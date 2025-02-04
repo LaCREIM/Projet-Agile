@@ -1,0 +1,2 @@
+CREATE USER dosi_dev IDENTIFIED BY dosi_dev;
+GRANT CONNECT, RESOURCE TO dosi_dev;
