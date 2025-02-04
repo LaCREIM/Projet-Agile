@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosConfig";
-import { Enseignant } from "../redux/EnseignantSlice";
+import { Enseignant } from "../features/EnseignantSlice";
 
 export const fetchEnseignants = async (): Promise<Enseignant[]> => {
   const response = await axiosInstance.get("/enseignants");
