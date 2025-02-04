@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosConfig';
 
-
-
 export interface Enseignant {
     noEnseignant: number;
     type: string;
@@ -22,7 +20,6 @@ export interface Enseignant {
     intSocNom: string;
 }
 
-// Définition de l'état global pour les enseignants
 interface EnseignantState {
     enseignants: Enseignant[];
     loading: boolean;
