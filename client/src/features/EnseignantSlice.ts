@@ -83,14 +83,15 @@ export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { reject
             return response.data;
         } catch (error: any) {
             console.error("Error deleting enseignant:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while deleting the enseignant.");
+            return rejectWithValue(error.response?.data || "An error occurred d while deleting the enseignant.");
         }
     }
 );
  
 
-const enseignantSlice = createSlice({
+const enseignantSlice = createSlice({ 
     name: "enseignants",
+
     initialState,
     reducers: {},
     extraReducers: (builder) => {
