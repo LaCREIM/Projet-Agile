@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import enseignantReducer from "./EnseignantSlice";
+import enseignantReducer from "../features/EnseignantSlice";
 
 const store = configureStore({
   reducer: {
