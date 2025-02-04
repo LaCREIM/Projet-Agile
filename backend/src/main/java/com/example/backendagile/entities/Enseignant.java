@@ -33,7 +33,7 @@ public class Enseignant {
     @Column(name = "VILLE", nullable = false)
     private String ville;
 
-    @Column(name = "PAYS", nullable = false, length = 5)
+    @Column(name = "PAYS", nullable = false, length = 20)
     private String pays;
 
     @Column(name = "MOBILE", nullable = false, length = 20)
