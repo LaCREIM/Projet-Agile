@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,8 +14,12 @@ import java.util.Optional;
 @RequestMapping("/api/enseignants")
 public class EnseignantController {
 
+    private final EnseignantService enseignantService;
+
     @Autowired
-    private EnseignantService enseignantService;
+    public EnseignantController(EnseignantService enseignantService) {
+        this.enseignantService = enseignantService;
+    }
 
     @GetMapping
     public List<Enseignant> getAllEnseignants() {
@@ -28,17 +33,28 @@ public class EnseignantController {
     }
 
     @PostMapping
-    public Enseignant createEnseignant(@RequestBody Enseignant enseignant) {
-        return enseignantService.save(enseignant);
+    public ResponseEntity<Enseignant> createEnseignant(@Valid @RequestBody Enseignant enseignant) {
+        Enseignant savedEnseignant = enseignantService.save(enseignant);
+        return ResponseEntity.ok(savedEnseignant);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Enseignant> updateEnseignant(@PathVariable Long id, @RequestBody Enseignant enseignantDetails) {
+    public ResponseEntity<Enseignant> updateEnseignant(@PathVariable Long id, @Valid @RequestBody Enseignant enseignantDetails) {
         Optional<Enseignant> enseignant = enseignantService.findById(id);
         if (enseignant.isPresent()) {
             Enseignant updatedEnseignant = enseignant.get();
             updatedEnseignant.setNom(enseignantDetails.getNom());
-            // MISE A JOUR DES AUTRE CHAMPS //
+            updatedEnseignant.setPrenom(enseignantDetails.getPrenom());
+            updatedEnseignant.setAdresse(enseignantDetails.getAdresse());
+            updatedEnseignant.setSexe(enseignantDetails.getSexe());
+            updatedEnseignant.setVille(enseignantDetails.getVille());
+            updatedEnseignant.setPays(enseignantDetails.getPays());
+            updatedEnseignant.setMobile(enseignantDetails.getMobile());
+            updatedEnseignant.setTelephone(enseignantDetails.getTelephone());
+            updatedEnseignant.setCodePostal(enseignantDetails.getCodePostal());
+            updatedEnseignant.setType(enseignantDetails.getType());
+            updatedEnseignant.setEmailUbo(enseignantDetails.getEmailUbo());
+            updatedEnseignant.setEmailPerso(enseignantDetails.getEmailPerso());
             enseignantService.save(updatedEnseignant);
             return ResponseEntity.ok(updatedEnseignant);
         } else {
