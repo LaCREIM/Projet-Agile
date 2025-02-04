@@ -91,7 +91,6 @@ export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { reject
 
 const enseignantSlice = createSlice({ 
     name: "enseignants",
-
     initialState,
     reducers: {},
     extraReducers: (builder) => {
