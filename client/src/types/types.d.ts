@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2025-02-05 16:10:52.
+// Generated using typescript-generator version 3.2.1263 on 2025-02-05 16:17:29.
 
 export interface Authentification {
     id: number;
