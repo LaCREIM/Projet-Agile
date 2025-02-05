@@ -9,6 +9,7 @@ export const HoverEffect = ({
 }: {
   items: {
     title: string;
+    icon: React.ReactElement;
     description: string;
     link: string;
   }[];
@@ -50,6 +51,7 @@ export const HoverEffect = ({
           </AnimatePresence>
           <Card>
             <CardTitle>{item.title}</CardTitle>
+            <CardIcon>{item.icon}</CardIcon>
             <CardDescription>{item.description}</CardDescription>
           </Card>
         </Link>
@@ -68,7 +70,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "rounded-2xl h-full w-full p-4 overflow-hidden bg-slate-100 border border-transparent dark:border-white/[0.2] group-hover:border-slate-700 relative z-20",
+        "rounded-2xl h-full w-full shadow-md p-4 overflow-hidden bg-white border border-transparent  group-hover:border-slate-700 relative z-20",
         className
       )}
     >
@@ -86,7 +88,20 @@ export const CardTitle = ({
   children: React.ReactNode;
 }) => {
   return (
-    <h4 className={cn("text-zinc-100 font-bold tracking-wide mt-4", className)}>
+    <h4 className={cn("text-slate-900 text-center font-bold tracking-wide mt-4", className)}>
+      {children}
+    </h4>
+  );
+};
+export const CardIcon = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <h4 className={cn("text-slate-900 font-bold tracking-wide mt-4", className)}>
       {children}
     </h4>
   );
