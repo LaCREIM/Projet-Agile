@@ -1,33 +1,112 @@
 package com.example.backendagile.services;
-
+import com.example.backendagile.dto.PromotionDTO;
+import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.entities.Formation;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.entities.PromotionId;
+import com.example.backendagile.mapper.PromotionMapper;
+import com.example.backendagile.repositories.EnseignantRepository;
+import com.example.backendagile.repositories.FormationRepository;
 import com.example.backendagile.repositories.PromotionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PromotionService {
+    private final PromotionMapper promotionMapper;
+    private final PromotionRepository promotionRepository;
+    private final FormationRepository formationRepository;
+    private final EnseignantRepository enseignantRepository;
 
-    @Autowired
-    private PromotionRepository promotionRepository;
 
-    public List<Promotion> findAll() {
-        return promotionRepository.findAll();
+
+    public PromotionService(PromotionMapper promotionMapper, PromotionRepository promotionRepository, FormationRepository formationRepository, EnseignantRepository enseignantRepository) {
+        this.promotionMapper = promotionMapper;
+        this.promotionRepository = promotionRepository;
+        this.formationRepository = formationRepository;
+        this.enseignantRepository = enseignantRepository;
     }
 
-    public Optional<Promotion> findById(PromotionId id) {
-        return promotionRepository.findById(id);
+    /**
+     * Retrieves all promotions from the database.
+     *
+     * @return A list of {@link PromotionDTO} objects representing all promotions.
+     */
+    public List<PromotionDTO> getAllPromotions() {
+        List<Promotion> promotions = promotionRepository.findAll();
+        System.out.println(promotions);
+        List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt ->promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
+        return promotionDTOs;
     }
 
-    public Promotion save(Promotion promotion) {
+    /**
+     * Retrieves a specific promotion by its ID.
+     *
+     * @param anneeUniversitaire codeFormation The ID of the promotion to retrieve.
+     * @return An {@link Optional} containing the {@link Promotion} if found, or empty if not found.
+     */
+    public PromotionDTO getPromotionById(String anneeUniversitaire, String codeFormation) {
+        PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
+        //System.out.println(key);
+        Promotion promotion = promotionRepository.findById(key).orElseThrow(()->new RuntimeException("Promotion Not Found"));
+        return promotionMapper.fromPromotion(promotion);
+    }
+
+    /**
+     * Creates a new promotion and saves it to the database.
+     *
+     * @param Promotion The {@link PromotionDTO} object containing the promotion's data.
+     * @return The saved {@link Promotion} entity.
+     * @throws RuntimeException If the associated formation or teacher is not found.
+     */
+    public Promotion createPromotion(PromotionDTO Promotion) {
+        Formation formation = formationRepository.findById(Promotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
+        Enseignant enseignant = enseignantRepository.findById(Promotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
+        Promotion promotion = promotionMapper.fromPromotionDTO(Promotion);
+        PromotionId key = new PromotionId(Promotion.getAnneeUniversitaire(),Promotion.getCodeFormation());
+        promotion.setId(key);
+        promotion.setEnseignant(enseignant);
         return promotionRepository.save(promotion);
     }
 
-    public void deleteById(PromotionId promotionId) {
-    promotionRepository.deleteById(promotionId);
-
+    /**
+     * Updates an existing promotion in the database.
+     *
+     * @param anneeUniversitaire The ID of the promotion to update.
+     * @param updatedPromotion The {@link Promotion} object containing the updated data.
+     * @return The updated {@link Promotion} entity.
+     * @throws RuntimeException If the promotion with the given ID is not found.
+     */
+    public PromotionDTO updatePromotion(String anneeUniversitaire,String codeFormation, PromotionDTO updatedPromotion) {
+        PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
+        Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
+        Formation formation = formationRepository.findById(updatedPromotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
+        Enseignant enseignant = enseignantRepository.findById(updatedPromotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
+        Promotion newpromotion = promotionMapper.fromPromotionDTO(updatedPromotion);
+        newpromotion.setEnseignant(enseignant);
+        PromotionId key2 = new PromotionId(updatedPromotion.getAnneeUniversitaire(),updatedPromotion.getCodeFormation());
+        newpromotion.setId(key2);
+        promotionRepository.save(newpromotion);
+        return promotionMapper.fromPromotion(newpromotion);
     }
+
+    /**
+     * Deletes a promotion from the database.
+     *
+     * @param anneeUniversitaire The ID of the promotion to delete.
+     */
+    public void deletePromotion(String anneeUniversitaire,String codeFormation) {
+        PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
+        promotionRepository.deleteById(key);
+    }
+
+
+
+
+
+
 }

@@ -1,0 +1,188 @@
+package com.example.backendagile.dto;
+
+import com.example.backendagile.entities.Etudiant;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public class PromotionDTO {
+
+    private String anneeUniversitaire;
+
+    private String siglePromotion;
+
+    private Integer nbMaxEtudiant;
+
+    private LocalDate dateReponseLp;
+
+    private LocalDate dateReponseLalp;
+
+    private LocalDate dateRentree;
+
+    private String lieuRentree;
+
+    private String processusStage;
+
+    private String commentaire;
+
+    private List<Etudiant> etudiants;
+
+
+    private String codeFormation;
+
+    private String diplome;
+
+    private Long noEnseignant;
+
+    private String type;
+
+    private String nom;
+
+    private String prenom;
+
+
+
+// Getter and Setter
+
+
+
+    public LocalDate getDateReponseLp() {
+        return dateReponseLp;
+    }
+
+    public void setDateReponseLp(LocalDate dateReponseLp) {
+        this.dateReponseLp = dateReponseLp;
+    }
+
+    public LocalDate getDateReponseLalp() {
+        return dateReponseLalp;
+    }
+
+    public void setDateReponseLalp(LocalDate dateReponseLalp) {
+        this.dateReponseLalp = dateReponseLalp;
+    }
+
+    public void setDateRentree(LocalDate dateRentree) {
+        this.dateRentree = dateRentree;
+    }
+
+    public String getProcessusStage() {
+        return processusStage;
+    }
+
+    public void setProcessusStage(String processusStage) {
+        this.processusStage = processusStage;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
+    }
+    public Long getNoEnseignant() {
+        return noEnseignant;
+    }
+
+    public void setNoEnseignant(Long noEnseignant) {
+        this.noEnseignant = noEnseignant;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public String getCodeFormation() {
+        return codeFormation;
+    }
+
+    public void setCodeFormation(String codeFormation) {
+        this.codeFormation = codeFormation;
+    }
+
+    public String getDiplome() {
+        return diplome;
+    }
+
+    public void setDiplome(String diplome) {
+        this.diplome = diplome;
+    }
+
+    public String getAnneeUniversitaire() {
+        return anneeUniversitaire;
+    }
+
+    public void setAnneeUniversitaire(String anneeUniversitaire) {
+        this.anneeUniversitaire = anneeUniversitaire;
+    }
+
+    public void setEtudiants(List<Etudiant> etudiants) {
+        this.etudiants = etudiants;
+    }
+
+
+
+    public List<Etudiant> getEtudiants() {
+        return etudiants;
+    }
+
+    public String getSiglePromotion() {
+        return siglePromotion;
+    }
+
+    public void setSiglePromotion(String siglePromotion) {
+        this.siglePromotion = siglePromotion;
+    }
+
+    public Integer getNbMaxEtudiant() {
+        return nbMaxEtudiant;
+    }
+
+    public void setNbMaxEtudiant(Integer nbMaxEtudiant) {
+        this.nbMaxEtudiant = nbMaxEtudiant;
+    }
+
+    public LocalDate getDateRentree() {
+        return dateRentree;
+    }
+
+    public String getLieuRentree() {
+        return lieuRentree;
+    }
+
+    public void setLieuRentree(String lieuRentree) {
+        this.lieuRentree = lieuRentree;
+    }
+
+    @Override
+    public String toString() {
+        return "Promotion{" +
+                "anneePro=" + anneeUniversitaire +
+                ", siglePro='" + siglePromotion + '\'' +
+                ", nbEtuSouhaite=" + nbMaxEtudiant +
+                ", dateRentree=" + dateRentree +
+                ", lieuRentree='" + lieuRentree + '\'' +
+                '}';
+    }
+}

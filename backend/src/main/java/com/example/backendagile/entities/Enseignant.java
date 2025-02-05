@@ -64,7 +64,17 @@ public class Enseignant {
     @Column(name = "EMAIL_PERSO")
     private String emailPerso;
 
-    public Long getId() {
+
+    public Enseignant(Integer id) {
+        this.id = id;
+    }
+
+    public Enseignant() {
+
+    }
+
+    public Integer getId() {
+
         return id;
     }
 
