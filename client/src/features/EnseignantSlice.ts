@@ -1,144 +1,105 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axiosInstance from "../api/axiosConfig";
-import { getPromotionAsync } from "./PromotionSlice";
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import axiosInstance from '../api/axiosConfig';
 
-// Définition de l'interface Etudiant
-export interface Etudiant {
+export interface Enseignant {
+    noEnseignant: number;
+    type: string;
     nom: string;
     prenom: string;
     sexe: string;
+    adresse: string;
     email: string;
-    telephone: string;
-    noEtudiantUbo: string;
-    noEtudiantNat: string;
-    dateNaissance: string;
-    lieuNaissance: string;
-    nationalite?: string;
-    universite: string;
-    anneePro: string;
-    permAdresse: string;
-    permVille: string;
-    permCp: string;
-    permPays: string;
-    dernierDiplome: string;
-    sigleEtu: string;
-    compteCri: string;
-    siglePro: string;
-    situation: string;
+    cp: string;
+    telPort: string;
+    pays: string;
+    encUboTel: number;
+    encUboEmail: string;
+    encPersoEmail: string;
+    intFonction: string;
+    intNoInsee: number;
+    intSocNom: string;
 }
 
-interface EtudiantState {
-    etudiant: Etudiant | null;
-    etudiants: Etudiant[];
+interface EnseignantState {
+    enseignants: Enseignant[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: EtudiantState = {
-    etudiant: null,
-    etudiants: [],
+const initialState: EnseignantState = {
+    enseignants: [],
     loading: false,
     error: null,
 };
 
-export const getEtudiantAsync = createAsyncThunk<Etudiant[], void, { rejectValue: string }>(
-    "etudiants/getEtudiantAsync",
+// Actions asynchrones
+export const getEnseignantAsync = createAsyncThunk<Enseignant[], void, { rejectValue: string }>(
+    "enseignants/getEnseignantAsync",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Etudiant[]>("/etudiants");
+            const response = await axiosInstance.get<Enseignant[]>('/enseignants');
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des étudiants.");
+            console.error("Error fetching professors:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching professors.");
         }
     }
 );
 
-export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], string, { rejectValue: string }>(
-    "etudiants/getEtudiantByPromotionAsync",
-    async (anneePro, { rejectWithValue }) => {
+export const createEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
+    "enseignants/createEnseignantAsync",
+    async (enseignant , { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Etudiant[]>(`/promotions/students/${anneePro}`);
+            const response = await axiosInstance.post('/enseignants', enseignant);
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des étudiants par promotion.");
+            console.error("Error adding professor:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while adding the professor.");
         }
     }
 );
 
-export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
-    "etudiants/postEtudiantAsync",
-    async (etudiant, { rejectWithValue }) => {
+export const editEnseignantAsync = createAsyncThunk<void, Enseignant , { rejectValue: string }>(
+    "enseignants/editEnseignantAsync",
+    async (enseignant, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post("/etudiants", etudiant);
+            const response = await axiosInstance.put(`/enseignants/${enseignant.noEnseignant}`, enseignant);
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de l'ajout de l'étudiant.");
+            console.error("Error updating professor:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while updating the professor.");
         }
     }
 );
 
-export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
-    "etudiants/updateEtudiantAsync",
-    async (etudiant, { rejectWithValue }) => {
+export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
+    "enseignants/deleteEnseignantAsync",
+    async (enseignant, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/etudiants/${etudiant.noEtudiantNat}`, etudiant);
+            const response = await axiosInstance.delete(`/enseignants/${enseignant.noEnseignant}`);
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la modification de l'étudiant.");
+            console.error("Error deleting enseignant:", error);
+            return rejectWithValue(error.response?.data || "An error occurred d while deleting the enseignant.");
         }
     }
 );
+ 
 
-export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValue: string }>(
-    "etudiants/deleteEtudiantAsync",
-    async (id, { rejectWithValue }) => {
-        try {
-            await axiosInstance.delete(`/etudiants/${id}`);
-            return id;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la suppression de l'étudiant.");
-        }
-    }
-);
-
-const etudiantSlice = createSlice({
-    name: "etudiants",
+const enseignantSlice = createSlice({ 
+    name: "enseignants",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getEtudiantAsync.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(getEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
+            .addCase(getEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
                 state.loading = false;
-                state.etudiants = action.payload;
+                state.enseignants = action.payload;
             })
-            .addCase(getEtudiantAsync.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload || "Erreur inconnue.";
-            })
-            .addCase(getEtudiantByPromotionAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
-                state.etudiants = action.payload;
-            })
-            .addCase(postEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant>) => {
-                state.etudiants.push(action.payload);
-            })
-            .addCase(updateEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant>) => {
-                const index = state.etudiants.findIndex((e) => e.noEtudiantNat === action.payload.noEtudiantNat);
-                if (index !== -1) {
-                    state.etudiants[index] = action.payload;
-                }
-            })
-            .addCase(deleteEtudiantAsync.fulfilled, (state, action: PayloadAction<string>) => {
-                state.etudiants = state.etudiants.filter((e) => e.noEtudiantNat !== action.payload);
-            })
-            .addCase(getPromotionAsync.fulfilled, (_state, action) => {
-                console.log("Promotions fetched:", action.payload);
-            });
+            
     },
 });
 
-export default etudiantSlice.reducer;
+export default enseignantSlice.reducer;
+

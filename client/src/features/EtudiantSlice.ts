@@ -1,185 +1,150 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import axiosInstance from "../api/axiosConfig";
 import axios from "axios";
-import { getPromotionAsync } from "./PromotionSlice"; 
 
-const BASE_URL = "http://localhost:8080/api";
-
-// Définition de l'interface Etudiant
-export interface Etudiant {
+export interface Promotion {
+    anneePro: string;
+    siglePro: string;
+    nbEtuSouhaite: number;
+    dateRentree: string;
+    lieuRentree: string;
     nom: string;
     prenom: string;
-    sexe: string;
-    email: string;
-    telephone: string;
-    noEtudiantUbo: string;
-    noEtudiantNat: string;
-    dateNaissance: string;
-    lieuNaissance: string;
-    nationalite?: string;
-    universite: string;
-    anneePro: string;
-    permAdresse: string;
-    permVille: string;
-    permCp: string;
-    permPays: string;
-    dernierDiplome: string;
-    sigleEtu: string;
-    compteCri: string;
-    siglePro: string;
-    situation: string;
+    type: string;
+    noEnseignant: string;
+    nomFormation: string;
+    codeFormation: string;
+    diplome: string;
+    etatPreselection: string;
 }
 
-// Définition de l'état global
-interface EtudiantState {
-    etudiant: Etudiant | null;
-    etudiants: Etudiant[];
+// 🎯 **Initial state**
+interface PromotionState {
+    promotions: Promotion[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: EtudiantState = {
-    etudiant: null,
-    etudiants: [],
+const initialState: PromotionState = {
+    promotions: [],
     loading: false,
     error: null,
 };
 
-interface Formation {
-    codeFormation: string;
-    diplome: string;
-    nomFormation: string;
-}
-
-export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectValue: string }>(
-    "formations/getFormationAsync",
+// 🚀 **Actions asynchrones avec Axios**
+export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectValue: string }>(
+    "promotions/getPromotionAsync",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get<Formation[]>(`${BASE_URL}/promotions/formations`);
+            const response = await axiosInstance.get<Promotion[]>("/promotions");
             return response.data;
-        } catch (error: any) {
-            console.error("Error fetching formations:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while fetching formations.");
+        } catch (error: unknown) {
+            console.error("Error fetching promotions:", error);
+            if (axios.isAxiosError(error) && error.response) {
+                return rejectWithValue(error.response.data || "An error occurred while fetching promotions.");
+            }
+            return rejectWithValue("An error occurred while fetching promotions.");
         }
     }
 );
 
-// ✅ Récupérer tous les étudiants
-export const getEtudiantAsync = createAsyncThunk<Etudiant[], void, { rejectValue: string }>(
-    "etudiants/getEtudiantAsync",
-    async (_, { rejectWithValue }) => {
+// 🔹 Ajouter une promotion
+export const createPromotionAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
+    "promotions/createPromotionAsync",
+    async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axios.get<Etudiant[]>(`${BASE_URL}/etudiants`);
-            return response.data;
+            const response = await axiosInstance.post<Promotion>("/promotions", promotion);
+            return response.data;   
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des étudiants.");
+            console.error("Error adding promotion:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while adding a promotion.");
         }
     }
 );
 
-// ✅ Récupérer les étudiants par promotion
-export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], string, { rejectValue: string }>(
-    "etudiants/getEtudiantByPromotionAsync",
-    async (anneePro, { rejectWithValue }) => {
+// 🔹 Mettre à jour une promotion
+export const editPromotionAsync = createAsyncThunk<
+    Promotion,
+    { id: { anneeUniversitaire: string; codeFormation: string }; promotion: Partial<Promotion> },
+    { rejectValue: string }
+>(
+    "promotions/editPromotionAsync",
+    async ({ id, promotion }, { rejectWithValue }) => {
         try {
-            const response = await axios.get<Etudiant[]>(`${BASE_URL}/promotions/students/${anneePro}`);
+            const response = await axiosInstance.put<Promotion>(
+                `/promotions/${id.anneeUniversitaire}/${id.codeFormation}`,
+                promotion
+            );
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des étudiants par promotion.");
+            console.error("Error updating promotion:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while updating the promotion.");
         }
     }
 );
 
-// ✅ Ajouter un étudiant
-export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
-    "etudiants/postEtudiantAsync",
-    async (etudiant, { rejectWithValue }) => {
-        try {
-            const response = await axios.post(`${BASE_URL}/etudiants`, etudiant);
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de l'ajout de l'étudiant.");
-        }
-    }
-);
-
-// ✅ Modifier un étudiant
-export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
-    "etudiants/updateEtudiantAsync",
-    async (etudiant, { rejectWithValue }) => {
-        try {
-            const response = await axios.put(`${BASE_URL}/etudiants/${etudiant.noEtudiantNat}`, etudiant);
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la modification de l'étudiant.");
-        }
-    }
-);
-
-// ✅ Supprimer un étudiant
-export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValue: string }>(
-    "etudiants/deleteEtudiantAsync",
+// 🔹 Supprimer une promotion
+export const removePromotionAsync = createAsyncThunk<
+    { anneeUniversitaire: string; codeFormation: string },
+    { anneeUniversitaire: string; codeFormation: string },
+    { rejectValue: string }
+>(
+    "promotions/removePromotionAsync",
     async (id, { rejectWithValue }) => {
         try {
-            await axios.delete(`${BASE_URL}/etudiants/${id}`);
-            return id; // Retourner l'ID pour mise à jour du state
+            await axiosInstance.delete(`/promotions/${id.anneeUniversitaire}/${id.codeFormation}`);
+            return id; // Retourner l'ID supprimé
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la suppression de l'étudiant.");
+            console.error("Error deleting promotion:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while deleting the promotion.");
         }
     }
 );
 
-const etudiantSlice = createSlice({
-    name: "etudiants",
+// 🎯 **Création du Slice Redux**
+const promotionSlice = createSlice({
+    name: "promotions",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // ✅ Récupération des étudiants
-            .addCase(getEtudiantAsync.pending, (state) => {
+            // 📌 Récupérer les promotions
+            .addCase(getPromotionAsync.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
+            .addCase(getPromotionAsync.fulfilled, (state, action: PayloadAction<Promotion[]>) => {
                 state.loading = false;
-                state.etudiants = action.payload;
+                state.promotions = action.payload;
             })
-            .addCase(getEtudiantAsync.rejected, (state, action) => {
+            .addCase(getPromotionAsync.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || "Erreur inconnue.";
+                state.error = action.payload || "Erreur lors du chargement des promotions.";
             })
 
-            // ✅ Récupération des étudiants par promotion
-            .addCase(getEtudiantByPromotionAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
-                state.etudiants = action.payload;
+            // 📌 Ajouter une promotion
+            .addCase(createPromotionAsync.fulfilled, (state, action: PayloadAction<Promotion>) => {
+                state.promotions.push(action.payload);
             })
 
-            // ✅ Ajout d'un étudiant
-            .addCase(postEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant>) => {
-                state.etudiants.push(action.payload);
-            })
-
-            // ✅ Mise à jour d'un étudiant
-            .addCase(updateEtudiantAsync.fulfilled, (state, action: PayloadAction<Etudiant>) => {
-                const index = state.etudiants.findIndex((e) => e.noEtudiantNat === action.payload.noEtudiantNat);
+            // 📌 Mettre à jour une promotion
+            .addCase(editPromotionAsync.fulfilled, (state, action: PayloadAction<Promotion>) => {
+                const index = state.promotions.findIndex(
+                    (p) => p.anneePro === action.payload.anneePro && p.codeFormation === action.payload.codeFormation
+                );
                 if (index !== -1) {
-                    state.etudiants[index] = action.payload;
+                    state.promotions[index] = action.payload;
                 }
             })
 
-            // ✅ Suppression d'un étudiant
-            .addCase(deleteEtudiantAsync.fulfilled, (state, action: PayloadAction<string>) => {
-                state.etudiants = state.etudiants.filter((e) => e.noEtudiantNat !== action.payload);
-            })
-
-            // ✅ Gestion des promotions et formations
-            .addCase(getPromotionAsync.fulfilled, (_state, action) => {
-                console.log("Promotions fetched:", action.payload);
-            })
-            .addCase(getFormationAsync.fulfilled, (_state, action) => {
-                console.log("Formations fetched:", action.payload);
+            // 📌 Supprimer une promotion
+            .addCase(removePromotionAsync.fulfilled, (state, action: PayloadAction<{ anneeUniversitaire: string; codeFormation: string }>) => {
+                state.promotions = state.promotions.filter(
+                    (p) => !(p.anneePro === action.payload.anneeUniversitaire && p.codeFormation === action.payload.codeFormation)
+                );
             });
     },
 });
 
-export default etudiantSlice.reducer;
+export default promotionSlice.reducer;
