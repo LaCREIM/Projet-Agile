@@ -43,21 +43,25 @@ public class EtudiantController {
             updatedEtudiant.setDateNaissance(etudiantDetails.getDateNaissance());
             updatedEtudiant.setLieuNaissance(etudiantDetails.getLieuNaissance());
             updatedEtudiant.setNationalite(etudiantDetails.getNationalite());
-            // updatedEtudiant.setPromotion(etudiantDetails.getPromotion());
+            updatedEtudiant.setPromotion(etudiantDetails.getPromotion());
             etudiantService.save(updatedEtudiant);
             return ResponseEntity.ok(updatedEtudiant);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-
+    
+    @GetMapping("/promotion/{anneePro}")
+    public ResponseEntity<List<Etudiant>> getEtudiantsByPromotion(@PathVariable String anneePro) {
+        List<Etudiant> etudiants = etudiantService.findEtudiantsByPromotion(anneePro);
+        return ResponseEntity.ok(etudiants);
+    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEtudiant(@PathVariable Long id) {
+    public ResponseEntity<String> deleteEtudiant(@PathVariable Long id) {
         if (etudiantService.findById(id).isPresent()) {
             etudiantService.deleteById(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("L'étudiant a été supprimé avec succès.");
         } else {
-            return ResponseEntity.notFound().build();
-        }
+            return ResponseEntity.ok("L'étudiant a été supprimé avec succès.");        }
     }
 }

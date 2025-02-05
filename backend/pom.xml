@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.2</version>
-        <relativePath/> 
+        <relativePath/>
     </parent>
     <groupId>com.example</groupId>
     <artifactId>Backend-Agile</artifactId>
@@ -87,10 +87,84 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.12</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>cz.habarta.typescript-generator</groupId>
+                <artifactId>typescript-generator-maven-plugin</artifactId>
+                <version>3.2.1263</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsonLibrary>jackson2</jsonLibrary>
+                    <classes>
+                        <class>com.example.backendagile.entities.Authentification</class>
+                        <class>com.example.backendagile.entities.Candidat</class>
+                        <class>com.example.backendagile.entities.CgRefCode</class>
+                        <class>com.example.backendagile.entities.DroitId</class>
+                        <class>com.example.backendagile.entities.Droit</class>
+                        <class>com.example.backendagile.entities.ElementConstitutifId</class>
+                        <class>com.example.backendagile.entities.ElementConstitutif</class>
+                        <class>com.example.backendagile.entities.Enseignant</class>
+                        <class>com.example.backendagile.entities.EnseignantJn</class>
+                        <class>com.example.backendagile.entities.Etudiant</class>
+                        <class>com.example.backendagile.entities.Evaluation</class>
+                        <class>com.example.backendagile.entities.Formation</class>
+                        <class>com.example.backendagile.entities.PromotionId</class>
+                        <class>com.example.backendagile.entities.Promotion</class>
+                        <class>com.example.backendagile.entities.Qualificatif</class>
+                        <class>com.example.backendagile.entities.QuestionEvaluation</class>
+                        <class>com.example.backendagile.entities.Question</class>
+                        <class>com.example.backendagile.entities.ReponseEvaluation</class>
+                        <class>com.example.backendagile.entities.ReponseQuestionId</class>
+                        <class>com.example.backendagile.entities.ReponseQuestion</class>
+                        <class>com.example.backendagile.entities.RubriqueEvaluation</class>
+                        <class>com.example.backendagile.entities.Rubrique</class>
+                        <class>com.example.backendagile.entities.RubriqueQuestionId</class>
+                        <class>com.example.backendagile.entities.RubriqueQuestion</class>
+                        <class>com.example.backendagile.entities.UniteEnseignementId</class>
+                    </classes>
+                    <outputKind>module</outputKind>
+                    <outputFile>../client/src/types/types.d.ts</outputFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,18 +1,32 @@
 package com.example.backendagile.entities;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "ENSEIGNANT", schema = "DOSI_DEV")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Enseignant {
     @Id
+    @GeneratedValue(generator = "sequence-generator")
+    @GenericGenerator(
+            name = "sequence-generator",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @Parameter(name = "sequence_name", value = "user_sequence"),
+                    @Parameter(name = "initial_value", value = "4"),
+                    @Parameter(name = "increment_size", value = "1")
+            }
+    )
     @Column(name = "NO_ENSEIGNANT", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "TYPE", nullable = false, length = 5)
     private String type;
@@ -50,6 +64,7 @@ public class Enseignant {
     @Column(name = "EMAIL_PERSO")
     private String emailPerso;
 
+
     public Enseignant(Integer id) {
         this.id = id;
     }
@@ -59,10 +74,11 @@ public class Enseignant {
     }
 
     public Integer getId() {
+
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
