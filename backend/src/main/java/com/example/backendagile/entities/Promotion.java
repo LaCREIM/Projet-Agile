@@ -19,12 +19,12 @@ public class Promotion {
     @EmbeddedId
     private PromotionId id;
 
-     @MapsId("codeFormation")
-     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-     @OnDelete(action = OnDeleteAction.RESTRICT)
-     @JoinColumn(name = "CODE_FORMATION", nullable = false)
-     @JsonIgnore
-     private Formation codeFormation;
+    @MapsId("codeFormation")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "CODE_FORMATION", nullable = false)
+    @JsonIgnore
+    private Formation codeFormation;
 
     @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, insertable = false, updatable = false)
     private String anneeUniversitaire;
@@ -32,7 +32,6 @@ public class Promotion {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "NO_ENSEIGNANT")
-    @JsonIgnore
     private Enseignant noEnseignant;
 
     @Column(name = "SIGLE_PROMOTION", length = 16)
@@ -69,13 +68,13 @@ public class Promotion {
         this.id = id;
     }
 
-     public Formation getCodeFormation() {
-         return codeFormation;
-     }
+    public Formation getCodeFormation() {
+        return codeFormation;
+    }
 
-     public void setCodeFormation(Formation codeFormation) {
-         this.codeFormation = codeFormation;
-     }
+    public void setCodeFormation(Formation codeFormation) {
+        this.codeFormation = codeFormation;
+    }
 
     public Enseignant getNoEnseignant() {
         return noEnseignant;
