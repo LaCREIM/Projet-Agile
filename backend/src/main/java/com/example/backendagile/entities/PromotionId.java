@@ -8,12 +8,16 @@ import java.util.Objects;
 
 @Embeddable
 public class PromotionId implements java.io.Serializable {
-    private static final long serialVersionUID = -3770408658719747761L;
+    private static final long serialVersionUID = 1L;
     @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, length = 10)
     private String anneeUniversitaire;
 
     @Column(name = "CODE_FORMATION", nullable = false, length = 8)
     private String codeFormation;
+
+    public PromotionId() {
+
+    }
 
     public String getAnneeUniversitaire() {
         return anneeUniversitaire;
@@ -45,4 +49,8 @@ public class PromotionId implements java.io.Serializable {
         return Objects.hash(anneeUniversitaire, codeFormation);
     }
 
+    public PromotionId(String codeFormation, String anneeUniversitaire ){
+        this.anneeUniversitaire = anneeUniversitaire;
+        this.codeFormation = codeFormation;
+    }
 }
