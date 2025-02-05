@@ -1,5 +1,6 @@
 package com.example.backendagile.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Table(name = "ETUDIANT", schema = "DOSI_DEV", indexes = {
         @Index(name = "ETU_PRO_FK_I", columnList = "ANNEE_UNIVERSITAIRE")
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Etudiant {
     @Id
     @Column(name = "NO_ETUDIANT", nullable = false, length = 50)
@@ -20,7 +22,6 @@ public class Etudiant {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JsonIgnore    
     @JoinColumns({
         @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
         @JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE")
