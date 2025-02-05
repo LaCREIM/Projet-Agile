@@ -65,7 +65,7 @@ public class Enseignant {
     private String emailPerso;
 
 
-    public Enseignant(Integer id) {
+    public Enseignant(Long id) {
         this.id = id;
     }
 
@@ -73,7 +73,7 @@ public class Enseignant {
 
     }
 
-    public Integer getId() {
+    public Long getId() {
 
         return id;
     }
