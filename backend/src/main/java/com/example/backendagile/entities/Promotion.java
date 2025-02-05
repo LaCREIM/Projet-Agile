@@ -1,6 +1,5 @@
 package com.example.backendagile.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -19,20 +18,11 @@ public class Promotion {
     @EmbeddedId
     private PromotionId id;
 
-    @MapsId("codeFormation")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "CODE_FORMATION", nullable = false)
-    @JsonIgnore
-    private Formation codeFormation;
-
-    @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, insertable = false, updatable = false)
-    private String anneeUniversitaire;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "NO_ENSEIGNANT")
-    private Enseignant noEnseignant;
+    private Enseignant enseignant;
 
     @Column(name = "SIGLE_PROMOTION", length = 16)
     private String siglePromotion;
@@ -68,20 +58,13 @@ public class Promotion {
         this.id = id;
     }
 
-    public Formation getCodeFormation() {
-        return codeFormation;
+
+    public Enseignant getEnseignant() {
+        return enseignant;
     }
 
-    public void setCodeFormation(Formation codeFormation) {
-        this.codeFormation = codeFormation;
-    }
-
-    public Enseignant getNoEnseignant() {
-        return noEnseignant;
-    }
-
-    public void setNoEnseignant(Enseignant noEnseignant) {
-        this.noEnseignant = noEnseignant;
+    public void setEnseignant(Enseignant enseignant) {
+        this.enseignant = enseignant;
     }
 
     public String getSiglePromotion() {

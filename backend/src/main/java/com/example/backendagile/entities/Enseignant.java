@@ -50,6 +50,14 @@ public class Enseignant {
     @Column(name = "EMAIL_PERSO")
     private String emailPerso;
 
+    public Enseignant(Integer id) {
+        this.id = id;
+    }
+
+    public Enseignant() {
+
+    }
+
     public Integer getId() {
         return id;
     }
