@@ -26,6 +26,10 @@ public class EtudiantService {
         return etudiantRepository.save(etudiant);
     }
 
+    public List<Etudiant> findEtudiantsByPromotion(String anneePro) {
+        return etudiantRepository.findByPromotionCode(anneePro);
+    }
+    
     public void deleteById(Long id) {
         etudiantRepository.deleteById(id);
     }
