@@ -140,7 +140,7 @@
                         <class>com.example.backendagile.entities.UniteEnseignementId</class>
                     </classes>
                     <outputKind>module</outputKind>
-                    <outputFile>../client/types/types.d.ts</outputFile>
+                    <outputFile>../client/src/types/types.d.ts</outputFile>
                 </configuration>
             </plugin>
             <plugin>
