@@ -1,16 +1,20 @@
 package com.example.backendagile.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 
-@Entity
+@Entity 
 @Table(name = "ETUDIANT", schema = "DOSI_DEV", indexes = {
         @Index(name = "ETU_PRO_FK_I", columnList = "ANNEE_UNIVERSITAIRE")
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Etudiant {
     @Id
     @Column(name = "NO_ETUDIANT", nullable = false, length = 50)
@@ -18,8 +22,13 @@ public class Etudiant {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    private com.example.backendagile.entities.Promotion promotion;
-
+    @JoinColumns({
+        @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
+        @JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE")
+    })
+    private Promotion promotion;
+    
+   
     @Column(name = "NOM", nullable = false, length = 50)
     private String nom;
 
@@ -80,13 +89,13 @@ public class Etudiant {
         this.noEtudiant = noEtudiant;
     }
 
-    public com.example.backendagile.entities.Promotion getPromotion() {
-        return promotion;
-    }
+     public com.example.backendagile.entities.Promotion getPromotion() {
+         return promotion;
+     }
 
-    public void setPromotion(com.example.backendagile.entities.Promotion promotion) {
-        this.promotion = promotion;
-    }
+     public void setPromotion(com.example.backendagile.entities.Promotion promotion) {
+         this.promotion = promotion;
+     }
 
     public String getNom() {
         return nom;
@@ -118,7 +127,8 @@ public class Etudiant {
 
     public void setDateNaissance(LocalDate dateNaissance) {
         this.dateNaissance = dateNaissance;
-    }
+    }  
+     
 
     public String getLieuNaissance() {
         return lieuNaissance;

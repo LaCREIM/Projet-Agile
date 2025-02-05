@@ -10,20 +10,30 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDate;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "PROMOTION", schema = "DOSI_DEV", indexes = {
+        @Index(name = "PRO_FRM_FK_I", columnList = "CODE_FORMATION"),
         @Index(name = "PRO_ENS_FK_I", columnList = "NO_ENSEIGNANT")
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Promotion {
     @EmbeddedId
     private PromotionId id;
 
+     @MapsId("codeFormation")
+     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+     @OnDelete(action = OnDeleteAction.RESTRICT)
+     @JoinColumn(name = "CODE_FORMATION", nullable = false)
+     @JsonIgnore
+     private Formation codeFormation;
 
-    @Column(name = "NO_ENSEIGNANT", length = 5)
+    @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, insertable = false, updatable = false)
+    private String anneeUniversitaire;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "NO_ENSEIGNANT")
     @JsonIgnore
-    private Long noEnseignant;
-
-
+    private Enseignant noEnseignant;
 
     @Column(name = "SIGLE_PROMOTION", length = 16)
     private String siglePromotion;
@@ -59,11 +69,19 @@ public class Promotion {
         this.id = id;
     }
 
-    public Long getNoEnseignant() {
+     public Formation getCodeFormation() {
+         return codeFormation;
+     }
+
+     public void setCodeFormation(Formation codeFormation) {
+         this.codeFormation = codeFormation;
+     }
+
+    public Enseignant getNoEnseignant() {
         return noEnseignant;
     }
 
-    public void setNoEnseignant(Long noEnseignant) {
+    public void setNoEnseignant(Enseignant noEnseignant) {
         this.noEnseignant = noEnseignant;
     }
 
@@ -130,4 +148,5 @@ public class Promotion {
     public void setCommentaire(String commentaire) {
         this.commentaire = commentaire;
     }
+
 }

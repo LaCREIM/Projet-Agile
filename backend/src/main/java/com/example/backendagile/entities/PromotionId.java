@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Embeddable
 public class PromotionId implements java.io.Serializable {
-    private static final long serialVersionUID = -3770408658719747761L;
+    private static final long serialVersionUID = 1L;
     @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, length = 10)
     private String anneeUniversitaire;
 
