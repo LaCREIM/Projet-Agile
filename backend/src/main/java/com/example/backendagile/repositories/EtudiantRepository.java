@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
-    @Query("SELECT e FROM Etudiant e WHERE e.promotion.anneeUniversitaire = :anneeUniversitaire")
+    @Query("SELECT e FROM Etudiant e WHERE e.promotion.id.anneeUniversitaire = :anneeUniversitaire")
     List<Etudiant> findByPromotionCode(@Param("anneeUniversitaire") String anneeUniversitaire);
 
 }
