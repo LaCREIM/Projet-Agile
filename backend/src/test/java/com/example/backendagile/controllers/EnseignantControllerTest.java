@@ -34,7 +34,7 @@ public class EnseignantControllerTest {
     @Test
     public void testGetAllEnseignants() throws Exception {
         Enseignant enseignant1 = new Enseignant();
-        enseignant1.setId(1);
+        //enseignant1.setId(1);
         enseignant1.setType("MCF");
         enseignant1.setSexe("H");
         enseignant1.setNom("Saliou");
@@ -49,7 +49,7 @@ public class EnseignantControllerTest {
         enseignant1.setEmailPerso("philippe.saliou@gmail.com");
 
         Enseignant enseignant2 = new Enseignant();
-        enseignant2.setId(2);
+       // enseignant2.setId(2);
         enseignant2.setType("MCF");
         enseignant2.setSexe("H");
         enseignant2.setNom("Lallali");
@@ -74,7 +74,7 @@ public class EnseignantControllerTest {
     @Test
     public void testGetEnseignantById() throws Exception {
         Enseignant enseignant = new Enseignant();
-        enseignant.setId(1);
+       // enseignant.setId(1);
         enseignant.setType("MCF");
         enseignant.setSexe("H");
         enseignant.setNom("Saliou");
@@ -123,7 +123,7 @@ public class EnseignantControllerTest {
     @Test
     public void testUpdateEnseignant() throws Exception {
         Enseignant enseignant = new Enseignant();
-        enseignant.setId(1);
+      //  enseignant.setId(1);
         enseignant.setType("MCF");
         enseignant.setSexe("H");
         enseignant.setNom("Saliou");
@@ -150,7 +150,7 @@ public class EnseignantControllerTest {
     @Test
     public void testDeleteEnseignant() throws Exception {
         Enseignant enseignant = new Enseignant();
-        enseignant.setId(1);
+       // enseignant.setId(1);
         enseignant.setType("MCF");
         enseignant.setSexe("H");
         enseignant.setNom("Saliou");
