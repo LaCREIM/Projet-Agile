@@ -24,6 +24,10 @@ public class Formation {
     @Column(name = "NOM_FORMATION", nullable = false, length = 64)
     private String nomFormation;
 
+    public Formation(String codeFormation) {
+        this.codeFormation = codeFormation;
+    }
+
     @Convert(disableConversion = true)
     @Column(name = "DOUBLE_DIPLOME", nullable = false)
     private Boolean doubleDiplome = false;
@@ -33,6 +37,10 @@ public class Formation {
 
     @Column(name = "FIN_ACCREDITATION")
     private LocalDate finAccreditation;
+
+    public Formation() {
+
+    }
 
     public String getCodeFormation() {
         return codeFormation;
