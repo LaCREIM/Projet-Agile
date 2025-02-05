@@ -25,6 +25,7 @@ public class Enseignant {
                     @Parameter(name = "increment_size", value = "1")
             }
     )
+    @Column(name = "NO_ENSEIGNANT", nullable = false)
     private Long id;
 
     @Column(name = "TYPE", nullable = false, length = 5)
