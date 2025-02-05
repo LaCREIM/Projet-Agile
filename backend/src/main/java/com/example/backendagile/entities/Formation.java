@@ -1,10 +1,11 @@
 package com.example.backendagile.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "FORMATION", schema = "DOSI_DEV")
 public class Formation {

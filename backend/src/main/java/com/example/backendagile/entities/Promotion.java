@@ -1,5 +1,7 @@
 package com.example.backendagile.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
@@ -8,24 +10,20 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDate;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "PROMOTION", schema = "DOSI_DEV", indexes = {
-        @Index(name = "PRO_FRM_FK_I", columnList = "CODE_FORMATION"),
         @Index(name = "PRO_ENS_FK_I", columnList = "NO_ENSEIGNANT")
 })
 public class Promotion {
     @EmbeddedId
     private PromotionId id;
 
-    @MapsId("codeFormation")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "CODE_FORMATION", nullable = false)
-    private Formation codeFormation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "NO_ENSEIGNANT")
-    private Enseignant noEnseignant;
+    @Column(name = "NO_ENSEIGNANT", length = 5)
+    @JsonIgnore
+    private Long noEnseignant;
+
+
 
     @Column(name = "SIGLE_PROMOTION", length = 16)
     private String siglePromotion;
@@ -61,19 +59,11 @@ public class Promotion {
         this.id = id;
     }
 
-    public Formation getCodeFormation() {
-        return codeFormation;
-    }
-
-    public void setCodeFormation(Formation codeFormation) {
-        this.codeFormation = codeFormation;
-    }
-
-    public Enseignant getNoEnseignant() {
+    public Long getNoEnseignant() {
         return noEnseignant;
     }
 
-    public void setNoEnseignant(Enseignant noEnseignant) {
+    public void setNoEnseignant(Long noEnseignant) {
         this.noEnseignant = noEnseignant;
     }
 
@@ -140,5 +130,4 @@ public class Promotion {
     public void setCommentaire(String commentaire) {
         this.commentaire = commentaire;
     }
-
 }
