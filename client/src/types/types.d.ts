@@ -11,6 +11,10 @@ export interface Authentification {
     noEnseignant: Enseignant;
     noEtudiant: Etudiant;
 }
+export interface PromotionDetails {
+    anneePro: string;
+    siglePro: string;
+}
 
 export interface Candidat {
     noCandidat: string;

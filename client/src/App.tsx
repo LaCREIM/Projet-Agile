@@ -8,7 +8,7 @@ import { AdminLayout } from "./layouts/AdminLayout";
 import EnseignantsHome from "./components/Enseignant/EnseignantsHome";
 import PromotionHome from "./components/Promotion/PromotionHome";
 import RootLayout from "./layouts/RootLayout";
-import EtudiantHome from "./components/Etudiant/EtudiantHome";
+import EtudiantHome from "./components/Student/StudentHome";
 import { Dashboard } from "./components/Admin/Dashboard";
 
 const router = createBrowserRouter(

@@ -7,7 +7,7 @@ import { IoSchool } from "react-icons/io5";
 import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import ubo from "/ubo.png";
+import ubo from "/ubologo.png";
 
 export function Dashboard() {
   const links = [
@@ -39,19 +39,7 @@ export function Dashboard() {
         <FiLogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "pose1don",
-      href: "#",
-      icon: (
-        <img
-          src={ubo}
-          className="h-7 w-7 flex-shrink-0 rounded-full"
-          width={50}
-          height={50}
-          alt="Avatar"
-        />
-      ),
-    },
+    
   ];
   const [open, setOpen] = useState(false);
   return (
@@ -89,7 +77,7 @@ export const Logo = () => {
         animate={{ opacity: 1 }}
         className="font-medium text-black dark:text-white whitespace-pre"
       >
-        AT-MF
+        UBO - SPI
       </motion.span>
     </Link>
   );
@@ -100,32 +88,8 @@ export const LogoIcon = () => {
       to="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <img src={ubo}  className="w-20 h-6 flex-shrink-0 rounded-full" />
     </Link>
   );
 };
 
-// const Dashboard = () => {
-//   return (
-//     <div className="flex flex-1">
-//       <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-//         <div className="flex gap-2">
-//           {[...new Array(4)].map((i) => (
-//             <div
-//               key={"first-array" + i}
-//               className="h-20 w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//             ></div>
-//           ))}
-//         </div>
-//         <div className="flex gap-2 flex-1">
-//           {[...new Array(2)].map((i) => (
-//             <div
-//               key={"second-array" + i}
-//               className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"
-//             ></div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
