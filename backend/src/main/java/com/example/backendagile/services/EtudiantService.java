@@ -4,7 +4,6 @@ import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.repositories.EtudiantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +32,11 @@ public class EtudiantService {
     public void deleteById(Long id) {
         etudiantRepository.deleteById(id);
     }
+    
+    public List<Etudiant> getEtudiantsPaged(int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return etudiantRepository.findAllWithPagination(startRow, endRow);
+    }
+
 }

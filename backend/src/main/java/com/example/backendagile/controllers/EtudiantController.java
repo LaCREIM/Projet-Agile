@@ -3,9 +3,9 @@ package com.example.backendagile.controllers;
 import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.services.EtudiantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +43,17 @@ public class EtudiantController {
             updatedEtudiant.setDateNaissance(etudiantDetails.getDateNaissance());
             updatedEtudiant.setLieuNaissance(etudiantDetails.getLieuNaissance());
             updatedEtudiant.setNationalite(etudiantDetails.getNationalite());
+            updatedEtudiant.setTelephone(etudiantDetails.getTelephone());
+            updatedEtudiant.setMobile(etudiantDetails.getMobile());
+            updatedEtudiant.setEmail(etudiantDetails.getEmail());
+            updatedEtudiant.setEmailUbo(etudiantDetails.getEmailUbo());
+            updatedEtudiant.setAdresse(etudiantDetails.getAdresse());
+            updatedEtudiant.setCodePostal(etudiantDetails.getCodePostal());
+            updatedEtudiant.setVille(etudiantDetails.getVille());
+            updatedEtudiant.setPaysOrigine(etudiantDetails.getPaysOrigine());
+            updatedEtudiant.setUniversiteOrigine(etudiantDetails.getUniversiteOrigine());
+            updatedEtudiant.setGroupeTp(etudiantDetails.getGroupeTp());
+            updatedEtudiant.setGroupeAnglais(etudiantDetails.getGroupeAnglais());
             updatedEtudiant.setPromotion(etudiantDetails.getPromotion());
             etudiantService.save(updatedEtudiant);
             return ResponseEntity.ok(updatedEtudiant);
@@ -56,12 +67,18 @@ public class EtudiantController {
         List<Etudiant> etudiants = etudiantService.findEtudiantsByPromotion(anneePro);
         return ResponseEntity.ok(etudiants);
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEtudiant(@PathVariable Long id) {
-        if (etudiantService.findById(id).isPresent()) {
-            etudiantService.deleteById(id);
-            return ResponseEntity.ok("L'étudiant a été supprimé avec succès.");
-        } else {
-            return ResponseEntity.ok("L'étudiant a été supprimé avec succès.");        }
+
+    @GetMapping("/paged")
+    public List<Etudiant> getAllEtudiantsPaged(@RequestParam int page, @RequestParam int size) {
+        return etudiantService.getEtudiantsPaged(page, size);
     }
+   @DeleteMapping("/{id}")
+public ResponseEntity<String> deleteEtudiant(@PathVariable Long id) {
+    if (etudiantService.findById(id).isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun étudiant trouvé avec cet ID.");
+    }
+    etudiantService.deleteById(id);
+    return ResponseEntity.ok("Étudiant supprimé avec succès.");
+}
+
 }
