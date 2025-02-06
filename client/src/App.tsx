@@ -14,13 +14,13 @@ import { Dashboard } from "./components/Admin/Dashboard";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-      <Route path="admin" element={<AdminLayout />}>
-        <Route path="home" element={<Dashboard />} />
-        <Route path="home/enseignants" element={<EnseignantsHome />} />
-        <Route path="home/promotions" element={<PromotionHome />} />
-        <Route path="home/etudiants" element={<EtudiantHome />} />
-      </Route>
-
+      <Route path="admin" element={<AdminLayout />}/>
+        <Route path="/admin/home" element={<Dashboard />} >
+        <Route path="enseignants" element={<EnseignantsHome />} />
+        <Route path="promotions" element={<PromotionHome />} />
+        <Route path="etudiants" element={<EtudiantHome />} />
+          </Route>
+  )
       <Route path="*" element={<div>404 Not Found</div>} />
     </Route>
   )
