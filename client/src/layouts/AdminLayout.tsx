@@ -3,7 +3,6 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { LuSchool } from "react-icons/lu";
 import { IoSchool } from "react-icons/io5";
 import NavBar from "../components/Admin/NavBar";
-import { Outlet } from "react-router-dom";
 
 export function AdminLayout() {
   return (
@@ -12,7 +11,6 @@ export function AdminLayout() {
       <div className="max-w-5xl h-screen mx-auto px-8">
         <HoverEffect items={projects} />
       </div>
-      <Outlet />
     </>
   );
 }
