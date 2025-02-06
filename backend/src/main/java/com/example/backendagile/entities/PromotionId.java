@@ -49,7 +49,7 @@ public class PromotionId implements java.io.Serializable {
         return Objects.hash(anneeUniversitaire, codeFormation);
     }
 
-    public PromotionId(String codeFormation, String anneeUniversitaire ){
+    public PromotionId( String anneeUniversitaire , String codeFormation){
         this.anneeUniversitaire = anneeUniversitaire;
         this.codeFormation = codeFormation;
     }

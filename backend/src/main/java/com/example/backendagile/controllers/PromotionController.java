@@ -1,6 +1,5 @@
 package com.example.backendagile.controllers;
 import com.example.backendagile.dto.PromotionDTO;
-import com.example.backendagile.entities.Formation;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;

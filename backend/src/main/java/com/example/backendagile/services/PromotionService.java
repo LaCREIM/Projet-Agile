@@ -64,12 +64,9 @@ public class PromotionService {
      * @throws RuntimeException If the associated formation or teacher is not found.
      */
     public Promotion createPromotion(PromotionDTO Promotion) {
-        Formation formation = formationRepository.findById(Promotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
-        Enseignant enseignant = enseignantRepository.findById(Promotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
         Promotion promotion = promotionMapper.fromPromotionDTO(Promotion);
-        PromotionId key = new PromotionId(Promotion.getAnneeUniversitaire(),Promotion.getCodeFormation());
-        promotion.setId(key);
-        promotion.setEnseignant(enseignant);
+        System.out.println("PromotionDTO : "+Promotion);
+        System.out.println("Promotion : " +promotion);
         return promotionRepository.save(promotion);
     }
 
@@ -84,7 +81,6 @@ public class PromotionService {
     public PromotionDTO updatePromotion(String anneeUniversitaire,String codeFormation, PromotionDTO updatedPromotion) {
         PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
         Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
-        Formation formation = formationRepository.findById(updatedPromotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
         Enseignant enseignant = enseignantRepository.findById(updatedPromotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
         Promotion newpromotion = promotionMapper.fromPromotionDTO(updatedPromotion);
         newpromotion.setEnseignant(enseignant);

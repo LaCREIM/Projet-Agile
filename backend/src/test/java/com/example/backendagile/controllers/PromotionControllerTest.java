@@ -36,8 +36,8 @@ class PromotionControllerTest {
     @BeforeEach
     void setUp() {
         promotionDTO = new PromotionDTO();
-        promotionDTO.setAnneeUniversitaire("2025");
-        promotionDTO.setCodeFormation("JAVA");
+        promotionDTO.setAnneeUniversitaire("2024-2024-2025");
+        promotionDTO.setCodeFormation("M2DOSI");
 
         promotion = new Promotion();
     }
@@ -52,11 +52,11 @@ class PromotionControllerTest {
 
     @Test
     void getPromotionById_ShouldReturnPromotion_WhenExists() {
-        when(promotionService.getPromotionById("2025", "JAVA")).thenReturn(promotionDTO);
-        PromotionDTO result = promotionController.getPromotionById("2025", "JAVA");
+        when(promotionService.getPromotionById("2024-2025", "M2DOSI")).thenReturn(promotionDTO);
+        PromotionDTO result = promotionController.getPromotionById("2024-2025", "M2DOSI");
         assertNotNull(result);
-        assertEquals("2025", result.getAnneeUniversitaire());
-        assertEquals("JAVA", result.getCodeFormation());
+        assertEquals("2024-2025", result.getAnneeUniversitaire());
+        assertEquals("M2DOSI", result.getCodeFormation());
     }
 
     @Test
@@ -69,16 +69,16 @@ class PromotionControllerTest {
 
     @Test
     void updatePromotion_ShouldReturnUpdatedPromotion() {
-        when(promotionService.updatePromotion("2025", "JAVA", promotionDTO)).thenReturn(promotionDTO);
-        PromotionDTO result = promotionController.updatePromotion("2025", "JAVA", promotionDTO);
+        when(promotionService.updatePromotion("2024-2025", "M2DOSI", promotionDTO)).thenReturn(promotionDTO);
+        PromotionDTO result = promotionController.updatePromotion("2024-2025", "M2DOSI", promotionDTO);
         assertNotNull(result);
-        assertEquals("2025", result.getAnneeUniversitaire());
+        assertEquals("2024-2025", result.getAnneeUniversitaire());
     }
 
     @Test
     void deletePromotion_ShouldReturnNoContent_WhenSuccessful() {
-        doNothing().when(promotionService).deletePromotion("2025", "JAVA");
-        ResponseEntity<?> response = promotionController.deletePromotion("2025", "JAVA");
+        doNothing().when(promotionService).deletePromotion("2024-2025", "M2DOSI");
+        ResponseEntity<?> response = promotionController.deletePromotion("2024-2025", "M2DOSI");
         assertEquals(204, response.getStatusCodeValue());
     }
 }

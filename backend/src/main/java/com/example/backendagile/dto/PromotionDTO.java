@@ -36,7 +36,24 @@ public class PromotionDTO {
 
     private String prenom;
 
-
+//Default constructor
+public PromotionDTO() {
+    this.anneeUniversitaire = "";
+    this.siglePromotion = "";
+    this.nbMaxEtudiant = 0;
+    this.dateReponseLp = LocalDate.MIN;
+    this.dateReponseLalp = LocalDate.MIN;
+    this.dateRentree = LocalDate.MIN;
+    this.lieuRentree = "";
+    this.processusStage = "";
+    this.commentaire = "";
+    this.codeFormation = "";
+    this.diplome = "";
+    this.noEnseignant = 0L;
+    this.type = "";
+    this.nom = "";
+    this.prenom = "";
+}
 
 // Getter and Setter
 
