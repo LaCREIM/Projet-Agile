@@ -15,7 +15,7 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
     @Query(value = """
     SELECT * FROM (
         SELECT e.*, ROWNUM rnum FROM (
-            SELECT * FROM dosi_dev.etudiant ORDER BY annee_universitaire DESC, nom ASC
+            SELECT * FROM etudiant ORDER BY annee_universitaire DESC, nom ASC
         ) e WHERE ROWNUM <= :endRow
     ) WHERE rnum > :startRow
 """, nativeQuery = true)
