@@ -16,10 +16,8 @@ public class Formation {
     @Column(name = "DIPLOME", nullable = false, length = 3)
     private String diplome;
 
-    @ColumnDefault("1")
-    @Convert(disableConversion = true)
     @Column(name = "N0_ANNEE", nullable = false)
-    private Boolean n0Annee = false;
+    private Integer nOAnnee ;
 
     @Column(name = "NOM_FORMATION", nullable = false, length = 64)
     private String nomFormation;
@@ -28,9 +26,9 @@ public class Formation {
         this.codeFormation = codeFormation;
     }
 
-    @Convert(disableConversion = true)
+
     @Column(name = "DOUBLE_DIPLOME", nullable = false)
-    private Boolean doubleDiplome = false;
+    private String doubleDiplome ;
 
     @Column(name = "DEBUT_ACCREDITATION")
     private LocalDate debutAccreditation;
@@ -58,12 +56,12 @@ public class Formation {
         this.diplome = diplome;
     }
 
-    public Boolean getN0Annee() {
-        return n0Annee;
+    public Integer getnOAnnee() {
+        return nOAnnee;
     }
 
-    public void setN0Annee(Boolean n0Annee) {
-        this.n0Annee = n0Annee;
+    public void setnOAnnee(Integer nOAnnee) {
+        this.nOAnnee = nOAnnee;
     }
 
     public String getNomFormation() {
@@ -74,11 +72,11 @@ public class Formation {
         this.nomFormation = nomFormation;
     }
 
-    public Boolean getDoubleDiplome() {
+    public String getDoubleDiplome() {
         return doubleDiplome;
     }
 
-    public void setDoubleDiplome(Boolean doubleDiplome) {
+    public void setDoubleDiplome(String doubleDiplome) {
         this.doubleDiplome = doubleDiplome;
     }
 
