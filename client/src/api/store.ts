@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import enseignantReducer from "../features/EnseignantSlice";
+import promotionReducer from "../features/PromotionSlice";
+import etudiantReducer from "../features/EtudiantSlice";
 
 const store = configureStore({
   reducer: {
     enseignants: enseignantReducer,
+    etudiants:etudiantReducer,
+    promotions:promotionReducer
   },
 });
 
