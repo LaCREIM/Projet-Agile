@@ -8,6 +8,9 @@ import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.repositories.EnseignantRepository;
 import com.example.backendagile.repositories.FormationRepository;
 import com.example.backendagile.repositories.PromotionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -42,7 +45,6 @@ public class PromotionService {
         List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt ->promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
         return promotionDTOs;
     }
-
     /**
      * Retrieves a specific promotion by its ID.
      *
@@ -98,6 +100,15 @@ public class PromotionService {
     public void deletePromotion(String anneeUniversitaire,String codeFormation) {
         PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
         promotionRepository.deleteById(key);
+    }
+
+
+    public List<PromotionDTO> getPromotionPaged(int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        List<Promotion> promotions = promotionRepository.findAllWithPagination(startRow, endRow);
+        List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt ->promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
+        return promotionDTOs;
     }
 
 
