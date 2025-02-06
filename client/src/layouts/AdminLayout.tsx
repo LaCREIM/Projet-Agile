@@ -25,12 +25,12 @@ export const projects = [
     title: "Gestion Promotions",
     icon: <LuSchool size={60} className="mx-auto" />,
     description: "Gérer les promotions.",
-    link: "promotions",
+    link: "/admin/home/promotions",
   },
   {
     title: "Gestion Étudiants",
     icon: <IoSchool size={60} className="mx-auto" />,
     description: "Gérer les étudiants.",
-    link: "etudiants",
+    link: "/admin/home/etudiants",
   },
 ];

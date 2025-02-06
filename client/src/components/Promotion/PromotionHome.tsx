@@ -126,9 +126,9 @@ const PromotionHome = () => {
       ) : (
         <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
           <h1>Liste des promotions</h1>
-          <div className="flex flex-row items-center justify-between gap-5 w-full px-14">
+          <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-14">
             <button
-              className="flex flex-row items-center justify-center gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+              className="flex flex-row items-center justify-center hover:cursor-pointer gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
               onClick={() => openModal("addPromotion")}
             >
               <IoMdAdd className="text-black" /> Ajouter une Promotion

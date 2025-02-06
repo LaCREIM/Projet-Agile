@@ -149,11 +149,11 @@ const StudentHome = ({
           <h1>Liste des étudiants</h1>
         )}
 
-        <div className="flex flex-row items-center justify-between gap-5 w-full px-14">
+        <div className="flex flex-row items-center  justify-between gap-5 w-full px-14">
           {!promotionDetails.siglePro ? (
             <select
               defaultValue="default"
-              className="select"
+              className="select hover:cursor-pointer"
               onChange={handlePromotionChange}
             >
               <option value="default" disabled>
@@ -182,7 +182,7 @@ const StudentHome = ({
           )}
 
           <button
-            className="flex flex-row items-center justify-center gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+            className="flex flex-row items-center justify-center  hover:cursor-pointer gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
             onClick={() => openModal("addStudent")}
           >
             <IoMdAdd className="text-black" /> Ajouter un étudiant
@@ -214,7 +214,7 @@ const StudentHome = ({
                     colSpan={11}
                     className="uppercase tracking-widest text-center text-gray-500"
                   >
-                    Pas d'étudiants trouvées.
+                    Pas d'étudiants trouvés.
                   </td>
                 </tr>
               ) : (
