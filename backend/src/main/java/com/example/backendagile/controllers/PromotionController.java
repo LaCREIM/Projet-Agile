@@ -1,9 +1,9 @@
 package com.example.backendagile.controllers;
 import com.example.backendagile.dto.PromotionDTO;
-import com.example.backendagile.entities.Formation;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,21 +93,11 @@ public class PromotionController {
         }
     }
 
-
-    /**
-     * Creates a new formation.
-     *
-     * @param formation the {@link Formation} object containing the formation details
-     * @return a {@link ResponseEntity} containing the created {@link Formation}
-     */
-    @PostMapping("/formations")
-    public ResponseEntity<Formation> createFormation(@RequestBody Formation formation) {
-        Formation savedPromotion = formationService.createFormation(formation);
-        return ResponseEntity.ok(savedPromotion);
+    @GetMapping("/paged")
+    public List<PromotionDTO> getAllEtudiantsPaged(@RequestParam int page, @RequestParam int size) {
+        return promotionService.getPromotionPaged(page, size);
     }
 
-    @GetMapping("/formations")
-    public List<Formation> getAllFormations() {
-        return formationService.getAllFormations();
-    }
+
+
 }

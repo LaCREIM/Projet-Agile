@@ -8,6 +8,9 @@ import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.repositories.EnseignantRepository;
 import com.example.backendagile.repositories.FormationRepository;
 import com.example.backendagile.repositories.PromotionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -42,7 +45,6 @@ public class PromotionService {
         List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt ->promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
         return promotionDTOs;
     }
-
     /**
      * Retrieves a specific promotion by its ID.
      *
@@ -64,12 +66,9 @@ public class PromotionService {
      * @throws RuntimeException If the associated formation or teacher is not found.
      */
     public Promotion createPromotion(PromotionDTO Promotion) {
-        Formation formation = formationRepository.findById(Promotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
-        Enseignant enseignant = enseignantRepository.findById(Promotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
         Promotion promotion = promotionMapper.fromPromotionDTO(Promotion);
-        PromotionId key = new PromotionId(Promotion.getAnneeUniversitaire(),Promotion.getCodeFormation());
-        promotion.setId(key);
-        promotion.setEnseignant(enseignant);
+        System.out.println("PromotionDTO : "+Promotion);
+        System.out.println("Promotion : " +promotion);
         return promotionRepository.save(promotion);
     }
 
@@ -84,7 +83,6 @@ public class PromotionService {
     public PromotionDTO updatePromotion(String anneeUniversitaire,String codeFormation, PromotionDTO updatedPromotion) {
         PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
         Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
-        Formation formation = formationRepository.findById(updatedPromotion.getCodeFormation()).orElseThrow(()->new RuntimeException("Formation Not Found"));
         Enseignant enseignant = enseignantRepository.findById(updatedPromotion.getNoEnseignant()).orElseThrow(()->new RuntimeException("Enseignant Not Found"));
         Promotion newpromotion = promotionMapper.fromPromotionDTO(updatedPromotion);
         newpromotion.setEnseignant(enseignant);
@@ -102,6 +100,15 @@ public class PromotionService {
     public void deletePromotion(String anneeUniversitaire,String codeFormation) {
         PromotionId key = new PromotionId(anneeUniversitaire,codeFormation);
         promotionRepository.deleteById(key);
+    }
+
+
+    public List<PromotionDTO> getPromotionPaged(int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        List<Promotion> promotions = promotionRepository.findAllWithPagination(startRow, endRow);
+        List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt ->promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
+        return promotionDTOs;
     }
 
 

@@ -7,7 +7,6 @@ import { IoSchool } from "react-icons/io5";
 import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import ubo from "/ubo.png";
 
 export function Dashboard() {
   const links = [
@@ -37,19 +36,6 @@ export function Dashboard() {
       href: "/",
       icon: (
         <FiLogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "pose1don",
-      href: "#",
-      icon: (
-        <img
-          src={ubo}
-          className="h-7 w-7 flex-shrink-0 rounded-full"
-          width={50}
-          height={50}
-          alt="Avatar"
-        />
       ),
     },
   ];

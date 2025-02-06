@@ -4,9 +4,9 @@ import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.repositories.EnseignantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,9 +16,12 @@ public class EnseignantService {
     private EnseignantRepository enseignantRepository;
 
 
-    public Page<Enseignant> findAllWithPagination(Pageable pageable) {
-        return enseignantRepository.findAll(pageable);
+    public List<Enseignant> getEnseignantPaged(int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return enseignantRepository.findAllWithPagination(startRow, endRow);
     }
+
 
     public Optional<Enseignant> findById(Long id) {
         return enseignantRepository.findById(id);
