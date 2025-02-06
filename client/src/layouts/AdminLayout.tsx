@@ -11,6 +11,7 @@ export function AdminLayout() {
       <div className="max-w-5xl h-screen mx-auto px-8">
         <HoverEffect items={projects} />
       </div>
+
     </>
   );
 }

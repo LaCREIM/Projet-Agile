@@ -270,3 +270,19 @@ export interface UniteEnseignement {
     nbhTd: number;
     nbhTp: number;
 }
+export  interface Chercheur {
+    encUboEmail: string,
+    encUboTel: number,
+    encPersoEmail: string,
+  }
+  
+  export interface Intervenant {
+    intFonction: string;
+    intNoInsee: number;
+    intSocNom: string;
+  }
+  
+  export interface PromotionDetails {
+    anneePro: string;
+    siglePro: string;
+  }

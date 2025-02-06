@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 import ubo from "/ubologo.png";
 
+
 export function Dashboard() {
   const links = [
     {
@@ -39,7 +40,6 @@ export function Dashboard() {
         <FiLogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    
   ];
   const [open, setOpen] = useState(false);
   return (

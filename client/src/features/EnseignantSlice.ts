@@ -47,7 +47,7 @@ export const getEnseignantAsync = createAsyncThunk<Enseignant[], void, { rejectV
     }
 );
 
-export const createEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
+export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
     "enseignants/createEnseignantAsync",
     async (enseignant , { rejectWithValue }) => {
         try {
@@ -100,6 +100,8 @@ const enseignantSlice = createSlice({
             
     },
 });
+
+export const getEnseignants = (state: { enseignant: EnseignantState }) => state.enseignant.enseignants;
 
 export default enseignantSlice.reducer;
 

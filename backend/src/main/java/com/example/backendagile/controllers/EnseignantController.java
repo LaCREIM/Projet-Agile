@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,10 +25,9 @@ public class EnseignantController {
     }
 
     @GetMapping
-    public Page<Enseignant> getAllEnseignants(@RequestParam(defaultValue = "0") int page,
+    public List<Enseignant> getAllEnseignants(@RequestParam(defaultValue = "0") int page,
                                               @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return enseignantService.findAllWithPagination(pageable);
+        return enseignantService.getEnseignantPaged(page, size);
     }
 
     @GetMapping("/{id}")

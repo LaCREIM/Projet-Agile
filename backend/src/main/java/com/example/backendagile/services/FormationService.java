@@ -14,9 +14,7 @@ public class FormationService {
         this.formationRepository = formationRepository;
     }
 
-    public Formation createFormation(Formation formation) {
-        return formationRepository.save(formation);
-    }
+
     public List<Formation> getAllFormations() {
         return formationRepository.findAll();
     }
