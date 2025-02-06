@@ -42,12 +42,12 @@ public class EnseignantControllerTest {
         enseignant2.setId(2L);
         enseignant2.setNom("Lallali");
 
-        Mockito.when(enseignantService.findAllWithPagination(ArgumentMatchers.any(Pageable.class)))
-                .thenReturn(new PageImpl<>(Arrays.asList(enseignant1, enseignant2)));
+        Mockito.when(enseignantService.getEnseignantPaged(1, 20))
+                .thenReturn(Arrays.asList(enseignant1, enseignant2));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/enseignants")
-                        .param("page", "0")
-                        .param("size", "2"))
+                        .param("page", "1")
+                        .param("size", "20"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].nom").value("Saliou"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].nom").value("Lallali"));

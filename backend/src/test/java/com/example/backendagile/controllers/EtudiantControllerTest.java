@@ -41,7 +41,7 @@ public class EtudiantControllerTest {
 
         when(etudiantService.findAll()).thenReturn(Arrays.asList(etudiant1, etudiant2));
 
-        List<Etudiant> etudiants = etudiantController.getAllEtudiants();
+        List<Etudiant> etudiants = etudiantController.getAllEtudiants(1,10);
 
         assertEquals(2, etudiants.size());
         verify(etudiantService, times(1)).findAll();
