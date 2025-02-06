@@ -94,20 +94,5 @@ public class PromotionController {
     }
 
 
-    /**
-     * Creates a new formation.
-     *
-     * @param formation the {@link Formation} object containing the formation details
-     * @return a {@link ResponseEntity} containing the created {@link Formation}
-     */
-    @PostMapping("/formations")
-    public ResponseEntity<Formation> createFormation(@RequestBody Formation formation) {
-        Formation savedPromotion = formationService.createFormation(formation);
-        return ResponseEntity.ok(savedPromotion);
-    }
 
-    @GetMapping("/formations")
-    public List<Formation> getAllFormations() {
-        return formationService.getAllFormations();
-    }
 }

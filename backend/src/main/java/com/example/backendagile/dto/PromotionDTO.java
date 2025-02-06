@@ -1,9 +1,8 @@
 package com.example.backendagile.dto;
 
-import com.example.backendagile.entities.Etudiant;
 
 import java.time.LocalDate;
-import java.util.List;
+
 
 public class PromotionDTO {
 
@@ -11,7 +10,7 @@ public class PromotionDTO {
 
     private String siglePromotion;
 
-    private Integer nbMaxEtudiant;
+    private Short nbMaxEtudiant;
 
     private LocalDate dateReponseLp;
 
@@ -24,9 +23,6 @@ public class PromotionDTO {
     private String processusStage;
 
     private String commentaire;
-
-    private List<Etudiant> etudiants;
-
 
     private String codeFormation;
 
@@ -137,15 +133,6 @@ public class PromotionDTO {
         this.anneeUniversitaire = anneeUniversitaire;
     }
 
-    public void setEtudiants(List<Etudiant> etudiants) {
-        this.etudiants = etudiants;
-    }
-
-
-
-    public List<Etudiant> getEtudiants() {
-        return etudiants;
-    }
 
     public String getSiglePromotion() {
         return siglePromotion;
@@ -155,11 +142,11 @@ public class PromotionDTO {
         this.siglePromotion = siglePromotion;
     }
 
-    public Integer getNbMaxEtudiant() {
+    public Short getNbMaxEtudiant() {
         return nbMaxEtudiant;
     }
 
-    public void setNbMaxEtudiant(Integer nbMaxEtudiant) {
+    public void setNbMaxEtudiant(Short nbMaxEtudiant) {
         this.nbMaxEtudiant = nbMaxEtudiant;
     }
 

@@ -23,6 +23,7 @@ public class PromotionMapper {
         System.out.println(promotion);
         newPromotion.setCodeFormation(promotion.getId().getCodeFormation());
         newPromotion.setAnneeUniversitaire(promotion.getId().getAnneeUniversitaire());
+        newPromotion.setDiplome(formationRepository.findDiplomeByCodeFormation(promotion.getId().getCodeFormation()).orElse(null));
         if(promotion.getEnseignant()!=null){
             newPromotion.setNoEnseignant((promotion.getEnseignant().getId()).longValue());
             newPromotion.setType(promotion.getEnseignant().getType());
