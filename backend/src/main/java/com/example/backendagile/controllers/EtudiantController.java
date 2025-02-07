@@ -39,12 +39,12 @@ public class EtudiantController {
      * Créer un nouvel étudiant (avec sa promotion)
      */
     @PostMapping
-    public ResponseEntity<EtudiantDTO> createEtudiant(@RequestBody EtudiantDTO etudiantDTO) {
+    public ResponseEntity<String> createEtudiant(@RequestBody EtudiantDTO etudiantDTO) {
         try {
             EtudiantDTO savedEtudiant = etudiantService.save(etudiantDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedEtudiant);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Étudiant créé avec succès.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la création de l'étudiant.");
         }
     }
 
@@ -52,12 +52,15 @@ public class EtudiantController {
      * Mettre à jour un étudiant existant
      */
     @PutMapping("/{id}")
-    public ResponseEntity<EtudiantDTO> updateEtudiant(@PathVariable String id, @RequestBody EtudiantDTO etudiantDTO) {
+    public ResponseEntity<String> updateEtudiant(@PathVariable String id, @RequestBody EtudiantDTO etudiantDTO) {
+        if (etudiantService.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Étudiant non trouvé avec cet ID.");
+        }
         try {
             EtudiantDTO updatedEtudiant = etudiantService.update(id, etudiantDTO);
-            return ResponseEntity.ok(updatedEtudiant);
+            return ResponseEntity.ok("Étudiant mis à jour avec succès.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant.");
         }
     }
 
