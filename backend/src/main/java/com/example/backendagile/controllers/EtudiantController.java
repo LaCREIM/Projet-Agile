@@ -1,6 +1,6 @@
 package com.example.backendagile.controllers;
 
-import com.example.backendagile.entities.Etudiant;
+import com.example.backendagile.dto.EtudiantDTO;
 import com.example.backendagile.services.EtudiantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/etudiants")
@@ -17,66 +16,71 @@ public class EtudiantController {
     @Autowired
     private EtudiantService etudiantService;
 
+    /**
+     * Récupérer une liste paginée d'étudiants
+     */
     @GetMapping
-    public List<Etudiant> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
-        return etudiantService.getEtudiantsPaged(page, size);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Etudiant> getEtudiantById(@PathVariable Long id) {
-        Optional<Etudiant> etudiant = etudiantService.findById(id);
-        return etudiant.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Etudiant createEtudiant(@RequestBody Etudiant etudiant) {
-        return etudiantService.save(etudiant);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Etudiant> updateEtudiant(@PathVariable Long id, @RequestBody Etudiant etudiantDetails) {
-        Optional<Etudiant> etudiant = etudiantService.findById(id);
-        if (etudiant.isPresent()) {
-            Etudiant updatedEtudiant = etudiant.get();
-            updatedEtudiant.setNom(etudiantDetails.getNom());
-            updatedEtudiant.setPrenom(etudiantDetails.getPrenom());
-            updatedEtudiant.setSexe(etudiantDetails.getSexe());
-            updatedEtudiant.setDateNaissance(etudiantDetails.getDateNaissance());
-            updatedEtudiant.setLieuNaissance(etudiantDetails.getLieuNaissance());
-            updatedEtudiant.setNationalite(etudiantDetails.getNationalite());
-            updatedEtudiant.setTelephone(etudiantDetails.getTelephone());
-            updatedEtudiant.setMobile(etudiantDetails.getMobile());
-            updatedEtudiant.setEmail(etudiantDetails.getEmail());
-            updatedEtudiant.setEmailUbo(etudiantDetails.getEmailUbo());
-            updatedEtudiant.setAdresse(etudiantDetails.getAdresse());
-            updatedEtudiant.setCodePostal(etudiantDetails.getCodePostal());
-            updatedEtudiant.setVille(etudiantDetails.getVille());
-            updatedEtudiant.setPaysOrigine(etudiantDetails.getPaysOrigine());
-            updatedEtudiant.setUniversiteOrigine(etudiantDetails.getUniversiteOrigine());
-            updatedEtudiant.setGroupeTp(etudiantDetails.getGroupeTp());
-            updatedEtudiant.setGroupeAnglais(etudiantDetails.getGroupeAnglais());
-            updatedEtudiant.setPromotion(etudiantDetails.getPromotion());
-            etudiantService.save(updatedEtudiant);
-            return ResponseEntity.ok(updatedEtudiant);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/promotion/{anneePro}")
-    public ResponseEntity<List<Etudiant>> getEtudiantsByPromotion(@PathVariable String anneePro) {
-        List<Etudiant> etudiants = etudiantService.findEtudiantsByPromotion(anneePro);
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
+        List<EtudiantDTO> etudiants = etudiantService.getEtudiantsPaged(page, size);
         return ResponseEntity.ok(etudiants);
     }
 
+    /**
+     * Récupérer un étudiant par son ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<EtudiantDTO> getEtudiantById(@PathVariable String id) {
+        return etudiantService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    /**
+     * Créer un nouvel étudiant (avec sa promotion)
+     */
+    @PostMapping
+    public ResponseEntity<EtudiantDTO> createEtudiant(@RequestBody EtudiantDTO etudiantDTO) {
+        try {
+            EtudiantDTO savedEtudiant = etudiantService.save(etudiantDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedEtudiant);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    /**
+     * Mettre à jour un étudiant existant
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<EtudiantDTO> updateEtudiant(@PathVariable String id, @RequestBody EtudiantDTO etudiantDTO) {
+        try {
+            EtudiantDTO updatedEtudiant = etudiantService.update(id, etudiantDTO);
+            return ResponseEntity.ok(updatedEtudiant);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    /**
+     * Récupérer les étudiants d'une promotion spécifique
+     */
+    @GetMapping("/promotion/{anneePro}/{codeFormation}")
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsByPromotion(
+            @PathVariable String anneePro,
+            @PathVariable String codeFormation) {
+        List<EtudiantDTO> etudiants = etudiantService.findEtudiantsByPromotion(anneePro, codeFormation);
+        return ResponseEntity.ok(etudiants);
+    }
+
+    /**
+     * Supprimer un étudiant par son ID
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEtudiant(@PathVariable Long id) {
+    public ResponseEntity<String> deleteEtudiant(@PathVariable String id) {
         if (etudiantService.findById(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun étudiant trouvé avec cet ID.");
         }
         etudiantService.deleteById(id);
         return ResponseEntity.ok("Étudiant supprimé avec succès.");
     }
-
 }

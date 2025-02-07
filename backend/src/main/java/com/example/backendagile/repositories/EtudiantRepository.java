@@ -9,7 +9,7 @@ import java.util.List;
 //import org.springframework.data.domain.Pageable;
 
 @Repository
-public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
+public interface EtudiantRepository extends JpaRepository<Etudiant, String> {
     @Query("SELECT e FROM Etudiant e WHERE e.promotion.id.anneeUniversitaire = :anneeUniversitaire")
     List<Etudiant> findByPromotionCode(@Param("anneeUniversitaire") String anneeUniversitaire);
     @Query(value = """

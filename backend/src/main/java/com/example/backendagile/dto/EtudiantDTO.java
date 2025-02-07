@@ -4,6 +4,9 @@ package com.example.backendagile.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+
+
+
 @Data
 public class EtudiantDTO {
     private String noEtudiant;
@@ -25,4 +28,7 @@ public class EtudiantDTO {
     private Long groupeTp;
     private Long groupeAnglais;
     private String password;
+
+    private String anneeUniversitaire;  
+    private String codeFormation;         
 }

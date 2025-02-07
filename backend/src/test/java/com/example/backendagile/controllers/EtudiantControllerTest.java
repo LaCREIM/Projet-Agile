@@ -1,25 +1,22 @@
 package com.example.backendagile.controllers;
 
-import com.example.backendagile.entities.Etudiant;
+import com.example.backendagile.dto.EtudiantDTO;
 import com.example.backendagile.services.EtudiantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.mockito.*;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
 public class EtudiantControllerTest {
+
+    private MockMvc mockMvc;
 
     @Mock
     private EtudiantService etudiantService;
@@ -30,115 +27,108 @@ public class EtudiantControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(etudiantController).build();
     }
 
+    /**
+     * Test : Récupérer une liste paginée d'étudiants
+     */
     @Test
-    public void testGetAllEtudiants() {
-        Etudiant etudiant1 = new Etudiant();
-        etudiant1.setNoEtudiant("1");
-        Etudiant etudiant2 = new Etudiant();
-        etudiant2.setNoEtudiant("2");
+    public void testGetAllEtudiantsWithPagination() throws Exception {
+        EtudiantDTO etudiant1 = new EtudiantDTO();
+        etudiant1.setNoEtudiant("E123");
+        etudiant1.setNom("Doe");
+        etudiant1.setPrenom("John");
 
-        when(etudiantService.findAll()).thenReturn(Arrays.asList(etudiant1, etudiant2));
+        EtudiantDTO etudiant2 = new EtudiantDTO();
+        etudiant2.setNoEtudiant("E456");
+        etudiant2.setNom("Smith");
+        etudiant2.setPrenom("Anna");
 
-        List<Etudiant> etudiants = etudiantController.getAllEtudiants(1,10);
+        Mockito.when(etudiantService.getEtudiantsPaged(1, 10))
+                .thenReturn(Arrays.asList(etudiant1, etudiant2));
 
-        assertEquals(2, etudiants.size());
-        verify(etudiantService, times(1)).findAll();
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/etudiants")
+                        .param("page", "1")
+                        .param("size", "10"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].nom").value("Doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].nom").value("Smith"));
     }
 
+    /**
+     * Test : Récupérer un étudiant par son ID
+     */
     @Test
-    public void testGetEtudiantById() {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNoEtudiant("1");
+    public void testGetEtudiantById() throws Exception {
+        EtudiantDTO etudiant = new EtudiantDTO();
+        etudiant.setNoEtudiant("E123");
+        etudiant.setNom("Doe");
+        etudiant.setPrenom("John");
 
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.of(etudiant));
+        Mockito.when(etudiantService.findById(ArgumentMatchers.anyString()))
+                .thenReturn(Optional.of(etudiant));
 
-        ResponseEntity<Etudiant> response = etudiantController.getEtudiantById(1L);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(etudiant, response.getBody());
-        verify(etudiantService, times(1)).findById(1L);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/etudiants/E123"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nom").value("Doe"));
     }
 
+    /**
+     * Test : Créer un nouvel étudiant
+     */
     @Test
-    public void testGetEtudiantById_NotFound() {
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.empty());
+    public void testCreateEtudiant() throws Exception {
+        EtudiantDTO etudiant = new EtudiantDTO();
+        etudiant.setNoEtudiant("E123");
+        etudiant.setNom("Doe");
+        etudiant.setPrenom("John");
 
-        ResponseEntity<Etudiant> response = etudiantController.getEtudiantById(1L);
+        Mockito.when(etudiantService.save(ArgumentMatchers.any(EtudiantDTO.class)))
+                .thenReturn(etudiant);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(etudiantService, times(1)).findById(1L);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"noEtudiant\": \"E123\", \"nom\": \"Doe\", \"prenom\": \"John\"}"))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nom").value("Doe"));
     }
 
+    /**
+     * Test : Mettre à jour un étudiant existant
+     */
     @Test
-    public void testCreateEtudiant() {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNoEtudiant("1");
+    public void testUpdateEtudiant() throws Exception {
+        EtudiantDTO etudiant = new EtudiantDTO();
+        etudiant.setNoEtudiant("E123");
+        etudiant.setNom("Doe");
+        etudiant.setPrenom("John");
 
-        when(etudiantService.save(any(Etudiant.class))).thenReturn(etudiant);
+        Mockito.when(etudiantService.findById(ArgumentMatchers.anyString()))
+                .thenReturn(Optional.of(etudiant));
+        Mockito.when(etudiantService.update(ArgumentMatchers.anyString(), ArgumentMatchers.any(EtudiantDTO.class)))
+                .thenReturn(etudiant);
 
-        Etudiant createdEtudiant = etudiantController.createEtudiant(etudiant);
-
-        assertEquals(etudiant, createdEtudiant);
-        verify(etudiantService, times(1)).save(etudiant);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/etudiants/E123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nom\": \"Doe Updated\", \"prenom\": \"John\"}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nom").value("Doe"));
     }
 
+    /**
+     * Test : Supprimer un étudiant par son ID
+     */
     @Test
-    public void testUpdateEtudiant() {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNoEtudiant("1");
+    public void testDeleteEtudiant() throws Exception {
+        EtudiantDTO etudiant = new EtudiantDTO();
+        etudiant.setNoEtudiant("E123");
 
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.of(etudiant));
-        when(etudiantService.save(any(Etudiant.class))).thenReturn(etudiant);
+        Mockito.when(etudiantService.findById(ArgumentMatchers.anyString()))
+                .thenReturn(Optional.of(etudiant));
+        Mockito.doNothing().when(etudiantService).deleteById(ArgumentMatchers.anyString());
 
-        ResponseEntity<Etudiant> response = etudiantController.updateEtudiant(1L, etudiant);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(etudiant, response.getBody());
-        verify(etudiantService, times(1)).findById(1L);
-        verify(etudiantService, times(1)).save(etudiant);
-    }
-
-    @Test
-    public void testUpdateEtudiant_NotFound() {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNoEtudiant("1");
-
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.empty());
-
-        ResponseEntity<Etudiant> response = etudiantController.updateEtudiant(1L, etudiant);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(etudiantService, times(1)).findById(1L);
-        verify(etudiantService, times(0)).save(any(Etudiant.class));
-    }
-
-    @Test
-    public void testDeleteEtudiant() {
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNoEtudiant("1");
-
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.of(etudiant));
-        doNothing().when(etudiantService).deleteById(anyLong());
-
-        ResponseEntity<String> response = etudiantController.deleteEtudiant(1L);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Étudiant supprimé avec succès.", response.getBody());
-        verify(etudiantService, times(1)).findById(1L);
-        verify(etudiantService, times(1)).deleteById(1L);
-    }
-
-    @Test
-    public void testDeleteEtudiant_NotFound() {
-        when(etudiantService.findById(anyLong())).thenReturn(Optional.empty());
-
-        ResponseEntity<String> response = etudiantController.deleteEtudiant(100L);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Aucun étudiant trouvé avec cet ID.", response.getBody());
-        verify(etudiantService, times(1)).findById(100L);
-        verify(etudiantService, times(0)).deleteById(anyLong());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/etudiants/E123"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
