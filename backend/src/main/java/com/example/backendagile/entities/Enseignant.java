@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Parameter;
 
@@ -17,8 +15,16 @@ import org.hibernate.annotations.Parameter;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Enseignant {
     @Id
-     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ens_seq_generator")
-    @SequenceGenerator(name = "ens_seq_generator", sequenceName = "ENS_SEQ", allocationSize = 1)
+    @GeneratedValue(generator = "sequence-generator")
+    @GenericGenerator(
+            name = "sequence-generator",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @Parameter(name = "sequence_name", value = "user_sequence"),
+                    @Parameter(name = "initial_value", value = "4"),
+                    @Parameter(name = "increment_size", value = "1")
+            }
+    )
     @Column(name = "NO_ENSEIGNANT", nullable = false)
     private Long id;
 
