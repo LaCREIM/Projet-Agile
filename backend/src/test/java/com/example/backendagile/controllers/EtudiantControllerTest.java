@@ -91,7 +91,7 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"noEtudiant\": \"E123\", \"nom\": \"Doe\", \"prenom\": \"John\"}"))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nom").value("Doe"));
+                .andExpect(MockMvcResultMatchers.content().string("Étudiant créé avec succès."));
     }
 
     /**
@@ -113,8 +113,9 @@ public class EtudiantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nom\": \"Doe Updated\", \"prenom\": \"John\"}"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nom").value("Doe"));
+                .andExpect(MockMvcResultMatchers.content().string("Étudiant mis à jour avec succès."));
     }
+
 
     /**
      * Test : Supprimer un étudiant par son ID
