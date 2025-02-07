@@ -5,12 +5,12 @@ import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.mapper.QualificatifMapper;
 import com.example.backendagile.services.QualificatifService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/qualificatifs")
@@ -22,44 +22,58 @@ public class QualificatifController {
     @Autowired
     private QualificatifMapper qualificatifMapper;
 
+    /**
+     * 🔹 Récupérer tous les qualificatifs (retourne `Qualificatif` directement)
+     */
     @GetMapping
-    public List<QualificatifDTO> getAllQualificatifs() {
-        return qualificatifService.findAll().stream()
-                .map(qualificatifMapper::toDto)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<Qualificatif>> getAllQualificatifs() {
+        List<Qualificatif> qualificatifs = qualificatifService.findAll();
+        return ResponseEntity.ok(qualificatifs);
     }
 
+    /**
+     * 🔹 Récupérer un qualificatif par son ID (retourne `Qualificatif` directement)
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<QualificatifDTO> getQualificatifById(@PathVariable Long id) {
+    public ResponseEntity<Qualificatif> getQualificatifById(@PathVariable Long id) {
         Optional<Qualificatif> qualificatif = qualificatifService.findById(id);
-        return qualificatif.map(q -> ResponseEntity.ok(qualificatifMapper.toDto(q)))
+        return qualificatif.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * 🔸 Créer un nouveau qualificatif (utilise `QualificatifDTO` pour la requête)
+     */
     @PostMapping
-    public ResponseEntity<QualificatifDTO> createQualificatif(@RequestBody QualificatifDTO qualificatifDTO) {
+    public ResponseEntity<Qualificatif> createQualificatif(@RequestBody QualificatifDTO qualificatifDTO) {
         Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
         Qualificatif savedQualificatif = qualificatifService.save(qualificatif);
-        return ResponseEntity.status(201).body(qualificatifMapper.toDto(savedQualificatif));
+        return ResponseEntity.status(201).body(savedQualificatif);
     }
 
+    /**
+     * 🔸 Mettre à jour un qualificatif existant (utilise `QualificatifDTO` pour la requête)
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<QualificatifDTO> updateQualificatif(@PathVariable Long id, @RequestBody QualificatifDTO qualificatifDTO) {
+    public ResponseEntity<String> updateQualificatif(@PathVariable Long id, @RequestBody QualificatifDTO qualificatifDTO) {
         if (!qualificatifService.findById(id).isPresent()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body("Aucun qualificatif trouvé avec cet ID.");
         }
         Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
-        qualificatif.setId(id);
-        Qualificatif updatedQualificatif = qualificatifService.save(qualificatif);
-        return ResponseEntity.ok(qualificatifMapper.toDto(updatedQualificatif));
+        qualificatif.setId(id); 
+        qualificatifService.save(qualificatif);
+        return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
     }
 
+    /**
+     * 🔹 Supprimer un qualificatif par son ID (retourne `Qualificatif` directement)
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteQualificatif(@PathVariable Long id) {
         if (!qualificatifService.findById(id).isPresent()) {
-            return ResponseEntity.status(404).body("Aucun qualificatif trouvé pour cet id.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun qualificatif trouvé avec cet ID.");
         }
         qualificatifService.deleteById(id);
-        return ResponseEntity.ok("Le qualificatif a été supprimé avec succès.");
+        return ResponseEntity.ok("Qualificatif supprimé avec succès.");
     }
 }

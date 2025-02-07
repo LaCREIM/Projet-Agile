@@ -64,7 +64,7 @@ public class EnseignantController {
         Optional<Enseignant> existingEnseignant = enseignantService.findById(id);
         if (existingEnseignant.isPresent()) {
             Enseignant updatedEnseignant = enseignantMapper.toEntity(enseignantDTO);
-            updatedEnseignant.setId(id); // Garder l'ID existant
+            updatedEnseignant.setId(id); 
             enseignantService.save(updatedEnseignant);
             return ResponseEntity.ok(updatedEnseignant);
         } else {
@@ -76,11 +76,11 @@ public class EnseignantController {
      * 🔹 Supprimer un enseignant par son ID (retourne `Enseignant` directement)
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEnseignant(@PathVariable Long id) {
+    public ResponseEntity<String> deleteEnseignant(@PathVariable Long id) {
         if (enseignantService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun enseignant trouvé avec cet ID.");
         }
         enseignantService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Enseignant supprimé avec succès.");
     }
 }
