@@ -3,6 +3,7 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { LuSchool } from "react-icons/lu";
 import { IoSchool } from "react-icons/io5";
 import NavBar from "../components/Admin/NavBar";
+
 export function AdminLayout() {
   return (
     <>
@@ -10,7 +11,7 @@ export function AdminLayout() {
       <div className="max-w-5xl h-screen mx-auto px-8">
         <HoverEffect items={projects} />
       </div>
-      
+
     </>
   );
 }
@@ -25,12 +26,12 @@ export const projects = [
     title: "Gestion Promotions",
     icon: <LuSchool size={60} className="mx-auto" />,
     description: "Gérer les promotions.",
-    link: "promotions",
+    link: "/admin/home/promotions",
   },
   {
     title: "Gestion Étudiants",
     icon: <IoSchool size={60} className="mx-auto" />,
     description: "Gérer les étudiants.",
-    link: "etudiants",
+    link: "/admin/home/etudiants",
   },
 ];

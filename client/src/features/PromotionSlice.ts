@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import axios from "axios";
+import { RootState } from "../api/store";
 
 export interface Promotion {
     anneePro: string;
@@ -19,8 +18,14 @@ export interface Promotion {
     etatPreselection: string;
 }
 
-// 🎯 **Initial state**
+export interface Formation {
+    codeFormation: string;
+    diplome: string;
+    nomFormation: string;
+}
+
 interface PromotionState {
+    formations: Formation[];
     promotions: Promotion[];
     loading: boolean;
     error: string | null;
@@ -28,54 +33,63 @@ interface PromotionState {
 
 const initialState: PromotionState = {
     promotions: [],
+    formations: [],
     loading: false,
     error: null,
 };
 
-// 🚀 **Actions asynchrones avec Axios**
+// Fetch promotions
 export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectValue: string }>(
     "promotions/getPromotionAsync",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Promotion[]>("/promotions");
+            const response = await axiosInstance.get<Promotion[]>(`/promotions`);
+
+
             return response.data;
-        } catch (error: unknown) {
-            console.error("Error fetching promotions:", error);
-            if (axios.isAxiosError(error) && error.response) {
-                return rejectWithValue(error.response.data || "An error occurred while fetching promotions.");
-            }
-            return rejectWithValue("An error occurred while fetching promotions.");
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
         }
     }
 );
 
-// 🔹 Ajouter une promotion
-export const createPromotionAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
-    "promotions/createPromotionAsync",
+export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectValue: string }>(
+    "formations/getFormationAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Formation[]>(`/promotions/formations`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching formations:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching formations.");
+        }
+    }
+);
+
+export const postPromotionsAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
+    "promotions/postEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post<Promotion>("/promotions", promotion);
-            return response.data;   
+            console.log(promotion);
+
+            const response = await axiosInstance.post(`/promotions`, promotion);
+            console.log(response);
+            return response.data;
         } catch (error: any) {
-            console.error("Error adding promotion:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while adding a promotion.");
+            console.error("Error posting promotion:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while posting the promotion.");
         }
     }
 );
 
-// 🔹 Mettre à jour une promotion
-export const editPromotionAsync = createAsyncThunk<
-    Promotion,
-    { id: { anneeUniversitaire: string; codeFormation: string }; promotion: Partial<Promotion> },
-    { rejectValue: string }
->(
-    "promotions/editPromotionAsync",
-    async ({ id, promotion }, { rejectWithValue }) => {
+export const updatePromotionAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
+    "promotions/updateEtudiantAsync",
+    async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put<Promotion>(
-                `/promotions/${id.anneeUniversitaire}/${id.codeFormation}`,
-                promotion
-            );
+            const response = await axiosInstance.put(`/promotions/${promotion.anneePro}`, promotion);
+            console.log(response);
+
             return response.data;
         } catch (error: any) {
             console.error("Error updating promotion:", error);
@@ -84,32 +98,27 @@ export const editPromotionAsync = createAsyncThunk<
     }
 );
 
-// 🔹 Supprimer une promotion
-export const removePromotionAsync = createAsyncThunk<
-    { anneeUniversitaire: string; codeFormation: string },
-    { anneeUniversitaire: string; codeFormation: string },
-    { rejectValue: string }
->(
-    "promotions/removePromotionAsync",
+export const deletePromotionAsync = createAsyncThunk<Promotion, string, { rejectValue: string }>(
+    "promotions/deleteEtudiantAsync",
     async (id, { rejectWithValue }) => {
         try {
-            await axiosInstance.delete(`/promotions/${id.anneeUniversitaire}/${id.codeFormation}`);
-            return id; // Retourner l'ID supprimé
+            const response = await axiosInstance.delete(`/promotions/${id}`);
+            return response.data;
         } catch (error: any) {
-            console.error("Error deleting promotion:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while deleting the promotion.");
+            console.error("Error deleting student:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while deleting the student.");
         }
     }
 );
 
-// 🎯 **Création du Slice Redux**
+// Redux slice
 const promotionSlice = createSlice({
     name: "promotions",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // 📌 Récupérer les promotions
+            // Fetch promotions
             .addCase(getPromotionAsync.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -120,31 +129,28 @@ const promotionSlice = createSlice({
             })
             .addCase(getPromotionAsync.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || "Erreur lors du chargement des promotions.";
+                state.error = action.payload || "Failed to fetch promotions.";
             })
 
-            // 📌 Ajouter une promotion
-            .addCase(createPromotionAsync.fulfilled, (state, action: PayloadAction<Promotion>) => {
-                state.promotions.push(action.payload);
+            // Fetch formations
+            .addCase(getFormationAsync.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getFormationAsync.fulfilled, (state, action: PayloadAction<Formation[]>) => {
+                state.loading = false;
+                state.formations = action.payload;
+            })
+            .addCase(getFormationAsync.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch formations.";
             })
 
-            // 📌 Mettre à jour une promotion
-            .addCase(editPromotionAsync.fulfilled, (state, action: PayloadAction<Promotion>) => {
-                const index = state.promotions.findIndex(
-                    (p) => p.anneePro === action.payload.anneePro && p.codeFormation === action.payload.codeFormation
-                );
-                if (index !== -1) {
-                    state.promotions[index] = action.payload;
-                }
-            })
-
-            // 📌 Supprimer une promotion
-            .addCase(removePromotionAsync.fulfilled, (state, action: PayloadAction<{ anneeUniversitaire: string; codeFormation: string }>) => {
-                state.promotions = state.promotions.filter(
-                    (p) => !(p.anneePro === action.payload.anneeUniversitaire && p.codeFormation === action.payload.codeFormation)
-                );
-            });
     },
 });
+
+// Selectors
+export const getFormations = (state: RootState) => state.promotions.formations;
+export const getPromotions = (state: RootState) => state.promotions.promotions;
 
 export default promotionSlice.reducer;

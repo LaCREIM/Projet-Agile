@@ -9,13 +9,13 @@ import java.util.List;
 //import org.springframework.data.domain.Pageable;
 
 @Repository
-public interface EtudiantRepository extends JpaRepository<Etudiant, Long> {
+public interface EtudiantRepository extends JpaRepository<Etudiant, String> {
     @Query("SELECT e FROM Etudiant e WHERE e.promotion.id.anneeUniversitaire = :anneeUniversitaire")
     List<Etudiant> findByPromotionCode(@Param("anneeUniversitaire") String anneeUniversitaire);
     @Query(value = """
     SELECT * FROM (
         SELECT e.*, ROWNUM rnum FROM (
-            SELECT * FROM dosi_dev.etudiant ORDER BY annee_universitaire DESC, nom ASC
+            SELECT * FROM etudiant ORDER BY annee_universitaire DESC, nom ASC
         ) e WHERE ROWNUM <= :endRow
     ) WHERE rnum > :startRow
 """, nativeQuery = true)

@@ -49,7 +49,7 @@ export const HoverEffect = ({
               />
             )}
           </AnimatePresence>
-          <Card>
+          <Card index={idx}>
             <CardTitle>{item.title}</CardTitle>
             <CardIcon>{item.icon}</CardIcon>
             <CardDescription>{item.description}</CardDescription>
@@ -60,15 +60,35 @@ export const HoverEffect = ({
   );
 };
 
+const CardVariant = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  final: (d: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      delay: 0.15 * d,
+    },
+  }),
+};
+
 export const Card = ({
   className,
   children,
+  index,
 }: {
   className?: string;
   children: React.ReactNode;
+  index: number;
 }) => {
   return (
-    <div
+    <motion.div
+      variants={CardVariant}
+      initial="initial"
+      animate={CardVariant.final(index)}
       className={cn(
         "rounded-2xl h-full w-full shadow-md p-4 overflow-hidden bg-white border border-transparent  group-hover:border-slate-700 relative z-20",
         className
@@ -77,7 +97,7 @@ export const Card = ({
       <div className="relative z-50">
         <div className="p-4">{children}</div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 export const CardTitle = ({

@@ -1,66 +1,73 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.EnseignantDTO;
 import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.mapper.EnseignantMapper;
 import com.example.backendagile.services.EnseignantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+//import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/enseignants")
 public class EnseignantController {
 
-    private final EnseignantService enseignantService;
+    @Autowired
+    private EnseignantService enseignantService;
 
     @Autowired
-    public EnseignantController(EnseignantService enseignantService) {
-        this.enseignantService = enseignantService;
-    }
+    private EnseignantMapper enseignantMapper;
 
+    /**
+     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
+     */
     @GetMapping
-    public List<Enseignant> getAllEnseignants(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size) {
-        return enseignantService.getEnseignantPaged(page, size);
+    public ResponseEntity<List<Enseignant>> getAllEnseignants(@RequestParam int page, @RequestParam int size) {
+        List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
+        return ResponseEntity.ok(enseignants);
     }
 
+    /**
+     * 🔹 Récupérer un enseignant par son ID (retourne `Enseignant` directement)
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Enseignant> getEnseignantById(@PathVariable Long id) {
         Optional<Enseignant> enseignant = enseignantService.findById(id);
-        return enseignant.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return enseignant.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * 🔸 Créer un nouvel enseignant (utilise `EnseignantDTO` pour la requête)
+     */
     @PostMapping
-    public ResponseEntity<Enseignant> createEnseignant(@Valid @RequestBody Enseignant enseignant) {
-        Enseignant savedEnseignant = enseignantService.save(enseignant);
-        return ResponseEntity.ok(savedEnseignant);
+    public ResponseEntity<Enseignant> createEnseignant(@RequestBody EnseignantDTO enseignantDTO) {
+        try {
+            Enseignant enseignant = enseignantMapper.toEntity(enseignantDTO);
+            Enseignant savedEnseignant = enseignantService.save(enseignant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedEnseignant);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
+    /**
+     * 🔸 Mettre à jour un enseignant existant (utilise `EnseignantDTO` pour la requête)
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<Enseignant> updateEnseignant(@PathVariable Long id, @Valid @RequestBody Enseignant enseignantDetails) {
-        Optional<Enseignant> enseignant = enseignantService.findById(id);
-        if (enseignant.isPresent()) {
-            Enseignant updatedEnseignant = enseignant.get();
-            updatedEnseignant.setNom(enseignantDetails.getNom());
-            updatedEnseignant.setPrenom(enseignantDetails.getPrenom());
-            updatedEnseignant.setAdresse(enseignantDetails.getAdresse());
-            updatedEnseignant.setSexe(enseignantDetails.getSexe());
-            updatedEnseignant.setVille(enseignantDetails.getVille());
-            updatedEnseignant.setPays(enseignantDetails.getPays());
-            updatedEnseignant.setMobile(enseignantDetails.getMobile());
-            updatedEnseignant.setTelephone(enseignantDetails.getTelephone());
-            updatedEnseignant.setCodePostal(enseignantDetails.getCodePostal());
-            updatedEnseignant.setType(enseignantDetails.getType());
-            updatedEnseignant.setEmailUbo(enseignantDetails.getEmailUbo());
-            updatedEnseignant.setEmailPerso(enseignantDetails.getEmailPerso());
+    public ResponseEntity<Enseignant> updateEnseignant(@PathVariable Long id, @RequestBody EnseignantDTO enseignantDTO) {
+        Optional<Enseignant> existingEnseignant = enseignantService.findById(id);
+        if (existingEnseignant.isPresent()) {
+            Enseignant updatedEnseignant = enseignantMapper.toEntity(enseignantDTO);
+            updatedEnseignant.setId(id); // Garder l'ID existant
             enseignantService.save(updatedEnseignant);
             return ResponseEntity.ok(updatedEnseignant);
         } else {
@@ -68,6 +75,9 @@ public class EnseignantController {
         }
     }
 
+    /**
+     * 🔹 Supprimer un enseignant par son ID (retourne `Enseignant` directement)
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEnseignant(@PathVariable Long id) {
         Optional<Enseignant> enseignant = enseignantService.findById(id);
@@ -86,6 +96,8 @@ public class EnseignantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur interne s'est produite lors de la suppression.");
         }
+        enseignantService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
