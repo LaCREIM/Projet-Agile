@@ -4,28 +4,35 @@ import {
   getEnseignantAsync,
   postEnseignantAsync,
 } from "../../features/EnseignantSlice";
-import { Chercheur, Intervenant } from "../../types/types";
+import { Chercheur, Enseignant, Intervenant } from "../../types/types";
 import ChercheurInfo from "./ChercheurInfo";
 import IntervenantInfo from "./IntervenantInfo";
 
 const AddEnseignant = () => {
   const dispatch = useAppDispatch();
-  const [enseignant, setEnseignant] = useState({
-    noEnseignant: 0,
+  const [enseignant, setEnseignant] = useState<Enseignant>({
+    id: 0,
     type: "ENC",
+    sexe: "",
     nom: "",
     prenom: "",
-    sexe: "",
     adresse: "",
-    email: "",
-    cp: "",
-    telPort: "",
-    pays: "France",
+    codePostal: "",
+    ville: "",  // Ajouté
+    pays: "FR",
+    mobile: "",
+    telephone: "",  // Ajouté
+    emailUbo: "",  // Correspondance avec l'interface
+    emailPerso: "",  // Correspondance avec l'interface
+    intSocNom: "", // Ajouté pour Intervenant
+    intNoInsee: 0, // Ajouté pour Intervenant
+    intFonction: "", // Ajouté pour Intervenant
   });
+  
 
   const [chercheur, setChercheur] = useState<Chercheur>({
     encUboEmail: "",
-    encUboTel: 0,
+    encUboTel: "",
     encPersoEmail: "",
   });
 
@@ -35,46 +42,94 @@ const AddEnseignant = () => {
     intSocNom: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setEnseignant({ ...enseignant, [name]: value });
+  
+    setEnseignant((prev) => {
+      const updatedEnseignant = {
+        ...prev,
+        [name]: value,
+      };
+  
+      // Correspondance explicite des valeurs pour Chercheur
+      if (updatedEnseignant.type.toUpperCase() === "ENC") {
+        setChercheur((prevChercheur) => ({
+          ...prevChercheur,
+          encUboEmail: updatedEnseignant.emailUbo,
+          encPersoEmail: updatedEnseignant.emailPerso,
+          encUboTel: updatedEnseignant.telephone,
+        }));
+      }
+  
+      if (updatedEnseignant.type.toUpperCase() === "INT") {
+        setIntervenant((prevIntervenant) => ({
+          ...prevIntervenant,
+          intFonction: updatedEnseignant.intFonction || "",
+          intNoInsee: Number(updatedEnseignant.intNoInsee) || 0,
+          intSocNom: updatedEnseignant.intSocNom || "",
+        }));
+      }
+      
+  
+      console.log("Nouvel état de enseignant :", updatedEnseignant);
+      return updatedEnseignant;
+    });
   };
+  
+  
+  
+  
+  
+  
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
+    if (!canSave) {
+      console.error("Tous les champs requis doivent être remplis correctement.");
+    }
+    
     if (
       enseignant.nom &&
       enseignant.prenom &&
       enseignant.sexe &&
       enseignant.adresse &&
-      enseignant.email &&
-      enseignant.cp &&
-      enseignant.telPort &&
-      enseignant.type
+      enseignant.emailUbo &&
+      enseignant.codePostal &&
+      enseignant.mobile &&
+      enseignant.type &&
+      (enseignant.type === "ENC"
+        ? chercheur.encUboEmail && chercheur.encUboTel && chercheur.encPersoEmail
+        : intervenant.intFonction && intervenant.intNoInsee && intervenant.intSocNom)
     ) {
-      const enseignantComplet = {
-        ...enseignant,
-        ...chercheur,
-        ...intervenant,
-      };
+      const enseignantComplet =
+        enseignant.type === "ENC"
+          ? { ...enseignant, ...chercheur }
+          : { ...enseignant, ...intervenant };
+  
       await dispatch(postEnseignantAsync(enseignantComplet));
-      dispatch(getEnseignantAsync());
+      dispatch(getEnseignantAsync({ page: 1, size: 10 }));
     } else {
       console.error("Tous les champs requis doivent être remplis.");
     }
   };
+  
+  
 
   const canSave = [
-    enseignant.nom,
-    enseignant.prenom,
-    enseignant.sexe,
-    enseignant.adresse,
-    enseignant.email,
-    enseignant.cp,
-    enseignant.telPort,
-    enseignant.type,
-  ].every(Boolean);
+    { champ: "nom", valeur: enseignant.nom.trim() },
+    { champ: "prenom", valeur: enseignant.prenom.trim() },
+    { champ: "sexe", valeur: enseignant.sexe },
+    { champ: "adresse", valeur: enseignant.adresse.trim() },
+    { champ: "emailUbo", valeur: enseignant.emailUbo.trim() },
+    { champ: "codePostal", valeur: enseignant.codePostal.trim() },
+    { champ: "mobile", valeur: enseignant.mobile.trim() },
+    { champ: "type", valeur: enseignant.type },
+  ].every((field) => {
+    // console.log(`Validation du champ ${field.champ} :`, Boolean(field.valeur)); // Debugging
+    return Boolean(field.valeur);
+  });
+  
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -130,8 +185,8 @@ const AddEnseignant = () => {
               <input
                 required
                 type="number"
-                name="telPort"
-                value={enseignant.telPort}
+                name="mobile"
+                value={enseignant.mobile}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 0701010101"
@@ -156,8 +211,8 @@ const AddEnseignant = () => {
               <input
                 required
                 type="text"
-                name="cp"
-                value={enseignant.cp}
+                name="codePostal"
+                value={enseignant.codePostal}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 29200"
@@ -194,24 +249,22 @@ const AddEnseignant = () => {
             </label>
 
             {enseignant.type === "ENC" && (
-              <ChercheurInfo setChercheur={setChercheur} />
+              <ChercheurInfo setEnseignant={setEnseignant} setChercheur={setChercheur} />
             )}
             {enseignant.type === "INT" && (
-              <IntervenantInfo setIntervenant={setIntervenant} />
+              <IntervenantInfo setEnseignant={setEnseignant} setIntervenant={setIntervenant} />
             )}
           </div>
 
           <div className="modal-action">
-            <form method="dialog" className="flex flex-row gap-5">
               <button className="btn">Annuler</button>
               <button
+                type="submit"
                 className="btn btn-neutral disabled:cursor-not-allowed"
                 disabled={!canSave}
               >
                 Ajouter
-              </button>
-            </form>
-          </div>
+              </button>          </div>
         </form>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { Enseignant, getEnseignantAsync } from "../../features/EnseignantSlice";
-import { Intervenant, Chercheur } from "../../types/types";
+import { getEnseignantAsync, postEnseignantAsync } from "../../features/EnseignantSlice";
+import { Intervenant, Chercheur, Enseignant } from "../../types/types";
+import { toast } from "react-toastify";
 
 interface UpdateEnseignantProps {
   enseignantData: Enseignant;
@@ -16,6 +17,7 @@ const UpdateEnseignant = ({
 
   const [enseignant, setEnseignant] = useState<Enseignant>({
     ...enseignantData,
+    
   });
 
   const handleChange = (
@@ -27,22 +29,39 @@ const UpdateEnseignant = ({
 
   const handleSubmit = async () => {
     if (
-      enseignant.adresse &&
-      enseignant.type &&
-      enseignant.pays &&
       enseignant.nom &&
       enseignant.prenom &&
       enseignant.sexe &&
-      enseignant.cp 
+      enseignant.adresse &&
+      enseignant.emailPerso &&
+      enseignant.codePostal &&
+      enseignant.mobile &&
+      enseignant.type
     ) {
-    //   const enseignantComplet = {
-    //     ...enseignant,
-    //     ...typeData,
-    //   };
-      // await dispatch(updateEnseignantAsync(enseignantComplet));
-       dispatch(getEnseignantAsync());
+      const enseignantComplet = {
+        ...enseignant,
+        ...(enseignant.type.toUpperCase() === "ENC"
+          ? {
+              encPersoEmail: enseignant.emailPerso,
+              encUboEmail: enseignant.emailUbo,
+              encUboTel: enseignant.telephone,
+            }
+          : {
+              intFonction: enseignant.intFonction,
+              intNoInsee: enseignant.intNoInsee,
+              intSocNom: enseignant.intSocNom,
+            }),
+      };
+  
+      await dispatch(postEnseignantAsync(enseignantComplet));
+      dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+    } else {
+      toast.error("Tous les champs requis doivent être remplis.");
     }
   };
+  
+
+
 
   const canSave = [
     enseignant.adresse,
@@ -51,7 +70,7 @@ const UpdateEnseignant = ({
     enseignant.nom,
     enseignant.prenom,
     enseignant.sexe,
-    enseignant.cp,
+    enseignant.codePostal,
   ].every(Boolean);
 
   return (
@@ -105,7 +124,7 @@ const UpdateEnseignant = ({
               required
               type="number"
               name="telPort"
-              value={enseignant.telPort}
+              value={enseignant.mobile}
               onChange={handleChange}
               className="grow"
               placeholder="Ex: 0701010101"
@@ -128,8 +147,8 @@ const UpdateEnseignant = ({
             <span className="font-semibold">Nationalité</span>
             <input
               type="number"
-              name="cp"
-              value={enseignant.cp}
+              name="codePostal"
+              value={enseignant.codePostal}
               onChange={handleChange}
               className="grow"
               placeholder="Ex: 29200"
@@ -149,7 +168,9 @@ const UpdateEnseignant = ({
               <option value="INT">Intervenant</option>
             </select>
           </label>
-          {enseignant.type.toUpperCase() === "ENC" && (
+
+          {/* Affichage pour un Chercheur (ENC) */}
+          {enseignant.type?.toUpperCase() === "ENC" && typeData && "encPersoEmail" in typeData && (
             <div className="flex flex-col gap-5">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Email Personnel</span>
@@ -157,10 +178,10 @@ const UpdateEnseignant = ({
                   required
                   type="email"
                   name="encPersoEmail"
-                  value={(typeData as Chercheur).encPersoEmail}
+                  value={typeData.encPersoEmail || ""}
                   onChange={handleChange}
                   className="grow"
-                  placeholder="Ex: Dupont"
+                  placeholder="Ex: john.doe@gmail.com"
                 />
               </label>
               <label className="input input-bordered flex items-center gap-2">
@@ -168,10 +189,10 @@ const UpdateEnseignant = ({
                 <input
                   type="email"
                   name="encUboEmail"
-                  value={(typeData as Chercheur).encUboEmail}
+                  value={typeData.encUboEmail || ""}
                   onChange={handleChange}
                   className="grow"
-                  placeholder="Ex: 0451"
+                  placeholder="Ex: john.doe@ubo.fr"
                 />
               </label>
               <label className="input input-bordered flex items-center gap-2">
@@ -179,26 +200,28 @@ const UpdateEnseignant = ({
                 <input
                   type="text"
                   name="encUboTel"
-                  value={(typeData as Chercheur).encUboTel}
+                  value={typeData.encUboTel || ""}
                   onChange={handleChange}
                   className="grow"
-                  placeholder="Ex: Lab Informatique"
+                  placeholder="Ex: 02 98 XX XX XX"
                 />
               </label>
             </div>
           )}
-          {enseignant.type.toUpperCase() === "INT" && (
+
+          {/* Affichage pour un Intervenant (INT) */}
+          {enseignant.type?.toUpperCase() === "INT" && typeData && "intFonction" in typeData && (
             <div className="flex flex-col gap-5">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Fonction</span>
                 <input
                   required
-                  type="string"
+                  type="text"
                   name="intFonction"
-                  value={(typeData as Intervenant).intFonction}
+                  value={typeData.intFonction || ""}
                   onChange={handleChange}
                   className="grow"
-                  placeholder="Ex: Fonction"
+                  placeholder="Ex: Consultant"
                 />
               </label>
               <label className="input input-bordered flex items-center gap-2">
@@ -207,20 +230,19 @@ const UpdateEnseignant = ({
                   required
                   type="number"
                   name="intNoInsee"
-                  value={(typeData as Intervenant).intNoInsee}
+                  value={typeData.intNoInsee || ""}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: 108765"
                 />
               </label>
-
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Société</span>
                 <input
                   required
                   type="text"
                   name="intSocNom"
-                  value={(typeData as Intervenant).intSocNom}
+                  value={typeData.intSocNom || ""}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: Capgemini Paris"
@@ -228,6 +250,7 @@ const UpdateEnseignant = ({
               </label>
             </div>
           )}
+
 
           <div className="modal-action">
             <form method="dialog" className="flex flex-row gap-5">

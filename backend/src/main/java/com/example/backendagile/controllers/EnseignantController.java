@@ -3,7 +3,9 @@ package com.example.backendagile.controllers;
 import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.services.EnseignantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
@@ -67,12 +69,23 @@ public class EnseignantController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEnseignant(@PathVariable Long id) {
-        if (enseignantService.findById(id).isPresent()) {
+    public ResponseEntity<?> deleteEnseignant(@PathVariable Long id) {
+        Optional<Enseignant> enseignant = enseignantService.findById(id);
+        if (enseignant.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("L'enseignant avec l'ID " + id + " n'existe pas.");
+        }
+
+        try {
             enseignantService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Cet enseignant est responsable d'une formation et ne peut pas être supprimé.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur interne s'est produite lors de la suppression.");
         }
     }
+
 }
