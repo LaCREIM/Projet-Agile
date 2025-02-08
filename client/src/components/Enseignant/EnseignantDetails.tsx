@@ -3,6 +3,7 @@ import { Enseignant } from "../../features/EnseignantSlice";
 interface EnseignantProp {
   enseignant: Enseignant;
 }
+
 const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
   return (
     <div className="flex justify-center items-center w-full h-screen">
