@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Intervenant } from "../../types/types";
+import { Intervenant, Enseignant } from "../../types/types";
 import { motion } from "framer-motion";
 
 interface IntervenantInfoProps {
   setIntervenant: (c: Intervenant) => void;
+  setEnseignant: (e: (prevEnseignant: Enseignant) => Enseignant) => void;
 }
 
 const FormVariant = {
@@ -21,7 +22,7 @@ const FormVariant = {
   }),
 };
 
-const IntervenantInfo = ({ setIntervenant }: IntervenantInfoProps) => {
+const IntervenantInfo = ({ setIntervenant, setEnseignant }: IntervenantInfoProps) => {
   const [intervenantInfo, setIntervenantInfo] = useState<Intervenant>({
     intFonction: "",
     intNoInsee: 0,
@@ -30,9 +31,27 @@ const IntervenantInfo = ({ setIntervenant }: IntervenantInfoProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setIntervenantInfo((prev) => ({ ...prev, [name]: value }));
-    setIntervenant(intervenantInfo as Intervenant);
+
+    setIntervenantInfo((prev) => {
+      const updatedInfo = { ...prev, [name]: name === "intNoInsee" ? parseInt(value) || 0 : value };
+
+      // Propagation à l'état parent
+      setIntervenant(updatedInfo);
+
+      // Synchronisation avec les champs d'enseignant
+      setEnseignant((prevEnseignant) => ({
+        ...prevEnseignant,
+        intFonction: updatedInfo.intFonction || prevEnseignant.intFonction,
+        intNoInsee: updatedInfo.intNoInsee || prevEnseignant.intNoInsee,
+        intSocNom: updatedInfo.intSocNom || prevEnseignant.intSocNom,
+      }));
+      
+      
+
+      return updatedInfo;
+    });
   };
+
   return (
     <div className="flex flex-col gap-5">
       <motion.label
@@ -61,7 +80,7 @@ const IntervenantInfo = ({ setIntervenant }: IntervenantInfoProps) => {
         <span className="font-semibold">Fonction</span>
         <input
           required
-          type="string"
+          type="text"
           name="intFonction"
           value={intervenantInfo.intFonction}
           onChange={handleChange}
@@ -84,7 +103,7 @@ const IntervenantInfo = ({ setIntervenant }: IntervenantInfoProps) => {
           value={intervenantInfo.intSocNom}
           onChange={handleChange}
           className="grow"
-          placeholder="Ex: 29200"
+          placeholder="Ex: Société XYZ"
         />
       </motion.label>
     </div>

@@ -1,8 +1,9 @@
-import { Enseignant } from "../../features/EnseignantSlice";
+import { Enseignant } from "../../types/types";
 
 interface EnseignantProp {
   enseignant: Enseignant;
 }
+
 const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -19,7 +20,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 sm:col-gap-6 xl:grid-cols-2">
             <div className="text-base font-medium text-gray-900">
               <dt>Code :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.noEnseignant}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.id}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Nom :</dt>
@@ -35,7 +36,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Téléphone :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.telPort}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.mobile}</dd>
             </div>
 
             <div className="text-base font-medium text-gray-900">
@@ -44,7 +45,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Code postale :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.cp}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.codePostal}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Pays :</dt>
@@ -58,27 +59,27 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
             </div>
             {enseignant.type === "ENC" && (
               <>
-                {enseignant.encPersoEmail && (
+                {enseignant.emailPerso && (
                   <div className="text-base font-medium text-gray-900">
                     <dt>Email personnel :</dt>
                     <dd className="mt-1 text-gray-500">
-                      {enseignant.encPersoEmail}
+                      {enseignant.emailPerso}
                     </dd>
                   </div>
                 )}
-                {enseignant.encUboEmail && (
+                {enseignant.emailUbo && (
                   <div className="text-base font-medium text-gray-900">
                     <dt>Email UBO :</dt>
                     <dd className="mt-1 text-gray-500">
-                      {enseignant.encUboEmail}
+                      {enseignant.emailUbo}
                     </dd>
                   </div>
                 )}
-                {enseignant.encUboTel && (
+                {enseignant.telephone && (
                   <div className="text-base font-medium text-gray-900">
                     <dt>Numéro téléphone :</dt>
                     <dd className="mt-1 text-gray-500">
-                      {enseignant.encUboTel}
+                      {enseignant.telephone}
                     </dd>
                   </div>
                 )}
