@@ -7,6 +7,10 @@ import { Dashboard } from "./components/Admin/Dashboard";
 import StudentHome from "./components/Student/StudentHome";
 import { useState } from "react";
 import { PromotionDetails } from "./types/types";
+import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
+import QuestionHome from "./components/Questions/QuestionHome";
+import EvaluationHome from "./components/Evaluations/EvaluationHome";
+import RubriqueHome from "./components/Rubriques/RubriqueHome";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneePro: "-1",
@@ -33,6 +37,11 @@ function App() {
                   />
                 }
               />
+              <Route path="qualificatifs" element={<QualificatifHome/>} />
+              <Route path="questions" element={<QuestionHome/>} />
+              <Route path="evaluations" element={<EvaluationHome/>} />
+              <Route path="rubriques" element={<RubriqueHome/>} />
+
             </Route>
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>

@@ -2,6 +2,11 @@ import { HoverEffect } from "../components/ui/card-hover-effect";
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuSchool } from "react-icons/lu";
 import { IoSchool } from "react-icons/io5";
+import { PiSealQuestionFill } from "react-icons/pi";
+import { FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { BsCardHeading } from "react-icons/bs";
+import { FaFileAlt } from "react-icons/fa";
+
 import NavBar from "../components/Admin/NavBar";
 
 export function AdminLayout() {
@@ -33,5 +38,29 @@ export const projects = [
     icon: <IoSchool size={60} className="mx-auto" />,
     description: "Gérer les étudiants.",
     link: "/admin/home/etudiants",
+  },
+  {
+    title: "Gestion Qualificatifs",
+    icon: <FaArrowsLeftRightToLine size={60} className="mx-auto" />,
+    description: "Gérer les qualificatifs.",
+    link: "/admin/home/qualificatifs",
+  },
+  {
+    title: "Gestion Questions",
+    icon: <PiSealQuestionFill size={60} className="mx-auto" />,
+    description: "Gérer les questions.",
+    link: "/admin/home/questions",
+  },
+  {
+    title: "Gestion Rubriques",
+    icon: <BsCardHeading size={60} className="mx-auto" />,
+    description: "Gestion les rubriques.",
+    link: "/admin/home/rubriquess",
+  },
+  {
+    title: "Gestion Évaluations",
+    icon: <FaFileAlt size={60} className="mx-auto" />,
+    description: "Gérer les évaluations.",
+    link: "/admin/home/evaluations",
   },
 ];
