@@ -4,6 +4,10 @@ import { FiLogOut } from "react-icons/fi";
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuSchool } from "react-icons/lu";
 import { IoSchool } from "react-icons/io5";
+import { PiSealQuestionFill } from "react-icons/pi";
+import { FaArrowsLeftRightToLine } from "react-icons/fa6";
+import { FaFileAlt } from "react-icons/fa";
+import { BsCardHeading } from "react-icons/bs";
 import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
@@ -16,28 +20,56 @@ export function Dashboard() {
       label: "Gestion enseignants",
       href: "/admin/home/enseignants",
       icon: (
-        <AiOutlineTeam className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <AiOutlineTeam className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion promotions",
       href: "/admin/home/promotions",
       icon: (
-        <LuSchool className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <LuSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion étudiants",
       href: "/admin/home/etudiants",
       icon: (
-        <IoSchool className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IoSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Gestion qualificatifs",
+      href: "/admin/home/qualificatifs",
+      icon: (
+        <FaArrowsLeftRightToLine className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Gestion questions",
+      href: "/admin/home/questions",
+      icon: (
+        <PiSealQuestionFill className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Gestion rubriques",
+      href: "/admin/home/rubriques",
+      icon: (
+        <BsCardHeading className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Gestion evaluations",
+      href: "/admin/home/evaluations",
+      icon: (
+        <FaFileAlt className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Logout",
       href: "/",
       icon: (
-        <FiLogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <FiLogOut className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
   ];
@@ -45,7 +77,7 @@ export function Dashboard() {
   return (
     <div
       className={cn(
-        "rounded-md flex flex-1 flex-col md:flex-row bg-white dark:bg-neutral-800 w-full mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+        "rounded-md flex flex-1 flex-col md:flex-row bg-white  w-full mx-auto border border-neutral-200  overflow-hidden",
         "h-screen"
       )}
     >
@@ -68,14 +100,14 @@ export function Dashboard() {
 export const Logo = () => {
   return (
     <Link
-      to="#"
+      to="/admin"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <div className="h-5 w-6 bg-black  rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
+        className="font-medium text-black  whitespace-pre"
       >
         UBO - SPI
       </motion.span>
@@ -85,10 +117,10 @@ export const Logo = () => {
 export const LogoIcon = () => {
   return (
     <Link
-      to="#"
+      to="/admin"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <img src={ubo}  className="w-20 h-6 flex-shrink-0 rounded-full" />
+      <div className="h-5 w-6 bg-black  rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
     </Link>
   );
 };
