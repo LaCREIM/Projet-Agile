@@ -98,7 +98,10 @@ const EnseignantsHome = () => {
             <tbody>
               {enseignants.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center text-gray-500">
+                  <td
+                    colSpan={11}
+                    className="uppercase tracking-widest text-center text-gray-500"
+                  >
                     Pas d'enseignants trouvés.
                   </td>
                 </tr>
