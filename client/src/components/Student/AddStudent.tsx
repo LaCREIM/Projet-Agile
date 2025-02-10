@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
+  getDomainePaysAsync,
   getEtudiantAsync,
+  getPays,
   postEtudiantAsync,
 } from "../../features/EtudiantSlice";
 
@@ -10,34 +12,34 @@ import {
   getPromotions,
 } from "../../features/PromotionSlice";
 
-import { getEnseignantAsync } from "../../features/EnseignantSlice";
+import { Etudiant } from "../../types/types";
+
 
 const AddStudent = () => {
   const dispatch = useAppDispatch();
 
-  const [student, setStudent] = useState({
+  const [student, setStudent] = useState<Etudiant>({
+    noEtudiant: "",
+    promotion: "",
     nom: "",
     prenom: "",
     sexe: "",
-    email: "",
-    telephone: "",
-    noEtudiantUbo: "",
-    noEtudiantNat: "",
-    dateNaissance: "",
+    dateNaissance: null,
     lieuNaissance: "",
-    nationalite: "Française",
-    universite: "",
-    anneePro: "",
+    nationalite: "",
+    telephone: "",
+    mobile: "",
+    email: "",
+    emailUbo: "",
     adresse: "",
-    permAdresse: "",
-    permVille: "",
-    permCp: "",
-    permPays: "",
-    dernierDiplome: "",
-    sigleEtu: "",
-    compteCri: "",
-    siglePro: "",
-    situation: "",
+    codePostal: "",
+    ville: "",
+    paysOrigine: "",
+    universiteOrigine: "",
+    groupeTp: 0,
+    groupeAnglais: 0,
+    codeFormation: "",
+    anneeUniversitaire: "",
   });
 
   const handleChange = (
@@ -54,20 +56,22 @@ const AddStudent = () => {
       student.sexe &&
       student.email &&
       student.telephone &&
-      student.noEtudiantUbo &&
-      student.noEtudiantNat &&
+      student.noEtudiant &&
       student.dateNaissance &&
       student.lieuNaissance &&
-      student.universite &&
-      student.anneePro &&
-      student.permAdresse &&
-      student.permVille &&
-      student.permCp &&
-      student.permPays &&
-      student.dernierDiplome &&
-      student.sigleEtu &&
-      student.compteCri &&
-      student.situation
+      student.universiteOrigine &&
+      student.codeFormation &&
+      student.adresse &&
+      student.ville &&
+      student.codePostal &&
+      student.paysOrigine &&
+      student.universiteOrigine &&
+      student.groupeTp &&
+      student.groupeAnglais &&
+      student.mobile&& 
+      student.codeFormation &&
+      student.anneeUniversitaire &&
+      student.promotion
     ) {
       console.log(student);
 
@@ -77,10 +81,11 @@ const AddStudent = () => {
   };
 
   const promotions = useAppSelector(getPromotions);
+  const pays = useAppSelector(getPays);
 
   useEffect(() => {
     dispatch(getPromotionAsync());
-    dispatch(getEnseignantAsync());
+    dispatch(getDomainePaysAsync())
   }, [dispatch]);
 
   const canSave = [
@@ -89,20 +94,19 @@ const AddStudent = () => {
       student.sexe &&
       student.email &&
       student.telephone &&
-      student.noEtudiantUbo &&
-      student.noEtudiantNat &&
+      student.noEtudiant &&
       student.dateNaissance &&
       student.lieuNaissance &&
-      student.universite &&
-      student.anneePro &&
-      student.permAdresse &&
-      student.permVille &&
-      student.permCp &&
-      student.permPays &&
-      student.dernierDiplome &&
-      student.sigleEtu &&
-      student.compteCri &&
-      student.situation,
+      student.universiteOrigine &&
+      student.codeFormation &&
+      student.adresse &&
+      student.ville &&
+      student.codePostal &&
+      student.paysOrigine &&
+      student.universiteOrigine &&
+      student.groupeTp &&
+      student.groupeAnglais &&
+      student.mobile,
   ].every(Boolean);
 
   return (
@@ -155,23 +159,6 @@ const AddStudent = () => {
                 <option value="F">Femme</option>
               </select>
             </label>
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Situation</span>
-              <select
-                required
-                name="situation"
-                value={student.situation}
-                onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
-              >
-                <option value="" disabled>
-                  Sélectionnez une situation matrimoniale
-                </option>
-                <option value="CEL">Célibataire</option>
-                <option value="MAR">Marié</option>
-                <option value="DIV">Divorcé</option>
-              </select>
-            </label>
 
             {/* Email et Téléphone */}
             <label className="input input-bordered flex items-center gap-2">
@@ -183,6 +170,18 @@ const AddStudent = () => {
                 value={student.email}
                 onChange={handleChange}
                 className="grow"
+                placeholder="john.doe@gamil.com"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Email Ubo</span>
+              <input
+                required
+                type="email"
+                name="emailUbo"
+                value={student.emailUbo}
+                onChange={handleChange}
+                className="grow"
                 placeholder="john.doe@univ.fr"
               />
             </label>
@@ -191,8 +190,8 @@ const AddStudent = () => {
               <input
                 required
                 type="text"
-                name="telephone"
-                value={student.telephone}
+                name="mobile"
+                value={student.mobile}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 0700000000"
@@ -206,7 +205,11 @@ const AddStudent = () => {
                 required
                 type="date"
                 name="dateNaissance"
-                value={student.dateNaissance}
+                value={
+                  student.dateNaissance
+                    ? student.dateNaissance.toISOString().split("T")[0]
+                    : ""
+                }
                 onChange={handleChange}
                 className="grow"
               />
@@ -226,12 +229,12 @@ const AddStudent = () => {
 
             {/* Adresse permanente */}
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Adresse permanente</span>
+              <span className="font-semibold">Adresse</span>
               <input
                 required
                 type="text"
-                name="permAdresse"
-                value={student.permAdresse}
+                name="adresse"
+                value={student.adresse}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 12 rue..."
@@ -242,8 +245,8 @@ const AddStudent = () => {
               <input
                 required
                 type="text"
-                name="permVille"
-                value={student.permVille}
+                name="ville"
+                value={student.ville}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Brest"
@@ -254,32 +257,43 @@ const AddStudent = () => {
               <input
                 required
                 type="text"
-                name="permCp"
-                value={student.permCp}
+                name="codePostal"
+                value={student.codePostal}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 29200"
               />
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Pays</span>
-              <input
-                required
-                type="text"
-                name="permPays"
-                value={student.permPays}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: France"
-              />
-            </label>
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Promotion</span>
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Pays</span>
               <select
                 required
-                className="select w-full max-w-full"
+                className="select w-[80%] max-w-full"
+                name="paysOrigine"
+                value={student.paysOrigine}
+                onChange={handleChange}
+              >
+                <option value="" disabled>
+                  Sélectionnez un pays
+                </option>
+                {pays.map((pays, idx) => (
+                  <option key={idx} value={pays.rvLowValue}>
+                    {pays.rvMeaning}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Promotion</span>
+              <select
+                required
+                className="select w-[80%] max-w-full"
                 name="anneePro"
-                value={student.anneePro === "-1" ? "" : student.anneePro}
+                value={
+                  student.codeFormation === "-1"
+                    ? ""
+                    : student.anneeUniversitaire
+                }
                 onChange={handleChange}
               >
                 <option value="" disabled>
@@ -293,80 +307,76 @@ const AddStudent = () => {
               </select>
             </label>
 
-            {/* Dernier diplôme et université */}
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">No Etudiant National</span>
+              <span className="font-semibold">No Etudiant</span>
               <input
                 required
                 type="text"
-                name="noEtudiantNat"
-                value={student.noEtudiantNat}
+                name="noEtudiant"
+                value={student.noEtudiant}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: YI98765"
               />
             </label>
+
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">No Etudiant UBO</span>
+              <span className="font-semibold">Université</span>
               <input
                 required
                 type="text"
-                name="noEtudiantUbo"
-                value={student.noEtudiantUbo}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: UB76543"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Dernier diplôme</span>
-              <input
-                required
-                type="text"
-                name="dernierDiplome"
-                value={student.dernierDiplome}
+                name="universiteOrigine"
+                value={student.universiteOrigine}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Licence"
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Université</span>
+              <span className="font-semibold">Code Postale</span>
               <input
                 required
-                type="text"
-                name="universite"
-                value={student.universite}
+                type="number"
+                name="codePostal"
+                value={student.codePostal}
                 onChange={handleChange}
                 className="grow"
-                placeholder="Ex: UBO"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Sigle Étudiant</span>
-              <input
-                required
-                type="text"
-                name="sigleEtu"
-                value={student.sigleEtu}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: SIG123"
+                placeholder="Ex: 02922"
               />
             </label>
 
-            {/* Compte CRI */}
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Compte CRI</span>
-              <input
+            {/* Groupe TP et Anglais */}
+            <label className="flex  flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Groupe TP</span>
+              <select
                 required
-                type="text"
-                name="compteCri"
-                value={student.compteCri}
+                name="groupeAnglais"
+                value={student.groupeAnglais}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Identifiant CRI"
-              />
+                className="select select-bordered w-[80%] max-w-full"
+              >
+                <option value="" disabled>
+                  Sélectionnez un groupe d'anglais
+                </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+            </label>
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Groupe Anglais</span>
+              <select
+                required
+                name="groupeTp"
+                value={student.groupeTp}
+                onChange={handleChange}
+                className="select select-bordered w-[80%] max-w-full"
+              >
+                <option value="" disabled>
+                  Sélectionnez un groupe de TP
+                </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
             </label>
           </div>
         </form>
