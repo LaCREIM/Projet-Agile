@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/questions")
+@RequestMapping("/api/questionsPrs")
 public class QuestionPrsController {
 
     private final QuestionPrsService questionPrsService;
@@ -45,5 +45,10 @@ public class QuestionPrsController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
         questionPrsService.deleteQuestion(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/enseignant/{noEnseignant}")
+    public List<QuestionPrsDTO> getQuestionsByEnseignant(@PathVariable Long noEnseignant) {
+        return questionPrsService.getQuestionsByEnseignant(noEnseignant);
     }
 }

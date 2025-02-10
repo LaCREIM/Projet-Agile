@@ -64,5 +64,12 @@ public class QuestionPrsService {
         questionRepository.deleteById(id);
     }
 
+    public List<QuestionPrsDTO> getQuestionsByEnseignant(Long noEnseignant) {
+        List<Question> questions = questionRepository.findByNoEnseignant_NoEnseignant(noEnseignant);
+        return questions.stream()
+                .map(questionMapper::fromQuestion)
+                .collect(Collectors.toList());
+    }
+
 
 }

@@ -1,10 +1,13 @@
 package com.example.backendagile.dto;
 
+import com.example.backendagile.repositories.QuestionRepository;
+
 public class QuestionPrsDTO {
     String intitule;
     Long idQuestion;
     Long idQualificatif;
-
+    String maxQualificatif;
+    String minQualificatif;
 
     public QuestionPrsDTO() {
     }
@@ -13,6 +16,22 @@ public class QuestionPrsDTO {
         this.intitule = intitule;
         this.idQuestion = idQuestion;
         this.idQualificatif = idQualificatif;
+    }
+
+    public String getMinQualificatif() {
+        return minQualificatif;
+    }
+
+    public void setMinQualificatif(String minQualificatif) {
+        this.minQualificatif = minQualificatif;
+    }
+
+    public String getMaxQualificatif() {
+        return maxQualificatif;
+    }
+
+    public void setMaxQualificatif(String naxQualificatif) {
+        this.maxQualificatif = naxQualificatif;
     }
 
     public String getIntitule() {
