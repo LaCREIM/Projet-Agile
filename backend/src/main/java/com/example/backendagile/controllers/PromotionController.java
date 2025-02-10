@@ -1,4 +1,5 @@
 package com.example.backendagile.controllers;
+
 import com.example.backendagile.dto.PromotionDTO;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
@@ -22,7 +23,7 @@ public class PromotionController {
 
 
     private final PromotionService promotionService;
-    private final FormationService formationService;
+
     /**
      * Constructor to initialize services for promotions and formations.
      *
@@ -31,7 +32,6 @@ public class PromotionController {
      */
     public PromotionController(PromotionService promotionService, FormationService formationService) {
         this.promotionService = promotionService;
-        this.formationService = formationService;
     }
 
     /**
@@ -73,7 +73,7 @@ public class PromotionController {
     @PutMapping("/{anneeUniversitaire}/{codeFormation}")
     public PromotionDTO updatePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation, @RequestBody PromotionDTO promotion) {
 
-        PromotionDTO updatedPromotion = promotionService.updatePromotion(anneeUniversitaire,codeFormation, promotion);
+        PromotionDTO updatedPromotion = promotionService.updatePromotion(anneeUniversitaire, codeFormation, promotion);
         return updatedPromotion;
     }
 
@@ -85,8 +85,8 @@ public class PromotionController {
      */
     @DeleteMapping("/{anneeUniversitaire}/{codeFormation}")
     public ResponseEntity<?> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
-        try{
-            promotionService.deletePromotion(anneeUniversitaire,codeFormation);
+        try {
+            promotionService.deletePromotion(anneeUniversitaire, codeFormation);
             return new ResponseEntity<>("deleted", HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
@@ -97,7 +97,6 @@ public class PromotionController {
     public List<PromotionDTO> getAllEtudiantsPaged(@RequestParam int page, @RequestParam int size) {
         return promotionService.getPromotionPaged(page, size);
     }
-
 
 
 }
