@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
@@ -57,15 +58,28 @@ const QualificatifHome = () => {
 
   const handleDelete = async (qualificatif: Qualificatif, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
-
-    if (response?.payload === "not deleted") {
-      toast.error("Ce qualificatif ne peut pas être supprimé.");
-    } else if (response?.payload === "deleted") {
-      toast.success("Qualificatif supprimé avec succès.");
-      dispatch(fetchQualificatifsAsync());
+    try {
+      const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
+  
+      if (response?.payload === "not deleted") {
+        toast.error("Ce qualificatif ne peut pas être supprimé.");
+      } else if (response?.payload === "deleted") {
+        toast.success("Qualificatif supprimé avec succès.");
+  
+        // Vérifiez si cette action est bien exécutée et rafraîchit la liste
+        const refreshResponse = await dispatch(fetchQualificatifsAsync());
+        if (refreshResponse?.payload) {
+          console.log("Liste des qualificatifs rafraîchie :", refreshResponse.payload);
+        } else {
+          console.warn("Échec du rafraîchissement.");
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error);
+      toast.error("Une erreur est survenue lors de la suppression.");
     }
   };
+  
 
   return (
     <>
