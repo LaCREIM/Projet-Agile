@@ -16,5 +16,5 @@ public class EnseignantDTO {
     private String type;
     private String emailUbo;
     private String emailPerso;
-    private String password;
+    private String motPasse;
 }

@@ -1,12 +1,21 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.EtudiantDTO;
+import com.example.backendagile.entities.Authentification;
+import com.example.backendagile.entities.Role;
+import com.example.backendagile.mapper.EtudiantMapper;
+import com.example.backendagile.services.AuthentificationService;
 import com.example.backendagile.services.EtudiantService;
+import com.example.backendagile.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -15,6 +24,11 @@ public class EtudiantController {
 
     @Autowired
     private EtudiantService etudiantService;
+
+    @Autowired
+    private AuthentificationService authentificationService;
+    @Autowired
+    private EtudiantMapper etudiantMapper;
 
     /**
      * Récupérer une liste paginée d'étudiants
@@ -39,11 +53,28 @@ public class EtudiantController {
      * Créer un nouvel étudiant (avec sa promotion)
      */
     @PostMapping
-    public ResponseEntity<String> createEtudiant(@RequestBody EtudiantDTO etudiantDTO) {
+    public ResponseEntity<String> createEtudiant(@RequestBody EtudiantDTO etudiantDTO, HttpServletResponse response) {
         try {
             EtudiantDTO savedEtudiant = etudiantService.save(etudiantDTO);
+            if (savedEtudiant == null) {
+                throw new RuntimeException("Erreur lors de la création de l'étudiant.");
+            }
+            String pseudo = savedEtudiant.getNom().substring(0, 2) + " " + savedEtudiant.getPrenom().substring(0, 2);
+            pseudo = pseudo.toUpperCase();
+
+            // Create authentication for the new student
+            authentificationService.save(
+                    String.valueOf(Role.ETU),
+                    savedEtudiant.getEmail(),
+                    pseudo,
+                    etudiantDTO.getMotPasse(),
+                    null,
+                    etudiantMapper.toEntity(savedEtudiant, null)
+            );
+
             return ResponseEntity.status(HttpStatus.CREATED).body("Étudiant créé avec succès.");
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la création de l'étudiant.");
         }
     }
@@ -60,7 +91,7 @@ public class EtudiantController {
             EtudiantDTO updatedEtudiant = etudiantService.update(id, etudiantDTO);
             return ResponseEntity.ok("Étudiant mis à jour avec succès.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant. " + e.getMessage());
         }
     }
 
