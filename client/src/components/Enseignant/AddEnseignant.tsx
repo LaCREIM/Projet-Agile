@@ -74,14 +74,7 @@ const AddEnseignant = () => {
       console.log("Nouvel état de enseignant :", updatedEnseignant);
       return updatedEnseignant;
     });
-  };
-  
-  
-  
-  
-  
-  
-
+  }; 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
     if (!canSave) {
