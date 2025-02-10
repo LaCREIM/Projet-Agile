@@ -17,7 +17,7 @@ import org.hibernate.annotations.Parameter;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Enseignant {
     @Id
-     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ens_seq_generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ens_seq_generator")
     @SequenceGenerator(name = "ens_seq_generator", sequenceName = "ENS_SEQ", allocationSize = 1)
     @Column(name = "NO_ENSEIGNANT", nullable = false)
     private Long id;
