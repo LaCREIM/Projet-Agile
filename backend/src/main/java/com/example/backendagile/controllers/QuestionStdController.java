@@ -2,7 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.QuestionStdDTO;
 import com.example.backendagile.entities.Question;
-import com.example.backendagile.services.QuestionService;
+import com.example.backendagile.services.QuestionStdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class QuestionStdController {
 
     @Autowired
-    private QuestionService questionService;
+    private QuestionStdService questionService;
 
     /**
      * Récupérer toutes les questions standards (renvoie les entités)
