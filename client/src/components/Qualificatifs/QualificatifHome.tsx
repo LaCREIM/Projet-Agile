@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
