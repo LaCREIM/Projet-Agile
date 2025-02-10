@@ -9,12 +9,15 @@ import org.hibernate.annotations.OnDeleteAction;
         @Index(name = "QUE_ENS_FK_I", columnList = "NO_ENSEIGNANT"),
         @Index(name = "QUE_QUA_FK_I", columnList = "ID_QUALIFICATIF")
 })
+
 public class Question {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ens_seq_generator")
+    @SequenceGenerator(name = "ens_seq_generator", sequenceName = "ENS_SEQ", allocationSize = 1)
     @Column(name = "ID_QUESTION", nullable = false)
     private Long id;
 
-    @Column(name = "\"TYPE\"", nullable = false, length = 10)
+    @Column(name = "TYPE", nullable = false, length = 10)
     private String type;
 
     @ManyToOne(fetch = FetchType.LAZY)
