@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import enseignantReducer from "../features/EnseignantSlice";
 import promotionReducer from "../features/PromotionSlice";
 import etudiantReducer from "../features/EtudiantSlice";
+import qualificatifReducer from "../features/QualificatifSlice";
 
 const store = configureStore({
   reducer: {
     enseignants: enseignantReducer,
     etudiants:etudiantReducer,
-    promotions:promotionReducer
+    promotions:promotionReducer,
+    qualificatif:qualificatifReducer,
   },
 });
 
