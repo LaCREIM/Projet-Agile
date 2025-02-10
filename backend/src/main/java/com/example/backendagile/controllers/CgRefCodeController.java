@@ -16,7 +16,7 @@ public class CgRefCodeController {
         this.cgRefCodeService = cgRefCodeService;
     }
 
-    @GetMapping("/byDomain")
+    @GetMapping("/{domain}")
     public ResponseEntity<List<CgRefCode>> getByRvDomain(@RequestParam String domain) {
         List<CgRefCode> result = cgRefCodeService.getAllByRvDomain(domain);
         return ResponseEntity.ok(result);
