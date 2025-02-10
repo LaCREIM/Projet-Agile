@@ -60,7 +60,7 @@ public class QualificatifController {
             return ResponseEntity.status(404).body("Aucun qualificatif trouvé avec cet ID.");
         }
         Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
-        qualificatif.setId(id); 
+        qualificatif.setId(id);
         qualificatifService.save(qualificatif);
         return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
     }
@@ -73,7 +73,11 @@ public class QualificatifController {
         if (!qualificatifService.findById(id).isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun qualificatif trouvé avec cet ID.");
         }
-        qualificatifService.deleteById(id);
+        try {
+            qualificatifService.deleteById(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Qualificatif deja utilisé.");
+        }
         return ResponseEntity.ok("Qualificatif supprimé avec succès.");
     }
 }
