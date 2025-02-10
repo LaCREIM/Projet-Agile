@@ -2,6 +2,7 @@ package com.example.backendagile.repositories;
 
 import com.example.backendagile.entities.Enseignant;
 
+import com.example.backendagile.entities.EnseignantJn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,6 @@ public interface EnseignantRepository extends JpaRepository<Enseignant, Long> {
                 ) WHERE rnum > :startRow
             """, nativeQuery = true)
     List<Enseignant> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
+
+    List<Enseignant> findByNomAndPrenom(String nom, String prenom);
 }

@@ -1,6 +1,7 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.EtudiantDTO;
+import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.services.EtudiantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -86,4 +87,11 @@ public class EtudiantController {
         etudiantService.deleteById(id);
         return ResponseEntity.ok("Étudiant supprimé avec succès.");
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Etudiant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
+        List<Etudiant> result = etudiantService.getByNomAndPrenom(nom, prenom);
+        return ResponseEntity.ok(result);
+    }
+
 }

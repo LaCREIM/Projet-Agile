@@ -34,4 +34,8 @@ public class EnseignantService {
     public void deleteById(Long id) {
         enseignantRepository.deleteById(id);
     }
+
+    public List<Enseignant> getByNomAndPrenom(String nom, String prenom) {
+        return enseignantRepository.findByNomAndPrenom(nom, prenom);
+    }
 }
