@@ -125,18 +125,18 @@ export  interface Chercheur {
     encPersoEmail: string,
   }
   
-  export interface Intervenant {
+export interface Intervenant {
     intFonction: string;
     intNoInsee: number;
     intSocNom: string;
-  }
+}
 export interface Etudiant {
     noEtudiant: string;
-    promotion: Promotion;
+    promotion: string;
     nom: string;
     prenom: string;
     sexe: string;
-    dateNaissance: Date;
+    dateNaissance: Date | null;
     lieuNaissance: string;
     nationalite: string;
     telephone: string;
@@ -150,6 +150,8 @@ export interface Etudiant {
     universiteOrigine: string;
     groupeTp: number;
     groupeAnglais: number;
+    codeFormation: string;
+    anneeUniversitaire: string;
 }
 
 export interface Evaluation {
