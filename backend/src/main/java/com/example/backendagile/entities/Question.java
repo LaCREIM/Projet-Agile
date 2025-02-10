@@ -12,8 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
         @Index(name = "QUE_ENS_FK_I", columnList = "NO_ENSEIGNANT"),
         @Index(name = "QUE_QUA_FK_I", columnList = "ID_QUALIFICATIF")
 })
+
 public class Question {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ens_seq_generator")
+    @SequenceGenerator(name = "ens_seq_generator", sequenceName = "ENS_SEQ", allocationSize = 1)
     @Column(name = "ID_QUESTION", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "qst_seq_generator")
     @SequenceGenerator(name = "qst_seq_generator", sequenceName = "QUE_SEQ", allocationSize = 1)
