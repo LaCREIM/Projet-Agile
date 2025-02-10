@@ -4,14 +4,11 @@ import com.example.backendagile.dto.PromotionDTO;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -44,6 +41,11 @@ public class PromotionController {
         return promotionService.getAllPromotions();
     }
 
+    @GetMapping("/search")
+    public List<PromotionDTO> getPromotionsByName(@RequestParam String name) {
+        return promotionService.getPromotionsByName(name);
+    }
+
     /**
      * Retrieves a promotion by its ID.
      *
@@ -53,7 +55,6 @@ public class PromotionController {
     @GetMapping("/{anneeUniversitaire}/{codeFormation}")
     public PromotionDTO getPromotionById(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
         PromotionDTO promotion = promotionService.getPromotionById(anneeUniversitaire, codeFormation);
-        // System.out.println(anneeUniversitaire + " &&& " + codeFormation);
         return promotion;
     }
 
