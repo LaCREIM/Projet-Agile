@@ -67,7 +67,7 @@ public class EnseignantController {
         Optional<Enseignant> existingEnseignant = enseignantService.findById(id);
         if (existingEnseignant.isPresent()) {
             Enseignant updatedEnseignant = enseignantMapper.toEntity(enseignantDTO);
-            updatedEnseignant.setId(id); // Garder l'ID existant
+            updatedEnseignant.setId(id); 
             enseignantService.save(updatedEnseignant);
             return ResponseEntity.ok(updatedEnseignant);
         } else {
@@ -97,7 +97,7 @@ public class EnseignantController {
                     .body("Une erreur interne s'est produite lors de la suppression.");
         }
         enseignantService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Enseignant supprimé avec succès.");
     }
 
 }

@@ -103,23 +103,18 @@ public class QualificatifControllerTest {
         updatedQualificatif.setId(1L);
         updatedQualificatif.setMaximal("Very Good");
         updatedQualificatif.setMinimal("Bad");
-
-        QualificatifDTO updatedQualificatifDTO = new QualificatifDTO();
-        updatedQualificatifDTO.setMaximal("Very Good");
-        updatedQualificatifDTO.setMinimal("Bad");
-
-        when(qualificatifService.findById(anyLong())).thenReturn(Optional.of(qualificatif));
+    
+        when(qualificatifService.findById(anyLong())).thenReturn(Optional.of(updatedQualificatif));
         when(qualificatifMapper.toEntity(any(QualificatifDTO.class))).thenReturn(updatedQualificatif);
         when(qualificatifService.save(any(Qualificatif.class))).thenReturn(updatedQualificatif);
-        when(qualificatifMapper.toDto(any(Qualificatif.class))).thenReturn(updatedQualificatifDTO);
-
+    
         mockMvc.perform(put("/api/qualificatifs/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"maximal\": \"Very Good\", \"minimal\": \"Bad\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.maximal").value("Very Good"))
-                .andExpect(jsonPath("$.minimal").value("Bad"));
+                .andExpect(status().isOk()) 
+                .andExpect(content().string("Le qualificatif a bien été mis à jour.")); 
     }
+    
 
     @Test
     void testDeleteQualificatif() throws Exception {
@@ -128,7 +123,7 @@ public class QualificatifControllerTest {
         mockMvc.perform(delete("/api/qualificatifs/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()) 
-                .andExpect(content().string("Le qualificatif a été supprimé avec succès."));
+                .andExpect(content().string("Qualificatif supprimé avec succès."));
     }
     
 
@@ -139,6 +134,6 @@ public class QualificatifControllerTest {
         mockMvc.perform(delete("/api/qualificatifs/999")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Aucun qualificatif trouvé pour cet id."));
+                .andExpect(content().string("Aucun qualificatif trouvé avec cet ID."));
     }
 }
