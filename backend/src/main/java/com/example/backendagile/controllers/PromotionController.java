@@ -4,11 +4,14 @@ import com.example.backendagile.dto.PromotionDTO;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -36,8 +39,9 @@ public class PromotionController {
      *
      * @return a list of all {@link PromotionDTO} objects
      */
-    public List<PromotionDTO> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
-        return promotionService.getPromotionPaged(page, size);
+    @GetMapping
+    public List<PromotionDTO> getAllPromotions() {
+        return promotionService.getAllPromotions();
     }
 
     /**
@@ -87,6 +91,11 @@ public class PromotionController {
         } catch (Exception e) {
             return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping("/paged")
+    public List<PromotionDTO> getAllEtudiantsPaged(@RequestParam int page, @RequestParam int size) {
+        return promotionService.getPromotionPaged(page, size);
     }
 
 
