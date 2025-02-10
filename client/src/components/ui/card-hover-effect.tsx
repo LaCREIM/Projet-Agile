@@ -70,7 +70,7 @@ const CardVariant = {
     y: 0,
     transition: {
       duration: 0.3,
-      delay: 0.15 * d,
+      delay: 0.1 * d,
     },
   }),
 };

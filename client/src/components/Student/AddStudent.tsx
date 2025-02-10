@@ -107,7 +107,7 @@ const AddStudent = () => {
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
-      <div className="modal-box w-[50em] max-w-5xl">
+      <div className=" modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un étudiant</h3>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
@@ -374,7 +374,7 @@ const AddStudent = () => {
           <form method="dialog" className="flex flex-row gap-5">
             <button className="btn">Annuler</button>
             <button
-              className="btn btn-neutral"
+              className="btn btn-neutral hover:cursor-pointer"
               onClick={handleSubmit}
               disabled={!canSave}
             >

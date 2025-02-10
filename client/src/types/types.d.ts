@@ -79,6 +79,9 @@ export interface ElementConstitutif {
 }
 
 export interface Enseignant {
+    intSocNom: any;
+    intNoInsee: any;
+    intFonction: any;
     id: number;
     type: string;
     sexe: string;
@@ -116,6 +119,17 @@ export interface EnseignantJn {
     emailPerso: string;
 }
 
+export  interface Chercheur {
+    encUboEmail: string,
+    encUboTel: string,
+    encPersoEmail: string,
+  }
+  
+  export interface Intervenant {
+    intFonction: string;
+    intNoInsee: number;
+    intSocNom: string;
+  }
 export interface Etudiant {
     noEtudiant: string;
     promotion: Promotion;
@@ -270,17 +284,7 @@ export interface UniteEnseignement {
     nbhTd: number;
     nbhTp: number;
 }
-export  interface Chercheur {
-    encUboEmail: string,
-    encUboTel: number,
-    encPersoEmail: string,
-  }
-  
-  export interface Intervenant {
-    intFonction: string;
-    intNoInsee: number;
-    intSocNom: string;
-  }
+
   
   export interface PromotionDetails {
     anneePro: string;

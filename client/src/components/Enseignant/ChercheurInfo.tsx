@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Chercheur } from "../../types/types";
+import { Chercheur, Enseignant } from "../../types/types";
 
 interface ChercheurInfoProps {
   setChercheur: (c: Chercheur) => void;
+  setEnseignant: (e: (prevEnseignant: Enseignant) => Enseignant) => void;
 }
 
 const FormVariant = {
@@ -21,17 +22,33 @@ const FormVariant = {
   }),
 };
 
-const ChercheurInfo = ({ setChercheur }: ChercheurInfoProps) => {
+const ChercheurInfo = ({ setChercheur, setEnseignant }: ChercheurInfoProps) => {
   const [chercheurInfo, setChercheurInfo] = useState<Chercheur>({
     encUboEmail: "",
-    encUboTel: 0,
+    encUboTel: "",
     encPersoEmail: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setChercheurInfo((prev) => ({ ...prev, [name]: value }));
-    setChercheur(chercheurInfo as Chercheur);
+
+    // Mise à jour locale de l'état chercheur
+    setChercheurInfo((prev) => {
+      const updatedInfo = { ...prev, [name]: value };
+
+      // Mise à jour de l'état parent pour chercheur
+      setChercheur(updatedInfo);
+
+      // Synchronisation explicite avec l'objet enseignant
+      setEnseignant((prevEnseignant) => ({
+        ...prevEnseignant,
+        emailUbo: updatedInfo.encUboEmail,
+        emailPerso: updatedInfo.encPersoEmail,
+        telephone: updatedInfo.encUboTel,
+      }));
+
+      return updatedInfo;
+    });
   };
 
   return (
@@ -77,12 +94,13 @@ const ChercheurInfo = ({ setChercheur }: ChercheurInfoProps) => {
       >
         <span className="font-semibold">Numéro téléphone</span>
         <input
-          type="number"
+          type="tel"
           name="encUboTel"
           value={chercheurInfo.encUboTel}
           onChange={handleChange}
           className="grow"
           placeholder="Ex: 0700000000"
+          pattern="[0-9]{10}"
         />
       </motion.label>
     </div>

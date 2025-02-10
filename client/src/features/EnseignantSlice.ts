@@ -1,25 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosConfig';
+import { Enseignant } from "../types/types";
 
-export interface Enseignant {
-    noEnseignant: number;
-    type: string;
-    nom: string;
-    prenom: string;
-    sexe: string;
-    adresse: string;
-    email: string;
-    cp: string;
-    telPort: string;
-    pays: string;
-    encUboTel: number;
-    encUboEmail: string;
-    encPersoEmail: string;
-    intFonction: string;
-    intNoInsee: number;
-    intSocNom: string;
-}
+
 
 interface EnseignantState {
     enseignants: Enseignant[];
@@ -34,11 +18,17 @@ const initialState: EnseignantState = {
 };
 
 // Actions asynchrones
-export const getEnseignantAsync = createAsyncThunk<Enseignant[], void, { rejectValue: string }>(
+export const getEnseignantAsync = createAsyncThunk<
+    Enseignant[],
+    { page: number; size: number },
+    { rejectValue: string }
+>(
     "enseignants/getEnseignantAsync",
-    async (_, { rejectWithValue }) => {
+    async ({ page, size }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Enseignant[]>('/enseignants');
+            const response = await axiosInstance.get<Enseignant[]>(`/enseignants`, {
+                params: { page, size },
+            });
             return response.data;
         } catch (error: any) {
             console.error("Error fetching professors:", error);
@@ -46,6 +36,7 @@ export const getEnseignantAsync = createAsyncThunk<Enseignant[], void, { rejectV
         }
     }
 );
+
 
 export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
     "enseignants/createEnseignantAsync",
@@ -60,31 +51,43 @@ export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { re
     }
 );
 
-export const editEnseignantAsync = createAsyncThunk<void, Enseignant , { rejectValue: string }>(
+export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
     "enseignants/editEnseignantAsync",
     async (enseignant, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/enseignants/${enseignant.noEnseignant}`, enseignant);
+            console.log("Updating enseignant:", enseignant);
+            
+            if (!enseignant.id) {
+                throw new Error("L'enseignant n'a pas d'ID valide.");
+            }
+
+            const response = await axiosInstance.put(`/enseignants/${enseignant.id}`, enseignant);
             return response.data;
         } catch (error: any) {
-            console.error("Error updating professor:", error);
+            console.error("Error updating enseignant:", error);
             return rejectWithValue(error.response?.data || "An error occurred while updating the professor.");
         }
     }
 );
 
+
 export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
     "enseignants/deleteEnseignantAsync",
     async (enseignant, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.delete(`/enseignants/${enseignant.noEnseignant}`);
+            console.log("Deleting enseignant:", enseignant);
+            if (!enseignant.id) {
+                throw new Error("L'enseignant n'a pas d'ID valide.");
+            }
+            const response = await axiosInstance.delete(`/enseignants/${enseignant.id}`);
             return response.data;
         } catch (error: any) {
             console.error("Error deleting enseignant:", error);
-            return rejectWithValue(error.response?.data || "An error occurred d while deleting the enseignant.");
+            return rejectWithValue(error.response?.data || "An error occurred while deleting the enseignant.");
         }
     }
 );
+
  
 
 const enseignantSlice = createSlice({ 

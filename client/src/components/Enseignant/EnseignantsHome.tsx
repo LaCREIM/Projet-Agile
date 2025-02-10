@@ -4,18 +4,10 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddEnseignant from "./AddEnseignant";
 import DetailsEnseignant from "./EnseignantDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import UpdateEnseignant from "./UpdateEnseignant";
-import {
-  deleteEnseignantAsync,
-  Enseignant,
-  getEnseignantAsync,
-} from "../../features/EnseignantSlice";
-import { Chercheur, Intervenant } from "../../types/types";
+import { deleteEnseignantAsync, getEnseignantAsync } from "../../features/EnseignantSlice";
+import { Enseignant, Chercheur, Intervenant } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { RootState } from "../../api/store";
 
@@ -23,43 +15,36 @@ const EnseignantsHome = () => {
   document.title = "UBO | Enseignants";
   const dispatch = useAppDispatch();
   const enseignants = useAppSelector((state: RootState) => state.enseignants.enseignants);
-  const [modal, setModal] = useState<{
-    enseignant: Enseignant | null;
-    index: number;
-  }>({ enseignant: null, index: -1 });
 
-  const [modalUpdate, setModalUpdate] = useState<{
-    enseignant: Enseignant | null;
-    index: number;
-  }>({ enseignant: null, index: -1 });
+  const [modal, setModal] = useState<{ enseignant: Enseignant | null; index: number }>({
+    enseignant: null,
+    index: -1,
+  });
+
+  const [modalUpdate, setModalUpdate] = useState<{ enseignant: Enseignant | null; index: number }>({
+    enseignant: null,
+    index: -1,
+  });
 
   const updateEnseignantModalRef = useRef<HTMLDialogElement | null>(null);
   const enseignantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(getEnseignantAsync());
+    dispatch(getEnseignantAsync({ page: 1, size: 10 }));
   }, [dispatch]);
 
   useEffect(() => {
-    if (
-      modal.enseignant &&
-      modal.index !== -1 &&
-      enseignantDetailsModalRef.current
-    ) {
+    if (modal.enseignant && enseignantDetailsModalRef.current) {
       enseignantDetailsModalRef.current.showModal();
     }
 
-    if (
-      modalUpdate.enseignant &&
-      modalUpdate.index !== -1 &&
-      updateEnseignantModalRef.current
-    ) {
+    if (modalUpdate.enseignant && updateEnseignantModalRef.current) {
       updateEnseignantModalRef.current.showModal();
     }
   }, [modal, modalUpdate]);
 
-  const openModal = (name: string) => {
-    const dialog = document.getElementById(name) as HTMLDialogElement;
+  const openModal = (id: string) => {
+    const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
 
@@ -74,19 +59,13 @@ const EnseignantsHome = () => {
   const handleDelete = async (enseignant: Enseignant, e: React.MouseEvent) => {
     e.stopPropagation();
     const response = await dispatch(deleteEnseignantAsync(enseignant));
-    if (
-              response?.payload ===
-              "not deleted"
-            ) {
-              toast.error(
-                "Cet enseignant ne peut pas être supprimé"
-              );
-            }
-            if (response?.payload === "deleted") {
-              toast.success("Enseignant supprimé avec succès");
-                dispatch(getEnseignantAsync());
-            }
-  
+
+    if (response?.payload === "not deleted") {
+      toast.error("Cet enseignant ne peut pas être supprimé.");
+    } else if (response?.payload === "deleted") {
+      toast.success("Enseignant supprimé avec succès.");
+      dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+    }
   };
 
   return (
@@ -96,23 +75,23 @@ const EnseignantsHome = () => {
         <h1>Liste des enseignants</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-full px-14">
           <button
-            className="flex flex-row items-center justify-center gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+            className="flex flex-row items-center justify-center gap-5 px-4 py-2 w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
             onClick={() => openModal("addEnseignant")}
           >
             <IoMdAdd className="text-black" /> Ajouter un enseignant
           </button>
         </div>
+
         <div className="overflow-y-auto w-[90%]">
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th></th>
+                <th>ID</th>
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>Telephone</th>
+                <th>Email</th>
+                <th>Téléphone</th>
                 <th>Type</th>
-                <th>Code Postale</th>
-                <th>Pays</th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
@@ -128,32 +107,20 @@ const EnseignantsHome = () => {
                 </tr>
               ) : (
                 enseignants.map((enseignant: Enseignant, index: number) => (
-                  <tr
-                    key={enseignant.noEnseignant}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                  >
-                    <td className="px-4 py-2">{enseignant.noEnseignant}</td>
+                  <tr key={enseignant.id} className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75">
+                    <td className="px-4 py-2">{enseignant.id}</td>
                     <td className="px-4 py-2">{enseignant.nom}</td>
                     <td className="px-4 py-2">{enseignant.prenom}</td>
-                    <td className="px-4 py-2">{enseignant.telPort}</td>
+                    <td className="px-4 py-2">{enseignant.emailUbo}</td>
+                    <td className="px-4 py-2">{enseignant.mobile}</td>
                     <td className="px-4 py-2">{enseignant.type}</td>
-                    <td className="px-4 py-2">{enseignant.cp}</td>
-                    <td className="px-4 py-2">{enseignant.pays || "France"}</td>
-
-                    <td
-                      className="flex gap-3 justify-center items-center"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
                         icon={faPenToSquare}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Enseignant, index);
-                          handleClickUpdate({} as Enseignant, index);
                           handleClickUpdate(enseignant, index);
-                          openModal(
-                            `updateEnseignant-${enseignant.noEnseignant}`
-                          );
+                          openModal(`updateEnseignant-${index}`);
                         }}
                       />
 
@@ -161,43 +128,32 @@ const EnseignantsHome = () => {
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Enseignant, index);
-                          handleClickUpdate({} as Enseignant, index);
                           handleClick(enseignant, index);
-                          openModal(`inspect-${enseignant.noEnseignant}`);
+                          openModal(`inspect-${index}`);
                         }}
                       />
+
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
                         onClick={(e) => handleDelete(enseignant, e)}
                       />
                     </td>
-                    <dialog
-                      id={`updateEnseignant-${enseignant.noEnseignant}`}
-                      className="modal"
-                    >
+
+                    {/* Modal de mise à jour */}
+                    <dialog id={`updateEnseignant-${index}`} className="modal">
                       <UpdateEnseignant
                         typeData={
-                          enseignant.type.toUpperCase() == "INT"
-                            ? ({
-                                intFonction: enseignant.intFonction,
-                                intNoInsee: enseignant.intNoInsee,
-                                intSocNom: enseignant.intSocNom,
-                              } as Intervenant)
-                            : ({
-                                encPersoEmail: enseignant.encPersoEmail,
-                                encUboEmail: enseignant.encUboEmail,
-                                encUboTel: enseignant.encUboTel,
-                              } as Chercheur)
+                          enseignant.type.toUpperCase() === "INT"
+                            ? ({ intFonction: enseignant.intFonction, intNoInsee: enseignant.intNoInsee, intSocNom: enseignant.intSocNom } as Intervenant)
+                            : ({ encPersoEmail: enseignant.emailPerso, encUboEmail: enseignant.emailUbo, encUboTel: enseignant.telephone } as Chercheur)
                         }
                         enseignantData={enseignant}
                       />
                     </dialog>
-                    <dialog
-                      id={`inspect-${enseignant.noEnseignant}`}
-                      className="modal"
-                    >
+
+                    {/* Modal de détails */}
+                    <dialog id={`inspect-${index}`} className="modal">
                       <DetailsEnseignant enseignant={enseignant} />
                     </dialog>
                   </tr>
@@ -207,6 +163,7 @@ const EnseignantsHome = () => {
           </table>
         </div>
       </div>
+
       <dialog id="addEnseignant" className="modal">
         <AddEnseignant />
       </dialog>
