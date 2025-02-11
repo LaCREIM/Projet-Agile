@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   deleteEtudiantAsync,
-  Etudiant,
   getEtudiantAsync,
   getEtudiants,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
+import { Etudiant } from "../../types/types";
 
 import {
   getPromotionAsync,
@@ -104,7 +104,7 @@ const StudentHome = ({
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
     const response = await dispatch(
-      deleteEtudiantAsync(etudiant.noEtudiantNat)
+      deleteEtudiantAsync(etudiant.noEtudiant)
     );
     dispatch(getEtudiantAsync());
     if (
@@ -220,7 +220,7 @@ const StudentHome = ({
               ) : (
                 etudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
-                    key={etudiant.noEtudiantNat}
+                    key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{index + 1}</td>
@@ -230,8 +230,8 @@ const StudentHome = ({
                       {etudiant.nationalite || "Française"}
                     </td>
                     <td className="px-4 py-2">{etudiant.email}</td>
-                    <td className="px-4 py-2">{etudiant.anneePro}</td>
-                    <td className="px-4 py-2">{etudiant.universite}</td>
+                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
+                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
                     <td
                       className="flex gap-3 justify-center items-center"
                       onClick={(e) => e.stopPropagation()}
@@ -240,10 +240,8 @@ const StudentHome = ({
                         icon={faPenToSquare}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Etudiant, index);
-                          handleClickUpdate({} as Etudiant, index);
                           handleClickUpdate(etudiant, index);
-                          openModal(`updateStudent-${etudiant.noEtudiantNat}`);
+                          openModal(`updateStudent-${etudiant.noEtudiant}`);
                         }}
                       />
                       <FontAwesomeIcon
@@ -255,21 +253,19 @@ const StudentHome = ({
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Etudiant, index);
-                          handleClickUpdate({} as Etudiant, index);
                           handleClick(etudiant, index);
-                          openModal(`inspect-${etudiant.noEtudiantNat}`);
+                          openModal(`inspect-${etudiant.noEtudiant}`);
                         }}
                       />
                     </td>
                     <dialog
-                      id={`updateStudent-${etudiant.noEtudiantNat}`}
+                      id={`updateStudent-${etudiant.noEtudiant}`}
                       className="modal"
                     >
                       <UpdateStudent studentData={etudiant} />
                     </dialog>
                     <dialog
-                      id={`inspect-${etudiant.noEtudiantNat}`}
+                      id={`inspect-${etudiant.noEtudiant}`}
                       className="modal"
                     >
                       <EtudiantDetails etudiant={etudiant} />

@@ -36,8 +36,14 @@ public class PromotionController {
      *
      * @return a list of all {@link PromotionDTO} objects
      */
-    public List<PromotionDTO> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
-        return promotionService.getPromotionPaged(page, size);
+    @GetMapping
+    public List<PromotionDTO> getAllPromotions() {
+        return promotionService.getAllPromotions();
+    }
+
+    @GetMapping("/search")
+    public List<PromotionDTO> getPromotionsByName(@RequestParam String name) {
+        return promotionService.getPromotionsByName(name);
     }
 
     /**
@@ -49,7 +55,6 @@ public class PromotionController {
     @GetMapping("/{anneeUniversitaire}/{codeFormation}")
     public PromotionDTO getPromotionById(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
         PromotionDTO promotion = promotionService.getPromotionById(anneeUniversitaire, codeFormation);
-        // System.out.println(anneeUniversitaire + " &&& " + codeFormation);
         return promotion;
     }
 
@@ -87,6 +92,11 @@ public class PromotionController {
         } catch (Exception e) {
             return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping("/paged")
+    public List<PromotionDTO> getAllEtudiantsPaged(@RequestParam int page, @RequestParam int size) {
+        return promotionService.getPromotionPaged(page, size);
     }
 
 

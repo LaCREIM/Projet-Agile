@@ -20,4 +20,6 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, String> {
     ) WHERE rnum > :startRow
 """, nativeQuery = true)
     List<Etudiant> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
+
+    List<Etudiant> findByNomAndPrenom(String nom, String prenom);
 }

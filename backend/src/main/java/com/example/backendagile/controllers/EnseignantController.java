@@ -2,6 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.EnseignantDTO;
 import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.entities.EnseignantJn;
 import com.example.backendagile.mapper.EnseignantMapper;
 import com.example.backendagile.services.EnseignantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,12 @@ public class EnseignantController {
     public ResponseEntity<List<Enseignant>> getAllEnseignants(@RequestParam int page, @RequestParam int size) {
         List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
         return ResponseEntity.ok(enseignants);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Enseignant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
+        List<Enseignant> result = enseignantService.getByNomAndPrenom(nom, prenom);
+        return ResponseEntity.ok(result);
     }
 
     /**

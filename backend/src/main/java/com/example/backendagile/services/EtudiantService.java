@@ -109,4 +109,8 @@ public class EtudiantService {
                 .map(etudiantMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public List<Etudiant> getByNomAndPrenom(String nom, String prenom) {
+        return etudiantRepository.findByNomAndPrenom(nom, prenom);
+    }
 }
