@@ -1,12 +1,18 @@
 package com.example.backendagile.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "AUTHENTIFICATION", schema = "DOSI_DEV")
 public class Authentification {
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aut_seq_generator")
+    @SequenceGenerator(name = "aut_seq_generator", sequenceName = "AUT_SEQ", allocationSize = 1)
     @Id
     @Column(name = "ID_CONNECTION", nullable = false)
     private Long id;
@@ -32,61 +38,5 @@ public class Authentification {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "NO_ETUDIANT")
     private com.example.backendagile.entities.Etudiant noEtudiant;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getLoginConnection() {
-        return loginConnection;
-    }
-
-    public void setLoginConnection(String loginConnection) {
-        this.loginConnection = loginConnection;
-    }
-
-    public String getPseudoConnection() {
-        return pseudoConnection;
-    }
-
-    public void setPseudoConnection(String pseudoConnection) {
-        this.pseudoConnection = pseudoConnection;
-    }
-
-    public String getMotPasse() {
-        return motPasse;
-    }
-
-    public void setMotPasse(String motPasse) {
-        this.motPasse = motPasse;
-    }
-
-    public com.example.backendagile.entities.Enseignant getNoEnseignant() {
-        return noEnseignant;
-    }
-
-    public void setNoEnseignant(com.example.backendagile.entities.Enseignant noEnseignant) {
-        this.noEnseignant = noEnseignant;
-    }
-
-    public com.example.backendagile.entities.Etudiant getNoEtudiant() {
-        return noEtudiant;
-    }
-
-    public void setNoEtudiant(com.example.backendagile.entities.Etudiant noEtudiant) {
-        this.noEtudiant = noEtudiant;
-    }
 
 }

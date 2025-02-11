@@ -7,8 +7,10 @@ import com.example.backendagile.entities.PromotionId;
 import com.example.backendagile.mapper.EtudiantMapper;
 import com.example.backendagile.repositories.EtudiantRepository;
 import com.example.backendagile.repositories.PromotionRepository;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ public class EtudiantService {
 
     @Autowired
     private EtudiantRepository etudiantRepository;
-    
+
     @Autowired
     private PromotionRepository promotionRepository;
 
@@ -33,7 +35,7 @@ public class EtudiantService {
         int endRow = page * size;
 
         List<Etudiant> etudiants = etudiantRepository.findAllWithPagination(startRow, endRow);
-        
+
         return etudiants.stream()
                 .map(etudiantMapper::toDto)
                 .collect(Collectors.toList());
@@ -51,7 +53,7 @@ public class EtudiantService {
      */
     public EtudiantDTO save(EtudiantDTO etudiantDTO) {
         Promotion promotion = promotionRepository.findById(
-                new PromotionId(etudiantDTO.getAnneeUniversitaire(), etudiantDTO.getCodeFormation()))
+                        new PromotionId(etudiantDTO.getAnneeUniversitaire(), etudiantDTO.getCodeFormation()))
                 .orElseThrow(() -> new RuntimeException("Promotion introuvable"));
 
         Etudiant etudiant = etudiantMapper.toEntity(etudiantDTO, promotion);
@@ -67,7 +69,7 @@ public class EtudiantService {
                 .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
 
         Promotion promotion = promotionRepository.findById(
-                new PromotionId(etudiantDTO.getAnneeUniversitaire(), etudiantDTO.getCodeFormation()))
+                        new PromotionId(etudiantDTO.getAnneeUniversitaire(), etudiantDTO.getCodeFormation()))
                 .orElseThrow(() -> new RuntimeException("Promotion non trouvée"));
 
         etudiant.setNom(etudiantDTO.getNom());
@@ -111,5 +113,9 @@ public class EtudiantService {
 
     public List<Etudiant> getByNomAndPrenom(String nom, String prenom) {
         return etudiantRepository.findByNomAndPrenom(nom, prenom);
+    }
+
+    public Optional<Etudiant> findByEmail(String emailUbo) {
+        return etudiantRepository.findByEmail(emailUbo).stream().findFirst();
     }
 }
