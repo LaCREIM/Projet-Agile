@@ -7,6 +7,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "AUTHENTIFICATION", schema = "DOSI_DEV")
 public class Authentification {
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "aut_seq_generator")
+    @SequenceGenerator(name = "aut_seq_generator", sequenceName = "AUT_SEQ", allocationSize = 1)
     @Id
     @Column(name = "ID_CONNECTION", nullable = false)
     private Long id;

@@ -27,7 +27,7 @@ public class EtudiantDTO {
     private String universiteOrigine;
     private Long groupeTp;
     private Long groupeAnglais;
-    private String password;
+    private String motPasse;
     private String anneeUniversitaire;  
-    private String codeFormation;         
+    private String codeFormation;
 }
