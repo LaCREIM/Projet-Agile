@@ -5,7 +5,6 @@ import {
   deletePromotionAsync,
   getPromotionAsync,
   getPromotions,
-  Promotion,
 } from "../../features/PromotionSlice";
 import { IoMdAdd } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
@@ -19,7 +18,8 @@ import AddPromotion from "./AddPromotion";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Student/StudentHome";
-import { PromotionDetails } from "../../types/types";
+import { PromotionDetails, PromotionId } from "../../types/types";
+import { Promotion } from "../../types/types";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
@@ -98,7 +98,7 @@ const PromotionHome = () => {
 
   const handleDelete = async (promotion: Promotion, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(deletePromotionAsync(promotion.anneePro));
+    const response = await dispatch(deletePromotionAsync({anneeUniversitaire: promotion.anneeUniversitaire, codeFormation:promotion.codeFormation} as PromotionId));
     if (response?.payload === "not deleted") {
       toast.error("Cette promotion ne peut pas être supprimée");
     }
@@ -108,9 +108,12 @@ const PromotionHome = () => {
     }
   };
 
-  const switchToStudent = (anneePro: string, siglePro: string) => {
+  const switchToStudent = (anneeUniversitaire: string, codeFormation: string) => {
     setPromotionDetails({} as PromotionDetails);
-    setPromotionDetails({ anneePro, siglePro });
+    setPromotionDetails({
+      anneeUniversitaire: anneeUniversitaire,
+      codeFormation: codeFormation,
+    } as PromotionDetails);
     setShowStudent(!showStudents);
   };
 
@@ -145,7 +148,6 @@ const PromotionHome = () => {
                 <tr>
                   <th>Annee</th>
                   <th>Désignation</th>
-                  <th>Nombre etudiants max</th>
                   <th>Date Rentrée</th>
                   <th>Lieu Rentrée</th>
                   <th>Diplome</th>
@@ -171,9 +173,10 @@ const PromotionHome = () => {
                       key={index}
                       className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                     >
-                      <td className="px-4 py-2">{promotion.anneePro}</td>
-                      <td className="px-4 py-2">{promotion.siglePro}</td>
-                      <td className="px-4 py-2">{promotion.nbEtuSouhaite}</td>
+                      <td className="px-4 py-2">
+                        {promotion.anneeUniversitaire}
+                      </td>
+                      <td className="px-4 py-2">{promotion.siglePromotion}</td>
                       <td className="px-4 py-2">
                         {new Date(promotion.dateRentree).toLocaleDateString(
                           "fr-FR",
@@ -200,8 +203,8 @@ const PromotionHome = () => {
                           className="text-black text-base cursor-pointer"
                           onClick={() =>
                             switchToStudent(
-                              promotion.anneePro,
-                              promotion.siglePro
+                              promotion.anneeUniversitaire,
+                              promotion.siglePromotion
                             )
                           }
                         />
@@ -212,7 +215,12 @@ const PromotionHome = () => {
                             handleClick({} as Promotion, index);
                             handleClickUpdate({} as Promotion, index);
                             handleClickUpdate(promotion, index);
-                            openModal(`updatePromotion-${promotion.anneePro}`);
+                            openModal(
+                              `updatePromotion-${
+                                (promotion.anneeUniversitaire,
+                                promotion.siglePromotion)
+                              }`
+                            );
                           }}
                         />
 
@@ -223,7 +231,10 @@ const PromotionHome = () => {
                         />
                       </td>
                       <dialog
-                        id={`updatePromotion-${promotion.anneePro}`}
+                        id={`updatePromotion-${
+                          (promotion.anneeUniversitaire,
+                          promotion.siglePromotion)
+                        }`}
                         className="modal"
                       >
                         <UpdatePromotion

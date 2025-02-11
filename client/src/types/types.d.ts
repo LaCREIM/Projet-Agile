@@ -12,8 +12,8 @@ export interface Authentification {
     noEtudiant: Etudiant;
 }
 export interface PromotionDetails {
-    anneePro: string;
-    siglePro: string;
+    anneeUniversitaire: string;
+    codeFormation: string;
 }
 
 export interface Candidat {
@@ -193,6 +193,14 @@ export interface Promotion {
     lieuRentree: string;
     processusStage: string;
     commentaire: string;
+    anneeUniversitaire: string;
+    diplome:string;
+    nomFormation:string;
+    codeFormation:string;
+    nom: string;
+    prenom: string;
+    type: string;
+    email: string;
 }
 
 export interface Qualificatif {

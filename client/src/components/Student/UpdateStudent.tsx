@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
-
+  getDomainePaysAsync,
+  getDomaineUnivAsync,
   getEtudiantAsync,
   getPays,
+  getUniversite,
   updateEtudiantAsync,
 } from "../../features/EtudiantSlice";
 
@@ -13,7 +15,6 @@ import {
 } from "../../features/PromotionSlice";
 
 import { Etudiant } from "../../types/types";
-
 
 interface UpdateStudentProps {
   studentData: Etudiant;
@@ -26,72 +27,70 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
     ...studentData,
   });
 
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setStudent({ ...student, [name]: value });
+     if (name === "promotion") {
+       const parsedPromotion = JSON.parse(value);
+       setStudent({
+         ...student,
+         anneeUniversitaire: parsedPromotion.anneeUniversitaire,
+         codeFormation: parsedPromotion.codeFormation,
+       });
+     } else {
+       setStudent({ ...student, [name]: value });
+     }
   };
+
+  const canSave =
+    student.nom != "" &&
+    student.prenom != "" &&
+    student.sexe != "" &&
+    student.email != "" &&
+    student.emailUbo != "" &&
+    student.noEtudiant != "" &&
+    student.dateNaissance != null &&
+    student.lieuNaissance != "" &&
+    student.nationalite != "" &&
+    student.adresse != "" &&
+    student.ville != "" &&
+    student.codePostal != "" &&
+    student.paysOrigine != "" &&
+    student.universiteOrigine != "" &&
+    student.groupeTp != -1 &&
+    student.groupeAnglais != -1 &&
+    student.mobile != "" &&
+    student.promotion != "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      student.nom &&
-      student.prenom &&
-      student.sexe &&
-      student.email &&
-      student.telephone &&
-      student.noEtudiant &&
-      student.dateNaissance &&
-      student.lieuNaissance &&
-      student.universiteOrigine &&
-      student.codeFormation &&
-      student.adresse &&
-      student.ville &&
-      student.codePostal &&
-      student.paysOrigine &&
-      student.universiteOrigine &&
-      student.groupeTp &&
-      student.groupeAnglais &&
-      student.mobile &&
-      student.codeFormation &&
-      student.anneeUniversitaire &&
-      student.promotion
-    )
+    if (canSave)
       await dispatch(updateEtudiantAsync(student));
     dispatch(getEtudiantAsync());
   };
 
   const promotions = useAppSelector(getPromotions);
   const pays = useAppSelector(getPays);
+  const universite = useAppSelector(getUniversite);
 
   useEffect(() => {
     dispatch(getPromotionAsync());
+    dispatch(getDomainePaysAsync());
+    dispatch(getDomaineUnivAsync())
   }, [dispatch]);
-  const canSave = [
-    student.nom &&
-      student.prenom &&
-      student.sexe &&
-      student.email &&
-      student.telephone &&
-      student.noEtudiant &&
-      student.dateNaissance &&
-      student.lieuNaissance &&
-      student.universiteOrigine &&
-      student.codeFormation &&
-      student.adresse &&
-      student.ville &&
-      student.codePostal &&
-      student.paysOrigine &&
-      student.universiteOrigine &&
-      student.groupeTp &&
-      student.groupeAnglais &&
-      student.mobile &&
-      student.codeFormation &&
-      student.anneeUniversitaire &&
-      student.promotion,
-  ].every(Boolean);
 
+  
+
+  const formatDate = (date: string | Date | null) => {
+    if (date === null) return "";
+    date instanceof Date ? date.toISOString().split("T")[0] : date;
+  };
+
+  useEffect(() => {
+    console.log(canSave);
+  }, [canSave]);
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -181,18 +180,13 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
               />
             </label>
 
-            {/* Informations personnelles */}
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Date de naissance</span>
               <input
                 required
                 type="date"
                 name="dateNaissance"
-                value={
-                  student.dateNaissance
-                    ? student.dateNaissance.toISOString().split("T")[0]
-                    : ""
-                }
+                value={formatDate(student.dateNaissance)}
                 onChange={handleChange}
                 className="grow"
               />
@@ -209,8 +203,19 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 placeholder="Ex: Paris"
               />
             </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Nationalité</span>
+              <input
+                required
+                type="text"
+                name="nationalite"
+                value={student.nationalite}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Marocaine"
+              />
+            </label>
 
-            {/* Adresse permanente */}
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Adresse</span>
               <input
@@ -266,25 +271,28 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 ))}
               </select>
             </label>
+
             <label className="flex flex-row items-center gap-2">
               <span className="font-semibold w-[15%]">Promotion</span>
               <select
                 required
                 className="select w-[80%] max-w-full"
-                name="anneePro"
-                value={
-                  student.codeFormation === "-1"
-                    ? ""
-                    : student.anneeUniversitaire
-                }
+                name="promotion"
+                value={student.promotion}
                 onChange={handleChange}
               >
                 <option value="" disabled>
                   Sélectionnez une promotion
                 </option>
-                {promotions.map((promotion) => (
-                  <option key={promotion.anneePro} value={promotion.anneePro}>
-                    {promotion.anneePro} : {promotion.siglePro}
+                {promotions.map((promotion, idx) => (
+                  <option
+                    key={idx}
+                    value={JSON.stringify({
+                      anneeUniversitaire: promotion.anneeUniversitaire,
+                      codeFormation: promotion.codeFormation,
+                    })}
+                  >
+                    {promotion.anneeUniversitaire} • {promotion.siglePromotion}
                   </option>
                 ))}
               </select>
@@ -303,34 +311,28 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
               />
             </label>
 
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Université</span>
-              <input
+            <label className=" flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Université</span>
+              <select
                 required
-                type="text"
+                className="select w-[80%] max-w-full"
                 name="universiteOrigine"
                 value={student.universiteOrigine}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Licence"
-              />
+              >
+                <option value="" disabled>
+                  Sélectionnez l'université d'origine
+                </option>
+                {universite.map((univ, idx) => (
+                  <option key={idx} value={univ.rvLowValue}>
+                    {univ.rvMeaning}
+                  </option>
+                ))}
+              </select>
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Code Postale</span>
-              <input
-                required
-                type="number"
-                name="codePostal"
-                value={student.codePostal}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 02922"
-              />
-            </label>
-
             {/* Groupe TP et Anglais */}
             <label className="flex  flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Groupe TP</span>
+              <span className="font-semibold w-[15%]">Groupe Anglais</span>
               <select
                 required
                 name="groupeAnglais"
@@ -338,15 +340,15 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 onChange={handleChange}
                 className="select select-bordered w-[80%] max-w-full"
               >
-                <option value="" disabled>
+                <option value={-1} disabled>
                   Sélectionnez un groupe d'anglais
                 </option>
-                <option value="1">1</option>
-                <option value="2">2</option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
               </select>
             </label>
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Groupe Anglais</span>
+              <span className="font-semibold w-[15%]">Groupe TP</span>
               <select
                 required
                 name="groupeTp"
@@ -354,11 +356,11 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 onChange={handleChange}
                 className="select select-bordered w-[80%] max-w-full"
               >
-                <option value="" disabled>
+                <option value={-1} disabled>
                   Sélectionnez un groupe de TP
                 </option>
-                <option value="1">1</option>
-                <option value="2">2</option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
               </select>
             </label>
           </div>

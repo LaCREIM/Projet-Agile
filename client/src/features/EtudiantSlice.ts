@@ -32,10 +32,16 @@ export interface Domaine_Pays{
     rvMeaning: string;
 }
 
+export interface Domaine_Universite{
+    rvLowValue: string;
+    rvMeaning: string;
+}
+
 interface EtudiantState {
     etudiant: Etudiant | null;
     etudiants: Etudiant[];
     pays: Domaine_Pays[];
+    universite: Domaine_Universite[];
     loading: boolean;
     error: string | null;
 }
@@ -44,6 +50,7 @@ const initialState: EtudiantState = {
     etudiant: null,
     etudiants: [],
     pays:[],
+    universite: [],
     loading: false,
     error: null,
 };
@@ -53,6 +60,20 @@ export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { reje
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
+            console.log("from all", response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching groupe tps:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching pays.");
+        }
+    }
+);
+
+export const getDomaineUnivAsync = createAsyncThunk<Domaine_Universite[], void, { rejectValue: string }>(
+    "universiteOrigine/getDomaineUnivAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=UNIVERSITE`);
             console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
@@ -146,6 +167,10 @@ const etudiantSlice = createSlice({
                 state.loading = false;
                 state.pays = action.payload;
             })
+            .addCase(getDomaineUnivAsync.fulfilled, (state, action: PayloadAction<Domaine_Pays[]>) => {
+                state.loading = false;
+                state.universite = action.payload;
+            })
            
             .addCase(getEtudiantByPromotionAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
                 state.etudiants = action.payload;
@@ -172,5 +197,9 @@ const etudiantSlice = createSlice({
 export const getEtudiants = (state: { etudiants: EtudiantState }) => state.etudiants.etudiants;
 
 export const getPays = (state: { etudiants: EtudiantState }) => state.etudiants.pays;
+
+export const getUniversite = (state: { etudiants: EtudiantState }) => state.etudiants.universite;
+
+
 
 export default etudiantSlice.reducer;
