@@ -26,6 +26,10 @@ public class PromotionDTO {
 
     private String codeFormation;
 
+    private String nomFormation;
+
+    private String emailEnseignant;
+
     private String diplome;
 
     private Long noEnseignant;
@@ -53,11 +57,28 @@ public PromotionDTO() {
     this.type = "";
     this.nom = "";
     this.prenom = "";
+    this.nomFormation = "";
+    this.emailEnseignant = "";
 }
 
 // Getter and Setter
 
 
+    public String getNomFormation() {
+        return nomFormation;
+    }
+
+    public void setNomFormation(String nomFormation) {
+        this.nomFormation = nomFormation;
+    }
+
+    public String getEmailEnseignant() {
+        return emailEnseignant;
+    }
+
+    public void setEmailEnseignant(String emailEnseignant) {
+        this.emailEnseignant = emailEnseignant;
+    }
 
     public LocalDate getDateReponseLp() {
         return dateReponseLp;

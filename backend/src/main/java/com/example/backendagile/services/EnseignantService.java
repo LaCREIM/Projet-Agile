@@ -2,6 +2,8 @@ package com.example.backendagile.services;
 
 import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.repositories.EnseignantRepository;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +39,9 @@ public class EnseignantService {
 
     public List<Enseignant> getByNomAndPrenom(String nom, String prenom) {
         return enseignantRepository.findByNomAndPrenom(nom, prenom);
+    }
+
+    public Optional<Enseignant> findByEmail(String emailUbo) {
+        return enseignantRepository.findByEmailUbo(emailUbo).stream().findFirst();
     }
 }

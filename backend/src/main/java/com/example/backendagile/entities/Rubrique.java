@@ -13,6 +13,7 @@ public class Rubrique {
     @Column(name = "ID_RUBRIQUE", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rub_seq_generator")
     @SequenceGenerator(name = "rub_seq_generator", sequenceName = "RUB_SEQ", allocationSize = 1)
+
     private Long id;
 
     @Column(name = "TYPE", nullable = false, length = 10)

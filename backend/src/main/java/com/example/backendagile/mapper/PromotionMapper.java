@@ -32,11 +32,13 @@ public class PromotionMapper {
         newPromotion.setCodeFormation(promotion.getId().getCodeFormation());
         newPromotion.setAnneeUniversitaire(promotion.getId().getAnneeUniversitaire());
         newPromotion.setDiplome(formationRepository.findDiplomeByCodeFormation(promotion.getId().getCodeFormation()).orElse(null));
+        newPromotion.setNomFormation(formationRepository.findNomByCodeFormation(promotion.getId().getCodeFormation()).orElse(null));
         if(promotion.getEnseignant()!=null){
             newPromotion.setNoEnseignant((promotion.getEnseignant().getId()).longValue());
             newPromotion.setType(promotion.getEnseignant().getType());
             newPromotion.setNom(promotion.getEnseignant().getNom());
             newPromotion.setPrenom(promotion.getEnseignant().getPrenom());
+            newPromotion.setEmailEnseignant(promotion.getEnseignant().getEmailUbo());
         }
         return  newPromotion;
     }
