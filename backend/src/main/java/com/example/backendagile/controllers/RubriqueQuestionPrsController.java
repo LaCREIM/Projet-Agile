@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rubrique-questions")
+@RequestMapping("/api/rubrique-questions/personnelle")
 @CrossOrigin(origins = "*")
 public class RubriqueQuestionPrsController {
 
