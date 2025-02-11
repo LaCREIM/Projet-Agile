@@ -7,6 +7,7 @@ import com.example.backendagile.entities.PromotionId;
 import com.example.backendagile.mapper.EtudiantMapper;
 import com.example.backendagile.repositories.EtudiantRepository;
 import com.example.backendagile.repositories.PromotionRepository;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,5 +113,9 @@ public class EtudiantService {
 
     public List<Etudiant> getByNomAndPrenom(String nom, String prenom) {
         return etudiantRepository.findByNomAndPrenom(nom, prenom);
+    }
+
+    public Optional<Etudiant> findByEmail(String emailUbo) {
+        return etudiantRepository.findByEmail(emailUbo).stream().findFirst();
     }
 }
