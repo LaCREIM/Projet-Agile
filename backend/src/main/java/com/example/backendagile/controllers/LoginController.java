@@ -4,6 +4,7 @@ import com.example.backendagile.dto.LoginRequestDTO;
 import com.example.backendagile.services.AuthentificationService;
 import com.example.backendagile.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         boolean isAuthenticated = authentificationService.authenticate(loginRequest.getUsername(), loginRequest.getMotPasse());
 
         if (isAuthenticated) {
