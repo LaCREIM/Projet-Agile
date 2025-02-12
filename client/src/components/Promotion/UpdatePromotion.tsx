@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   getFormationAsync,
   getFormations,
-  Promotion,
   updatePromotionAsync,
 } from "../../features/PromotionSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { Promotion } from "../../types/types";
 // import {
 //   getEnseignantAsync,
 //   getEnseignants,
@@ -39,14 +39,13 @@ const UpdatePromotion = ({
 
   const handleSubmit = async () => {
     if (
-      promotion.siglePro &&
-      promotion.nbEtuSouhaite &&
+      promotion.codeFormation &&
+      promotion.nbMaxEtudiant &&
       promotion.dateRentree &&
       promotion.lieuRentree &&
       promotion.noEnseignant &&
       promotion.nomFormation &&
-      promotion.diplome &&
-      promotion.etatPreselection
+      promotion.diplome 
     ) {
       await dispatch(updatePromotionAsync(promotion));
       dispatchPromotion();
@@ -58,15 +57,19 @@ const UpdatePromotion = ({
     //  dispatch(getEnseignantAsync());
   }, [dispatch]);
 
+    const formatDate = (date: string | Date | null) => {
+    if (date === null) return "";
+    date instanceof Date ? date.toISOString().split("T")[0] : date;
+  };
+
   const canSave = [
-    promotion.siglePro &&
-      promotion.nbEtuSouhaite &&
+    promotion.codeFormation &&
+      promotion.nbMaxEtudiant &&
       promotion.dateRentree &&
       promotion.lieuRentree &&
       promotion.noEnseignant &&
       promotion.nomFormation &&
-      promotion.diplome &&
-      promotion.etatPreselection,
+      promotion.diplome 
   ].every(Boolean);
 
   return (
@@ -81,8 +84,8 @@ const UpdatePromotion = ({
                 <input
                   required
                   type="text"
-                  name="siglePro"
-                  value={promotion.siglePro}
+                  name="codeFormation"
+                  value={promotion.codeFormation}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: DOSI"
@@ -93,8 +96,8 @@ const UpdatePromotion = ({
                 <input
                   required
                   type="number"
-                  name="nbEtuSouhaite"
-                  value={promotion.nbEtuSouhaite}
+                  name="nbMaxEtudiant"
+                  value={promotion.nbMaxEtudiant}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: 25"
@@ -108,7 +111,7 @@ const UpdatePromotion = ({
                 required
                 type="date"
                 name="dateRentree"
-                value={promotion.dateRentree}
+                value={formatDate(promotion.dateRentree)}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 2022-09-01"
@@ -172,22 +175,7 @@ const UpdatePromotion = ({
                 ))}
               </select>
             </label> */}
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Etat Préselection</span>
-              <select
-                required
-                className="select w-full max-w-full"
-                name="etatPreselection"
-                value={promotion.etatPreselection}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Sélectionnez un etat
-                </option>
-                <option value="TER">Terminée</option>
-                <option value="ENC">En cours</option>
-              </select>
-            </label>
+            
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Diplôme</span>
               <input

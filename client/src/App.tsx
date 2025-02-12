@@ -11,6 +11,7 @@ import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
 import QuestionHome from "./components/Questions/QuestionHome";
 import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import RubriqueHome from "./components/Rubriques/RubriqueHome";
+import LoginForm from "./components/Auth/LoginForm";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
@@ -21,6 +22,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<RootLayout />}>
+            <Route index element={<LoginForm />} />
             <Route path="admin" element={<AdminLayout />} />
             <Route path="/admin/home" element={<Dashboard />}>
               <Route path="enseignants" element={<EnseignantsHome />} />
@@ -32,7 +34,10 @@ function App() {
                     promotionDetails={promotionDetails}
                     setPromotionDetails={setPromotionDetails}
                     switchStudent={(anneeUniversitaire, codeFormation) =>
-                      setPromotionDetails({ anneeUniversitaire, codeFormation } as PromotionDetails)
+                      setPromotionDetails({
+                        anneeUniversitaire,
+                        codeFormation,
+                      } as PromotionDetails)
                     }
                   />
                 }

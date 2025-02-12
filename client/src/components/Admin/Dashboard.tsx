@@ -11,7 +11,6 @@ import { BsCardHeading } from "react-icons/bs";
 import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import ubo from "/ubologo.png";
 
 
 export function Dashboard() {

@@ -50,6 +50,10 @@ const QualificatifHome = () => {
 
 
   const handleClickUpdate = (qualificatif: Qualificatif, index: number) => {
+    setModal({
+      qualificatif: null,
+      index: -1,
+    });
     setModalUpdate({ qualificatif, index });
   };
 

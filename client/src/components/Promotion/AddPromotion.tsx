@@ -3,16 +3,17 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
   getFormationAsync,
   postPromotionsAsync,
-  Promotion,
+
   Formation,
   getFormations,
 } from "../../features/PromotionSlice";
 
-import {
-    //Enseignant,
-  getEnseignantAsync,
- // getEnseignants,
-} from "../../features/EnseignantSlice";
+// import {
+//     //Enseignant,
+//   getEnseignantAsync,
+//  // getEnseignants,
+// } from "../../features/EnseignantSlice";
+import { Promotion } from "../../types/types";
 
 interface AddPromotionProps {
   dispatchPromotion: () => void;
@@ -23,19 +24,27 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
   const formations = useAppSelector<Formation[]>(getFormations);
   //const enseaignants = useAppSelector<Enseignant[]>(getEnseignants);
   const [promotion, setPromotion] = useState<Promotion>({
-    anneePro: "",
-    siglePro: "",
-    nbEtuSouhaite: 0,
-    dateRentree: "",
+    id: {
+      anneeUniversitaire: "",
+      codeFormation: "",
+    },
+    noEnseignant: null,
+    siglePromotion: "",
+    nbMaxEtudiant: 0,
+    dateReponseLp: null,
+    dateReponseLalp: null,
+    dateRentree: null,
     lieuRentree: "",
-    noEnseignant: "",
+    processusStage: "",
+    commentaire: "",
+    anneeUniversitaire: "",
+    diplome: "",
+    nomFormation: "",
+    codeFormation: "",
     nom: "",
     prenom: "",
     type: "",
-    codeFormation: "",
-    nomFormation: "",
-    diplome: "",
-    etatPreselection: "",
+    email: "",
   });
 
   const handleChange = (
@@ -47,14 +56,13 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
 
   const handleSubmit = async () => {
     if (
-      promotion.siglePro &&
-      promotion.nbEtuSouhaite &&
+      promotion.codeFormation &&
+      promotion.nbMaxEtudiant &&
       promotion.dateRentree &&
       promotion.lieuRentree &&
       promotion.noEnseignant &&
       promotion.nomFormation &&
-      promotion.diplome &&
-      promotion.etatPreselection
+      promotion.diplome 
     ) {
       await dispatch(postPromotionsAsync(promotion));
       dispatchPromotion();
@@ -63,19 +71,23 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
 
   useEffect(() => {
     dispatch(getFormationAsync());
-    dispatch(getEnseignantAsync());
+    //dispatch(getEnseignantAsync());
   }, [dispatch]);
 
   const canSave = [
-    promotion.siglePro,
-    promotion.nbEtuSouhaite,
-    promotion.dateRentree,
-    promotion.lieuRentree,
-    promotion.noEnseignant,
-    promotion.nomFormation,
-    promotion.diplome,
-    promotion.etatPreselection,
+    promotion.codeFormation &&
+      promotion.nbMaxEtudiant &&
+      promotion.dateRentree &&
+      promotion.lieuRentree &&
+      promotion.noEnseignant &&
+      promotion.nomFormation &&
+      promotion.diplome,
   ].every(Boolean);
+
+      const formatDate = (date: string | Date | null) => {
+        if (date === null) return "";
+        date instanceof Date ? date.toISOString().split("T")[0] : date;
+      };
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -89,8 +101,8 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 <input
                   required
                   type="text"
-                  name="siglePro"
-                  value={promotion.siglePro}
+                  name="codeFormation"
+                  value={promotion.codeFormation}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: DOSI"
@@ -101,8 +113,8 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 <input
                   required
                   type="number"
-                  name="nbEtuSouhaite"
-                  value={promotion.nbEtuSouhaite}
+                  name="nbMaxEtudiant"
+                  value={promotion.nbMaxEtudiant}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: 25"
@@ -114,8 +126,8 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
               <input
                 required
                 type="text"
-                name="anneePro"
-                value={promotion.anneePro}
+                name="anneeUniversitaire"
+                value={promotion.anneeUniversitaire}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 2024-2025"
@@ -127,7 +139,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 required
                 type="date"
                 name="dateRentree"
-                value={promotion.dateRentree}
+                value={formatDate(promotion.dateRentree)}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 2022-09-01"
