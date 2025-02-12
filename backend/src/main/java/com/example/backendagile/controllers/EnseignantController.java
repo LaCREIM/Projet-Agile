@@ -31,13 +31,23 @@ public class EnseignantController {
     private EnseignantMapper enseignantMapper;
 
     /**
-     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
+     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement) avec pagination
      */
     @GetMapping
-    public ResponseEntity<List<Enseignant>> getAllEnseignants(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<List<Enseignant>> getAllEnseignantsPaged(@RequestParam int page, @RequestParam int size) {
         List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
         return ResponseEntity.ok(enseignants);
     }
+
+    /**
+     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
+     */
+    @GetMapping
+    public ResponseEntity<List<Enseignant>> getAllEnseignants() {
+        List<Enseignant> enseignants = enseignantService.getEnseignant();
+        return ResponseEntity.ok(enseignants);
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Enseignant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
