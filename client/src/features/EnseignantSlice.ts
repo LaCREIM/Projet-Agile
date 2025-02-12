@@ -2,17 +2,21 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosConfig';
 import { Enseignant } from "../types/types";
+import { RootState } from "../api/store";
 
 
 
 interface EnseignantState {
     enseignants: Enseignant[];
+    allEnseignants: Enseignant[];
+
     loading: boolean;
     error: string | null;
 }
 
 const initialState: EnseignantState = {
     enseignants: [],
+    allEnseignants: [],
     loading: false,
     error: null,
 };
@@ -37,10 +41,26 @@ export const getEnseignantAsync = createAsyncThunk<
     }
 );
 
+export const getAllEnseignantAsync = createAsyncThunk<
+    Enseignant[], void,
+    { rejectValue: string }
+>(
+    "enseignants/getEnseignantAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Enseignant[]>(`/enseignants`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching professors:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching professors.");
+        }
+    }
+);
+
 
 export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
     "enseignants/createEnseignantAsync",
-    async (enseignant , { rejectWithValue }) => {
+    async (enseignant, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('/enseignants', enseignant);
             return response.data;
@@ -56,7 +76,7 @@ export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectVa
     async (enseignant, { rejectWithValue }) => {
         try {
             console.log("Updating enseignant:", enseignant);
-            
+
             if (!enseignant.id) {
                 throw new Error("L'enseignant n'a pas d'ID valide.");
             }
@@ -88,9 +108,9 @@ export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { reject
     }
 );
 
- 
 
-const enseignantSlice = createSlice({ 
+
+const enseignantSlice = createSlice({
     name: "enseignants",
     initialState,
     reducers: {},
@@ -100,11 +120,16 @@ const enseignantSlice = createSlice({
                 state.loading = false;
                 state.enseignants = action.payload;
             })
-            
+            .addCase(getAllEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
+                state.loading = false;
+                state.allEnseignants = action.payload;
+            })
+
     },
 });
 
-export const getEnseignants = (state: { enseignant: EnseignantState }) => state.enseignant.enseignants;
+export const getEnseignants = (state: RootState) => state.enseignants.enseignants;
+export const getAllEnseignant = (state: RootState) => state.enseignants.allEnseignants;
 
 export default enseignantSlice.reducer;
 
