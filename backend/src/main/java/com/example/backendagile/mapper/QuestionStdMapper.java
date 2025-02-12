@@ -12,6 +12,13 @@ public class QuestionStdMapper {
         QuestionStdDTO dto = new QuestionStdDTO();
         dto.setIdQualificatif(question.getIdQualificatif().getId());
         dto.setIntitule(question.getIntitule());
+
+        Qualificatif qualificatif = question.getIdQualificatif();
+        if (qualificatif != null) {
+            dto.setMaxQualificatif(qualificatif.getMaximal());
+            dto.setMinQualificatif(qualificatif.getMinimal());
+        }
+
         return dto;
     }
 
