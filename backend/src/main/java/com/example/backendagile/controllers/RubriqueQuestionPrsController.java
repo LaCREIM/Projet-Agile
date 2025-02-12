@@ -2,6 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.RubriqueQuestionPrsDTO;
 import com.example.backendagile.services.RubriqueQuestionPrsService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +23,12 @@ public class RubriqueQuestionPrsController {
     public ResponseEntity<List<RubriqueQuestionPrsDTO>> getRubriquesByEnseignant(@PathVariable Long noEnseignant) {
         List<RubriqueQuestionPrsDTO> rubriqueQuestions = rubriqueQuestionPrsService.getRubriquesQuestionByEnseignant(noEnseignant);
         return ResponseEntity.ok(rubriqueQuestions);
+    }
+
+    // Nouvelle méthode pour sauvegarder ou mettre à jour une liste de RubriqueQuestionPrsDTO
+    @PostMapping("/save-or-update")
+    public ResponseEntity<Void> saveOrUpdateRubriqueQuestions(@RequestBody List<RubriqueQuestionPrsDTO> rubriqueQuestionDtos) {
+        rubriqueQuestionPrsService.saveOrUpdateRubriqueQuestions(rubriqueQuestionDtos);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Réponse 204 No Content
     }
 }

@@ -82,5 +82,48 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la création de l'étudiant.");
         }
     }
+
+    /**
+     * Mettre à jour un étudiant existant
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateEtudiant(@PathVariable String id, @RequestBody EtudiantDTO etudiantDTO) {
+        if (etudiantService.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Étudiant non trouvé avec cet ID.");
+        }
+        try {
+            EtudiantDTO updatedEtudiant = etudiantService.update(id, etudiantDTO);
+            return ResponseEntity.ok("Étudiant mis à jour avec succès.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant. " + e.getMessage());
+        }
+    }
+    /**
+     * Récupérer les étudiants d'une promotion spécifique
+     */
+    @GetMapping("/promotion/{anneePro}/{codeFormation}")
+    public ResponseEntity<List<EtudiantDTO>> getEtudiantsByPromotion(
+            @PathVariable String anneePro,
+            @PathVariable String codeFormation) {
+        List<EtudiantDTO> etudiants = etudiantService.findEtudiantsByPromotion(anneePro, codeFormation);
+        return ResponseEntity.ok(etudiants);
+    }
+    /**
+     * Supprimer un étudiant par son ID
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEtudiant(@PathVariable String id) {
+        if (etudiantService.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun étudiant trouvé avec cet ID.");
+        }
+        etudiantService.deleteById(id);
+        return ResponseEntity.ok("Étudiant supprimé avec succès.");
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Etudiant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
+        List<Etudiant> result = etudiantService.getByNomAndPrenom(nom, prenom);
+        return ResponseEntity.ok(result);
+    }
+
 }
 

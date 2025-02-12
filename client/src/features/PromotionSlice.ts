@@ -2,22 +2,23 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 import { RootState } from "../api/store";
+import { Promotion, PromotionId } from "../types/types";
 
-export interface Promotion {
-    anneePro: string;
-    siglePro: string;
-    nbEtuSouhaite: number;
-    dateRentree: string;
-    lieuRentree: string;
-    nom: string;
-    prenom: string;
-    type: string;
-    noEnseignant: string;
-    nomFormation: string;
-    codeFormation: string;
-    diplome: string;
-    etatPreselection: string;
-}
+// export interface Promotion {
+//     anneePro: string;
+//     siglePro: string;
+//     nbEtuSouhaite: number;
+//     dateRentree: string;
+//     lieuRentree: string;
+//     nom: string;
+//     prenom: string;
+//     type: string;
+//     noEnseignant: string;
+//     nomFormation: string;
+//     codeFormation: string;
+//     diplome: string;
+//     etatPreselection: string;
+// }
 
 export interface Formation {
     codeFormation: string;
@@ -45,8 +46,7 @@ export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Promotion[]>(`/promotions`);
-
-
+            //console.log("all promotions", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -59,7 +59,8 @@ export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectVal
     "formations/getFormationAsync",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Formation[]>(`/promotions/formations`);
+            const response = await axiosInstance.get<Formation[]>(`/formations`);
+            //console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching formations:", error);
@@ -72,10 +73,7 @@ export const postPromotionsAsync = createAsyncThunk<Promotion, Promotion, { reje
     "promotions/postEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
-            console.log(promotion);
-
             const response = await axiosInstance.post(`/promotions`, promotion);
-            console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error posting promotion:", error);
@@ -88,8 +86,8 @@ export const updatePromotionAsync = createAsyncThunk<Promotion, Promotion, { rej
     "promotions/updateEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/promotions/${promotion.anneePro}`, promotion);
-            console.log(response);
+            const response = await axiosInstance.put(`/promotions/${promotion.id}`, promotion);
+            //console.log(response);
 
             return response.data;
         } catch (error: any) {
@@ -99,7 +97,7 @@ export const updatePromotionAsync = createAsyncThunk<Promotion, Promotion, { rej
     }
 );
 
-export const deletePromotionAsync = createAsyncThunk<Promotion, string, { rejectValue: string }>(
+export const deletePromotionAsync = createAsyncThunk<Promotion, PromotionId, { rejectValue: string }>(
     "promotions/deleteEtudiantAsync",
     async (id, { rejectWithValue }) => {
         try {
