@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Etudiant } from "../types/types";
+import { Etudiant, PromotionDetails } from "../types/types";
 // Définition de l'interface Etudiant
 // export interface Etudiant {
 //     nom: string;
@@ -32,10 +32,16 @@ export interface Domaine_Pays{
     rvMeaning: string;
 }
 
+export interface Domaine_Universite{
+    rvLowValue: string;
+    rvMeaning: string;
+}
+
 interface EtudiantState {
     etudiant: Etudiant | null;
     etudiants: Etudiant[];
     pays: Domaine_Pays[];
+    universite: Domaine_Universite[];
     loading: boolean;
     error: string | null;
 }
@@ -44,6 +50,7 @@ const initialState: EtudiantState = {
     etudiant: null,
     etudiants: [],
     pays:[],
+    universite: [],
     loading: false,
     error: null,
 };
@@ -53,7 +60,21 @@ export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { reje
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
-            console.log("from all", response.data);
+            //console.log("from all", response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching groupe tps:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching pays.");
+        }
+    }
+);
+
+export const getDomaineUnivAsync = createAsyncThunk<Domaine_Universite[], void, { rejectValue: string }>(
+    "universiteOrigine/getDomaineUnivAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=UNIVERSITE`);
+            //console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching groupe tps:", error);
@@ -67,7 +88,7 @@ export const getEtudiantAsync = createAsyncThunk<Etudiant[], void, { rejectValue
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Etudiant[]>(`/etudiants?page=1&size=10`);
-            console.log("from all", response.data);
+            //console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -76,12 +97,12 @@ export const getEtudiantAsync = createAsyncThunk<Etudiant[], void, { rejectValue
     }
 );
 
-export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], string, { rejectValue: string }>(
+export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], PromotionDetails, { rejectValue: string }>(
     "students/getEtudiantByPromotionAsync",
-    async (anneePro, { rejectWithValue }) => {
+    async (promotionDetails, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<Etudiant[]>(`/promotions/students/${anneePro}`);
-            console.log("from by", { anneePro, "re": response.data });
+            const response = await axiosInstance.get<Etudiant[]>(`/etudiants/promotion/${promotionDetails.anneeUniversitaire}/${promotionDetails.codeFormation}`);
+            console.log("etudiant from by", { promotionDetails, response});
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -95,7 +116,7 @@ export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectVa
     async (etudiant, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/etudiants`, etudiant);
-            console.log(response);
+            //console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
@@ -122,8 +143,7 @@ export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValu
     async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete(`/etudiants/${id}`);
-            console.log(response);
-
+            //console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
@@ -145,6 +165,10 @@ const etudiantSlice = createSlice({
             .addCase(getDomainePaysAsync.fulfilled, (state, action: PayloadAction<Domaine_Pays[]>) => {
                 state.loading = false;
                 state.pays = action.payload;
+            })
+            .addCase(getDomaineUnivAsync.fulfilled, (state, action: PayloadAction<Domaine_Pays[]>) => {
+                state.loading = false;
+                state.universite = action.payload;
             })
            
             .addCase(getEtudiantByPromotionAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
@@ -172,5 +196,9 @@ const etudiantSlice = createSlice({
 export const getEtudiants = (state: { etudiants: EtudiantState }) => state.etudiants.etudiants;
 
 export const getPays = (state: { etudiants: EtudiantState }) => state.etudiants.pays;
+
+export const getUniversite = (state: { etudiants: EtudiantState }) => state.etudiants.universite;
+
+
 
 export default etudiantSlice.reducer;
