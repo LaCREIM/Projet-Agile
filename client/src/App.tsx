@@ -12,6 +12,7 @@ import QuestionHome from "./components/Questions/QuestionHome";
 import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import RubriqueHome from "./components/Rubriques/RubriqueHome";
 import LoginForm from "./components/Auth/LoginForm";
+import NotFound from "./layouts/NotFound";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
@@ -19,7 +20,7 @@ function App() {
   } as PromotionDetails);
   return (
     <>
-      <Router>
+      <Router basename="/">
         <Routes>
           <Route path="/" element={<RootLayout />}>
             <Route index element={<LoginForm />} />
@@ -47,7 +48,7 @@ function App() {
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="rubriques" element={<RubriqueHome />} />
             </Route>
-            <Route path="*" element={<div>404 Not Found</div>} />
+            <Route path="*" element={<NotFound/>} />
           </Route>
         </Routes>
       </Router>

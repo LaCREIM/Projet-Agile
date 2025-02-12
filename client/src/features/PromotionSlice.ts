@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 import { RootState } from "../api/store";
-import { Promotion, PromotionId } from "../types/types";
+import { Formation, Promotion, PromotionCreate, PromotionId } from "../types/types";
 
 // export interface Promotion {
 //     anneePro: string;
@@ -20,15 +20,25 @@ import { Promotion, PromotionId } from "../types/types";
 //     etatPreselection: string;
 // }
 
-export interface Formation {
-    codeFormation: string;
-    diplome: string;
-    nomFormation: string;
+// export interface Formation {
+//     codeFormation: string;
+//     diplome: string;
+//     nomFormation: string;
+// }
+
+export interface Domaine {
+    rvLowValue: string;
+    rvMeaning: string;
 }
+
+
 
 interface PromotionState {
     formations: Formation[];
     promotions: Promotion[];
+    salle: Domaine[];  
+    diplome: Domaine[];
+    processsusStage: Domaine[];
     loading: boolean;
     error: string | null;
 }
@@ -36,11 +46,53 @@ interface PromotionState {
 const initialState: PromotionState = {
     promotions: [],
     formations: [],
+    salle:[],
+    diplome:[],
+    processsusStage:[],
     loading: false,
     error: null,
 };
 
 // Fetch promotions
+export const getDomaineLieuEntreeAsync = createAsyncThunk<Domaine[], void, { rejectValue: string }>(
+    "salle/getDomaineLieuEntreeAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Domaine[]>(`/cgRefCodes/SALLE?domain=SALLE`);            
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+export const getDomaineProcessusStageAsync = createAsyncThunk<Domaine[], void, { rejectValue: string }>(
+    "processus_stage/getDomaineProcessusStageAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Domaine[]>(`/cgRefCodes/byDomain?domain=PROCESSUS_STAGE`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+export const getDomaineDiplomeAsync = createAsyncThunk<Domaine[], void, { rejectValue: string }>(
+    "diplome/getDomaineDiplomeAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Domaine[]>(`/cgRefCodes/byDomain?domain=DIPLOME`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
 export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectValue: string }>(
     "promotions/getPromotionAsync",
     async (_, { rejectWithValue }) => {
@@ -69,7 +121,7 @@ export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectVal
     }
 );
 
-export const postPromotionsAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
+export const postPromotionsAsync = createAsyncThunk<Promotion, PromotionCreate, { rejectValue: string }>(
     "promotions/postEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
@@ -82,11 +134,11 @@ export const postPromotionsAsync = createAsyncThunk<Promotion, Promotion, { reje
     }
 );
 
-export const updatePromotionAsync = createAsyncThunk<Promotion, Promotion, { rejectValue: string }>(
+export const updatePromotionAsync = createAsyncThunk<Promotion, PromotionCreate, { rejectValue: string }>(
     "promotions/updateEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/promotions/${promotion.id}`, promotion);
+            const response = await axiosInstance.put(`/promotions/${promotion.codeFormation}/${promotion.anneeUniversitaire}`, promotion);
             //console.log(response);
 
             return response.data;
@@ -144,6 +196,21 @@ const promotionSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch formations.";
             })
+            .addCase(getDomaineLieuEntreeAsync.fulfilled, (state, action) => {
+                state.loading = false;
+                state.salle = action.payload || "Failed to fetch formations.";
+            })
+            .addCase(getDomaineProcessusStageAsync.fulfilled, (state, action) => {
+                state.loading = false;
+                state.processsusStage = action.payload || "Failed to fetch formations.";
+            })
+            .addCase(getDomaineDiplomeAsync.fulfilled, (state, action) => {
+                state.loading = false;
+                state.diplome = action.payload || "Failed to fetch formations.";
+            })
+            
+
+
 
     },
 });
@@ -151,5 +218,9 @@ const promotionSlice = createSlice({
 // Selectors
 export const getFormations = (state: RootState) => state.promotions.formations;
 export const getPromotions = (state: RootState) => state.promotions.promotions;
+export const getSalles = (state: RootState) => state.promotions.salle;
+export const getProcessusStages = (state: RootState) => state.promotions.processsusStage;
+export const getDiplomes = (state: RootState) => state.promotions.diplome;
+
 
 export default promotionSlice.reducer;

@@ -77,7 +77,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             <div className="text-base font-medium text-gray-900">
               <dt>No :</dt>
               <dd className="mt-1 text-gray-500">
-                {promotion.noEnseignant?.id}
+                {promotion.noEnseignant}
               </dd>
             </div>
             <div className="text-base font-medium text-gray-900">

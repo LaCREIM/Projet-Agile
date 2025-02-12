@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import {
+  Domaine,
+  getDiplomes,
+  getDomaineDiplomeAsync,
+  getDomaineLieuEntreeAsync,
+  getDomaineProcessusStageAsync,
   getFormationAsync,
   getFormations,
+  getProcessusStages,
+  getSalles,
   updatePromotionAsync,
 } from "../../features/PromotionSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { Promotion } from "../../types/types";
+import { Formation, PromotionCreate } from "../../types/types";
 // import {
 //   getEnseignantAsync,
 //   getEnseignants,
 // } from "../../features/EnseignantSlice";
 
 interface UpdatePromotioProps {
-  promotionData: Promotion;
+  promotionData: PromotionCreate;
   dispatchPromotion: () => void;
 }
 
@@ -21,9 +28,12 @@ const UpdatePromotion = ({
   dispatchPromotion,
 }: UpdatePromotioProps) => {
   const dispatch = useAppDispatch();
-  const formations = useAppSelector(getFormations);
-//   const enseaignants = useAppSelector(getEnseignants);
-  const [promotion, setPromotion] = useState<Promotion>({
+  const formations = useAppSelector<Formation[]>(getFormations);
+  const salles = useAppSelector<Domaine[]>(getSalles);
+  const diplomes = useAppSelector<Domaine[]>(getDiplomes);
+  const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
+  //   const enseaignants = useAppSelector(getEnseignants);
+  const [promotion, setPromotion] = useState<PromotionCreate>({
     ...promotionData,
   });
 
@@ -35,42 +45,43 @@ const UpdatePromotion = ({
       ...promotion,
       [name]: value,
     });
+
+    console.log(promotion);
+    
   };
 
+  const canSave =
+    promotion.codeFormation != "" &&
+    promotion.siglePromotion != "" &&
+    promotion.anneeUniversitaire != "" &&
+    promotion.nbMaxEtudiant != 0 &&
+    promotion.dateRentree != new Date() &&
+    promotion.lieuRentree != "" &&
+    // promotion.noEnseignant &&
+    promotion.processusStage != "" &&
+    promotion.diplome != "";
+
   const handleSubmit = async () => {
-    if (
-      promotion.codeFormation &&
-      promotion.nbMaxEtudiant &&
-      promotion.dateRentree &&
-      promotion.lieuRentree &&
-      promotion.noEnseignant &&
-      promotion.nomFormation &&
-      promotion.diplome 
-    ) {
+    if (canSave) {
       await dispatch(updatePromotionAsync(promotion));
       dispatchPromotion();
     }
   };
 
   useEffect(() => {
+    console.log(promotionData);
+    
     dispatch(getFormationAsync());
+        dispatch(getDomaineLieuEntreeAsync());
+        dispatch(getDomaineProcessusStageAsync());
+        dispatch(getDomaineDiplomeAsync());
     //  dispatch(getEnseignantAsync());
   }, [dispatch]);
 
-    const formatDate = (date: string | Date | null) => {
+  const formatDate = (date: string | Date | null) => {
     if (date === null) return "";
     date instanceof Date ? date.toISOString().split("T")[0] : date;
   };
-
-  const canSave = [
-    promotion.codeFormation &&
-      promotion.nbMaxEtudiant &&
-      promotion.dateRentree &&
-      promotion.lieuRentree &&
-      promotion.noEnseignant &&
-      promotion.nomFormation &&
-      promotion.diplome 
-  ].every(Boolean);
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -80,19 +91,33 @@ const UpdatePromotion = ({
           <div className="flex flex-col gap-5">
             <div className="flex flex-row justify-between">
               <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Désignation</span>
+                <span className="font-semibold">Sigle</span>
                 <input
                   required
                   type="text"
-                  name="codeFormation"
-                  value={promotion.codeFormation}
+                  name="siglePromotion"
+                  value={promotion.siglePromotion}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: DOSI"
                 />
               </label>
               <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Nbr Etudiants</span>
+                <span className="font-semibold">Année universitaire</span>
+                <input
+                  required
+                  type="text"
+                  name="anneeUniversitaire"
+                  value={promotion.anneeUniversitaire}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 2023-2024"
+                />
+              </label>
+            </div>
+            <div className="flex flex-row justify-between">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Nombre Etudiants max</span>
                 <input
                   required
                   type="number"
@@ -103,38 +128,65 @@ const UpdatePromotion = ({
                   placeholder="Ex: 25"
                 />
               </label>
-            </div>
 
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Date rentrée</span>
-              <input
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Date rentrée</span>
+                <input
+                  required
+                  type="date"
+                  name="dateRentree"
+                  value={formatDate(promotion.dateRentree)}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 2022-09-01"
+                />
+              </label>
+            </div>
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Diplôme</span>
+              <select
                 required
-                type="date"
-                name="dateRentree"
-                value={formatDate(promotion.dateRentree)}
+                className="select w-[80%] max-w-full"
+                name="diplome"
+                value={promotion.diplome}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 2022-09-01"
-              />
+              >
+                <option value="" disabled>
+                  Sélectionnez un diplôme
+                </option>
+                {diplomes.map((domaine) => (
+                  <option key={domaine.rvLowValue} value={domaine.rvLowValue}>
+                    {domaine.rvMeaning}
+                  </option>
+                ))}
+              </select>
             </label>
 
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Lieu rentrée</span>
-              <input
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Lieu rentrée</span>
+              <select
                 required
-                type="text"
+                className="select w-[80%] max-w-full"
                 name="lieuRentree"
                 value={promotion.lieuRentree}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Brest"
-              />
+              >
+                <option value="" disabled>
+                  Sélectionnez une salle
+                </option>
+                {salles.map((salle) => (
+                  <option key={salle.rvLowValue} value={salle.rvLowValue}>
+                    {salle.rvMeaning}
+                  </option>
+                ))}
+              </select>
             </label>
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Formation</span>
+            {/* Champs ajoutés */}
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Formation</span>
               <select
                 required
-                className="select w-full max-w-full"
+                className="select w-[80%] max-w-full"
                 name="codeFormation"
                 value={promotion.codeFormation}
                 onChange={handleChange}
@@ -152,54 +204,46 @@ const UpdatePromotion = ({
                 ))}
               </select>
             </label>
-            {/* <label className="flex items-center gap-2">
-              <span className="font-semibold">Responsable</span>
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Responsable</span>
               <select
                 required
-                className="select w-full max-w-full"
+                className="select w-[80%] max-w-full"
                 name="noEnseignant"
                 value={promotion.noEnseignant}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez un responsable
+                  Sélectionnez une formation
                 </option>
-                {enseaignants.map((enseignant) => (
+                {formations.map((formation) => (
                   <option
-                    key={enseignant.noEnseignant}
-                    value={enseignant.noEnseignant}
+                    key={formation.codeFormation}
+                    value={formation.codeFormation}
                   >
-                    {enseignant?.nom.toLocaleUpperCase()} {enseignant.prenom} -{" "}
-                    {enseignant.type}
+                    {formation.codeFormation}
                   </option>
                 ))}
               </select>
-            </label> */}
-            
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Diplôme</span>
-              <input
-                required
-                type="text"
-                name="diplome"
-                value={promotion.diplome}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Master"
-              />
             </label>
-
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Nom Formation</span>
-              <input
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Processus stage</span>
+              <select
                 required
-                type="text"
-                name="nomFormation"
-                value={promotion.nomFormation}
+                className="select w-[80%] max-w-full"
+                name="processusStage"
+                value={promotion.processusStage}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Nom Formation"
-              />
+              >
+                <option value="" disabled>
+                  Sélectionnez un etat
+                </option>
+                {processusStage.map((ps) => (
+                  <option key={ps.rvLowValue} value={ps.rvLowValue}>
+                    {ps.rvMeaning}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
         </form>
