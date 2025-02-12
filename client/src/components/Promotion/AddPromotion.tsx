@@ -18,7 +18,7 @@ import {
 //   getEnseignantAsync,
 //  // getEnseignants,
 // } from "../../features/EnseignantSlice";
-import {  Formation, PromotionCreate } from "../../types/types";
+import { Formation, PromotionCreate } from "../../types/types";
 // import { getEnseignantAsync } from "../../features/EnseignantSlice";
 
 interface AddPromotionProps {
@@ -69,7 +69,11 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
 
   const handleSubmit = async () => {
     if (canSave) {
-      await dispatch(postPromotionsAsync(promotion));
+      {
+        console.log("i'm heeere", promotion);
+        
+        await dispatch(postPromotionsAsync(promotion));
+      }
       dispatchPromotion();
     }
   };
@@ -256,7 +260,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
             <button className="btn">Annuler</button>
-            <button className="btn btn-neutral" disabled={!canSave}>
+            <button className="btn btn-neutral" onClick={handleSubmit} type="submit" disabled={!canSave}>
               Ajouter
             </button>
           </form>

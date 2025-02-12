@@ -44,10 +44,7 @@ const UpdatePromotion = ({
     setPromotion({
       ...promotion,
       [name]: value,
-    });
-
-    console.log(promotion);
-    
+    });    
   };
 
   const canSave =
@@ -68,9 +65,7 @@ const UpdatePromotion = ({
     }
   };
 
-  useEffect(() => {
-    console.log(promotionData);
-    
+  useEffect(() => {    
     dispatch(getFormationAsync());
         dispatch(getDomaineLieuEntreeAsync());
         dispatch(getDomaineProcessusStageAsync());

@@ -126,6 +126,8 @@ export const postPromotionsAsync = createAsyncThunk<Promotion, PromotionCreate, 
     async (promotion, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/promotions`, promotion);
+            console.log(response);
+            
             return response.data;
         } catch (error: any) {
             console.error("Error posting promotion:", error);
@@ -138,9 +140,8 @@ export const updatePromotionAsync = createAsyncThunk<Promotion, PromotionCreate,
     "promotions/updateEtudiantAsync",
     async (promotion, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/promotions/${promotion.codeFormation}/${promotion.anneeUniversitaire}`, promotion);
-            //console.log(response);
-
+            const response = await axiosInstance.put(`/promotions/${promotion.anneeUniversitaire}/${promotion.codeFormation}`, promotion);
+            console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error updating promotion:", error);
@@ -153,7 +154,8 @@ export const deletePromotionAsync = createAsyncThunk<Promotion, PromotionId, { r
     "promotions/deleteEtudiantAsync",
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.delete(`/promotions/${id}`);
+            const response = await axiosInstance.delete(`/promotions/${id.anneeUniversitaire}/${id.codeFormation}`);
+            console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error deleting student:", error);
