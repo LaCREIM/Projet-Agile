@@ -9,6 +9,7 @@ import com.example.backendagile.services.EtudiantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -50,6 +51,7 @@ public class EtudiantController {
      * Créer un nouvel étudiant (avec sa promotion)
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<String> createEtudiant(@Valid @RequestBody EtudiantDTO etudiantDTO) {
         try {
             // Check if an Etudiant with the same email already exists

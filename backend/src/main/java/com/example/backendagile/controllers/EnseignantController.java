@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -69,6 +70,7 @@ public class EnseignantController {
      * 🔸 Créer un nouvel enseignant (utilise `EnseignantDTO` pour la requête)
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<Enseignant> createEnseignant(@Valid @RequestBody EnseignantDTO enseignantDTO) {
         try {
             // Check if an Enseignant with the same email already exists
