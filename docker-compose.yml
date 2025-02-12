@@ -2,20 +2,18 @@ services:
   frontend:
     build:
       context: ./client
-    image: pa-eq3-frontend
-    container_name: pa-eq3-frontend
+    image: pa-eq1-frontend
+    container_name: pa-eq1-frontend
     ports:
       - "8081:80"
 
   backend:
     build:
       context: ./backend
-    image: pa-eq3-backend
-    container_name: pa-eq3-backend
+    image: pa-eq1-backend
+    container_name: pa-eq1-backend
     ports:
       - "8091:8080"
     restart: on-failure:5
 
 
-volumes:
-  oracle-dev-data:
