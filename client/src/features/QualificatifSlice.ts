@@ -21,6 +21,7 @@ export const fetchQualificatifsAsync = createAsyncThunk<Qualificatif[], void, { 
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/qualificatifs");
+      console.log("response.data", response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la récupération des qualificatifs");

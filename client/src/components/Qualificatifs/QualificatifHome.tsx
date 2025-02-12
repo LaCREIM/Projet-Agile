@@ -67,6 +67,7 @@ const QualificatifHome = () => {
   
         // Vérifiez si cette action est bien exécutée et rafraîchit la liste
         const refreshResponse = await dispatch(fetchQualificatifsAsync());
+        console.log("refreshResponse", refreshResponse);
         if (refreshResponse?.payload) {
           console.log("Liste des qualificatifs rafraîchie :", refreshResponse.payload);
         } else {

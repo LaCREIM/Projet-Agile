@@ -4,11 +4,12 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-//import UpdateQuestion from "./UpdateQuestion";
 import { deleteQuestionAsync, fetchQuestionsAsync } from "../../features/QuestionSlice";
 import { Question } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { RootState } from "../../api/store";
+import DetailsQuestion from "./DetailsQuestion";
+import UpdateQuestion from "./UpdateQuestion";
 
 const QuestionHome = () => {
   document.title = "UBO | Questions";
@@ -97,10 +98,8 @@ const QuestionHome = () => {
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Type</th>
                 <th>Intitulé</th>
-                {/* <th>Enseignant</th> */}
                 <th>Qualificatif</th>
                 <th className="text-center">Actions</th>
               </tr>
@@ -115,11 +114,11 @@ const QuestionHome = () => {
               ) : (
                 questions.map((question: Question, index: number) => (
                   <tr key={question.id} className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75">
-                    <td className="px-4 py-2">{question.id}</td>
-                    <td className="px-4 py-2">{question.type}</td>
-                    <td className="px-4 py-2">{question.intitule}</td>
-                    {/* <td className="px-4 py-2">{question.noEnseignant}</td> */}
-                    <td className="px-4 py-2">{question.idQualificatif.maximal}</td>
+                    <td className="px-4 py-2">{question.type || "N/A"}</td>
+                    <td className="px-4 py-2">{question.intitule || "N/A"}</td>
+                    <td className="px-4 py-2">
+                      {question.idQualificatif?.maximal + " - "+ question.idQualificatif.minimal|| "N/A"}
+                    </td>
                     <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
                         icon={faPenToSquare}
@@ -148,8 +147,12 @@ const QuestionHome = () => {
 
                     {/* Modal de mise à jour */}
                     <dialog id={`updateQuestion-${index}`} className="modal">
-                      {/* <UpdateQuestion questionData={question} /> */}
+                       <UpdateQuestion questionData={question} /> 
                     </dialog>
+
+                    <dialog id={`inspect-${index}`} className="modal">
+                {modal.question && <DetailsQuestion question={modal.question} />}
+              </dialog>
                   </tr>
                 ))
               )}
