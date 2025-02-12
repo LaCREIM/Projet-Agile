@@ -13,9 +13,9 @@ import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import RubriqueHome from "./components/Rubriques/RubriqueHome";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
-    anneePro: "-1",
-    siglePro: "",
-  });
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
   return (
     <>
       <Router>
@@ -31,17 +31,16 @@ function App() {
                   <StudentHome
                     promotionDetails={promotionDetails}
                     setPromotionDetails={setPromotionDetails}
-                    switchStudent={(anneePro, siglePro) =>
-                      setPromotionDetails({ anneePro, siglePro })
+                    switchStudent={(anneeUniversitaire, codeFormation) =>
+                      setPromotionDetails({ anneeUniversitaire, codeFormation } as PromotionDetails)
                     }
                   />
                 }
               />
-              <Route path="qualificatifs" element={<QualificatifHome/>} />
-              <Route path="questions" element={<QuestionHome/>} />
-              <Route path="evaluations" element={<EvaluationHome/>} />
-              <Route path="rubriques" element={<RubriqueHome/>} />
-
+              <Route path="qualificatifs" element={<QualificatifHome />} />
+              <Route path="questions" element={<QuestionHome />} />
+              <Route path="evaluations" element={<EvaluationHome />} />
+              <Route path="rubriques" element={<RubriqueHome />} />
             </Route>
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>

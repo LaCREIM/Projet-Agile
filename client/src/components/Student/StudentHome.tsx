@@ -54,21 +54,33 @@ const StudentHome = ({
     index: number;
   }>({ etudiant: null, index: -1 });
 
-  const [anneePro, setAnneePro] = useState<string>("-1");
+  const [pro, setPro] = useState<PromotionDetails>({} as PromotionDetails);
 
   const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
   const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    if (etudiants.length === 0) dispatch(getPromotionAsync());
-    if (anneePro === "-1" && promotionDetails.anneePro === "-1") {
+    dispatch(getPromotionAsync());
+    if (etudiants.length === 0) {
       dispatch(getEtudiantAsync());
-    } else if (anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(anneePro));
-    } else if (promotionDetails.anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(promotionDetails.anneePro));
     }
-  }, [dispatch, anneePro, promotionDetails]);
+    if (
+      pro.anneeUniversitaire === "-1" &&
+      promotionDetails.anneeUniversitaire === "-1"
+    ) {
+      dispatch(getEtudiantAsync());
+    } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
+      
+      console.log("heeeeeere");
+      
+      dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
+    } else if (
+      promotionDetails.anneePro !== "-1" &&
+      promotionDetails.codeFormation !== ""
+    ) {
+      dispatch(getEtudiantByPromotionAsync(promotionDetails as PromotionDetails));
+    }
+  }, [dispatch, pro, promotionDetails]);
 
   useEffect(() => {
     if (
@@ -103,9 +115,7 @@ const StudentHome = ({
 
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(
-      deleteEtudiantAsync(etudiant.noEtudiant)
-    );
+    const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
     dispatch(getEtudiantAsync());
     if (
       response?.payload ===
@@ -121,8 +131,23 @@ const StudentHome = ({
   };
 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPromotion = e.target.value;
-    setAnneePro(selectedPromotion);
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "-1") {
+      setPro({
+        anneeUniversitaire: "-1",
+        codeFormation: "",
+      } as PromotionDetails);
+    } else {
+      try {
+        const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
+        setPro(selectedPromotion);
+        console.log("Selected promotion:", selectedPromotion);
+        
+      } catch (error) {
+        console.error("Error parsing promotion details:", error);
+      }
+    }
   };
 
   const MotionVariant = {
@@ -159,12 +184,26 @@ const StudentHome = ({
               <option value="default" disabled>
                 Sélectionnez une promotion
               </option>
-              <option value="-1" onClick={() => setAnneePro("-1")}>
+              <option
+                value="-1"
+                onClick={() =>
+                  setPro({
+                    anneeUniversitaire: "-1",
+                    codeFormation: "",
+                  } as PromotionDetails)
+                }
+              >
                 Tous les promotions
               </option>
-              {promotions.map((promotion) => (
-                <option key={promotion.anneePro} value={promotion.anneePro}>
-                  {promotion.anneePro} : {promotion.siglePro}
+              {promotions.map((promotion, idx) => (
+                <option
+                  key={idx}
+                  value={JSON.stringify({
+                    anneeUniversitaire: promotion.anneeUniversitaire,
+                    codeFormation: promotion.codeFormation,
+                  })}
+                >
+                  {promotion.anneeUniversitaire} : {promotion.codeFormation}
                 </option>
               ))}
             </select>
@@ -172,7 +211,10 @@ const StudentHome = ({
             <div
               className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
               onClick={() => {
-                setPromotionDetails({ anneePro: "-1", siglePro: "" });
+                setPromotionDetails({
+                  anneeUniversitaire: "-1",
+                  codeFormation: "",
+                } as PromotionDetails);
                 switchStudent("-1", "");
               }}
             >

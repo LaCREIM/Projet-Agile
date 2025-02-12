@@ -7,7 +7,7 @@ import {
   getPays,
   getUniversite,
   postEtudiantAsync,
-} from "../../features/EtudiantSlice";  
+} from "../../features/EtudiantSlice";
 
 import {
   getPromotionAsync,
@@ -16,13 +16,11 @@ import {
 
 import { Etudiant } from "../../types/types";
 
-
 const AddStudent = () => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
     noEtudiant: "",
-    promotion: "",
     nom: "",
     prenom: "",
     sexe: "",
@@ -40,30 +38,24 @@ const AddStudent = () => {
     universiteOrigine: "",
     groupeTp: -1,
     groupeAnglais: -1,
-    codeFormation: "",
     anneeUniversitaire: "",
+    codeFormation: "",
   });
 
- const handleChange = (
-     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-   ) => {
-     const { name, value } = e.target;
-      if (name === "promotion") {
-        const parsedPromotion = JSON.parse(value);
-        setStudent({
-          ...student,
-          anneeUniversitaire: parsedPromotion.anneeUniversitaire,
-          codeFormation: parsedPromotion.codeFormation,
-        });
-      } else {
-        setStudent({ ...student, [name]: value });
-      }
-   };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setStudent((prevStudent) => ({
+      ...prevStudent,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async () => {
     if (canSave) {
       console.log(student);
-
       await dispatch(postEtudiantAsync(student));
     }
     dispatch(getEtudiantAsync());
@@ -71,12 +63,12 @@ const AddStudent = () => {
 
   const promotions = useAppSelector(getPromotions);
   const pays = useAppSelector(getPays);
-  const universite = useAppSelector(getUniversite)
+  const universite = useAppSelector(getUniversite);
 
   useEffect(() => {
     dispatch(getPromotionAsync());
-    dispatch(getDomainePaysAsync())
-    dispatch(getDomaineUnivAsync())
+    dispatch(getDomainePaysAsync());
+    dispatch(getDomaineUnivAsync());
   }, [dispatch]);
 
   const formatDate = (date: string | Date | null) => {
@@ -85,23 +77,26 @@ const AddStudent = () => {
   };
 
   const canSave =
-    student.nom != "" &&
-    student.prenom != "" &&
-    student.sexe != "" &&
-    student.email != "" &&
-    student.emailUbo != "" &&
-    student.noEtudiant != "" &&
-    student.dateNaissance != null &&
-    student.lieuNaissance != "" &&
-    student.adresse != "" &&
-    student.ville != "" &&
-    student.codePostal != "" &&
-    student.paysOrigine != "" &&
-    student.universiteOrigine != "" &&
-    student.groupeTp != -1 &&
-    student.groupeAnglais != -1 &&
-    student.mobile != "" &&
-    student.promotion !=""
+    student.nom.trim() !== "" &&
+    student.prenom.trim() !== "" &&
+    student.sexe.trim() !== "" &&
+    student.email.trim() !== "" &&
+    student.emailUbo.trim() !== "" &&
+    student.noEtudiant.trim() !== "" &&
+    student.dateNaissance !== null &&
+    student.lieuNaissance.trim() !== "" &&
+    student.nationalite.trim() !== "" &&
+    student.adresse.trim() !== "" &&
+    student.ville.trim() !== "" &&
+    student.codePostal.trim() !== "" &&
+    student.paysOrigine.trim() !== "" &&
+    student.universiteOrigine.trim() !== "" &&
+    student.groupeTp !== -1 &&
+    student.groupeAnglais !== -1 &&
+    student.mobile.trim() !== "" &&
+    student.anneeUniversitaire.trim() !== "" &&
+    student.codeFormation.trim() !== "";
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -297,26 +292,40 @@ const AddStudent = () => {
             </label>
 
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Promotion</span>
+              <span className="font-semibold w-[15%]">Année Universitaire</span>
               <select
                 required
                 className="select w-[80%] max-w-full"
-                name="promotion"
-                value={student.promotion}
+                name="anneeUniversitaire"
+                value={student.anneeUniversitaire}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez une promotion
+                  Sélectionnez l'année universitaire
                 </option>
                 {promotions.map((promotion, idx) => (
-                  <option
-                    key={idx}
-                    value={JSON.stringify({
-                      anneeUniversitaire: promotion.anneeUniversitaire,
-                      codeFormation: promotion.codeFormation,
-                    })}
-                  >
-                    {promotion.anneeUniversitaire} • {promotion.siglePromotion}
+                  <option key={idx} value={promotion.anneeUniversitaire}>
+                    {promotion.anneeUniversitaire}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Formation</span>
+              <select
+                required
+                className="select w-[80%] max-w-full"
+                name="codeFormation"
+                value={student.codeFormation}
+                onChange={handleChange}
+              >
+                <option value="" disabled>
+                  Sélectionnez une formation
+                </option>
+                {promotions.map((promotion, idx) => (
+                  <option key={idx} value={promotion.codeFormation}>
+                    {promotion.codeFormation}
                   </option>
                 ))}
               </select>

@@ -132,7 +132,8 @@ export interface Intervenant {
 }
 export interface Etudiant {
     noEtudiant: string;
-    promotion: string;
+    anneeUniversitaire: string ;
+    codeFormation: string ;
     nom: string;
     prenom: string;
     sexe: string;
@@ -150,8 +151,6 @@ export interface Etudiant {
     universiteOrigine: string;
     groupeTp: number;
     groupeAnglais: number;
-    codeFormation: string;
-    anneeUniversitaire: string;
 }
 
 export interface Evaluation {

@@ -114,6 +114,7 @@ const PromotionHome = () => {
       anneeUniversitaire: anneeUniversitaire,
       codeFormation: codeFormation,
     } as PromotionDetails);
+
     setShowStudent(!showStudents);
   };
 
@@ -204,7 +205,7 @@ const PromotionHome = () => {
                           onClick={() =>
                             switchToStudent(
                               promotion.anneeUniversitaire,
-                              promotion.siglePromotion
+                              promotion.codeFormation
                             )
                           }
                         />

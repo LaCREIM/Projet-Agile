@@ -27,22 +27,13 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
     ...studentData,
   });
 
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-     if (name === "promotion") {
-       const parsedPromotion = JSON.parse(value);
-       setStudent({
-         ...student,
-         anneeUniversitaire: parsedPromotion.anneeUniversitaire,
-         codeFormation: parsedPromotion.codeFormation,
-       });
-     } else {
-       setStudent({ ...student, [name]: value });
-     }
+      setStudent({ ...student, [name]: value });
   };
+
 
   const canSave =
     student.nom != "" &&
@@ -62,12 +53,13 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
     student.groupeTp != -1 &&
     student.groupeAnglais != -1 &&
     student.mobile != "" &&
-    student.promotion != "";
+    student.anneeUniversitaire != "" &&
+    student.codeFormation != ""
+      
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (canSave)
-      await dispatch(updateEtudiantAsync(student));
+    if (canSave) await dispatch(updateEtudiantAsync(student));
     dispatch(getEtudiantAsync());
   };
 
@@ -78,10 +70,8 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
   useEffect(() => {
     dispatch(getPromotionAsync());
     dispatch(getDomainePaysAsync());
-    dispatch(getDomaineUnivAsync())
+    dispatch(getDomaineUnivAsync());
   }, [dispatch]);
-
-  
 
   const formatDate = (date: string | Date | null) => {
     if (date === null) return "";
@@ -124,6 +114,18 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 />
               </label>
             </div>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">No Etudiant</span>
+              <input
+                required
+                type="text"
+                name="noEtudiant"
+                value={student.noEtudiant}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: YI98765"
+              />
+            </label>
 
             {/* Sexe */}
             <label className="flex items-center gap-2">
@@ -273,42 +275,43 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
             </label>
 
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Promotion</span>
+              <span className="font-semibold w-[15%]">Année Universitaire</span>
               <select
                 required
                 className="select w-[80%] max-w-full"
-                name="promotion"
-                value={student.promotion}
+                name="anneeUniversitaire"
+                value={student.anneeUniversitaire}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez une promotion
+                  Sélectionnez l'année universitaire
                 </option>
                 {promotions.map((promotion, idx) => (
-                  <option
-                    key={idx}
-                    value={JSON.stringify({
-                      anneeUniversitaire: promotion.anneeUniversitaire,
-                      codeFormation: promotion.codeFormation,
-                    })}
-                  >
-                    {promotion.anneeUniversitaire} • {promotion.siglePromotion}
+                  <option key={idx} value={promotion.anneeUniversitaire}>
+                    {promotion.anneeUniversitaire}
                   </option>
                 ))}
               </select>
             </label>
 
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">No Etudiant</span>
-              <input
+            <label className="flex flex-row items-center gap-2">
+              <span className="font-semibold w-[15%]">Formation</span>
+              <select
                 required
-                type="text"
-                name="noEtudiant"
-                value={student.noEtudiant}
+                className="select w-[80%] max-w-full"
+                name="codeFormation"
+                value={student.codeFormation}
                 onChange={handleChange}
-                className="grow"
-                placeholder="Ex: YI98765"
-              />
+              >
+                <option value="" disabled>
+                  Sélectionnez une formation
+                </option>
+                {promotions.map((promotion, idx) => (
+                  <option key={idx} value={promotion.codeFormation}>
+                    {promotion.codeFormation}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className=" flex flex-row items-center gap-2">
