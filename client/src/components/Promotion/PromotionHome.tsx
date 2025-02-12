@@ -179,7 +179,7 @@ const PromotionHome = () => {
                       </td>
                       <td className="px-4 py-2">{promotion.siglePromotion}</td>
                       <td className="px-4 py-2">
-                        {new Date(promotion.dateRentree).toLocaleDateString(
+                        {new Date(promotion.dateRentree!).toLocaleDateString(
                           "fr-FR",
                           {
                             year: "numeric",
