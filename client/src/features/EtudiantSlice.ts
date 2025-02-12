@@ -102,7 +102,7 @@ export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], Promotio
     async (promotionDetails, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Etudiant[]>(`/etudiants/promotion/${promotionDetails.anneeUniversitaire}/${promotionDetails.codeFormation}`);
-            console.log("etudiant from by", { promotionDetails, response});
+            //console.log("etudiant from by", { promotionDetails, response});
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);

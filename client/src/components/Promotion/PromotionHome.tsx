@@ -10,6 +10,7 @@ import { IoMdAdd } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faEye,
   faGraduationCap,
   faPenToSquare,
   faTrash,
@@ -20,6 +21,7 @@ import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Student/StudentHome";
 import { PromotionDetails, PromotionId } from "../../types/types";
 import { Promotion } from "../../types/types";
+import { DetailsPromotions } from "./DetailsPromotions";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
@@ -190,7 +192,7 @@ const PromotionHome = () => {
                       </td>
                       <td className="px-4 py-2">{promotion.lieuRentree}</td>
                       <td className="px-4 py-2">{promotion.diplome}</td>
-                      <td className="px-4 py-2">{promotion.nomFormation}</td>
+                      <td className="px-4 py-2">{promotion.codeFormation}</td>
                       <td className="px-4 py-2">
                         {promotion.nom?.toUpperCase() + " " + promotion.prenom}
                       </td>
@@ -208,6 +210,21 @@ const PromotionHome = () => {
                               promotion.codeFormation
                             )
                           }
+                        />
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClick({} as Promotion, index);
+                            handleClickUpdate({} as Promotion, index);
+                            handleClick(promotion, index);
+                            openModal(
+                              `detailsPromotion-${
+                                (promotion.anneeUniversitaire,
+                                promotion.siglePromotion)
+                              }`
+                            );
+                          }}
                         />
                         <FontAwesomeIcon
                           icon={faPenToSquare}
@@ -241,6 +258,17 @@ const PromotionHome = () => {
                         <UpdatePromotion
                           promotionData={promotion}
                           dispatchPromotion={dispatchPromotion}
+                        />
+                      </dialog>
+                      <dialog
+                        id={`detailsPromotion-${
+                          (promotion.anneeUniversitaire,
+                          promotion.siglePromotion)
+                        }`}
+                        className="modal"
+                      >
+                        <DetailsPromotions
+                          promotion={promotion}
                         />
                       </dialog>
                     </tr>
