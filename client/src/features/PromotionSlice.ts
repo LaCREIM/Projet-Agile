@@ -46,7 +46,7 @@ export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Promotion[]>(`/promotions`);
-            //console.log("all promotions", response.data);
+            console.log("all promotions", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);

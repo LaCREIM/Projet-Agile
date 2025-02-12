@@ -54,7 +54,10 @@ const StudentHome = ({
     index: number;
   }>({ etudiant: null, index: -1 });
 
-  const [pro, setPro] = useState<PromotionDetails>({} as PromotionDetails);
+  const [pro, setPro] = useState<PromotionDetails>({
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
 
   const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
   const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
@@ -168,14 +171,14 @@ const StudentHome = ({
     <>
       <motion.div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
-        {promotionDetails.siglePro ? (
-          <h1>Liste des étudiants de {promotionDetails.siglePro} </h1>
+        {promotionDetails.codeFormation ? (
+          <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
         ) : (
           <h1>Liste des étudiants</h1>
         )}
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-14">
-          {!promotionDetails.siglePro ? (
+          {!promotionDetails.codeFormation ? (
             <select
               defaultValue="default"
               className="select hover:cursor-pointer"
