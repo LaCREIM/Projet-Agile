@@ -19,7 +19,7 @@ import AddPromotion from "./AddPromotion";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Student/StudentHome";
-import { PromotionDetails, PromotionId } from "../../types/types";
+import { PromotionCreate, PromotionDetails, PromotionId } from "../../types/types";
 import { Promotion } from "../../types/types";
 import { DetailsPromotions } from "./DetailsPromotions";
 
@@ -256,7 +256,7 @@ const PromotionHome = () => {
                         className="modal"
                       >
                         <UpdatePromotion
-                          promotionData={promotion}
+                          promotionData={promotion as PromotionCreate}
                           dispatchPromotion={dispatchPromotion}
                         />
                       </dialog>

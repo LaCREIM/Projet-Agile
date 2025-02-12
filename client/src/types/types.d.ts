@@ -183,7 +183,7 @@ export interface PromotionId extends Serializable {
 
 export interface Promotion {
     id: PromotionId;
-    noEnseignant: Enseignant | null;
+    noEnseignant: string;
     siglePromotion: string;
     nbMaxEtudiant: number;
     dateReponseLp: Date | null;
@@ -200,6 +200,22 @@ export interface Promotion {
     prenom: string;
     type: string;
     email: string;
+}
+
+export interface PromotionCreate {
+    noEnseignant: string;
+    siglePromotion: string;
+    nbMaxEtudiant: number;
+    dateReponseLp: Date | null;
+    dateReponseLalp: Date | null;
+    dateRentree: Date ;
+    lieuRentree: string;
+    processusStage: string;
+    commentaire: string | null;
+    anneeUniversitaire: string;
+    diplome:string;
+    nomFormation:string;
+    codeFormation:string;
 }
 
 export interface Qualificatif {
