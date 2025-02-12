@@ -13,13 +13,8 @@ import {
   getDomaineDiplomeAsync,
 } from "../../features/PromotionSlice";
 
-// import {
-//     //Enseignant,
-//   getEnseignantAsync,
-//  // getEnseignants,
-// } from "../../features/EnseignantSlice";
-import { Formation, PromotionCreate } from "../../types/types";
-// import { getEnseignantAsync } from "../../features/EnseignantSlice";
+import { Enseignant, Formation, PromotionCreate } from "../../types/types";
+import { getAllEnseignant, getAllEnseignantAsync } from "../../features/EnseignantSlice";
 
 interface AddPromotionProps {
   dispatchPromotion: () => void;
@@ -32,7 +27,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
   const salles = useAppSelector<Domaine[]>(getSalles);
   const diplomes = useAppSelector<Domaine[]>(getDiplomes);
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
-  //const enseaignants = useAppSelector<Enseignant[]>(getEnseignants);
+  const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
   const [promotion, setPromotion] = useState<PromotionCreate>({
     noEnseignant: "1",
     siglePromotion: "",
@@ -83,8 +78,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
     dispatch(getDomaineLieuEntreeAsync());
     dispatch(getDomaineProcessusStageAsync());
     dispatch(getDomaineDiplomeAsync());
-
-    // dispatch(getEnseignantAsync());
+    dispatch(getAllEnseignantAsync());
   }, [dispatch]);
 
   const formatDate = (date: string | Date | null) => {
@@ -225,12 +219,12 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 <option value="" disabled>
                   Sélectionnez une formation
                 </option>
-                {formations.map((formation) => (
+                {enseignants.map((ens) => (
                   <option
-                    key={formation.codeFormation}
-                    value={formation.codeFormation}
+                    key={ens.id}
+                    value={ens.id}
                   >
-                    {formation.codeFormation}
+                    {ens.nom.toUpperCase()} {" "} {ens.prenom}
                   </option>
                 ))}
               </select>
