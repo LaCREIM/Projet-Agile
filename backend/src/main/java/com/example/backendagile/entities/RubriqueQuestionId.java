@@ -12,6 +12,14 @@ public class RubriqueQuestionId implements java.io.Serializable {
     @Column(name = "ID_RUBRIQUE", nullable = false)
     private Long idRubrique;
 
+    public RubriqueQuestionId(Long idRubrique, Long idQuestion) {
+        this.idRubrique = idRubrique;
+        this.idQuestion = idQuestion;
+    }
+
+    public RubriqueQuestionId() {
+    }
+
     @Column(name = "ID_QUESTION", nullable = false)
     private Long idQuestion;
 
