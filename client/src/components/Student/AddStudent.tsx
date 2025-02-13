@@ -9,14 +9,18 @@ import {
   postEtudiantAsync,
 } from "../../features/EtudiantSlice";
 
-import {
-  getPromotionAsync,
-  getPromotions,
-} from "../../features/PromotionSlice";
+// import {
+//   getPromotionAsync,
+//   getPromotions,
+// } from "../../features/PromotionSlice";
 
-import { Etudiant } from "../../types/types";
+import { Etudiant, Promotion } from "../../types/types";
 
-const AddStudent = () => {
+interface AddStudentProps {
+  promotions: Promotion[]
+}
+
+const AddStudent = ({promotions}: AddStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
@@ -61,12 +65,12 @@ const AddStudent = () => {
     dispatch(getEtudiantAsync());
   };
 
-  const promotions = useAppSelector(getPromotions);
+  //const promotions = useAppSelector(getPromotions);
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
 
   useEffect(() => {
-    dispatch(getPromotionAsync());
+    // dispatch(getPromotionAsync());
     dispatch(getDomainePaysAsync());
     dispatch(getDomaineUnivAsync());
   }, [dispatch]);

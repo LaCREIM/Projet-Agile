@@ -12,19 +12,17 @@ import {
   updatePromotionAsync,
 } from "../../features/PromotionSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { Formation, PromotionCreate } from "../../types/types";
-// import {
-//   getEnseignantAsync,
-//   getEnseignants,
-// } from "../../features/EnseignantSlice";
+import { Enseignant, Formation, PromotionCreate } from "../../types/types";
 
 interface UpdatePromotioProps {
   promotionData: PromotionCreate;
+  enseignants: Enseignant[];
   dispatchPromotion: () => void;
 }
 
 const UpdatePromotion = ({
   promotionData,
+  enseignants,
   dispatchPromotion,
 }: UpdatePromotioProps) => {
   const dispatch = useAppDispatch();
@@ -32,7 +30,8 @@ const UpdatePromotion = ({
   const salles = useAppSelector<Domaine[]>(getSalles);
   const diplomes = useAppSelector<Domaine[]>(getDiplomes);
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
-  //   const enseaignants = useAppSelector(getEnseignants);
+
+    
   const [promotion, setPromotion] = useState<PromotionCreate>({
     ...promotionData,
   });
@@ -54,7 +53,7 @@ const UpdatePromotion = ({
     promotion.nbMaxEtudiant != 0 &&
     promotion.dateRentree != new Date() &&
     promotion.lieuRentree != "" &&
-    // promotion.noEnseignant &&
+    promotion.noEnseignant != "" &&
     promotion.processusStage != "" &&
     promotion.diplome != "";
 
@@ -70,7 +69,7 @@ const UpdatePromotion = ({
         dispatch(getDomaineLieuEntreeAsync());
         dispatch(getDomaineProcessusStageAsync());
         dispatch(getDomaineDiplomeAsync());
-    //  dispatch(getEnseignantAsync());
+      
   }, [dispatch]);
 
   const formatDate = (date: string | Date | null) => {
@@ -209,14 +208,11 @@ const UpdatePromotion = ({
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez une formation
+                  Sélectionnez un responsable
                 </option>
-                {formations.map((formation) => (
-                  <option
-                    key={formation.codeFormation}
-                    value={formation.codeFormation}
-                  >
-                    {formation.codeFormation}
+                {enseignants.map((ens) => (
+                  <option key={ens.id} value={ens.id}>
+                    {ens.nom.toUpperCase()} {ens.prenom}
                   </option>
                 ))}
               </select>

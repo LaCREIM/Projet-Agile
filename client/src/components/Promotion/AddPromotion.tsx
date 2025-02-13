@@ -14,22 +14,25 @@ import {
 } from "../../features/PromotionSlice";
 
 import { Enseignant, Formation, PromotionCreate } from "../../types/types";
-import { getAllEnseignant, getAllEnseignantAsync } from "../../features/EnseignantSlice";
 
 interface AddPromotionProps {
   dispatchPromotion: () => void;
+  enseignants: Enseignant[];
 }
 
-const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
+const AddPromotion = ({
+  dispatchPromotion,
+  enseignants,
+}: AddPromotionProps) => {
   const dispatch = useAppDispatch();
 
   const formations = useAppSelector<Formation[]>(getFormations);
   const salles = useAppSelector<Domaine[]>(getSalles);
   const diplomes = useAppSelector<Domaine[]>(getDiplomes);
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
-  const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
+
   const [promotion, setPromotion] = useState<PromotionCreate>({
-    noEnseignant: "1",
+    noEnseignant: "",
     siglePromotion: "",
     nbMaxEtudiant: 0,
     dateReponseLp: null,
@@ -58,19 +61,13 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
     promotion.nbMaxEtudiant != 0 &&
     promotion.dateRentree != null &&
     promotion.lieuRentree != "" &&
-    // promotion.noEnseignant &&
+    promotion.noEnseignant != "" &&
     promotion.processusStage != "" &&
     promotion.diplome != "";
 
   const handleSubmit = async () => {
-    if (canSave) {
-      {
-        console.log("i'm heeere", promotion);
-        
-        await dispatch(postPromotionsAsync(promotion));
-      }
-      dispatchPromotion();
-    }
+    if (canSave) await dispatch(postPromotionsAsync(promotion));
+    dispatchPromotion();
   };
 
   useEffect(() => {
@@ -78,7 +75,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
     dispatch(getDomaineLieuEntreeAsync());
     dispatch(getDomaineProcessusStageAsync());
     dispatch(getDomaineDiplomeAsync());
-    dispatch(getAllEnseignantAsync());
+
   }, [dispatch]);
 
   const formatDate = (date: string | Date | null) => {
@@ -217,14 +214,11 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez une formation
+                  Sélectionnez un responsable
                 </option>
                 {enseignants.map((ens) => (
-                  <option
-                    key={ens.id}
-                    value={ens.id}
-                  >
-                    {ens.nom.toUpperCase()} {" "} {ens.prenom}
+                  <option key={ens.id} value={ens.id}>
+                    {ens.nom.toUpperCase()} {ens.prenom}
                   </option>
                 ))}
               </select>
@@ -239,7 +233,7 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez un etat
+                  Sélectionnez un état
                 </option>
                 {processusStage.map((ps) => (
                   <option key={ps.rvLowValue} value={ps.rvLowValue}>
@@ -254,7 +248,12 @@ const AddPromotion = ({ dispatchPromotion }: AddPromotionProps) => {
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
             <button className="btn">Annuler</button>
-            <button className="btn btn-neutral" onClick={handleSubmit} type="submit" disabled={!canSave}>
+            <button
+              className="btn btn-neutral"
+              onClick={handleSubmit}
+              type="submit"
+              disabled={!canSave}
+            >
               Ajouter
             </button>
           </form>

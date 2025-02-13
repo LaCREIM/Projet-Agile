@@ -73,9 +73,6 @@ const StudentHome = ({
     ) {
       dispatch(getEtudiantAsync());
     } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
-      
-      console.log("heeeeeere");
-      
       dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
     } else if (
       promotionDetails.anneePro !== "-1" &&
@@ -307,7 +304,7 @@ const StudentHome = ({
                       id={`updateStudent-${etudiant.noEtudiant}`}
                       className="modal"
                     >
-                      <UpdateStudent studentData={etudiant} />
+                      <UpdateStudent promotions={promotions} studentData={etudiant} />
                     </dialog>
                     <dialog
                       id={`inspect-${etudiant.noEtudiant}`}
@@ -323,7 +320,7 @@ const StudentHome = ({
         </div>
       </motion.div>
       <dialog id="addStudent" className="modal">
-        <AddStudent />
+        <AddStudent promotions={promotions} />
       </dialog>
     </>
   );
