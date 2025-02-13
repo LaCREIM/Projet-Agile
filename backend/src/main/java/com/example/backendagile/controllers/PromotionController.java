@@ -38,6 +38,8 @@
          */
         @GetMapping
         public List<PromotionDTO> getAllPromotions() {
+            System.out.println(promotionService.getAllPromotions());
+
             return promotionService.getAllPromotions();
         }
 
