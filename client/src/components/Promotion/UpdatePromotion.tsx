@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Domaine,
-  getDiplomes,
   getDomaineDiplomeAsync,
   getDomaineLieuEntreeAsync,
   getDomaineProcessusStageAsync,
@@ -28,10 +27,8 @@ const UpdatePromotion = ({
   const dispatch = useAppDispatch();
   const formations = useAppSelector<Formation[]>(getFormations);
   const salles = useAppSelector<Domaine[]>(getSalles);
-  const diplomes = useAppSelector<Domaine[]>(getDiplomes);
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
 
-    
   const [promotion, setPromotion] = useState<PromotionCreate>({
     ...promotionData,
   });
@@ -43,7 +40,7 @@ const UpdatePromotion = ({
     setPromotion({
       ...promotion,
       [name]: value,
-    });    
+    });
   };
 
   const canSave =
@@ -64,18 +61,17 @@ const UpdatePromotion = ({
     }
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     dispatch(getFormationAsync());
-        dispatch(getDomaineLieuEntreeAsync());
-        dispatch(getDomaineProcessusStageAsync());
-        dispatch(getDomaineDiplomeAsync());
-      
+    dispatch(getDomaineLieuEntreeAsync());
+    dispatch(getDomaineProcessusStageAsync());
+    dispatch(getDomaineDiplomeAsync());
   }, [dispatch]);
 
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    date instanceof Date ? date.toISOString().split("T")[0] : date;
-  };
+  // const formatDate = (date: string | Date | null) => {
+  //   if (date === null) return "";
+  //   date instanceof Date ? date.toISOString().split("T")[0] : date;
+  // };
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -97,20 +93,6 @@ const UpdatePromotion = ({
                 />
               </label>
               <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Année universitaire</span>
-                <input
-                  required
-                  type="text"
-                  name="anneeUniversitaire"
-                  value={promotion.anneeUniversitaire}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: 2023-2024"
-                />
-              </label>
-            </div>
-            <div className="flex flex-row justify-between">
-              <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Nombre Etudiants max</span>
                 <input
                   required
@@ -122,38 +104,24 @@ const UpdatePromotion = ({
                   placeholder="Ex: 25"
                 />
               </label>
-
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Date rentrée</span>
-                <input
-                  required
-                  type="date"
-                  name="dateRentree"
-                  value={formatDate(promotion.dateRentree)}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: 2022-09-01"
-                />
-              </label>
             </div>
-            <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Diplôme</span>
-              <select
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Date rentrée</span>
+              <input
                 required
-                className="select w-[80%] max-w-full"
-                name="diplome"
-                value={promotion.diplome}
+                type="date"
+                name="dateRentree"
+                value={
+                  promotion.dateRentree
+                    ? new Date(promotion.dateRentree)
+                        .toISOString()
+                        .split("T")[0]
+                    : ""
+                }
                 onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Sélectionnez un diplôme
-                </option>
-                {diplomes.map((domaine) => (
-                  <option key={domaine.rvLowValue} value={domaine.rvLowValue}>
-                    {domaine.rvMeaning}
-                  </option>
-                ))}
-              </select>
+                className="grow"
+                placeholder="Ex: 2022-09-01"
+              />
             </label>
 
             <label className="flex flex-row items-center gap-2">

@@ -26,6 +26,15 @@ import { Formation, Promotion, PromotionCreate, PromotionId } from "../types/typ
 //     nomFormation: string;
 // }
 
+export const anneesUniv = [
+    "2000-2001", "2001-2002", "2002-2003", "2003-2004", "2004-2005",
+    "2005-2006", "2006-2007", "2007-2008", "2008-2009", "2009-2010",
+    "2010-2011", "2011-2012", "2012-2013", "2013-2014", "2014-2015",
+    "2015-2016", "2016-2017", "2017-2018", "2018-2019", "2019-2020",
+    "2020-2021", "2021-2022", "2022-2023", "2023-2024", "2024-2025",
+    "2025-2026", "2026-2027", "2027-2028", "2028-2029", "2029-2030"
+];
+
 export interface Domaine {
     rvLowValue: string;
     rvMeaning: string;
@@ -98,7 +107,8 @@ export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Promotion[]>(`/promotions`);
-            console.log("all promotions", response.data);
+            console.log(response.data);
+            
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -112,7 +122,7 @@ export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Formation[]>(`/formations`);
-            //console.log("from all", response.data);
+            // console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching formations:", error);
