@@ -12,4 +12,6 @@ public interface RubriqueQuestionPrsRepository extends JpaRepository<RubriqueQue
             "WHERE rq.idRubrique.noEnseignant.id = :noEnseignant")
     List<RubriqueQuestion> findByEnseignant(Long noEnseignant);
 
+    List<RubriqueQuestion> findByIdRubriqueId(Long idRubrique);
+
 }

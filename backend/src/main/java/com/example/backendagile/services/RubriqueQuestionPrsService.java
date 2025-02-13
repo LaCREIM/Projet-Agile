@@ -53,6 +53,14 @@ public class RubriqueQuestionPrsService {
         rubriqueQuestionRepository.deleteById(id);
     }
 
+    public List<RubriqueQuestionPrsDTO> getQuestionsByRubrique(Long idRubrique) {
+        List<RubriqueQuestion> rubriqueQuestions = rubriqueQuestionRepository.findByIdRubriqueId(idRubrique);
+
+        return rubriqueQuestions.stream()
+                .map(rubriqueQuestionPrsMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
 
 }
