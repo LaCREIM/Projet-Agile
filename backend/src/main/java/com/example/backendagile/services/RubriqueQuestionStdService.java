@@ -21,7 +21,14 @@ public class RubriqueQuestionStdService {
         this.rubriqueQuestionStdRepository = rubriqueQuestionStdRepository;
         this.rubriqueQuestionStdMapper = rubriqueQuestionStdMapper;
     }
-
+    public List<RubriqueQuestionStdDTO> getQuestionsByRubrique(Long idRubrique) {
+        List<RubriqueQuestion> rubriqueQuestions = rubriqueQuestionStdRepository.findByIdRubriqueId(idRubrique);
+        
+        return rubriqueQuestions.stream()
+                .map(rubriqueQuestionStdMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    
     public List<RubriqueQuestionStdDTO> getAllRubriquesQuestionStd() {
         return rubriqueQuestionStdRepository.findAll()
                 .stream()
