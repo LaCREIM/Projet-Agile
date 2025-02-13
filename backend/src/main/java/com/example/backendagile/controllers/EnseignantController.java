@@ -34,7 +34,7 @@ public class EnseignantController {
     /**
      * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement) avec pagination
      */
-    @GetMapping
+    @GetMapping("/paged")
     public ResponseEntity<List<Enseignant>> getAllEnseignantsPaged(@RequestParam int page, @RequestParam int size) {
         List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
         return ResponseEntity.ok(enseignants);
@@ -43,7 +43,7 @@ public class EnseignantController {
     /**
      * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
      */
-    @GetMapping("/paged")
+    @GetMapping
     public ResponseEntity<List<Enseignant>> getAllEnseignants() {
         List<Enseignant> enseignants = enseignantService.getEnseignant();
         return ResponseEntity.ok(enseignants);
