@@ -41,11 +41,16 @@ public class RubriqueQuestionPrsService {
 
             rubriqueQuestion = rubriqueQuestionPrsMapper.toEntity(dto, Optional.of(rubriqueQuestion));
 
-
-
             // Sauvegarder ou mettre à jour l'enregistrement
             rubriqueQuestionRepository.save(rubriqueQuestion);
         }
+    }
+    public void deleteRubriqueQuestion(Long idRubrique, Long idQuestion) {
+        RubriqueQuestionId id = new RubriqueQuestionId(idRubrique, idQuestion);
+        if (!rubriqueQuestionRepository.existsById(id)) {
+            throw new IllegalArgumentException("La question personnelle spécifiée n'existe pas dans cette rubrique.");
+        }
+        rubriqueQuestionRepository.deleteById(id);
     }
 
 
