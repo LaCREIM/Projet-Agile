@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,7 @@ public class RubriqueQuestionPrsController {
     }
 
     // Nouvelle méthode pour sauvegarder ou mettre à jour une liste de RubriqueQuestionPrsDTO
-    @PostMapping("/save-or-update")
+    @PostMapping("/sauvgarder")
     public ResponseEntity<Void> saveOrUpdateRubriqueQuestions(@RequestBody List<RubriqueQuestionPrsDTO> rubriqueQuestionDtos) {
         rubriqueQuestionPrsService.saveOrUpdateRubriqueQuestions(rubriqueQuestionDtos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Réponse 204 No Content
@@ -44,6 +45,22 @@ public class RubriqueQuestionPrsController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur inattendue est survenue lors de la suppression.");
+        }
+    }
+
+
+    @GetMapping("/{idRubrique}")
+    public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
+        try {
+            List<RubriqueQuestionPrsDTO> questions = rubriqueQuestionPrsService.getQuestionsByRubrique(idRubrique);
+            if (questions.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("message", "Aucune question standard trouvée pour cette rubrique."));
+            }
+            return ResponseEntity.ok(questions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Une erreur est survenue."));
         }
     }
 }
