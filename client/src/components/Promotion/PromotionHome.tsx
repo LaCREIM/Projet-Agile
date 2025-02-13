@@ -151,8 +151,6 @@ const PromotionHome = () => {
   ) => {
     const { value } = e.target;
     setSearch(value);
-
-    
     if (value.trim() === "") {
       setFilteredPromotions(promotions);
     } else {
@@ -226,7 +224,8 @@ const PromotionHome = () => {
                 </tr>
               </thead>
               <tbody>
-                {promotions.length === 0 ? (
+                {
+                promotions.length === 0 ? (
                   <tr>
                     <td
                       colSpan={11}
