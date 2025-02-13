@@ -9,18 +9,16 @@ import {
   updateEtudiantAsync,
 } from "../../features/EtudiantSlice";
 
-import {
-  getPromotionAsync,
-  getPromotions,
-} from "../../features/PromotionSlice";
 
-import { Etudiant } from "../../types/types";
+
+import { Etudiant, Promotion } from "../../types/types";
 
 interface UpdateStudentProps {
   studentData: Etudiant;
+  promotions: Promotion[]
 }
 
-const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
+const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
@@ -63,12 +61,12 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
     dispatch(getEtudiantAsync());
   };
 
-  const promotions = useAppSelector(getPromotions);
+  // const promotions = useAppSelector(getPromotions);
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
 
   useEffect(() => {
-    dispatch(getPromotionAsync());
+    // dispatch(getPromotionAsync());
     dispatch(getDomainePaysAsync());
     dispatch(getDomaineUnivAsync());
   }, [dispatch]);
@@ -78,9 +76,6 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
     date instanceof Date ? date.toISOString().split("T")[0] : date;
   };
 
-  useEffect(() => {
-    console.log(canSave);
-  }, [canSave]);
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -295,7 +290,7 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
             </label>
 
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Formation</span>
+              <span className="font-semibold w-[15%]">Promotion</span>
               <select
                 required
                 className="select w-[80%] max-w-full"
@@ -304,7 +299,7 @@ const UpdateStudent = ({ studentData }: UpdateStudentProps) => {
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez une formation
+                  Sélectionnez une promotion
                 </option>
                 {promotions.map((promotion, idx) => (
                   <option key={idx} value={promotion.codeFormation}>

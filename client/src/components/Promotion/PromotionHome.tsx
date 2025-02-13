@@ -19,14 +19,16 @@ import AddPromotion from "./AddPromotion";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Student/StudentHome";
-import { PromotionCreate, PromotionDetails, PromotionId } from "../../types/types";
+import { Enseignant, PromotionCreate, PromotionDetails, PromotionId } from "../../types/types";
 import { Promotion } from "../../types/types";
 import { DetailsPromotions } from "./DetailsPromotions";
+import { getAllEnseignant, getAllEnseignantAsync } from "../../features/EnseignantSlice";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
   const dispatch = useAppDispatch();
   const promotions = useAppSelector<Promotion[]>(getPromotions);
+  const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>(
     {} as PromotionDetails
   );
@@ -65,6 +67,7 @@ const PromotionHome = () => {
 
   useEffect(() => {
     dispatch(getPromotionAsync());
+    dispatch(getAllEnseignantAsync());
   }, [dispatch]);
 
   useEffect(() => {
@@ -103,11 +106,10 @@ const PromotionHome = () => {
     const response = await dispatch(deletePromotionAsync({anneeUniversitaire: promotion.anneeUniversitaire, codeFormation:promotion.codeFormation} as PromotionId));
     if (response?.payload === "not deleted") {
       toast.error("Cette promotion ne peut pas être supprimée");
-    }
-    if (response?.payload === "deleted") {
+    }else{
       toast.success("Promotion supprimée avec succès");
-      dispatch(getPromotionAsync());
     }
+    dispatch(getPromotionAsync());
   };
 
   const switchToStudent = (anneeUniversitaire: string, codeFormation: string) => {
@@ -256,6 +258,7 @@ const PromotionHome = () => {
                         className="modal"
                       >
                         <UpdatePromotion
+                        enseignants={enseignants}
                           promotionData={promotion as PromotionCreate}
                           dispatchPromotion={dispatchPromotion}
                         />
@@ -280,7 +283,7 @@ const PromotionHome = () => {
         </div>
       )}
       <dialog id="addPromotion" className="modal">
-        <AddPromotion dispatchPromotion={dispatchPromotion} />
+        <AddPromotion enseignants={enseignants} dispatchPromotion={dispatchPromotion} />
       </dialog>
     </>
   );
