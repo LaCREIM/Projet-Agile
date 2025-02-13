@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
@@ -68,7 +67,14 @@ const QualificatifHome = () => {
         toast.success("Qualificatif supprimé avec succès.");
   
         // Vérifiez si cette action est bien exécutée et rafraîchit la liste
-        dispatch(fetchQualificatifsAsync());
+        const refreshResponse = await dispatch(fetchQualificatifsAsync());
+        console.log("refreshResponse", refreshResponse);
+        if (refreshResponse?.payload) {
+          console.log("Liste des qualificatifs rafraîchie :", refreshResponse.payload);
+        } else {
+          console.warn("Échec du rafraîchissement.");
+        }
+
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
