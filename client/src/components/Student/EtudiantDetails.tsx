@@ -1,4 +1,5 @@
-import { Etudiant } from "../../features/EtudiantSlice";
+import { Etudiant } from "../../types/types";
+
 
 interface EtudiantProp {
   etudiant: Etudiant;
@@ -9,9 +10,6 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[55em] max-w-5xl space-y-5">
         <div className="flex flex-col items-center w-full">
-          <h1 className="text-left justify-start w-full">
-            <kbd className="kbd kbd-sm">ESC</kbd> pour quitter.
-          </h1>
           <h3 className="font-bold text-center text-lg">
             Détails de l'étudiant <b>{etudiant.nom.toUpperCase()}</b>
           </h3>
@@ -28,28 +26,31 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
               <dd className="mt-1 text-gray-500">{etudiant.prenom}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Numéro UBO :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.noEtudiantUbo}</dd>
+              <dt>Numéro Étudiant :</dt>
+              <dd className="mt-1 text-gray-500">{etudiant.noEtudiant}</dd>
             </div>
-            <div className="text-base font-medium text-gray-900">
-              <dt>Numéro National :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.noEtudiantNat}</dd>
-            </div>
+
             <div className="text-base font-medium text-gray-900">
               <dt>Promotion :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.anneePro}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.codeFormation}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Email :</dt>
+              <dt>Email personnel :</dt>
               <dd className="mt-1 text-gray-500">{etudiant.email}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
+              <dt>Email UBO :</dt>
+              <dd className="mt-1 text-gray-500">{etudiant.emailUbo}</dd>
+            </div>
+            <div className="text-base font-medium text-gray-900">
               <dt>Téléphone :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.telephone}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.mobile}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Université :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.universite}</dd>
+              <dd className="mt-1 text-gray-500">
+                {etudiant.universiteOrigine}
+              </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Sexe :</dt>
@@ -58,7 +59,7 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
             <div className="text-base font-medium text-gray-900">
               <dt>Date de naissance :</dt>
               <dd className="mt-1 text-gray-500">
-                {new Date(etudiant.dateNaissance).toLocaleDateString("fr-FR", {
+                {new Date(etudiant.dateNaissance!).toLocaleDateString("fr-FR", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -77,38 +78,42 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Adresse permanente :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.permAdresse}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.adresse}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Ville :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.permVille}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.ville}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Code Postal :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.permCp}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.codePostal}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Pays :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.permPays}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.paysOrigine}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Dernier Diplôme :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.dernierDiplome}</dd>
+              <dt>Universite d'origine :</dt>
+              <dd className="mt-1 text-gray-500">
+                {etudiant.universiteOrigine}
+              </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Sigle Étudiant :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.sigleEtu}</dd>
+              <dt>Groupe TP :</dt>
+              <dd className="mt-1 text-gray-500">{etudiant.groupeTp}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Compte CRI :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.compteCri}</dd>
-            </div>
-            <div className="text-base font-medium text-gray-900">
-              <dt>Situation :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.situation}</dd>
+              <dt>Groupe Anglais :</dt>
+              <dd className="mt-1 text-gray-500">{etudiant.groupeAnglais}</dd>
             </div>
           </dl>
         </div>
+      <div className="modal-action">
+        <form method="dialog" className="flex flex-row gap-5">
+          <button className="btn">Fermer</button>
+          
+        </form>
+      </div>
       </div>
     </div>
   );

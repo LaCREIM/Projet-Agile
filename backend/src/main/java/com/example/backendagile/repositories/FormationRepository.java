@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface FormationRepository extends JpaRepository<Formation, String> {
     @Query("SELECT f.diplome FROM Formation f WHERE f.codeFormation = :codeFormation")
     Optional<String> findDiplomeByCodeFormation(String codeFormation);
+
+    @Query("SELECT f.nomFormation FROM Formation f WHERE f.codeFormation = :codeFormation")
+    Optional<String> findNomByCodeFormation(String codeFormation);
 }

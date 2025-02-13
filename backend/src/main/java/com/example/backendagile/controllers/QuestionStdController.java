@@ -2,7 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.QuestionStdDTO;
 import com.example.backendagile.entities.Question;
-import com.example.backendagile.services.QuestionService;
+import com.example.backendagile.services.QuestionStdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +16,14 @@ import java.util.Optional;
 public class QuestionStdController {
 
     @Autowired
-    private QuestionService questionService;
+    private QuestionStdService questionStdService;
 
     /**
      * Récupérer toutes les questions standards (renvoie les entités)
      */
     @GetMapping
     public ResponseEntity<List<Question>> getStandardQuestions() {
-        return ResponseEntity.ok(questionService.getStandardQuestions());
+        return ResponseEntity.ok(questionStdService.getStandardQuestions());
     }
 
     /**
@@ -31,7 +31,7 @@ public class QuestionStdController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Question> getQuestionById(@PathVariable Long id) {
-        Optional<Question> question = questionService.findById(id);
+        Optional<Question> question = questionStdService.findById(id);
         return question.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -39,12 +39,12 @@ public class QuestionStdController {
      * Créer une question standard (utilise DTO)
      */
     @PostMapping
-    public ResponseEntity<QuestionStdDTO> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
+    public ResponseEntity<?> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
         try {
-            QuestionStdDTO createdQuestion = questionService.createStandardQuestion(questionStdDTO);
-            return ResponseEntity.status(201).body(createdQuestion);
+            QuestionStdDTO createdQuestion = questionStdService.createStandardQuestion(questionStdDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdQuestion);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -52,27 +52,34 @@ public class QuestionStdController {
      * Mettre à jour une question standard existante (utilise DTO)
      */
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionStdDTO> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionStdDTO) {
+    public ResponseEntity<QuestionStdDTO> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
         try {
-            QuestionStdDTO updatedQuestion = questionService.updateStandardQuestion(id, questionStdDTO);
-            return ResponseEntity.ok(updatedQuestion);
+            Question updatedQuestion = questionStdService.updateStandardQuestion(id, questionDto);
+    
+            // Créer un DTO uniquement avec les champs souhaités
+            QuestionStdDTO responseDto = new QuestionStdDTO();
+            responseDto.setIdQualificatif(updatedQuestion.getIdQualificatif().getId());
+            responseDto.setIntitule(updatedQuestion.getIntitule());
+    
+            return ResponseEntity.ok(responseDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
+    
 
     /**
      * Supprimer une question standard par ID (utilise l'entité directement)
      */
-   @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
-        if (!questionService.findById(id).isPresent()) {
+        if (!questionStdService.findById(id).isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucune question trouvée avec cet ID.");
         }
         try {
-            questionService.deleteById(id);
+            questionStdService.deleteById(id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est deja utilisée.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
         }
         return ResponseEntity.ok("La question a été supprimée avec succès.");
     }

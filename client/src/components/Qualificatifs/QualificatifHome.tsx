@@ -3,7 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQualificatif from "./AddQualificatif";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {  faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import UpdateQualificatif from "./UpdateQualificatif";
 import { deleteQualificatifAsync, fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 import { Qualificatif } from "../../types/types";
@@ -47,11 +47,12 @@ const QualificatifHome = () => {
     if (dialog) dialog.showModal();
   };
 
-  const handleClick = (qualificatif: Qualificatif, index: number) => {
-    setModal({ qualificatif, index });
-  };
 
   const handleClickUpdate = (qualificatif: Qualificatif, index: number) => {
+    setModal({
+      qualificatif: null,
+      index: -1,
+    });
     setModalUpdate({ qualificatif, index });
   };
 
@@ -73,6 +74,7 @@ const QualificatifHome = () => {
         } else {
           console.warn("Échec du rafraîchissement.");
         }
+
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
@@ -125,15 +127,6 @@ const QualificatifHome = () => {
                         onClick={() => {
                           handleClickUpdate(qualificatif, index);
                           openModal(`updateQualificatif-${index}`);
-                        }}
-                      />
-
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClick(qualificatif, index);
-                          openModal(`inspect-${index}`);
                         }}
                       />
 

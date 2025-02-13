@@ -1,0 +1,72 @@
+stages:
+  - build
+  - test
+  - deploy
+  - logs
+
+build-docker-image:
+  stage: build
+  tags:
+    - eqp2
+  script:
+    - echo "Construction de l'image Docker..."
+    - ls -l
+    - docker-compose build
+
+run-tests:
+  stage: test
+  tags:
+    - eqp2
+  image: maven:latest
+  before_script:
+    - cd Backend
+  script:
+    - mvn test
+  artifacts:
+    paths:
+      - surefire-reports/
+    expire_in: 1 week
+    when: always
+  after_script:
+    - mkdir -p surefire-reports
+    - cp -r Backend/target/surefire-reports/* surefire-reports/
+  allow_failure: false
+
+deploy-docker-container:
+  stage: deploy
+  tags:
+    - eqp2
+  script:
+    - echo "Exécution du conteneur Docker..."
+    - docker-compose down
+    - docker-compose up -d
+
+get-docker-containers:
+  stage: logs
+  script:
+    - docker ps
+  tags:
+    - eqp2
+  when: manual
+
+get-docker-logs-frontend:
+  stage: logs
+  tags:
+    - eqp2
+  script:
+    - docker logs --tail 2000 pa-eq1-frontend
+    - echo "=============================================="
+    - echo "Logs de l'application à $(date)"
+    - echo "=============================================="
+  when: manual
+
+get-docker-logs-backend:
+  stage: logs
+  tags:
+    - eqp2
+  script:
+    - docker logs --tail 2000 pa-eq1-backend
+    - echo "=============================================="
+    - echo "Logs de l'application à $(date)"
+    - echo "=============================================="
+  when: manual

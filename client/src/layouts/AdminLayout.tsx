@@ -55,7 +55,7 @@ export const projects = [
     title: "Gestion Rubriques",
     icon: <BsCardHeading size={60} className="mx-auto" />,
     description: "Gestion les rubriques.",
-    link: "/admin/home/rubriquess",
+    link: "/admin/home/rubriques",
   },
   {
     title: "Gestion Évaluations",

@@ -1,10 +1,12 @@
 package com.example.backendagile.repositories;
 import com.example.backendagile.entities.Etudiant;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.Pageable;
 
@@ -20,4 +22,8 @@ public interface EtudiantRepository extends JpaRepository<Etudiant, String> {
     ) WHERE rnum > :startRow
 """, nativeQuery = true)
     List<Etudiant> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
+
+    List<Etudiant> findByNomAndPrenom(String nom, String prenom);
+
+    List<Etudiant> findByEmail(@NotBlank String email);
 }

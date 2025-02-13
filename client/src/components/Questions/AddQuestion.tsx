@@ -5,6 +5,7 @@ import { Question, Enseignant, Qualificatif } from "../../types/types";
 import { getEnseignantAsync } from "../../features/EnseignantSlice";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 
+
 const AddQuestion = () => {
   const dispatch = useAppDispatch();
   

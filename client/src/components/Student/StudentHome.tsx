@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   deleteEtudiantAsync,
-  Etudiant,
   getEtudiantAsync,
   getEtudiants,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
+import { Etudiant } from "../../types/types";
 
 import {
   getPromotionAsync,
@@ -54,21 +54,36 @@ const StudentHome = ({
     index: number;
   }>({ etudiant: null, index: -1 });
 
-  const [anneePro, setAnneePro] = useState<string>("-1");
+  const [pro, setPro] = useState<PromotionDetails>({
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
 
   const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
   const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    if (etudiants.length === 0) dispatch(getPromotionAsync());
-    if (anneePro === "-1" && promotionDetails.anneePro === "-1") {
+    dispatch(getPromotionAsync());
+    if (etudiants.length === 0) {
       dispatch(getEtudiantAsync());
-    } else if (anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(anneePro));
-    } else if (promotionDetails.anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(promotionDetails.anneePro));
     }
-  }, [dispatch, anneePro, promotionDetails]);
+    if (
+      pro.anneeUniversitaire === "-1" &&
+      promotionDetails.anneeUniversitaire === "-1"
+    ) {
+      dispatch(getEtudiantAsync());
+    } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
+      
+      console.log("heeeeeere");
+      
+      dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
+    } else if (
+      promotionDetails.anneePro !== "-1" &&
+      promotionDetails.codeFormation !== ""
+    ) {
+      dispatch(getEtudiantByPromotionAsync(promotionDetails as PromotionDetails));
+    }
+  }, [dispatch, pro, promotionDetails]);
 
   useEffect(() => {
     if (
@@ -103,9 +118,7 @@ const StudentHome = ({
 
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(
-      deleteEtudiantAsync(etudiant.noEtudiantNat)
-    );
+    const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
     dispatch(getEtudiantAsync());
     if (
       response?.payload ===
@@ -121,8 +134,23 @@ const StudentHome = ({
   };
 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPromotion = e.target.value;
-    setAnneePro(selectedPromotion);
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "-1") {
+      setPro({
+        anneeUniversitaire: "-1",
+        codeFormation: "",
+      } as PromotionDetails);
+    } else {
+      try {
+        const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
+        setPro(selectedPromotion);
+        console.log("Selected promotion:", selectedPromotion);
+        
+      } catch (error) {
+        console.error("Error parsing promotion details:", error);
+      }
+    }
   };
 
   const MotionVariant = {
@@ -143,14 +171,14 @@ const StudentHome = ({
     <>
       <motion.div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
-        {promotionDetails.siglePro ? (
-          <h1>Liste des étudiants de {promotionDetails.siglePro} </h1>
+        {promotionDetails.codeFormation ? (
+          <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
         ) : (
           <h1>Liste des étudiants</h1>
         )}
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-14">
-          {!promotionDetails.siglePro ? (
+          {!promotionDetails.codeFormation ? (
             <select
               defaultValue="default"
               className="select hover:cursor-pointer"
@@ -159,12 +187,26 @@ const StudentHome = ({
               <option value="default" disabled>
                 Sélectionnez une promotion
               </option>
-              <option value="-1" onClick={() => setAnneePro("-1")}>
+              <option
+                value="-1"
+                onClick={() =>
+                  setPro({
+                    anneeUniversitaire: "-1",
+                    codeFormation: "",
+                  } as PromotionDetails)
+                }
+              >
                 Tous les promotions
               </option>
-              {promotions.map((promotion) => (
-                <option key={promotion.anneePro} value={promotion.anneePro}>
-                  {promotion.anneePro} : {promotion.siglePro}
+              {promotions.map((promotion, idx) => (
+                <option
+                  key={idx}
+                  value={JSON.stringify({
+                    anneeUniversitaire: promotion.anneeUniversitaire,
+                    codeFormation: promotion.codeFormation,
+                  })}
+                >
+                  {promotion.anneeUniversitaire} : {promotion.codeFormation}
                 </option>
               ))}
             </select>
@@ -172,7 +214,10 @@ const StudentHome = ({
             <div
               className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
               onClick={() => {
-                setPromotionDetails({ anneePro: "-1", siglePro: "" });
+                setPromotionDetails({
+                  anneeUniversitaire: "-1",
+                  codeFormation: "",
+                } as PromotionDetails);
                 switchStudent("-1", "");
               }}
             >
@@ -220,7 +265,7 @@ const StudentHome = ({
               ) : (
                 etudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
-                    key={etudiant.noEtudiantNat}
+                    key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{index + 1}</td>
@@ -230,8 +275,8 @@ const StudentHome = ({
                       {etudiant.nationalite || "Française"}
                     </td>
                     <td className="px-4 py-2">{etudiant.email}</td>
-                    <td className="px-4 py-2">{etudiant.anneePro}</td>
-                    <td className="px-4 py-2">{etudiant.universite}</td>
+                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
+                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
                     <td
                       className="flex gap-3 justify-center items-center"
                       onClick={(e) => e.stopPropagation()}
@@ -240,10 +285,8 @@ const StudentHome = ({
                         icon={faPenToSquare}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Etudiant, index);
-                          handleClickUpdate({} as Etudiant, index);
                           handleClickUpdate(etudiant, index);
-                          openModal(`updateStudent-${etudiant.noEtudiantNat}`);
+                          openModal(`updateStudent-${etudiant.noEtudiant}`);
                         }}
                       />
                       <FontAwesomeIcon
@@ -255,21 +298,19 @@ const StudentHome = ({
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClick({} as Etudiant, index);
-                          handleClickUpdate({} as Etudiant, index);
                           handleClick(etudiant, index);
-                          openModal(`inspect-${etudiant.noEtudiantNat}`);
+                          openModal(`inspect-${etudiant.noEtudiant}`);
                         }}
                       />
                     </td>
                     <dialog
-                      id={`updateStudent-${etudiant.noEtudiantNat}`}
+                      id={`updateStudent-${etudiant.noEtudiant}`}
                       className="modal"
                     >
                       <UpdateStudent studentData={etudiant} />
                     </dialog>
                     <dialog
-                      id={`inspect-${etudiant.noEtudiantNat}`}
+                      id={`inspect-${etudiant.noEtudiant}`}
                       className="modal"
                     >
                       <EtudiantDetails etudiant={etudiant} />

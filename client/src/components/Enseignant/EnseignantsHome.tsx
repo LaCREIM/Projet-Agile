@@ -10,6 +10,7 @@ import { deleteEnseignantAsync, getEnseignantAsync } from "../../features/Enseig
 import { Enseignant, Chercheur, Intervenant } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { RootState } from "../../api/store";
+import {motion} from "framer-motion";
 
 const EnseignantsHome = () => {
   document.title = "UBO | Enseignants";
@@ -68,6 +69,20 @@ const EnseignantsHome = () => {
     }
   };
 
+  const MotionVariant = {
+    initial: {
+      opacity: 0,
+      y: 30,
+    },
+    final: () => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+      },
+    }),
+  };
+
   return (
     <>
       <ToastContainer theme="colored" />
@@ -83,7 +98,12 @@ const EnseignantsHome = () => {
         </div>
 
         <div className="overflow-y-auto w-[90%]">
-          <table className="table table-zebra">
+          <motion.table
+            variants={MotionVariant}
+            initial="initial"
+            animate={MotionVariant.final()}
+            className="table table-zebra"
+          >
             <thead>
               <tr>
                 <th>ID</th>
@@ -107,7 +127,10 @@ const EnseignantsHome = () => {
                 </tr>
               ) : (
                 enseignants.map((enseignant: Enseignant, index: number) => (
-                  <tr key={enseignant.id} className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75">
+                  <tr
+                    key={enseignant.id}
+                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                  >
                     <td className="px-4 py-2">{enseignant.id}</td>
                     <td className="px-4 py-2">{enseignant.nom}</td>
                     <td className="px-4 py-2">{enseignant.prenom}</td>
@@ -145,8 +168,16 @@ const EnseignantsHome = () => {
                       <UpdateEnseignant
                         typeData={
                           enseignant.type.toUpperCase() === "INT"
-                            ? ({ intFonction: enseignant.intFonction, intNoInsee: enseignant.intNoInsee, intSocNom: enseignant.intSocNom } as Intervenant)
-                            : ({ encPersoEmail: enseignant.emailPerso, encUboEmail: enseignant.emailUbo, encUboTel: enseignant.telephone } as Chercheur)
+                            ? ({
+                                intFonction: enseignant.intFonction,
+                                intNoInsee: enseignant.intNoInsee,
+                                intSocNom: enseignant.intSocNom,
+                              } as Intervenant)
+                            : ({
+                                encPersoEmail: enseignant.emailPerso,
+                                encUboEmail: enseignant.emailUbo,
+                                encUboTel: enseignant.telephone,
+                              } as Chercheur)
                         }
                         enseignantData={enseignant}
                       />
@@ -160,7 +191,7 @@ const EnseignantsHome = () => {
                 ))
               )}
             </tbody>
-          </table>
+          </motion.table>
         </div>
       </div>
 

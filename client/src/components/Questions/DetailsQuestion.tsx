@@ -1,5 +1,6 @@
 import { Question } from "../../types/types";
 
+
 interface QuestionDetailsProps {
   question: Question;
 }

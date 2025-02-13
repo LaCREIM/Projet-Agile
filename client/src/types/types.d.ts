@@ -12,8 +12,8 @@ export interface Authentification {
     noEtudiant: Etudiant;
 }
 export interface PromotionDetails {
-    anneePro: string;
-    siglePro: string;
+    anneeUniversitaire: string;
+    codeFormation: string;
 }
 
 export interface Candidat {
@@ -125,18 +125,19 @@ export  interface Chercheur {
     encPersoEmail: string,
   }
   
-  export interface Intervenant {
+export interface Intervenant {
     intFonction: string;
     intNoInsee: number;
     intSocNom: string;
-  }
+}
 export interface Etudiant {
     noEtudiant: string;
-    promotion: Promotion;
+    anneeUniversitaire: string ;
+    codeFormation: string ;
     nom: string;
     prenom: string;
     sexe: string;
-    dateNaissance: Date;
+    dateNaissance: Date | null;
     lieuNaissance: string;
     nationalite: string;
     telephone: string;
@@ -182,15 +183,39 @@ export interface PromotionId extends Serializable {
 
 export interface Promotion {
     id: PromotionId;
-    noEnseignant: Enseignant;
+    noEnseignant: string;
     siglePromotion: string;
     nbMaxEtudiant: number;
-    dateReponseLp: Date;
-    dateReponseLalp: Date;
-    dateRentree: Date;
+    dateReponseLp: Date | null;
+    dateReponseLalp: Date | null;
+    dateRentree: Date | null;
     lieuRentree: string;
     processusStage: string;
     commentaire: string;
+    anneeUniversitaire: string;
+    diplome:string;
+    nomFormation:string;
+    codeFormation:string;
+    nom: string;
+    prenom: string;
+    type: string;
+    email: string;
+}
+
+export interface PromotionCreate {
+    noEnseignant: string;
+    siglePromotion: string;
+    nbMaxEtudiant: number;
+    dateReponseLp: Date | null;
+    dateReponseLalp: Date | null;
+    dateRentree: Date ;
+    lieuRentree: string;
+    processusStage: string;
+    commentaire: string | null;
+    anneeUniversitaire: string;
+    diplome:string;
+    nomFormation:string;
+    codeFormation:string;
 }
 
 export interface Qualificatif {
