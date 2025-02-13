@@ -15,7 +15,6 @@ const QuestionHome = () => {
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector((state: RootState) => state.question.questions);
-
   const [modal, setModal] = useState<{ question: Question | null; index: number }>({
     question: null,
     index: -1,

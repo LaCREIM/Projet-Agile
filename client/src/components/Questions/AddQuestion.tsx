@@ -61,12 +61,13 @@ const AddQuestion = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!question.intitule || !question.type || !question.noEnseignant || !question.idQualificatif) {
+    if (!question.intitule || !question.idQualificatif) {
       console.error("All required fields must be filled.");
       return;
     }
 
     await dispatch(createQuestionAsync(question));
+    
     dispatch(fetchQuestionsAsync());
   };
 

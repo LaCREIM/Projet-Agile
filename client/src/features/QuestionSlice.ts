@@ -21,8 +21,6 @@ export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectVa
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/questionsStd");
-      console.log("response.data", response.data);
-
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions");
@@ -35,7 +33,11 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
   "questions/create",
   async (question, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/questionsStd", question);
+      const  questionSTd = {
+        idQualificatif: question.idQualificatif.id, // Assurez-vous qu'il est bien un Long
+        intitule: question.intitule
+    };
+      const response = await axiosInstance.post("/questionsStd", questionSTd);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la création de la question");
@@ -44,11 +46,19 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
 );
 
 // **Thunk: Mise à jour d'une question**
-export const updateQuestionAsync = createAsyncThunk<string, { id: number; data: Question }, { rejectValue: string }>(
+export const updateQuestionAsync = createAsyncThunk<
+  Question, 
+  { id: number; data: Question }, 
+  { rejectValue: string }
+>(
   "questions/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/questionsStd/${id}`, data);
+      const questionSTd = {
+        idQualificatif: data.idQualificatif.id, // Assurez-vous qu'il est bien un Long
+        intitule: data.intitule
+      };
+      const response = await axiosInstance.put(`/questionsStd/${id}`, questionSTd);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la question");
@@ -57,12 +67,16 @@ export const updateQuestionAsync = createAsyncThunk<string, { id: number; data: 
 );
 
 // **Thunk: Suppression d'une question**
-export const deleteQuestionAsync = createAsyncThunk<string, number, { rejectValue: string }>(
+export const deleteQuestionAsync = createAsyncThunk<
+  number, 
+  number, 
+  { rejectValue: string }
+>(
   "questions/delete",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/questionsStd/${id}`);
-      return response.data;
+      await axiosInstance.delete(`/questionsStd/${id}`);
+      return id; // Retourner l'ID supprimé
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la suppression de la question");
     }
@@ -97,13 +111,19 @@ const questionSlice = createSlice({
     });
 
     // **Mettre à jour une question**
+    builder.addCase(updateQuestionAsync.fulfilled, (state, action: PayloadAction<Question>) => {
+      const index = state.questions.findIndex((q) => q.id === action.payload.id);
+      if (index !== -1) {
+        state.questions[index] = action.payload;
+      }
+    });
     builder.addCase(updateQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
     });
 
     // **Supprimer une question**
-    builder.addCase(deleteQuestionAsync.fulfilled, (state, action: PayloadAction<string>) => {
-      state.questions = state.questions.filter((q) => q.id !== parseInt(action.payload));
+    builder.addCase(deleteQuestionAsync.fulfilled, (state, action: PayloadAction<number>) => {
+      state.questions = state.questions.filter((q) => q.id !== action.payload);
     });
     builder.addCase(deleteQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
