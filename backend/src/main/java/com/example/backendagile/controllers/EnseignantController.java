@@ -43,7 +43,7 @@ public class EnseignantController {
     /**
      * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
      */
-    @GetMapping
+    @GetMapping("/paged")
     public ResponseEntity<List<Enseignant>> getAllEnseignants() {
         List<Enseignant> enseignants = enseignantService.getEnseignant();
         return ResponseEntity.ok(enseignants);
