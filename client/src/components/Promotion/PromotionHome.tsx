@@ -181,9 +181,9 @@ const PromotionHome = () => {
           switchStudent={switchToStudent}
         />
       ) : (
-        <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+        <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
           <h1>Liste des promotions</h1>
-          <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-14">
+          <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-[5%]">
             <div className="w-1/3 block hover:cursor-text">
               <label className="input input-bordered flex items-center gap-2 shadow-md">
                 <input
@@ -224,13 +224,9 @@ const PromotionHome = () => {
                 </tr>
               </thead>
               <tbody>
-                {
-                promotions.length === 0 ? (
+                {promotions.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={11}
-                      className="text-center w-full"
-                    >
+                    <td colSpan={11} className="text-center w-full">
                       <span className="loading loading-dots loading-lg"></span>
                     </td>
                   </tr>
