@@ -199,7 +199,7 @@ export interface Promotion {
     nom: string;
     prenom: string;
     type: string;
-    email: string;
+    emailEnseignant: string;
 }
 
 export interface PromotionCreate {

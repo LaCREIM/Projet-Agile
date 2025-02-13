@@ -98,7 +98,8 @@ export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Promotion[]>(`/promotions`);
-            console.log("all promotions", response.data);
+            console.log(response.data);
+            
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -112,7 +113,7 @@ export const getFormationAsync = createAsyncThunk<Formation[], void, { rejectVal
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Formation[]>(`/formations`);
-            //console.log("from all", response.data);
+            // console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching formations:", error);

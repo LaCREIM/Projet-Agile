@@ -19,20 +19,31 @@ import AddPromotion from "./AddPromotion";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Student/StudentHome";
-import { Enseignant, PromotionCreate, PromotionDetails, PromotionId } from "../../types/types";
+import {
+  Enseignant,
+  PromotionCreate,
+  PromotionDetails,
+  PromotionId,
+} from "../../types/types";
 import { Promotion } from "../../types/types";
 import { DetailsPromotions } from "./DetailsPromotions";
-import { getAllEnseignant, getAllEnseignantAsync } from "../../features/EnseignantSlice";
+import {
+  getAllEnseignant,
+  getAllEnseignantAsync,
+} from "../../features/EnseignantSlice";
+import { FaSearch } from "react-icons/fa";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
   const dispatch = useAppDispatch();
   const promotions = useAppSelector<Promotion[]>(getPromotions);
   const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
+  const [search, setSearch] = useState<string>("");
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>(
     {} as PromotionDetails
   );
   const [showStudents, setShowStudent] = useState<Boolean>(false);
+  const [filteredPromotions, setFilteredPromotions] = useState<Promotion[]>([]);
 
   const MotionVariant = {
     initial: {
@@ -65,10 +76,15 @@ const PromotionHome = () => {
   const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
   const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
-  useEffect(() => {
+  useEffect( () => {
     dispatch(getPromotionAsync());
     dispatch(getAllEnseignantAsync());
+    setFilteredPromotions(promotions);
   }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredPromotions(promotions);
+  }, [promotions]);
 
   useEffect(() => {
     if (
@@ -103,16 +119,24 @@ const PromotionHome = () => {
 
   const handleDelete = async (promotion: Promotion, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(deletePromotionAsync({anneeUniversitaire: promotion.anneeUniversitaire, codeFormation:promotion.codeFormation} as PromotionId));
+    const response = await dispatch(
+      deletePromotionAsync({
+        anneeUniversitaire: promotion.anneeUniversitaire,
+        codeFormation: promotion.codeFormation,
+      } as PromotionId)
+    );
     if (response?.payload === "not deleted") {
       toast.error("Cette promotion ne peut pas être supprimée");
-    }else{
+    } else {
       toast.success("Promotion supprimée avec succès");
     }
     dispatch(getPromotionAsync());
   };
 
-  const switchToStudent = (anneeUniversitaire: string, codeFormation: string) => {
+  const switchToStudent = (
+    anneeUniversitaire: string,
+    codeFormation: string
+  ) => {
     setPromotionDetails({} as PromotionDetails);
     setPromotionDetails({
       anneeUniversitaire: anneeUniversitaire,
@@ -120,6 +144,33 @@ const PromotionHome = () => {
     } as PromotionDetails);
 
     setShowStudent(!showStudents);
+  };
+
+  const handleSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { value } = e.target;
+    setSearch(value);
+
+    
+    if (value.trim() === "") {
+      setFilteredPromotions(promotions);
+    } else {
+      setFilteredPromotions(
+        promotions.filter(
+          (promotion) =>
+            promotion.siglePromotion
+              .toLowerCase()
+              .includes(value.toLowerCase()) ||
+            promotion.nomFormation
+              .toLowerCase()
+              .includes(value.toLowerCase()) ||
+            (promotion.nom + " " + promotion.prenom)
+              .toLowerCase()
+              .includes(value.toLowerCase())
+        )
+      );
+    }
   };
 
   return (
@@ -135,6 +186,20 @@ const PromotionHome = () => {
         <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
           <h1>Liste des promotions</h1>
           <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-14">
+            <div className="w-1/3 block hover:cursor-text">
+              <label className="input input-bordered flex items-center gap-2 shadow-md">
+                <input
+                  disabled={promotions.length == 0}
+                  name="search"
+                  value={search}
+                  onChange={handleSearchChange}
+                  type="text"
+                  className="grow placeholder:font-medium "
+                  placeholder="Rechercher..."
+                />
+                <FaSearch />
+              </label>
+            </div>
             <button
               className="flex flex-row items-center justify-center hover:cursor-pointer gap-5 px-4 py-2 disabled:cursor-not-allowed w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
               onClick={() => openModal("addPromotion")}
@@ -151,19 +216,26 @@ const PromotionHome = () => {
             >
               <thead>
                 <tr>
-                  <th>Annee</th>
-                  <th>Désignation</th>
-                  <th>Date Rentrée</th>
-                  <th>Lieu Rentrée</th>
+                  <th>Code</th>
+                  <th>Promotion</th>
                   <th>Diplome</th>
                   <th>Formation</th>
                   <th>Responsable</th>
-                  <th>Type</th>
+                  <th>Email</th>
                   <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {promotions.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={11}
+                      className="text-center w-full"
+                    >
+                      <span className="loading loading-dots loading-lg"></span>
+                    </td>
+                  </tr>
+                ) : filteredPromotions.length === 0 ? (
                   <tr>
                     <td
                       colSpan={11}
@@ -173,109 +245,105 @@ const PromotionHome = () => {
                     </td>
                   </tr>
                 ) : (
-                  promotions.map((promotion: Promotion, index: number) => (
-                    <tr
-                      key={index}
-                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                    >
-                      <td className="px-4 py-2">
-                        {promotion.anneeUniversitaire}
-                      </td>
-                      <td className="px-4 py-2">{promotion.siglePromotion}</td>
-                      <td className="px-4 py-2">
-                        {new Date(promotion.dateRentree!).toLocaleDateString(
-                          "fr-FR",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </td>
-                      <td className="px-4 py-2">{promotion.lieuRentree}</td>
-                      <td className="px-4 py-2">{promotion.diplome}</td>
-                      <td className="px-4 py-2">{promotion.codeFormation}</td>
-                      <td className="px-4 py-2">
-                        {promotion.nom?.toUpperCase() + " " + promotion.prenom}
-                      </td>
-                      <td className="px-4 py-2">{promotion.type}</td>
-                      <td
-                        className="flex flex-row gap-3 justify-center items-center"
-                        onClick={(e) => e.stopPropagation()}
+                  filteredPromotions.map(
+                    (promotion: Promotion, index: number) => (
+                      <tr
+                        key={index}
+                        className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                       >
-                        <FontAwesomeIcon
-                          icon={faGraduationCap}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() =>
-                            switchToStudent(
-                              promotion.anneeUniversitaire,
-                              promotion.codeFormation
-                            )
-                          }
-                        />
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick({} as Promotion, index);
-                            handleClickUpdate({} as Promotion, index);
-                            handleClick(promotion, index);
-                            openModal(
-                              `detailsPromotion-${
-                                (promotion.anneeUniversitaire,
-                                promotion.siglePromotion)
-                              }`
-                            );
-                          }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faPenToSquare}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick({} as Promotion, index);
-                            handleClickUpdate({} as Promotion, index);
-                            handleClickUpdate(promotion, index);
-                            openModal(
-                              `updatePromotion-${
-                                (promotion.anneeUniversitaire,
-                                promotion.siglePromotion)
-                              }`
-                            );
-                          }}
-                        />
+                        <td className="px-4 py-2">
+                          {promotion.siglePromotion}
+                        </td>
+                        <td className="px-4 py-2">
+                          {promotion.anneeUniversitaire}
+                        </td>
+                        <td className="px-4 py-2">{promotion.diplome}</td>
+                        <td className="px-4 py-2">{promotion.nomFormation}</td>
 
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-black text-base cursor-pointer"
-                          onClick={(e) => handleDelete(promotion, e)}
-                        />
-                      </td>
-                      <dialog
-                        id={`updatePromotion-${
-                          (promotion.anneeUniversitaire,
-                          promotion.siglePromotion)
-                        }`}
-                        className="modal"
-                      >
-                        <UpdatePromotion
-                        enseignants={enseignants}
-                          promotionData={promotion as PromotionCreate}
-                          dispatchPromotion={dispatchPromotion}
-                        />
-                      </dialog>
-                      <dialog
-                        id={`detailsPromotion-${
-                          (promotion.anneeUniversitaire,
-                          promotion.siglePromotion)
-                        }`}
-                        className="modal"
-                      >
-                        <DetailsPromotions
-                          promotion={promotion}
-                        />
-                      </dialog>
-                    </tr>
-                  ))
+                        <td className="px-4 py-2">
+                          {promotion.nom?.toUpperCase() +
+                            " " +
+                            promotion.prenom}
+                        </td>
+                        <td className="px-4 py-2">
+                          {promotion.emailEnseignant}
+                        </td>
+                        <td
+                          className="flex flex-row gap-3 justify-center items-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FontAwesomeIcon
+                            icon={faGraduationCap}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() =>
+                              switchToStudent(
+                                promotion.anneeUniversitaire,
+                                promotion.codeFormation
+                              )
+                            }
+                          />
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() => {
+                              handleClick({} as Promotion, index);
+                              handleClickUpdate({} as Promotion, index);
+                              handleClick(promotion, index);
+                              openModal(
+                                `detailsPromotion-${
+                                  (promotion.anneeUniversitaire,
+                                  promotion.siglePromotion)
+                                }`
+                              );
+                            }}
+                          />
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() => {
+                              handleClick({} as Promotion, index);
+                              handleClickUpdate({} as Promotion, index);
+                              handleClickUpdate(promotion, index);
+                              openModal(
+                                `updatePromotion-${
+                                  (promotion.anneeUniversitaire,
+                                  promotion.siglePromotion)
+                                }`
+                              );
+                            }}
+                          />
+
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className="text-black text-base cursor-pointer"
+                            onClick={(e) => handleDelete(promotion, e)}
+                          />
+                        </td>
+                        <dialog
+                          id={`updatePromotion-${
+                            (promotion.anneeUniversitaire,
+                            promotion.siglePromotion)
+                          }`}
+                          className="modal"
+                        >
+                          <UpdatePromotion
+                            enseignants={enseignants}
+                            promotionData={promotion as PromotionCreate}
+                            dispatchPromotion={dispatchPromotion}
+                          />
+                        </dialog>
+                        <dialog
+                          id={`detailsPromotion-${
+                            (promotion.anneeUniversitaire,
+                            promotion.siglePromotion)
+                          }`}
+                          className="modal"
+                        >
+                          <DetailsPromotions promotion={promotion} />
+                        </dialog>
+                      </tr>
+                    )
+                  )
                 )}
               </tbody>
             </motion.table>
@@ -283,7 +351,10 @@ const PromotionHome = () => {
         </div>
       )}
       <dialog id="addPromotion" className="modal">
-        <AddPromotion enseignants={enseignants} dispatchPromotion={dispatchPromotion} />
+        <AddPromotion
+          enseignants={enseignants}
+          dispatchPromotion={dispatchPromotion}
+        />
       </dialog>
     </>
   );
