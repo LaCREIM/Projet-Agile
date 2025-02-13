@@ -7,10 +7,7 @@ import com.example.backendagile.mapper.QuestionStdMapper;
 import com.example.backendagile.repositories.QuestionRepository;
 import com.example.backendagile.repositories.QualificatifRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +80,11 @@ public class QuestionStdService {
         question.setIntitule(questionDto.getIntitule());
     
         return questionRepository.save(question);
+    }
+    
+    public Optional<QuestionStdDTO> getQuestionById(Long id) {
+        return questionRepository.findById(id)
+                .map(questionStdMapper::toDto);
     }
     
 

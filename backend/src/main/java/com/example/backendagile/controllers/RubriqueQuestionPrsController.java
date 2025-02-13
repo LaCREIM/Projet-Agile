@@ -31,4 +31,19 @@ public class RubriqueQuestionPrsController {
         rubriqueQuestionPrsService.saveOrUpdateRubriqueQuestions(rubriqueQuestionDtos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Réponse 204 No Content
     }
+
+    @DeleteMapping("/{idRubrique}/{idQuestion}")
+    public ResponseEntity<String> deleteRubriqueQuestion(
+            @PathVariable Long idRubrique,
+            @PathVariable Long idQuestion) {
+        try {
+            rubriqueQuestionPrsService.deleteRubriqueQuestion(idRubrique, idQuestion);
+            return ResponseEntity.ok("Rubrique Question Standard supprimée avec succès.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur inattendue est survenue lors de la suppression.");
+        }
+    }
 }
