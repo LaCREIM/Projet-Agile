@@ -195,7 +195,7 @@ const StudentHome = ({
 
   return (
     <>
-      <motion.div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+      <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
         {promotionDetails.codeFormation ? (
           <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
@@ -203,9 +203,9 @@ const StudentHome = ({
           <h1>Liste des étudiants</h1>
         )}
 
-        <div className="flex flex-row items-center  justify-between gap-5 w-full px-14">
+        <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
           {!promotionDetails.codeFormation ? (
-            <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-1/2 px-14">
+            <div className="flex flex-row items-center justify-between  w-1/2 ">
               <select
                 defaultValue="default"
                 className="select hover:cursor-pointer shadow-md"
@@ -253,7 +253,7 @@ const StudentHome = ({
               </div>
             </div>
           ) : (
-            <div className="flex flex-row items-center justify-between gap-5 w-1/2  hover:cursor-pointer px-14">
+            <div className="flex flex-row items-center justify-between w-1/2">
               <div
                 className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
                 onClick={() => {
@@ -267,7 +267,7 @@ const StudentHome = ({
                 <HiOutlineChevronLeft className="text-lg " size={20} />{" "}
                 Retournez à la liste des promotions
               </div>
-              <div className="w-1/3 block hover:cursor-text">
+              <div className="w-1/2 block hover:cursor-text">
                 <label className="input input-bordered flex items-center gap-2 shadow-md">
                   <input
                     disabled={etudiants.length == 0}
