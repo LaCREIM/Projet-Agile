@@ -90,7 +90,7 @@ const AddQuestion = () => {
     question.intitule.trim() !== "" &&
     question.type !== "" &&
     question.noEnseignant !== {} as Enseignant &&
-    question.idQualificatif !== {} as Qualificatif;
+    question.idQualificatif.id !== 0;
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">

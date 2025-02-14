@@ -176,7 +176,7 @@ const EnseignantsHome = () => {
                 <tr>
                   <td
                     colSpan={11}
-                    className="uppercase tracking-widest text-center text-gray-500"
+                    className="uppercase tracking-widest text-center "
                   >
                     <span className="loading loading-dots loading-lg"></span>
                   </td>

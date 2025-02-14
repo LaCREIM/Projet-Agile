@@ -105,7 +105,7 @@ public class EtudiantService {
      * Récupérer les étudiants par promotion
      */
     public List<EtudiantDTO> findEtudiantsByPromotion(String anneeUniversitaire, String codeFormation) {
-        return etudiantRepository.findByPromotionCode(anneeUniversitaire)
+        return etudiantRepository.findByPromotionCodeAndFormation(anneeUniversitaire, codeFormation)
                 .stream()
                 .map(etudiantMapper::toDto)
                 .collect(Collectors.toList());

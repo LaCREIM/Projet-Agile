@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFloppyDisk,
   faPenToSquare,
+  faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -101,6 +102,15 @@ const QualificatifHome = () => {
     }
   };
 
+  const handleCancelEdit = (index: number) => {
+    setEditingValues((prev) => {
+      const updatedValues = { ...prev };
+      delete updatedValues[index]; // Supprime les modifications en cours
+      return updatedValues;
+    });
+    setUpdatingIndex(null); // Sort du mode édition
+  };
+
   const MotionVariant = {
     initial: {
       opacity: 0,
@@ -134,7 +144,8 @@ const QualificatifHome = () => {
             className="table table-zebra"
             variants={MotionVariant}
             initial="initial"
-            animate={MotionVariant.final()}>
+            animate={MotionVariant.final()}
+          >
             <thead>
               <tr>
                 <th>ID</th>
@@ -198,26 +209,34 @@ const QualificatifHome = () => {
                         )}
                       </td>
 
-                      <td className="flex gap-3 justify-center items-center">
+                      <td className="px-4 py-2 flex gap-3 justify-center items-center">
                         {updatingIndex === index ? (
-                          <FontAwesomeIcon
-                            icon={faFloppyDisk}
-                            className="text-black text-base cursor-pointer"
-                            onClick={() => handleUpdate(index)}
-                          />
+                          <>
+                            <FontAwesomeIcon
+                              icon={faFloppyDisk}
+                              className="text-black text-base cursor-pointer"
+                              onClick={() => handleUpdate(index)}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTimes}
+                              className="text-black text-base cursor-pointer"
+                              onClick={() => handleCancelEdit(index)}
+                            />
+                          </>
                         ) : (
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="text-black text-base cursor-pointer"
-                            onClick={() => handleClickUpdate(index)}
-                          />
+                          <>
+                            <FontAwesomeIcon
+                              icon={faPenToSquare}
+                              className="text-black text-base cursor-pointer"
+                              onClick={() => handleClickUpdate(index)}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="text-black text-base cursor-pointer"
+                              onClick={(e) => handleDelete(qualificatif, e)}
+                            />
+                          </>
                         )}
-
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-black text-base cursor-pointer"
-                          onClick={(e) => handleDelete(qualificatif, e)}
-                        />
                       </td>
                     </tr>
                   )
