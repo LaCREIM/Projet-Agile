@@ -89,24 +89,16 @@ const QuestionHome = () => {
     try {
       const response = await dispatch(deleteQuestionAsync(question.id));
 
-      if (response?.payload === "La question est deja utilisée.") {
+      console.log(response);
+      
+
+      if (response?.payload === "La question est déjà utilisée.") {
         toast.error(
           "Cette question est déjà utilisée et ne peut pas être supprimée."
         );
-      } else if (
-        response?.payload === "La question a été supprimée avec succès."
-      ) {
+      } else{
         toast.success("Question supprimée avec succès.");
-
-        const refreshResponse = await dispatch(fetchQuestionsAsync());
-        if (refreshResponse?.payload) {
-          console.log(
-            "Liste des questions rafraîchie :",
-            refreshResponse.payload
-          );
-        } else {
-          console.warn("Échec du rafraîchissement.");
-        }
+        dispatch(fetchQuestionsAsync());
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
