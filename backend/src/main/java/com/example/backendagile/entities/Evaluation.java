@@ -40,7 +40,7 @@ public class Evaluation {
     @Column(name = "DESIGNATION", nullable = false, length = 16)
     private String designation;
 
-    @ColumnDefault("'ELA'")
+    @ColumnDefault("ELA")
     @Column(name = "ETAT", nullable = false, length = 3)
     private String etat;
 
