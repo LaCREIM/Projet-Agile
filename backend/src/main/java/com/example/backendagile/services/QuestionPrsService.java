@@ -9,6 +9,7 @@ import com.example.backendagile.mapper.QuestionPrsMapper;
 import com.example.backendagile.repositories.QualificatifRepository;
 import com.example.backendagile.repositories.QuestionPrsRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -72,4 +73,10 @@ public class QuestionPrsService {
     }
 
 
+    public List<QuestionPrsDTO> getAllQuestionsPaged(int page, int size) {
+        return questionRepository.findAllPaged(page, size)
+                .stream()
+                .map(questionMapper::fromQuestion)
+                .collect(Collectors.toList());
+    }
 }

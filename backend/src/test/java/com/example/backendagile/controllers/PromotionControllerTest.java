@@ -2,28 +2,22 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.PromotionDTO;
 import com.example.backendagile.entities.Promotion;
-import com.example.backendagile.mapper.PromotionMapper;
-import com.example.backendagile.repositories.FormationRepository;
-import com.example.backendagile.services.EnseignantService;
 import com.example.backendagile.services.PromotionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-public class PromotionControllerTest {
-
-    private MockMvc mockMvc;
+class PromotionControllerTest {
 
     @Mock
     private PromotionService promotionService;
@@ -31,144 +25,97 @@ public class PromotionControllerTest {
     @InjectMocks
     private PromotionController promotionController;
 
-    private PromotionMapper promotionMapper;
     @BeforeEach
-    public void setUp() {
-        promotionMapper = new PromotionMapper(new EnseignantService(), null);
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(promotionController).build();
     }
 
-    /**
-     * Test : Get all promotions with pagination
-     */
     @Test
-    public void testGetAllPromotionsWithPagination() throws Exception {
+    void testGetAllPromotions() {
+        List<PromotionDTO> promotions = Arrays.asList(new PromotionDTO(), new PromotionDTO());
+        when(promotionService.getAllPromotions()).thenReturn(promotions);
 
-        Long ens1 = 1L;
-        System.out.println("avhbbbbbbbbbbbbbbbbbb");
+        List<PromotionDTO> result = promotionController.getAllPromotions();
 
-        PromotionDTO promotion1 = new PromotionDTO("2013-2014", "DOSI4", (short) 24,
-                LocalDate.parse("2013-05-04"), LocalDate.parse("2013-05-19"), LocalDate.parse("2013-09-07"),
-                "LC117B", "EC", null, "M2DOSI", "Master Developpement e lOffshore des Systemes dInformation",
-                "philippe.saliou@univ-brest.fr", "M", ens1, "MCF", "Saliou", "Philippe");
-
-        PromotionDTO promotion2 = new PromotionDTO("2014-2015", "DOSI5", (short) 24,
-                LocalDate.parse("2014-05-10"), LocalDate.parse("2014-05-19"), LocalDate.parse("2014-09-08"),
-                "LC117B", "RECH", null, "M2DOSI", "Master Developpement e lOffshore des Systemes dInformation",
-                "philippe.saliou@univ-brest.fr", "M", ens1, "MCF", "Saliou", "Philippe");
-
-        Mockito.when(promotionService.getAllPromotions())
-                .thenAnswer(invocation -> {
-                    // Log the promotions to the console
-                    System.out.println("Returning promotions:");
-                    System.out.println(promotion1);
-                    System.out.println(promotion2);
-                    return Arrays.asList(promotion1, promotion2);
-                });
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/promotions")).andDo(print())
-
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].siglePromotion").value("DOSI4"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].siglePromotion").value("DOSI5"));
+        assertEquals(promotions, result);
+        verify(promotionService, times(2)).getAllPromotions();
     }
 
-    /**
-     * Test : Get promotion by ID
-     */
     @Test
-    public void testGetPromotionById() throws Exception {
-        PromotionDTO promotion = new PromotionDTO("2013-2014", "DOSI4", (short) 24,
-                LocalDate.parse("2013-05-04"), LocalDate.parse("2013-05-19"), LocalDate.parse("2013-09-07"),
-                "LC117B", "EC", null, "M2DOSI", "Master Developpement e lOffshore des Systemes dInformation",
-                "philippe.saliou@univ-brest.fr", "M", 1L, "MCF", "Saliou", "Philippe");
+    void testGetPromotionsByName() {
+        String name = "TestName";
+        List<PromotionDTO> promotions = Arrays.asList(new PromotionDTO(), new PromotionDTO());
+        when(promotionService.getPromotionsByName(name)).thenReturn(promotions);
 
-        // Mock the service method to return the promotion when given "2013-2014" and "DOSI4"
-        Mockito.when(promotionService.getPromotionById("2013-2014", "M2DOSI"))
-                .thenReturn(promotion);
+        List<PromotionDTO> result = promotionController.getPromotionsByName(name);
 
-        // Perform the request using the two parameters
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/promotions/2013-2014/M2DOSI")
-                ).andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.siglePromotion").value("DOSI4"));
+        assertEquals(promotions, result);
+        verify(promotionService, times(1)).getPromotionsByName(name);
     }
 
-
-    /**
-     * Test : Create a new promotion
-     */
     @Test
-    public void testCreatePromotion() throws Exception {
-//        PromotionDTO promotion = new PromotionDTO(
-//                "2013-2014", "DOSI4", (short) 24, LocalDate.parse("2013-05-04"), LocalDate.parse("2013-05-19"),
-//                LocalDate.parse("2013-09-07"), "LC117B", "EC", null, "M2DOSI",
-//                "Master Developpement e lOffshore des Systemes dInformation",
-//                "philippe.saliou@univ-brest.fr", "M", 1L, "MCF", "Saliou", "Philippe"
-//        );
-//        Promotion prm = promotionMapper.fromPromotionDTO(promotion);
-//        Mockito.when(promotionService.createPromotion(ArgumentMatchers.any(PromotionDTO.class)))
-//                .thenReturn(prm);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/api/promotions")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"anneeUniversitaire\": \"2013-2014\", \"siglePromotion\": \"DOSI4\", \"nbMaxEtudiant\": 24, \"dateReponseLp\": \"2013-05-04\", \"dateReponseLalp\": \"2013-05-19\", \"dateRentree\": \"2013-09-07\", \"lieuRentree\": \"LC117B\", \"processusStage\": \"EC\", \"codeFormation\": \"M2DOSI\"}"))
-//                .andExpect(MockMvcResultMatchers.status().isCreated())
-//                .andExpect(MockMvcResultMatchers.content().string("Promotion created successfully."));
-//
-        System.out.println("Creation passed successfully");
+    void testGetPromotionById() {
+        String anneeUniversitaire = "2023";
+        String codeFormation = "CS101";
+        PromotionDTO promotion = new PromotionDTO();
+        when(promotionService.getPromotionById(anneeUniversitaire, codeFormation)).thenReturn(promotion);
+
+        PromotionDTO result = promotionController.getPromotionById(anneeUniversitaire, codeFormation);
+
+        assertEquals(promotion, result);
+        verify(promotionService, times(1)).getPromotionById(anneeUniversitaire, codeFormation);
     }
 
-    /**
-     * Test : Update an existing promotion
-     */
     @Test
-    public void testUpdatePromotion() throws Exception {
-        PromotionDTO promotion = new PromotionDTO("2013-2014", "DOSI4", (short) 24, LocalDate.parse("2013-05-04"), LocalDate.parse("2013-05-19"), LocalDate.parse("2013-09-07"), "LC117B", "EC", null, "M2DOSI", "Master Developpement e lOffshore des Systemes dInformation", "philippe.saliou@univ-brest.fr", "M", 1L, "MCF", "Saliou", "Philippe");
+    void testCreatePromotion() {
+        PromotionDTO promotionDTO = new PromotionDTO();
+        Promotion promotion = new Promotion();
+        when(promotionService.createPromotion(promotionDTO)).thenReturn(promotion);
 
-        Mockito.when(promotionService.getPromotionById("2013-2014", "M2DOSI"))
-                .thenReturn(promotion);
-        Mockito.when(promotionService.updatePromotion("2013-2014", "M2DOSI", promotion))
-                .thenReturn(promotion);
+        ResponseEntity<Promotion> response = promotionController.createPromotion(promotionDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/promotions/2013-2014/M2DOSI")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"anneeUniversitaire\": \"2013-2014\","
-                                + "\"siglePromotion\": \"DOSI4 Updated\","
-                                + "\"nbMaxEtudiants\": 24,"
-                                + "\"dateRentree\": \"2013-05-04\","
-                                + "\"dateReponseLalp\": \"2013-05-19\","
-                                + "\"dateReponseLp\": \"2013-09-07\","
-                                + "\"lieuRentree\": \"LC117B\","
-                                + "\"processusStage\": \"EC\","
-                                + "\"commentaire\": null,"
-                                + "\"codeFormation\": \"M2DOSI\","
-                                + "\"nomFormation\": \"Master Developpement e lOffshore des Systemes dInformation\","
-                                + "\"emailReferent\": \"philippe.saliou@univ-brest.fr\","
-                                + "\"sexeReferent\": \"M\","
-                                + "\"idReferent\": 1,"
-                                + "\"statutReferent\": \"MCF\","
-                                + "\"prenomReferent\": \"Philippe\","
-                                + "\"nomReferent\": \"Saliou\""
-                                + "}"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(promotion, response.getBody());
+        verify(promotionService, times(1)).createPromotion(promotionDTO);
     }
 
-    /**
-     * Test : Delete promotion by ID
-     */
     @Test
-    public void testDeletePromotion() throws Exception {
-        PromotionDTO promotion = new PromotionDTO("2013-2014", "DOSI4", (short) 24, LocalDate.parse("2013-05-04"), LocalDate.parse("2013-05-19"), LocalDate.parse("2013-09-07"), "LC117B", "EC", null, "M2DOSI", "Master Developpement e lOffshore des Systemes dInformation", "philippe.saliou@univ-brest.fr", "M", 1L, "MCF", "Saliou", "Philippe");
+    void testUpdatePromotion() {
+        String anneeUniversitaire = "2023";
+        String codeFormation = "CS101";
+        PromotionDTO promotionDTO = new PromotionDTO();
+        PromotionDTO updatedPromotion = new PromotionDTO();
 
-        Mockito.when(promotionService.getPromotionById("2013-2014", "M2DOSI"))
-                .thenReturn(promotion);
-        Mockito.doNothing().when(promotionService).deletePromotion("2013-2014", "M2DOSI");
+        when(promotionService.updatePromotion(anneeUniversitaire, codeFormation, promotionDTO)).thenReturn(updatedPromotion);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/promotions/2013-2014/M2DOSI"))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+        ResponseEntity<String> response = promotionController.updatePromotion(anneeUniversitaire, codeFormation, promotionDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Promotion mise à jour avec succès", response.getBody());
+        verify(promotionService, times(1)).updatePromotion(anneeUniversitaire, codeFormation, promotionDTO);
+    }
+
+    @Test
+    void testDeletePromotion() {
+        String anneeUniversitaire = "2023";
+        String codeFormation = "CS101";
+
+        ResponseEntity<?> response = promotionController.deletePromotion(anneeUniversitaire, codeFormation);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(promotionService, times(1)).deletePromotion(anneeUniversitaire, codeFormation);
+    }
+
+    @Test
+    void testGetAllPromotionPaged() {
+        int page = 0;
+        int size = 10;
+        List<PromotionDTO> promotions = Arrays.asList(new PromotionDTO(), new PromotionDTO());
+        when(promotionService.getPromotionPaged(page, size)).thenReturn(promotions);
+
+        List<PromotionDTO> result = promotionController.getAllPromotionPaged(page, size);
+
+        assertEquals(promotions, result);
+        verify(promotionService, times(1)).getPromotionPaged(page, size);
     }
 }
