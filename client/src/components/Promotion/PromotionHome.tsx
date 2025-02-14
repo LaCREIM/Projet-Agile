@@ -32,6 +32,7 @@ import {
   getAllEnseignantAsync,
 } from "../../features/EnseignantSlice";
 import { FaSearch } from "react-icons/fa";
+import { diplomeMapper } from "../../mappers/mappers";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
@@ -252,7 +253,7 @@ const PromotionHome = () => {
                         <td className="px-4 py-2">
                           {promotion.anneeUniversitaire}
                         </td>
-                        <td className="px-4 py-2">{promotion.diplome}</td>
+                        <td className="px-4 py-2">{diplomeMapper(promotion.diplome)}</td>
                         <td className="px-4 py-2">{promotion.nomFormation}</td>
 
                         <td className="px-4 py-2">
