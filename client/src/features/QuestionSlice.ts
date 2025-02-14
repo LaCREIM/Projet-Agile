@@ -33,11 +33,13 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
   "questions/create",
   async (question, { rejectWithValue }) => {
     try {
-      const  questionSTd = {
+      const questionSTd = {
         idQualificatif: question.idQualificatif.id, // Assurez-vous qu'il est bien un Long
         intitule: question.intitule
-    };
+      };
       const response = await axiosInstance.post("/questionsStd", questionSTd);
+      console.log(response.data);
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la création de la question");
@@ -47,8 +49,8 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
 
 // **Thunk: Mise à jour d'une question**
 export const updateQuestionAsync = createAsyncThunk<
-  Question, 
-  { id: number; data: Question }, 
+  Question,
+  { id: number; data: Question },
   { rejectValue: string }
 >(
   "questions/update",
@@ -68,15 +70,16 @@ export const updateQuestionAsync = createAsyncThunk<
 
 // **Thunk: Suppression d'une question**
 export const deleteQuestionAsync = createAsyncThunk<
-  number, 
-  number, 
+  void,
+  number,
   { rejectValue: string }
 >(
   "questions/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/questionsStd/${id}`);
-      return id; // Retourner l'ID supprimé
+      const response = await axiosInstance.delete(`/questionsStd/${id}`);
+      console.log(response);
+
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la suppression de la question");
     }
@@ -119,11 +122,6 @@ const questionSlice = createSlice({
     });
     builder.addCase(updateQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
-    });
-
-    // **Supprimer une question**
-    builder.addCase(deleteQuestionAsync.fulfilled, (state, action: PayloadAction<number>) => {
-      state.questions = state.questions.filter((q) => q.id !== action.payload);
     });
     builder.addCase(deleteQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;

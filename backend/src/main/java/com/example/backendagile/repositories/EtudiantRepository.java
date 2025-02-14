@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface EtudiantRepository extends JpaRepository<Etudiant, String> {
-    @Query("SELECT e FROM Etudiant e WHERE e.promotion.id.anneeUniversitaire = :anneeUniversitaire")
-    List<Etudiant> findByPromotionCode(@Param("anneeUniversitaire") String anneeUniversitaire);
+    @Query("SELECT e FROM Etudiant e JOIN Formation f WHERE e.promotion.id.anneeUniversitaire = :anneeUniversitaire and e.promotion.id.codeFormation = :codeFormation ")
+    List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") String anneeUniversitaire, @Param("codeFormation") String codeFormation);
     @Query(value = """
     SELECT * FROM (
         SELECT e.*, ROWNUM rnum FROM (
-            SELECT * FROM etudiant ORDER BY annee_universitaire DESC, nom ASC
+            SELECT * FROM etudiant   ORDER BY annee_universitaire DESC, nom ASC
         ) e WHERE ROWNUM <= :endRow
     ) WHERE rnum > :startRow
 """, nativeQuery = true)

@@ -21,12 +21,13 @@ const AddEnseignant = () => {
     ville: "",  // Ajouté
     pays: "FR",
     mobile: "",
-    telephone: "",  // Ajouté
-    emailUbo: "",  // Correspondance avec l'interface
-    emailPerso: "",  // Correspondance avec l'interface
-    intSocNom: "", // Ajouté pour Intervenant
-    intNoInsee: 0, // Ajouté pour Intervenant
-    intFonction: "", // Ajouté pour Intervenant
+    password: "",
+    telephone: "", 
+    emailUbo: "",  
+    emailPerso: "",  
+    intSocNom: "", 
+    intNoInsee: 0, 
+    intFonction: "", 
   });
   
 
@@ -224,6 +225,18 @@ const AddEnseignant = () => {
                 placeholder="Ex: France"
               />
             </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Password</span>
+              <input
+                required
+                type="text"
+                name="password"
+                value={enseignant.password}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Entrez un mot de passe"
+              />
+            </label>
 
             <label className="flex items-center gap-2">
               <select
@@ -242,22 +255,29 @@ const AddEnseignant = () => {
             </label>
 
             {enseignant.type === "ENC" && (
-              <ChercheurInfo setEnseignant={setEnseignant} setChercheur={setChercheur} />
+              <ChercheurInfo
+                setEnseignant={setEnseignant}
+                setChercheur={setChercheur}
+              />
             )}
             {enseignant.type === "INT" && (
-              <IntervenantInfo setEnseignant={setEnseignant} setIntervenant={setIntervenant} />
+              <IntervenantInfo
+                setEnseignant={setEnseignant}
+                setIntervenant={setIntervenant}
+              />
             )}
           </div>
 
           <div className="modal-action">
-              <button className="btn">Annuler</button>
-              <button
-                type="submit"
-                className="btn btn-neutral disabled:cursor-not-allowed"
-                disabled={!canSave}
-              >
-                Ajouter
-              </button>          </div>
+            <button className="btn">Annuler</button>
+            <button
+              type="submit"
+              className="btn btn-neutral disabled:cursor-not-allowed"
+              disabled={!canSave}
+            >
+              Ajouter
+            </button>{" "}
+          </div>
         </form>
       </div>
     </div>
