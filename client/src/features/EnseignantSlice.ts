@@ -49,8 +49,6 @@ export const getAllEnseignantAsync = createAsyncThunk<
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Enseignant[]>(`/enseignants/paged`);
-            console.log(response.data);
-             
             return response.data;
         } catch (error: any) {
             console.error("Error fetching professors:", error);

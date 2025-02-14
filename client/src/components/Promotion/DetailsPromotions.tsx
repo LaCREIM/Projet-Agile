@@ -18,7 +18,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
       <div className="modal-box w-[55em] max-w-5xl space-y-5 hover:cursor-default">
         <div className="flex flex-col items-center w-full">
           <h3 className="font-bold text-center text-lg">
-            Détails de la promotion <b>{promotion.nom.toUpperCase()}</b>
+            Détails de la promotion <b>{promotion.siglePromotion.toUpperCase()}</b>
           </h3>
         </div>
 

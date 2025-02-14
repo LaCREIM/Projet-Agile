@@ -9,8 +9,8 @@ import {
   getSalles,
   getProcessusStages,
   getDomaineProcessusStageAsync,
-  getDiplomes,
   getDomaineDiplomeAsync,
+  anneesUniv,
 } from "../../features/PromotionSlice";
 
 import { Enseignant, Formation, PromotionCreate } from "../../types/types";
@@ -28,7 +28,7 @@ const AddPromotion = ({
 
   const formations = useAppSelector<Formation[]>(getFormations);
   const salles = useAppSelector<Domaine[]>(getSalles);
-  const diplomes = useAppSelector<Domaine[]>(getDiplomes);
+
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
 
   const [promotion, setPromotion] = useState<PromotionCreate>({
@@ -42,7 +42,7 @@ const AddPromotion = ({
     processusStage: "",
     commentaire: "",
     anneeUniversitaire: "",
-    diplome: "",
+    diplome: "t",
     nomFormation: "",
     codeFormation: "",
   });
@@ -102,18 +102,6 @@ const AddPromotion = ({
                   placeholder="Ex: DOSI"
                 />
               </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Année universitaire</span>
-                <input
-                  required
-                  type="text"
-                  name="anneeUniversitaire"
-                  value={promotion.anneeUniversitaire}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: 2023-2024"
-                />
-              </label>
             </div>
             <div className="flex flex-row justify-between">
               <label className="input input-bordered flex items-center gap-2">
@@ -143,20 +131,20 @@ const AddPromotion = ({
               </label>
             </div>
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Diplôme</span>
+              <span className="font-semibold w-[15%]">Année universitaire</span>
               <select
                 required
                 className="select w-[80%] max-w-full"
-                name="diplome"
-                value={promotion.diplome}
+                name="anneeUniversitaire"
+                value={promotion.anneeUniversitaire}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez un diplôme
+                  Sélectionnez une année universitaire
                 </option>
-                {diplomes.map((domaine) => (
-                  <option key={domaine.rvLowValue} value={domaine.rvLowValue}>
-                    {domaine.rvMeaning}
+                {anneesUniv.map((a, idx) => (
+                  <option key={idx} value={a}>
+                    {a}
                   </option>
                 ))}
               </select>

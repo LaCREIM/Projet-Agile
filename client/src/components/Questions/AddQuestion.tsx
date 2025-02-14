@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { fetchQuestionsAsync, createQuestionAsync } from "../../features/QuestionSlice";
+import {
+  fetchQuestionsAsync,
+  createQuestionAsync,
+} from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 
-
 const AddQuestion = () => {
   const dispatch = useAppDispatch();
-  
+
   // State for Question and related entities
   const [question, setQuestion] = useState<Question>({
     id: 0,
@@ -25,14 +27,17 @@ const AddQuestion = () => {
       const qualificatifsData = await dispatch(fetchQualificatifsAsync());
       
       if (Array.isArray(qualificatifsData?.payload)) setQualificatifs(qualificatifsData.payload);
+
     };
-    
+
     fetchData();
   }, [dispatch]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    
+
     setQuestion((prev) => ({
       ...prev,
       [name]: value,
@@ -47,8 +52,13 @@ const AddQuestion = () => {
   //   }));
   // };
 
-  const handleSelectQualificatif = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedQualificatif = qualificatifs.find((qual) => qual.id === Number(e.target.value));
+
+  const handleSelectQualificatif = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedQualificatif = qualificatifs.find(
+      (qual) => qual.id === Number(e.target.value)
+    );
     setQuestion((prev) => ({
       ...prev,
       idQualificatif: selectedQualificatif || ({} as Qualificatif),
@@ -64,11 +74,12 @@ const AddQuestion = () => {
     }
 
     await dispatch(createQuestionAsync(question));
-    
+
     dispatch(fetchQuestionsAsync());
   };
 
   const canSave = question.intitule.trim()  && question.idQualificatif;
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -91,6 +102,7 @@ const AddQuestion = () => {
               />
             </label>
 
+
             <label className="flex items-center gap-2">
               <span className="font-semibold">Qualificatif</span>
               <select
@@ -101,7 +113,7 @@ const AddQuestion = () => {
                 <option value="">Sélectionnez un qualificatif</option>
                 {qualificatifs.map((qual) => (
                   <option key={qual.id} value={qual.id}>
-                    {qual.id} - {qual.maximal} - {qual.minimal}
+                    {qual.maximal} - {qual.minimal}
                   </option>
                 ))}
               </select>
@@ -109,14 +121,16 @@ const AddQuestion = () => {
           </div>
 
           <div className="modal-action">
-            <button className="btn">Annuler</button>
-            <button
-              type="submit"
-              className="btn btn-neutral disabled:cursor-not-allowed"
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
+            <form method="dialog" className="flex flex-row gap-5">
+              <button className="btn">Annuler</button>
+              <button
+                type="submit"
+                className="btn btn-neutral disabled:cursor-not-allowed"
+                disabled={!canSave}
+              >
+                Ajouter
+              </button>
+            </form>
           </div>
         </form>
       </div>

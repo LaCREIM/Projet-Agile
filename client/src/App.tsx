@@ -46,7 +46,7 @@ function App() {
               <Route path="qualificatifs" element={<QualificatifHome />} />
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
-              <Route path="rubriques" element={<RubriqueHome />} />
+              {/* <Route path="rubriques" element={<RubriqueHome />} /> */}
             </Route>
             <Route path="*" element={<NotFound/>} />
           </Route>

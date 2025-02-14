@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class QuestionStdDTO {
     private Long idQualificatif; 
     private String intitule;
-    @JsonIgnore
+    //@JsonIgnore
     String maxQualificatif;
-    @JsonIgnore
+   // @JsonIgnore
     String minQualificatif;
 
     public Long getIdQualificatif() {

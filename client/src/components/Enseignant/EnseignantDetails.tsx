@@ -8,14 +8,9 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl space-y-5">
-        <div className="flex flex-col items-center w-full">
-          <h1 className="text-left justify-start w-full">
-            <kbd className="kbd kbd-sm">ESC</kbd> pour quitter.
-          </h1>
-          <h3 className="font-bold text-center text-lg">
-            Détails de l'enseignant <b>{enseignant.nom.toUpperCase()}</b>
-          </h3>
-        </div>
+        <h3 className="font-bold text-center text-lg">
+          Détails de l'enseignant <b>{enseignant.nom.toUpperCase()}</b>
+        </h3>
         <div className="flex-grow overflow-auto">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 sm:col-gap-6 xl:grid-cols-2">
             <div className="text-base font-medium text-gray-900">
@@ -114,6 +109,11 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
               </>
             )}
           </dl>
+        </div>
+        <div className="modal-action">
+          <form method="dialog" className="flex flex-row gap-5">
+            <button className="btn">Fermer</button>
+          </form>
         </div>
       </div>
     </div>
