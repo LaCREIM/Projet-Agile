@@ -50,21 +50,28 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     }));
   };
 
+  const canSave =
+    question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!question.intitule || !question.idQualificatif) {
-      console.error("All required fields must be filled.");
-      return;
+    if (canSave) {
+      await dispatch(createQuestionAsync(question));
+      setQuestion({
+        id: 0,
+        type: "",
+        noEnseignant: {} as Enseignant,
+        idQualificatif: {} as Qualificatif,
+        intitule: "",
+      });
     }
-    await dispatch(createQuestionAsync(question));
+    
     dispatch(fetchQuestionsAsync());
   };
 
 
-  const canSave =
-    question.intitule.trim() !== "" &&
-    question.idQualificatif.id !== 0;
+  
 
 
   return (
@@ -97,7 +104,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
                 onChange={handleSelectQualificatif}
                 className="select select-bordered w-[70%] max-w-full  hover:cursor-pointer"
               >
-                <option value="">Sélectionnez un qualificatif</option>
+                <option value={-1}>Sélectionnez un qualificatif</option>
                 {qualificatifs.map((qual) => (
                   <option key={qual.id} value={qual.id}>
                     {qual.maximal} - {qual.minimal}
@@ -111,8 +118,8 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
             <form method="dialog" className="flex flex-row gap-5">
               <button className="btn">Annuler</button>
               <button
-                type="submit"
                 className="btn btn-neutral disabled:cursor-not-allowed"
+                onClick={handleSubmit}
                 disabled={!canSave}
               >
                 Ajouter
