@@ -18,7 +18,7 @@ interface UpdateStudentProps {
   promotions: Promotion[]
 }
 
-const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
+const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
@@ -380,4 +380,4 @@ const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
   );
 };
 
-export default UpdateStudent;
+export default UpdateEtudiant;

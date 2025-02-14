@@ -4,7 +4,7 @@ import EnseignantsHome from "./components/Enseignant/EnseignantsHome";
 import PromotionHome from "./components/Promotion/PromotionHome";
 import RootLayout from "./layouts/RootLayout";
 import { Dashboard } from "./components/Admin/Dashboard";
-import StudentHome from "./components/Student/StudentHome";
+import StudentHome from "./components/Etudiant/EtudiantHome.tsx";
 import { useState } from "react";
 import { PromotionDetails } from "./types/types";
 import QualificatifHome from "./components/Qualificatifs/QualificatifHome";

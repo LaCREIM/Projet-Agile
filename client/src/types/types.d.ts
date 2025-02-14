@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+
 // Generated using typescript-generator version 3.2.1263 on 2025-02-05 16:17:29.
 
 export interface Authentification {
@@ -11,6 +12,7 @@ export interface Authentification {
     noEnseignant: Enseignant;
     noEtudiant: Etudiant;
 }
+
 export interface PromotionDetails {
     anneeUniversitaire: string;
     codeFormation: string;
@@ -120,24 +122,25 @@ export interface EnseignantJn {
     emailPerso: string;
 }
 
-export  interface Chercheur {
+export interface Chercheur {
     encUboEmail: string,
     encUboTel: string,
     encPersoEmail: string,
-  }
-  
+}
+
 export interface Intervenant {
     intFonction: string;
     intNoInsee: number;
     intSocNom: string;
 }
+
 export interface Etudiant {
     noEtudiant: string;
-    anneeUniversitaire: string ;
-    codeFormation: string ;
+    anneeUniversitaire: string;
+    codeFormation: string;
     nom: string;
     prenom: string;
-    motPasse:"";
+    motPasse: "";
     sexe: string;
     dateNaissance: Date | null;
     lieuNaissance: string;
@@ -186,7 +189,7 @@ export interface PromotionId extends Serializable {
 export interface Promotion {
     id: PromotionId;
     noEnseignant: string;
-    siglePromotion: string;
+    siglePromotion: string | null;
     nbMaxEtudiant: number;
     dateReponseLp: Date | null;
     dateReponseLalp: Date | null;
@@ -195,9 +198,9 @@ export interface Promotion {
     processusStage: string;
     commentaire: string;
     anneeUniversitaire: string;
-    diplome:string;
-    nomFormation:string;
-    codeFormation:string;
+    diplome: string;
+    nomFormation: string;
+    codeFormation: string;
     nom: string;
     prenom: string;
     type: string;
@@ -210,14 +213,14 @@ export interface PromotionCreate {
     nbMaxEtudiant: number;
     dateReponseLp: Date | null;
     dateReponseLalp: Date | null;
-    dateRentree: Date ;
+    dateRentree: Date;
     lieuRentree: string;
     processusStage: string;
     commentaire: string | null;
     anneeUniversitaire: string;
-    diplome:string;
-    nomFormation:string;
-    codeFormation:string;
+    diplome: string;
+    nomFormation: string;
+    codeFormation: string;
 }
 
 export interface Qualificatif {
@@ -312,8 +315,8 @@ export interface UniteEnseignement {
     nbhTp: number;
 }
 
-  
-  export interface PromotionDetails {
+
+export interface PromotionDetails {
     anneePro: string;
     siglePro: string;
-  }
+}
