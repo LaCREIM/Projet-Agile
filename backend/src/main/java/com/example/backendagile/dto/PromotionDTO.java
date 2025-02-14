@@ -1,236 +1,67 @@
 package com.example.backendagile.dto;
 
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-
+@Setter
+@Getter
 public class PromotionDTO {
 
+    @NotBlank
     private String anneeUniversitaire;
 
+    @NotBlank
+    @Size(max = 16)
     private String siglePromotion;
 
+    @NotNull
+    @Min(1)
     private Short nbMaxEtudiant;
 
+    @PastOrPresent
     private LocalDate dateReponseLp;
 
+    @PastOrPresent
     private LocalDate dateReponseLalp;
 
+    @Future
     private LocalDate dateRentree;
 
+    @NotBlank
+    @Size(max = 12)
     private String lieuRentree;
 
+    @NotBlank
+    @Size(max = 5)
     private String processusStage;
 
+    @Size(max = 255)
     private String commentaire;
 
+    @NotBlank
     private String codeFormation;
 
+    @NotBlank
     private String nomFormation;
 
+    @Email
     private String emailEnseignant;
 
+    @NotBlank
     private String diplome;
 
+    @NotNull
     private Long noEnseignant;
 
+    @NotBlank
     private String type;
 
+    @NotBlank
     private String nom;
 
+    @NotBlank
     private String prenom;
-
-//Parameterized constructor
-
-
-    public PromotionDTO(String anneeUniversitaire, String siglePromotion, Short nbMaxEtudiant, LocalDate dateReponseLp, LocalDate dateReponseLalp, LocalDate dateRentree, String lieuRentree, String processusStage, String commentaire, String codeFormation, String nomFormation, String emailEnseignant, String diplome, Long noEnseignant, String type, String nom, String prenom) {
-        this.anneeUniversitaire = anneeUniversitaire;
-        this.siglePromotion = siglePromotion;
-        this.nbMaxEtudiant = nbMaxEtudiant;
-        this.dateReponseLp = dateReponseLp;
-        this.dateReponseLalp = dateReponseLalp;
-        this.dateRentree = dateRentree;
-        this.lieuRentree = lieuRentree;
-        this.processusStage = processusStage;
-        this.commentaire = commentaire;
-        this.codeFormation = codeFormation;
-        this.nomFormation = nomFormation;
-        this.emailEnseignant = emailEnseignant;
-        this.diplome = diplome;
-        this.noEnseignant = noEnseignant;
-        this.type = type;
-        this.nom = nom;
-        this.prenom = prenom;
-    }
-
-    //Default constructor
-public PromotionDTO() {
-    this.anneeUniversitaire = "";
-    this.siglePromotion = "";
-    this.nbMaxEtudiant = 0;
-    this.dateReponseLp = LocalDate.MIN;
-    this.dateReponseLalp = LocalDate.MIN;
-    this.dateRentree = LocalDate.MIN;
-    this.lieuRentree = "";
-    this.processusStage = "";
-    this.commentaire = "";
-    this.codeFormation = "";
-    this.diplome = "";
-    this.noEnseignant = 0L;
-    this.type = "";
-    this.nom = "";
-    this.prenom = "";
-    this.nomFormation = "";
-    this.emailEnseignant = "";
-}
-
-// Getter and Setter
-
-
-    public String getNomFormation() {
-        return nomFormation;
-    }
-
-    public void setNomFormation(String nomFormation) {
-        this.nomFormation = nomFormation;
-    }
-
-    public String getEmailEnseignant() {
-        return emailEnseignant;
-    }
-
-    public void setEmailEnseignant(String emailEnseignant) {
-        this.emailEnseignant = emailEnseignant;
-    }
-
-    public LocalDate getDateReponseLp() {
-        return dateReponseLp;
-    }
-
-    public void setDateReponseLp(LocalDate dateReponseLp) {
-        this.dateReponseLp = dateReponseLp;
-    }
-
-    public LocalDate getDateReponseLalp() {
-        return dateReponseLalp;
-    }
-
-    public void setDateReponseLalp(LocalDate dateReponseLalp) {
-        this.dateReponseLalp = dateReponseLalp;
-    }
-
-    public void setDateRentree(LocalDate dateRentree) {
-        this.dateRentree = dateRentree;
-    }
-
-    public String getProcessusStage() {
-        return processusStage;
-    }
-
-    public void setProcessusStage(String processusStage) {
-        this.processusStage = processusStage;
-    }
-
-    public String getCommentaire() {
-        return commentaire;
-    }
-
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
-    public Long getNoEnseignant() {
-        return noEnseignant;
-    }
-
-    public void setNoEnseignant(Long noEnseignant) {
-        this.noEnseignant = noEnseignant;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getCodeFormation() {
-        return codeFormation;
-    }
-
-    public void setCodeFormation(String codeFormation) {
-        this.codeFormation = codeFormation;
-    }
-
-    public String getDiplome() {
-        return diplome;
-    }
-
-    public void setDiplome(String diplome) {
-        this.diplome = diplome;
-    }
-
-    public String getAnneeUniversitaire() {
-        return anneeUniversitaire;
-    }
-
-    public void setAnneeUniversitaire(String anneeUniversitaire) {
-        this.anneeUniversitaire = anneeUniversitaire;
-    }
-
-
-    public String getSiglePromotion() {
-        return siglePromotion;
-    }
-
-    public void setSiglePromotion(String siglePromotion) {
-        this.siglePromotion = siglePromotion;
-    }
-
-    public Short getNbMaxEtudiant() {
-        return nbMaxEtudiant;
-    }
-
-    public void setNbMaxEtudiant(Short nbMaxEtudiant) {
-        this.nbMaxEtudiant = nbMaxEtudiant;
-    }
-
-    public LocalDate getDateRentree() {
-        return dateRentree;
-    }
-
-    public String getLieuRentree() {
-        return lieuRentree;
-    }
-
-    public void setLieuRentree(String lieuRentree) {
-        this.lieuRentree = lieuRentree;
-    }
-
-    @Override
-    public String toString() {
-        return "Promotion{" +
-                "anneePro=" + anneeUniversitaire +
-                ", siglePromotion='" + siglePromotion + '\'' +
-                ", nbEtuSouhaite=" + nbMaxEtudiant +
-                ", dateRentree=" + dateRentree +
-                ", lieuRentree='" + lieuRentree + '\'' +
-                '}';
-    }
 }

@@ -7,6 +7,7 @@ import {
 import { Question, Enseignant, Qualificatif } from "../../types/types";
 
 
+
 interface AddQuestionProps {
   qualificatifs: Qualificatif[];
 }
@@ -23,6 +24,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     intitule: "",
   });
 
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -33,6 +35,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
       [name]: value,
     }));
   };
+
 
 
   const handleSelectQualificatif = (
@@ -58,9 +61,11 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     dispatch(fetchQuestionsAsync());
   };
 
+
   const canSave =
     question.intitule.trim() !== "" &&
     question.idQualificatif.id !== 0;
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -68,6 +73,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
         <h3 className="font-bold text-lg my-4">Ajouter une Question</h3>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
+
 
               <label className="input input-bordered w-[85%] flex items-center gap-2">
                 <span className="font-semibold">Intitulé</span>
@@ -85,6 +91,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
 
             <label className="flex flex-row items-center ">
               <span className="font-semibold w-[15%]">Qualificatif</span>
+
               <select
                 required
                 onChange={handleSelectQualificatif}
