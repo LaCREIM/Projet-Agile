@@ -60,7 +60,7 @@ const QualificatifHome = () => {
     e.stopPropagation();
     try {
       const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
-  
+
       if (response?.payload === "not deleted") {
         toast.error("Ce qualificatif ne peut pas être supprimé.");
       } else if (response?.payload === "deleted") {

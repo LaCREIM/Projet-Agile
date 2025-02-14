@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useAppDispatch } from "../../hook/hooks";
 import { fetchQuestionsAsync, createQuestionAsync } from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
-import { getEnseignantAsync } from "../../features/EnseignantSlice";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 
 
@@ -18,16 +17,13 @@ const AddQuestion = () => {
     intitule: "",
   });
 
-  const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
 
   useEffect(() => {
     // Fetch Enseignants and Qualificatifs from API when component mounts
     const fetchData = async () => {
-      const enseignantsData = await dispatch(getEnseignantAsync({ page: 1,size: 10 }));
       const qualificatifsData = await dispatch(fetchQualificatifsAsync());
       
-      if (Array.isArray(enseignantsData?.payload)) setEnseignants(enseignantsData.payload);
       if (Array.isArray(qualificatifsData?.payload)) setQualificatifs(qualificatifsData.payload);
     };
     
@@ -43,13 +39,13 @@ const AddQuestion = () => {
     }));
   };
 
-  const handleSelectEnseignant = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedEnseignant = enseignants.find((ens) => ens.id === Number(e.target.value));
-    setQuestion((prev) => ({
-      ...prev,
-      noEnseignant: selectedEnseignant || ({} as Enseignant),
-    }));
-  };
+  // const handleSelectEnseignant = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const selectedEnseignant = enseignants.find((ens) => ens.id === Number(e.target.value));
+  //   setQuestion((prev) => ({
+  //     ...prev,
+  //     noEnseignant: selectedEnseignant || ({} as Enseignant),
+  //   }));
+  // };
 
   const handleSelectQualificatif = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedQualificatif = qualificatifs.find((qual) => qual.id === Number(e.target.value));
@@ -72,7 +68,7 @@ const AddQuestion = () => {
     dispatch(fetchQuestionsAsync());
   };
 
-  const canSave = question.intitule.trim() && question.type && question.noEnseignant && question.idQualificatif;
+  const canSave = question.intitule.trim()  && question.idQualificatif;
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -80,18 +76,7 @@ const AddQuestion = () => {
         <h3 className="font-bold text-lg my-4">Ajouter une Question</h3>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Type</span>
-              <input
-                required
-                type="text"
-                name="type"
-                value={question.type}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: QCM, Open Question"
-              />
-            </label>
+
 
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Intitulé</span>
@@ -104,22 +89,6 @@ const AddQuestion = () => {
                 className="grow"
                 placeholder="Ex: Quelle est la capitale de la France ?"
               />
-            </label>
-
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Enseignant</span>
-              <select
-                required
-                onChange={handleSelectEnseignant}
-                className="select select-bordered w-full max-w-full"
-              >
-                <option value="">Sélectionnez un enseignant</option>
-                {enseignants.map((ens) => (
-                  <option key={ens.id} value={ens.id}>
-                    {ens.nom} {ens.prenom}
-                  </option>
-                ))}
-              </select>
             </label>
 
             <label className="flex items-center gap-2">
