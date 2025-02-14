@@ -18,6 +18,15 @@ public class QuestionPrsController {
         this.questionPrsService = questionPrsService;
     }
 
+
+    @GetMapping("/paged")
+    public ResponseEntity<List<QuestionPrsDTO>> getAllQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<QuestionPrsDTO> questions = questionPrsService.getAllQuestionsPaged(page, size);
+        return ResponseEntity.ok(questions);
+    }
+
     @GetMapping
     public ResponseEntity<List<QuestionPrsDTO>> getAllQuestions() {
         List<QuestionPrsDTO> questions = questionPrsService.getAllQuestions();
