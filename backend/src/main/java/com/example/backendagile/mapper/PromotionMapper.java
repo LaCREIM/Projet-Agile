@@ -23,6 +23,7 @@ public class PromotionMapper {
         this.formationRepository = formationRepository;
     }
 
+
     public PromotionDTO fromPromotion(Promotion promotion)
     {
         PromotionDTO newPromotion = new PromotionDTO();

@@ -11,16 +11,19 @@ import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
 import QuestionHome from "./components/Questions/QuestionHome";
 import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import RubriqueHome from "./components/Rubriques/RubriqueHome";
+import LoginForm from "./components/Auth/LoginForm";
+import NotFound from "./layouts/NotFound";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
-    anneePro: "-1",
-    siglePro: "",
-  });
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
   return (
     <>
-      <Router>
+      <Router basename="/">
         <Routes>
           <Route path="/" element={<RootLayout />}>
+            <Route index element={<LoginForm />} />
             <Route path="admin" element={<AdminLayout />} />
             <Route path="/admin/home" element={<Dashboard />}>
               <Route path="enseignants" element={<EnseignantsHome />} />
@@ -31,19 +34,21 @@ function App() {
                   <StudentHome
                     promotionDetails={promotionDetails}
                     setPromotionDetails={setPromotionDetails}
-                    switchStudent={(anneePro, siglePro) =>
-                      setPromotionDetails({ anneePro, siglePro })
+                    switchStudent={(anneeUniversitaire, codeFormation) =>
+                      setPromotionDetails({
+                        anneeUniversitaire,
+                        codeFormation,
+                      } as PromotionDetails)
                     }
                   />
                 }
               />
-              <Route path="qualificatifs" element={<QualificatifHome/>} />
-              <Route path="questions" element={<QuestionHome/>} />
-              <Route path="evaluations" element={<EvaluationHome/>} />
-              <Route path="rubriques" element={<RubriqueHome/>} />
-
+              <Route path="qualificatifs" element={<QualificatifHome />} />
+              <Route path="questions" element={<QuestionHome />} />
+              <Route path="evaluations" element={<EvaluationHome />} />
+              {/* <Route path="rubriques" element={<RubriqueHome />} /> */}
             </Route>
-            <Route path="*" element={<div>404 Not Found</div>} />
+            <Route path="*" element={<NotFound/>} />
           </Route>
         </Routes>
       </Router>

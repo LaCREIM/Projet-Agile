@@ -27,6 +27,7 @@ import {
 import UpdateStudent from "./UpdateStudent";
 import { PromotionDetails } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
+import { FaSearch } from "react-icons/fa";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -43,6 +44,9 @@ const StudentHome = ({
   const dispatch = useAppDispatch();
   const etudiants = useAppSelector(getEtudiants);
   const promotions = useAppSelector(getPromotions);
+  const [search, setSearch] = useState<string>("");
+
+  const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
 
   const [modal, setModal] = useState<{
     etudiant: Etudiant | null;
@@ -54,21 +58,35 @@ const StudentHome = ({
     index: number;
   }>({ etudiant: null, index: -1 });
 
-  const [anneePro, setAnneePro] = useState<string>("-1");
+  const [pro, setPro] = useState<PromotionDetails>({
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
 
   const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
   const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    if (etudiants.length === 0) dispatch(getPromotionAsync());
-    if (anneePro === "-1" && promotionDetails.anneePro === "-1") {
+    dispatch(getPromotionAsync());
+    if (etudiants.length === 0) {
       dispatch(getEtudiantAsync());
-    } else if (anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(anneePro));
-    } else if (promotionDetails.anneePro !== "-1") {
-      dispatch(getEtudiantByPromotionAsync(promotionDetails.anneePro));
     }
-  }, [dispatch, anneePro, promotionDetails]);
+    if (
+      pro.anneeUniversitaire === "-1" &&
+      promotionDetails.anneeUniversitaire === "-1"
+    ) {
+      dispatch(getEtudiantAsync());
+    } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
+      dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
+    } else if (
+      promotionDetails.anneePro !== "-1" &&
+      promotionDetails.codeFormation !== ""
+    ) {
+      dispatch(
+        getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
+      );
+    }
+  }, [dispatch, pro, promotionDetails]);
 
   useEffect(() => {
     if (
@@ -103,9 +121,7 @@ const StudentHome = ({
 
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
-    const response = await dispatch(
-      deleteEtudiantAsync(etudiant.noEtudiant)
-    );
+    const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
     dispatch(getEtudiantAsync());
     if (
       response?.payload ===
@@ -121,8 +137,22 @@ const StudentHome = ({
   };
 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPromotion = e.target.value;
-    setAnneePro(selectedPromotion);
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "-1") {
+      setPro({
+        anneeUniversitaire: "-1",
+        codeFormation: "",
+      } as PromotionDetails);
+    } else {
+      try {
+        const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
+        setPro(selectedPromotion);
+        console.log("Selected promotion:", selectedPromotion);
+      } catch (error) {
+        console.error("Error parsing promotion details:", error);
+      }
+    }
   };
 
   const MotionVariant = {
@@ -139,45 +169,118 @@ const StudentHome = ({
     }),
   };
 
+  useEffect(() => {
+    setfilteredEtudiants(etudiants);
+  }, [etudiants]);
+
+ const handleSearchChange = (
+   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+ ) => {
+   const value = e.target.value.toLowerCase().trim();
+   setSearch(value);
+
+   if (!value) {
+     setfilteredEtudiants(etudiants);
+     return;
+   }
+
+   setfilteredEtudiants(
+     etudiants.filter(
+       (etu) =>
+         (etu.nom?.toLowerCase().includes(value) ?? false) ||
+         (etu.prenom?.toLowerCase().includes(value) ?? false)
+     )
+   );
+ };
+
   return (
     <>
-      <motion.div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+      <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
-        {promotionDetails.siglePro ? (
-          <h1>Liste des étudiants de {promotionDetails.siglePro} </h1>
+        {promotionDetails.codeFormation ? (
+          <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
         ) : (
           <h1>Liste des étudiants</h1>
         )}
 
-        <div className="flex flex-row items-center  justify-between gap-5 w-full px-14">
-          {!promotionDetails.siglePro ? (
-            <select
-              defaultValue="default"
-              className="select hover:cursor-pointer"
-              onChange={handlePromotionChange}
-            >
-              <option value="default" disabled>
-                Sélectionnez une promotion
-              </option>
-              <option value="-1" onClick={() => setAnneePro("-1")}>
-                Tous les promotions
-              </option>
-              {promotions.map((promotion) => (
-                <option key={promotion.anneePro} value={promotion.anneePro}>
-                  {promotion.anneePro} : {promotion.siglePro}
+        <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
+          {!promotionDetails.codeFormation ? (
+            <div className="flex flex-row items-center justify-between  w-1/2 ">
+              <select
+                defaultValue="default"
+                className="select hover:cursor-pointer shadow-md"
+                onChange={handlePromotionChange}
+              >
+                <option value="default" disabled>
+                  Sélectionnez une promotion
                 </option>
-              ))}
-            </select>
+                <option
+                  value="-1"
+                  onClick={() =>
+                    setPro({
+                      anneeUniversitaire: "-1",
+                      codeFormation: "",
+                    } as PromotionDetails)
+                  }
+                >
+                  Tous les promotions
+                </option>
+                {promotions.map((promotion, idx) => (
+                  <option
+                    key={idx}
+                    value={JSON.stringify({
+                      anneeUniversitaire: promotion.anneeUniversitaire,
+                      codeFormation: promotion.codeFormation,
+                    })}
+                  >
+                    {promotion.anneeUniversitaire} : {promotion.codeFormation}
+                  </option>
+                ))}
+              </select>
+              <div className="w-1/2 block hover:cursor-text">
+                <label className="input input-bordered flex items-center gap-2 shadow-md">
+                  <input
+                    disabled={etudiants.length == 0}
+                    name="search"
+                    value={search}
+                    onChange={handleSearchChange}
+                    type="text"
+                    className="grow placeholder:font-medium "
+                    placeholder="Rechercher..."
+                  />
+                  <FaSearch />
+                </label>
+              </div>
+            </div>
           ) : (
-            <div
-              className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
-              onClick={() => {
-                setPromotionDetails({ anneePro: "-1", siglePro: "" });
-                switchStudent("-1", "");
-              }}
-            >
-              <HiOutlineChevronLeft className="text-lg " size={20} /> Retournez
-              à la liste des promotions
+            <div className="flex flex-row items-center justify-between w-1/2">
+              <div
+                className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
+                onClick={() => {
+                  setPromotionDetails({
+                    anneeUniversitaire: "-1",
+                    codeFormation: "",
+                  } as PromotionDetails);
+                  switchStudent("-1", "");
+                }}
+              >
+                <HiOutlineChevronLeft className="text-lg " size={20} />{" "}
+                Retournez à la liste des promotions
+              </div>
+              <div className="w-1/2 block hover:cursor-text">
+                <label className="input input-bordered flex items-center gap-2 shadow-md">
+                  <input
+                    disabled={etudiants.length == 0}
+                    name="search"
+                    value={search}
+                    onChange={handleSearchChange}
+                    type="text"
+                    className="grow placeholder:font-medium "
+                    placeholder="Rechercher..."
+                  />
+                  <FaSearch />
+                </label>
+              </div>
             </div>
           )}
 
@@ -210,6 +313,12 @@ const StudentHome = ({
             <tbody>
               {etudiants.length === 0 ? (
                 <tr>
+                  <td colSpan={11} className="text-center w-full">
+                    <span className="loading loading-dots loading-lg"></span>
+                  </td>
+                </tr>
+              ) : filteredEtudiants.length === 0 ? (
+                <tr>
                   <td
                     colSpan={11}
                     className="uppercase tracking-widest text-center text-gray-500"
@@ -218,7 +327,7 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                etudiants.map((etudiant: Etudiant, index: number) => (
+                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
                     key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
@@ -262,7 +371,10 @@ const StudentHome = ({
                       id={`updateStudent-${etudiant.noEtudiant}`}
                       className="modal"
                     >
-                      <UpdateStudent studentData={etudiant} />
+                      <UpdateStudent
+                        promotions={promotions}
+                        studentData={etudiant}
+                      />
                     </dialog>
                     <dialog
                       id={`inspect-${etudiant.noEtudiant}`}
@@ -278,7 +390,7 @@ const StudentHome = ({
         </div>
       </motion.div>
       <dialog id="addStudent" className="modal">
-        <AddStudent />
+        <AddStudent promotions={promotions} />
       </dialog>
     </>
   );

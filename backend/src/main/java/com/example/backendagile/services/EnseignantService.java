@@ -44,4 +44,8 @@ public class EnseignantService {
     public Optional<Enseignant> findByEmail(String emailUbo) {
         return enseignantRepository.findByEmailUbo(emailUbo).stream().findFirst();
     }
+
+    public List<Enseignant> getEnseignant() {
+        return enseignantRepository.findAll();
+    }
 }

@@ -42,11 +42,11 @@ export const createQualificatifAsync = createAsyncThunk<Qualificatif, Qualificat
 );
 
 // **Thunk: Mise à jour d'un qualificatif**
-export const updateQualificatifAsync = createAsyncThunk<string, { id: number; data: Qualificatif }, { rejectValue: string }>(
+export const updateQualificatifAsync = createAsyncThunk<string,  Qualificatif, { rejectValue: string }>(
   "qualificatifs/update",
-  async ({ id, data }, { rejectWithValue }) => {
+  async (data , { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/qualificatifs/${id}`, data);
+      const response = await axiosInstance.put(`/qualificatifs/${data.id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour du qualificatif");

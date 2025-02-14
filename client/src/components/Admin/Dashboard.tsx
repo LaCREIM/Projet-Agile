@@ -11,55 +11,54 @@ import { BsCardHeading } from "react-icons/bs";
 import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import ubo from "/ubologo.png";
 
 
 export function Dashboard() {
   const links = [
     {
-      label: "Gestion enseignants",
+      label: "Gestion des enseignants",
       href: "/admin/home/enseignants",
       icon: (
         <AiOutlineTeam className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion promotions",
+      label: "Gestion des promotions",
       href: "/admin/home/promotions",
       icon: (
         <LuSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion étudiants",
+      label: "Gestion des étudiants",
       href: "/admin/home/etudiants",
       icon: (
         <IoSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion qualificatifs",
+      label: "Gestion des qualificatifs",
       href: "/admin/home/qualificatifs",
       icon: (
         <FaArrowsLeftRightToLine className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion questions",
+      label: "Gestion des questions",
       href: "/admin/home/questions",
       icon: (
         <PiSealQuestionFill className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion rubriques",
+      label: "Gestion des rubriques",
       href: "/admin/home/rubriques",
       icon: (
         <BsCardHeading className="text-neutral-700  h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion evaluations",
+      label: "Gestion des evaluations",
       href: "/admin/home/evaluations",
       icon: (
         <FaFileAlt className="text-neutral-700  h-5 w-5 flex-shrink-0" />

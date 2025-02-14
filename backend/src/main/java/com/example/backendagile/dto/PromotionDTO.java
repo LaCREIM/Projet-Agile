@@ -40,7 +40,30 @@ public class PromotionDTO {
 
     private String prenom;
 
-//Default constructor
+//Parameterized constructor
+
+
+    public PromotionDTO(String anneeUniversitaire, String siglePromotion, Short nbMaxEtudiant, LocalDate dateReponseLp, LocalDate dateReponseLalp, LocalDate dateRentree, String lieuRentree, String processusStage, String commentaire, String codeFormation, String nomFormation, String emailEnseignant, String diplome, Long noEnseignant, String type, String nom, String prenom) {
+        this.anneeUniversitaire = anneeUniversitaire;
+        this.siglePromotion = siglePromotion;
+        this.nbMaxEtudiant = nbMaxEtudiant;
+        this.dateReponseLp = dateReponseLp;
+        this.dateReponseLalp = dateReponseLalp;
+        this.dateRentree = dateRentree;
+        this.lieuRentree = lieuRentree;
+        this.processusStage = processusStage;
+        this.commentaire = commentaire;
+        this.codeFormation = codeFormation;
+        this.nomFormation = nomFormation;
+        this.emailEnseignant = emailEnseignant;
+        this.diplome = diplome;
+        this.noEnseignant = noEnseignant;
+        this.type = type;
+        this.nom = nom;
+        this.prenom = prenom;
+    }
+
+    //Default constructor
 public PromotionDTO() {
     this.anneeUniversitaire = "";
     this.siglePromotion = "";
@@ -204,7 +227,7 @@ public PromotionDTO() {
     public String toString() {
         return "Promotion{" +
                 "anneePro=" + anneeUniversitaire +
-                ", siglePro='" + siglePromotion + '\'' +
+                ", siglePromotion='" + siglePromotion + '\'' +
                 ", nbEtuSouhaite=" + nbMaxEtudiant +
                 ", dateRentree=" + dateRentree +
                 ", lieuRentree='" + lieuRentree + '\'' +

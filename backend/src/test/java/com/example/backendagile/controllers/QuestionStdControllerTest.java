@@ -2,95 +2,115 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.QuestionStdDTO;
 import com.example.backendagile.entities.Question;
+import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.services.QuestionStdService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class QuestionStdControllerTest {
+@WebMvcTest(QuestionStdController.class)
+public class QuestionStdControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private QuestionStdService questionStdService;
 
-    @InjectMocks
-    private QuestionStdController questionStdController;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private QuestionStdDTO questionStdDTO;
+    private Question question;
+    private Qualificatif qualificatif;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(questionStdController).build();
+        qualificatif = new Qualificatif();
+        qualificatif.setId(1L);
+        qualificatif.setMaximal("Excellent");
+        qualificatif.setMinimal("Mauvais");
+
+        question = new Question();
+        question.setId(1L);
+        question.setIdQualificatif(qualificatif);
+        question.setIntitule("Quel est votre avis sur ce cours ?");
+
+        questionStdDTO = new QuestionStdDTO();
+        questionStdDTO.setIdQualificatif(1L);
+        questionStdDTO.setIntitule("Quel est votre avis sur ce cours ?");
     }
 
     /**
-     * Test récupérer toutes les questions standards (GET)
+     * ✅ Test : Récupération de toutes les questions standards
      */
     @Test
-    void testGetAllStandardQuestions() throws Exception {
-        when(questionStdService.getStandardQuestions()).thenReturn(Collections.singletonList(new Question()));
+    void testGetStandardQuestions() throws Exception {
+        when(questionStdService.getStandardQuestions()).thenReturn(List.of(question));
 
         mockMvc.perform(get("/api/questionsStd"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(1)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].intitule", is("Quel est votre avis sur ce cours ?")));
     }
 
     /**
-     * Test récupérer une question standard par ID (GET)
+     * ✅ Test : Récupération d’une question standard par ID (Success)
      */
     @Test
-    void testGetStandardQuestionById() throws Exception {
-        Question question = new Question();
-        when(questionStdService.findById(anyLong())).thenReturn(Optional.of(question));
+    void testGetQuestionByIdSuccess() throws Exception {
+        when(questionStdService.findById(1L)).thenReturn(Optional.of(question));
 
         mockMvc.perform(get("/api/questionsStd/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.intitule", is("Quel est votre avis sur ce cours ?")));
     }
 
     /**
-     * Test récupérer une question standard inexistante (GET)
+     * ❌ Test : Récupération d’une question standard par ID (Not Found)
      */
     @Test
-    void testGetStandardQuestionByIdNotFound() throws Exception {
-        when(questionStdService.findById(anyLong())).thenReturn(Optional.empty());
+    void testGetQuestionByIdNotFound() throws Exception {
+        when(questionStdService.findById(99L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/questionsStd/1"))
+        mockMvc.perform(get("/api/questionsStd/99"))
                 .andExpect(status().isNotFound());
     }
 
     /**
-     * Test créer une question standard avec un qualificatif existant (POST)
+     * ✅ Test : Création d’une question standard (Success)
      */
     @Test
     void testCreateStandardQuestion() throws Exception {
-        QuestionStdDTO dto = new QuestionStdDTO();
-        dto.setIdQualificatif(1L);
-        dto.setIntitule("Nouvelle Question");
-
-        when(questionStdService.createStandardQuestion(any(QuestionStdDTO.class))).thenReturn(dto);
+        when(questionStdService.createStandardQuestion(any(QuestionStdDTO.class))).thenReturn(questionStdDTO);
 
         mockMvc.perform(post("/api/questionsStd")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idQualificatif\": 1, \"intitule\": \"Nouvelle Question\"}"))
+                        .content(objectMapper.writeValueAsString(questionStdDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.intitule").value("Nouvelle Question"));
+                .andExpect(jsonPath("$.intitule", is("Quel est votre avis sur ce cours ?")));
     }
 
     /**
-     * Test créer une question standard avec un qualificatif inexistant (POST)
+     * ❌ Test : Création d’une question standard avec un qualificatif inexistant (Bad Request)
      */
     @Test
     void testCreateStandardQuestionWithInvalidQualificatif() throws Exception {
@@ -99,48 +119,46 @@ class QuestionStdControllerTest {
 
         mockMvc.perform(post("/api/questionsStd")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idQualificatif\": 99, \"intitule\": \"Question invalide\"}"))
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(questionStdDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Le qualificatif spécifié n'existe pas."));
     }
 
     /**
-     * Test mettre à jour une question standard existante (PUT)
+     * ✅ Test : Mise à jour d’une question standard (Success)
      */
     @Test
     void testUpdateStandardQuestion() throws Exception {
-        QuestionStdDTO dto = new QuestionStdDTO();
-        dto.setIdQualificatif(1L);
-        dto.setIntitule("Question mise à jour");
-
-        when(questionStdService.updateStandardQuestion(anyLong(), any(QuestionStdDTO.class))).thenReturn(dto);
+        when(questionStdService.updateStandardQuestion(eq(1L), any(QuestionStdDTO.class))).thenReturn(question);
 
         mockMvc.perform(put("/api/questionsStd/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idQualificatif\": 1, \"intitule\": \"Question mise à jour\"}"))
+                        .content(objectMapper.writeValueAsString(questionStdDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.intitule").value("Question mise à jour"));
+                .andExpect(jsonPath("$.intitule", is("Quel est votre avis sur ce cours ?")));
     }
 
     /**
-     * Test mettre à jour une question standard inexistante (PUT)
+     * ❌ Test : Mise à jour d’une question standard inexistante (Not Found)
      */
     @Test
     void testUpdateStandardQuestionNotFound() throws Exception {
-        when(questionStdService.updateStandardQuestion(anyLong(), any(QuestionStdDTO.class)))
+        when(questionStdService.updateStandardQuestion(eq(99L), any(QuestionStdDTO.class)))
                 .thenThrow(new IllegalArgumentException("Aucune question trouvée avec cet ID."));
 
-        mockMvc.perform(put("/api/questionsStd/1")
+        mockMvc.perform(put("/api/questionsStd/99")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idQualificatif\": 1, \"intitule\": \"Question mise à jour\"}"))
+                        .content(objectMapper.writeValueAsString(questionStdDTO)))
                 .andExpect(status().isNotFound());
     }
 
     /**
-     * Test supprimer une question standard existante (DELETE)
+     * ✅ Test : Suppression d’une question standard (Success)
      */
     @Test
     void testDeleteStandardQuestion() throws Exception {
-        when(questionStdService.findById(anyLong())).thenReturn(Optional.of(new Question()));
+        when(questionStdService.findById(1L)).thenReturn(Optional.of(question));
+        Mockito.doNothing().when(questionStdService).deleteById(1L);
 
         mockMvc.perform(delete("/api/questionsStd/1"))
                 .andExpect(status().isOk())
@@ -148,13 +166,13 @@ class QuestionStdControllerTest {
     }
 
     /**
-     * Test supprimer une question standard inexistante (DELETE)
+     * ❌ Test : Suppression d’une question standard inexistante (Not Found)
      */
     @Test
     void testDeleteStandardQuestionNotFound() throws Exception {
-        when(questionStdService.findById(anyLong())).thenReturn(Optional.empty());
+        when(questionStdService.findById(99L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(delete("/api/questionsStd/1"))
+        mockMvc.perform(delete("/api/questionsStd/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Aucune question trouvée avec cet ID."));
     }

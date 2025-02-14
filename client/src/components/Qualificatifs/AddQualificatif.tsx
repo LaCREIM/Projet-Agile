@@ -1,49 +1,49 @@
-import  { useState } from 'react';
+import { useState } from "react";
 import {
   fetchQualificatifsAsync,
   createQualificatifAsync,
 } from "../../features/QualificatifSlice";
-import { useAppDispatch } from '../../hook/hooks';
+import { useAppDispatch } from "../../hook/hooks";
 const AddQualificatif = () => {
   const [qualificatif, setQualificatif] = useState({
     id: 0,
-    maximal: '',
-    minimal: '',
+    maximal: "",
+    minimal: "",
   });
   const dispatch = useAppDispatch();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setQualificatif((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
+  const canSave = qualificatif.maximal != "" && qualificatif.minimal != "";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
-    if (!canSave) {
-      console.error("Tous les champs requis doivent être remplis correctement.");
-    }
-
-    if (
-      qualificatif.maximal &&
-      qualificatif.maximal) {
+    e.preventDefault();
+    if (canSave) {
+      console.log("heeeere");
+      
       await dispatch(createQualificatifAsync(qualificatif));
       dispatch(fetchQualificatifsAsync());
-    } else {
-      console.error("Tous les champs requis doivent être remplis.");
+      setQualificatif({
+        id: 0,
+        maximal: "",
+        minimal: "",
+      });
     }
   };
 
-  const canSave = qualificatif.maximal && qualificatif.minimal;
-
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
-      <div className="modal-box w-[50em] max-w-5xl">
+      <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un qualificatif</h3>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-5">
+
+          <div className="flex flex-row justify-center items-center gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Maximal</span>
               <input
@@ -72,16 +72,17 @@ const AddQualificatif = () => {
           </div>
 
           <div className="modal-action">
-            <button type="button" className="btn">Annuler</button>
-            <button
-              type="submit"
-              className="btn btn-neutral disabled:cursor-not-allowed"
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
+            <form method="dialog" className="flex flex-row gap-5">
+              <button className="btn">Annuler</button>
+              <button
+                onClick={handleSubmit}
+                className="btn btn-neutral disabled:cursor-not-allowed"
+                disabled={!canSave}
+              >
+                Ajouter
+              </button>
+            </form>
           </div>
-        </form>
       </div>
     </div>
   );

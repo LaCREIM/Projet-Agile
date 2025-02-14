@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -31,13 +32,23 @@ public class EnseignantController {
     private EnseignantMapper enseignantMapper;
 
     /**
-     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
+     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement) avec pagination
      */
-    @GetMapping
-    public ResponseEntity<List<Enseignant>> getAllEnseignants(@RequestParam int page, @RequestParam int size) {
+    @GetMapping("/paged")
+    public ResponseEntity<List<Enseignant>> getAllEnseignantsPaged(@RequestParam int page, @RequestParam int size) {
         List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
         return ResponseEntity.ok(enseignants);
     }
+
+    /**
+     * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement)
+     */
+    @GetMapping
+    public ResponseEntity<List<Enseignant>> getAllEnseignants() {
+        List<Enseignant> enseignants = enseignantService.getEnseignant();
+        return ResponseEntity.ok(enseignants);
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Enseignant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
@@ -59,6 +70,7 @@ public class EnseignantController {
      * 🔸 Créer un nouvel enseignant (utilise `EnseignantDTO` pour la requête)
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<Enseignant> createEnseignant(@Valid @RequestBody EnseignantDTO enseignantDTO) {
         try {
             // Check if an Enseignant with the same email already exists
