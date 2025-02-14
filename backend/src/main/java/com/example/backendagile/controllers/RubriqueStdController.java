@@ -82,7 +82,7 @@ public class RubriqueStdController {
             rubriqueStdService.deleteById(id);
             return ResponseEntity.ok("La rubrique a été supprimée avec succès.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La rubrique est déjà utilisée.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Il faut vider la rubrique de ses questions avant de la supprimer.");
         }
     }
 }
