@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
 import {
   fetchQuestionsAsync,
   createQuestionAsync,
 } from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
-import { getEnseignantAsync } from "../../features/EnseignantSlice";
-import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 
-const AddQuestion = () => {
+
+interface AddQuestionProps {
+  qualificatifs: Qualificatif[];
+}
+
+const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
   const dispatch = useAppDispatch();
 
   // State for Question and related entities
@@ -19,26 +22,6 @@ const AddQuestion = () => {
     idQualificatif: {} as Qualificatif,
     intitule: "",
   });
-
-  const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
-  const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
-
-  useEffect(() => {
-    // Fetch Enseignants and Qualificatifs from API when component mounts
-    const fetchData = async () => {
-      const enseignantsData = await dispatch(
-        getEnseignantAsync({ page: 1, size: 10 })
-      );
-      const qualificatifsData = await dispatch(fetchQualificatifsAsync());
-
-      if (Array.isArray(enseignantsData?.payload))
-        setEnseignants(enseignantsData.payload);
-      if (Array.isArray(qualificatifsData?.payload))
-        setQualificatifs(qualificatifsData.payload);
-    };
-
-    fetchData();
-  }, [dispatch]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -51,15 +34,6 @@ const AddQuestion = () => {
     }));
   };
 
-  const handleSelectEnseignant = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedEnseignant = enseignants.find(
-      (ens) => ens.id === Number(e.target.value)
-    );
-    setQuestion((prev) => ({
-      ...prev,
-      noEnseignant: selectedEnseignant || ({} as Enseignant),
-    }));
-  };
 
   const handleSelectQualificatif = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -80,16 +54,12 @@ const AddQuestion = () => {
       console.error("All required fields must be filled.");
       return;
     }
-
     await dispatch(createQuestionAsync(question));
-
     dispatch(fetchQuestionsAsync());
   };
 
   const canSave =
     question.intitule.trim() !== "" &&
-    question.type !== "" &&
-    question.noEnseignant !== {} as Enseignant &&
     question.idQualificatif.id !== 0;
 
   return (
@@ -98,22 +68,8 @@ const AddQuestion = () => {
         <h3 className="font-bold text-lg my-4">Ajouter une Question</h3>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
-            
-            <div className="flex flex-row  justify-between gap-5">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Type</span>
-                <input
-                  required
-                  type="text"
-                  name="type"
-                  value={question.type}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: QCM, Open Question"
-                />
-              </label>
 
-              <label className="input input-bordered w-2/3 flex items-center gap-2">
+              <label className="input input-bordered w-[85%] flex items-center gap-2">
                 <span className="font-semibold">Intitulé</span>
                 <input
                   required
@@ -125,30 +81,14 @@ const AddQuestion = () => {
                   placeholder="Ex: Quelle est la capitale de la France ?"
                 />
               </label>
-            </div>
 
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Enseignant</span>
-              <select
-                required
-                onChange={handleSelectEnseignant}
-                className="select select-bordered w-full max-w-full"
-              >
-                <option value="">Sélectionnez un enseignant</option>
-                {enseignants.map((ens) => (
-                  <option key={ens.id} value={ens.id}>
-                    {ens.nom} {ens.prenom}
-                  </option>
-                ))}
-              </select>
-            </label>
 
-            <label className="flex items-center gap-2">
-              <span className="font-semibold">Qualificatif</span>
+            <label className="flex flex-row items-center ">
+              <span className="font-semibold w-[15%]">Qualificatif</span>
               <select
                 required
                 onChange={handleSelectQualificatif}
-                className="select select-bordered w-full max-w-full"
+                className="select select-bordered w-[70%] max-w-full  hover:cursor-pointer"
               >
                 <option value="">Sélectionnez un qualificatif</option>
                 {qualificatifs.map((qual) => (

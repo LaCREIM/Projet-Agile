@@ -137,7 +137,7 @@ export interface Etudiant {
     codeFormation: string ;
     nom: string;
     prenom: string;
-    password:"";
+    motPasse:"";
     sexe: string;
     dateNaissance: Date | null;
     lieuNaissance: string;

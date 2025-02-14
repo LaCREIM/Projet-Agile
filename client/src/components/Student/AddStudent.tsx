@@ -27,7 +27,7 @@ const AddStudent = ({promotions}: AddStudentProps) => {
     noEtudiant: "",
     nom: "",
     prenom: "",
-    password:"",
+    motPasse:"",
     sexe: "",
     dateNaissance: null,
     lieuNaissance: "",
@@ -102,7 +102,7 @@ const AddStudent = ({promotions}: AddStudentProps) => {
     student.mobile.trim() !== "" &&
     student.anneeUniversitaire.trim() !== "" &&
     student.codeFormation.trim() !== "";
-    student.password.trim() !== "";
+    student.motPasse.trim() !== "";
 
 
 
@@ -157,7 +157,7 @@ const AddStudent = ({promotions}: AddStudentProps) => {
                 required
                 type="text"
                 name="password"
-                value={student.password}
+                value={student.motPasse}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Entrez un mot de passe"
