@@ -79,6 +79,7 @@ export interface ElementConstitutif {
 }
 
 export interface Enseignant {
+    password: string;
     intSocNom: any;
     intNoInsee: any;
     intFonction: any;
@@ -136,6 +137,7 @@ export interface Etudiant {
     codeFormation: string ;
     nom: string;
     prenom: string;
+    password:"";
     sexe: string;
     dateNaissance: Date | null;
     lieuNaissance: string;
