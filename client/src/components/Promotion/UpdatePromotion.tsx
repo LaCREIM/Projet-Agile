@@ -74,6 +74,7 @@ const UpdatePromotion = ({
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier une promotion</h3>
+        
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             <div className="flex flex-row justify-between">

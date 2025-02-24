@@ -10,7 +10,7 @@ import { PromotionDetails } from "./types/types";
 import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
 import QuestionHome from "./components/Questions/QuestionHome";
 import EvaluationHome from "./components/Evaluations/EvaluationHome";
-import RubriqueHome from "./components/Rubriques/RubriqueHome";
+// import RubriqueHome from "./components/Rubriques/RubriqueHome";
 import LoginForm from "./components/Auth/LoginForm";
 import NotFound from "./layouts/NotFound";
 function App() {
