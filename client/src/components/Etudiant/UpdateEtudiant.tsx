@@ -18,7 +18,7 @@ interface UpdateStudentProps {
   promotions: Promotion[]
 }
 
-const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
+const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
@@ -80,6 +80,7 @@ const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier un étudiant</h3>
+        
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             {/* Nom et Prénom */}
@@ -363,6 +364,7 @@ const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
             </label>
           </div>
         </form>
+
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
             <button className="btn">Annuler</button>
@@ -371,7 +373,7 @@ const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
               onClick={handleSubmit}
               disabled={!canSave}
             >
-              Mis à jour
+              Mettre à jour
             </button>
           </form>
         </div>
@@ -380,4 +382,4 @@ const UpdateStudent = ({ studentData, promotions }: UpdateStudentProps) => {
   );
 };
 
-export default UpdateStudent;
+export default UpdateEtudiant;

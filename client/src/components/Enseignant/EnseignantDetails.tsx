@@ -43,15 +43,23 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
               <dd className="mt-1 text-gray-500">{enseignant.codePostal}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
+              <dt>Email :</dt>
+              <dd className="mt-1 text-gray-500">
+                {enseignant.emailUbo || "France"}
+              </dd>
+            </div>
+            <div className="text-base font-medium text-gray-900">
               <dt>Pays :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.pays || "France"}
               </dd>
             </div>
+
             <div className="text-base font-medium text-gray-900">
               <dt>Type :</dt>
               <dd className="mt-1 text-gray-500">{enseignant.type}</dd>
             </div>
+
             {enseignant.type === "ENC" && (
               <>
                 {enseignant.emailPerso && (

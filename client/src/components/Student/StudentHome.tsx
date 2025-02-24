@@ -195,7 +195,7 @@ const StudentHome = ({
 
   return (
     <>
-      <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
+      <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
         {promotionDetails.codeFormation ? (
           <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
@@ -205,7 +205,7 @@ const StudentHome = ({
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
           {!promotionDetails.codeFormation ? (
-            <div className="flex flex-row items-center justify-between  w-1/2 ">
+            <div className="flex flex-row items-center justify-between gap-2  w-1/2 ">
               <select
                 defaultValue="default"
                 className="select hover:cursor-pointer shadow-md"
@@ -253,7 +253,7 @@ const StudentHome = ({
               </div>
             </div>
           ) : (
-            <div className="flex flex-row items-center justify-between w-1/2">
+            <div className="flex flex-row items-center gap-1 justify-between w-1/2">
               <div
                 className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
                 onClick={() => {
@@ -388,7 +388,7 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-      </motion.div>
+      </div>
       <dialog id="addStudent" className="modal">
         <AddStudent promotions={promotions} />
       </dialog>
