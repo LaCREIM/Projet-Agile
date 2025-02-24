@@ -20,7 +20,7 @@ interface AddStudentProps {
   promotions: Promotion[]
 }
 
-const AddStudent = ({promotions}: AddStudentProps) => {
+const AddEtudiant = ({promotions}: AddStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
@@ -421,4 +421,4 @@ const AddStudent = ({promotions}: AddStudentProps) => {
   );
 };
 
-export default AddStudent;
+export default AddEtudiant;
