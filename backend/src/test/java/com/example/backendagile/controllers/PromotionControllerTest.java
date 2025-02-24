@@ -85,11 +85,13 @@ class PromotionControllerTest {
         String codeFormation = "CS101";
         PromotionDTO promotionDTO = new PromotionDTO();
         PromotionDTO updatedPromotion = new PromotionDTO();
+
         when(promotionService.updatePromotion(anneeUniversitaire, codeFormation, promotionDTO)).thenReturn(updatedPromotion);
 
-        PromotionDTO result = promotionController.updatePromotion(anneeUniversitaire, codeFormation, promotionDTO);
+        ResponseEntity<String> response = promotionController.updatePromotion(anneeUniversitaire, codeFormation, promotionDTO);
 
-        assertEquals(updatedPromotion, result);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Promotion mise à jour avec succès", response.getBody());
         verify(promotionService, times(1)).updatePromotion(anneeUniversitaire, codeFormation, promotionDTO);
     }
 

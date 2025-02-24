@@ -19,7 +19,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
       <div className="modal-box w-[55em] max-w-5xl space-y-5 hover:cursor-default">
         <div className="flex flex-col items-center w-full">
           <h3 className="font-bold text-center text-lg">
-            Détails de la promotion <b>{promotion.siglePromotion.toUpperCase()}</b>
+            Détails de la promotion <b>{promotion.siglePromotion?.toUpperCase()}</b>
           </h3>
         </div>
 
@@ -76,9 +76,9 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             </div>
 
             <div className="text-base font-medium text-gray-900">
-              <dt>No :</dt>
+              <dt>Email :</dt>
               <dd className="mt-1 text-gray-500">
-                {promotion.noEnseignant}
+                {promotion.emailEnseignant}
               </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
@@ -89,7 +89,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             </div>
 
             <div className="divider divider-start xl:col-span-2 sm:col-span-3 col-span-1 text-lg text-gray-400 ">
-              Rectrutement
+              Recrutement
             </div>
 
             <div className="text-base font-medium text-gray-900">

@@ -130,6 +130,8 @@ export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { reject
     async (etudiant, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.put(`/etudiants/${etudiant.noEtudiant}`, etudiant);
+            console.log(response.data);
+            
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
