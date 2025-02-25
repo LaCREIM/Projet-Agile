@@ -18,6 +18,13 @@ public class QuestionStdController {
     @Autowired
     private QuestionStdService questionStdService;
 
+    @GetMapping("/paged")
+    public ResponseEntity<List<Question>> getStandardQuestionsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<Question> questions = questionStdService.getStandardQuestionsPaged(page, size);
+        return ResponseEntity.ok(questions);
+    }
     /**
      * Récupérer toutes les questions standards (renvoie les entités)
      */

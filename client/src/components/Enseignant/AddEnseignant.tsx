@@ -28,6 +28,7 @@ const AddEnseignant = () => {
     intNoInsee: 0, // Ajouté pour Intervenant
     intFonction: "", // Ajouté pour Intervenant
     motPasse: "",  // Ajouté
+
   });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -258,6 +259,7 @@ const AddEnseignant = () => {
                 </button>
               </label>
 
+
             <label className="flex items-center gap-2">
               <select
                 required
@@ -275,22 +277,29 @@ const AddEnseignant = () => {
             </label>
 
             {enseignant.type === "ENC" && (
-              <ChercheurInfo setEnseignant={setEnseignant} setChercheur={setChercheur} />
+              <ChercheurInfo
+                setEnseignant={setEnseignant}
+                setChercheur={setChercheur}
+              />
             )}
             {enseignant.type === "INT" && (
-              <IntervenantInfo setEnseignant={setEnseignant} setIntervenant={setIntervenant} />
+              <IntervenantInfo
+                setEnseignant={setEnseignant}
+                setIntervenant={setIntervenant}
+              />
             )}
           </div>
 
           <div className="modal-action">
-              <button className="btn">Annuler</button>
-              <button
-                type="submit"
-                className="btn btn-neutral disabled:cursor-not-allowed"
-                disabled={!canSave}
-              >
-                Ajouter
-              </button>          </div>
+            <button className="btn">Annuler</button>
+            <button
+              type="submit"
+              className="btn btn-neutral disabled:cursor-not-allowed"
+              disabled={!canSave}
+            >
+              Ajouter
+            </button>{" "}
+          </div>
         </form>
       </div>
     </div>

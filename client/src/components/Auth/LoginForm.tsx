@@ -3,8 +3,8 @@ import LoginPoster from "./LoginPoster";
 
 const LoginForm = () => {
   return (
-    <div className="h-sceen w-full dark:bg-black bg-white  dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative">
-      <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+    <div className="h-sceen w-full bg-white bg-grid-black/[0.2] relative">
+      <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
 
       <div className="grid grid-cols-2 h-screen">
         <LoginPoster />

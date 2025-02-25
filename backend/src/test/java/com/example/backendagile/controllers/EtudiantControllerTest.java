@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -77,23 +78,40 @@ public class EtudiantControllerTest {
     /**
      * Test : Créer un nouvel étudiant
      */
-    @Test
-    public void testCreateEtudiant() throws Exception {
-        EtudiantDTO etudiant = new EtudiantDTO();
-        etudiant.setNoEtudiant("E123");
-        etudiant.setNom("Doe");
-        etudiant.setPrenom("John");
+@Test
+public void testCreateEtudiant() throws Exception {
+    EtudiantDTO etudiant = new EtudiantDTO();
+    etudiant.setNoEtudiant("E123");
+    etudiant.setNom("Doe");
+    etudiant.setPrenom("John");
+    etudiant.setSexe("M");
+    etudiant.setLieuNaissance("Paris");
+    etudiant.setMobile("1234567890");
+    etudiant.setNationalite("French");
+    etudiant.setVille("Paris");
+    etudiant.setPaysOrigine("France");
+    etudiant.setCodePostal("75000");
+    etudiant.setGroupeAnglais(1L);
+    etudiant.setDateNaissance(LocalDate.of(1990, 1, 1));
+    etudiant.setEmail("john.doe@example.com");
+    etudiant.setUniversiteOrigine("Sorbonne");
+    etudiant.setAnneeUniversitaire("2023-2024");
+    etudiant.setTelephone("0987654321");
+    etudiant.setAdresse("123 Rue de Paris");
+    etudiant.setGroupeTp(2L);
+    etudiant.setCodeFormation("CS101");
+    etudiant.setMotPasse("password123");
+    etudiant.setEmailUbo("john.doe@ubo.fr");
 
-        Mockito.when(etudiantService.save(ArgumentMatchers.any(EtudiantDTO.class)))
-                .thenReturn(etudiant);
+    Mockito.when(etudiantService.save(ArgumentMatchers.any(EtudiantDTO.class)))
+            .thenReturn(etudiant);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/etudiants")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"noEtudiant\": \"E123\", \"nom\": \"Doe\", \"prenom\": \"John\"}"))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().string("Étudiant créé avec succès."));
-    }
-
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/etudiants")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"noEtudiant\": \"E123\", \"nom\": \"Doe\", \"prenom\": \"John\", \"sexe\": \"M\", \"lieuNaissance\": \"Paris\", \"mobile\": \"1234567890\", \"nationalite\": \"French\", \"ville\": \"Paris\", \"paysOrigine\": \"France\", \"codePostal\": \"75000\", \"groupeAnglais\": 1, \"dateNaissance\": \"1990-01-01\", \"email\": \"john.doe@example.com\", \"universiteOrigine\": \"Sorbonne\", \"anneeUniversitaire\": \"2023-2024\", \"telephone\": \"0987654321\", \"adresse\": \"123 Rue de Paris\", \"groupeTp\": 2, \"codeFormation\": \"CS101\", \"motPasse\": \"password123\", \"emailUbo\": \"john.doe@ubo.fr\"}"))
+            .andExpect(MockMvcResultMatchers.status().isCreated())
+            .andExpect(MockMvcResultMatchers.content().string("Étudiant créé avec succès."));
+}
     /**
      * Test : Mettre à jour un étudiant existant
      */

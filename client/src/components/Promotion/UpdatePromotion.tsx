@@ -5,13 +5,14 @@ import {
   getDomaineLieuEntreeAsync,
   getDomaineProcessusStageAsync,
   getFormationAsync,
-  getFormations,
+
   getProcessusStages,
   getSalles,
   updatePromotionAsync,
 } from "../../features/PromotionSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { Enseignant, Formation, PromotionCreate } from "../../types/types";
+import { Enseignant, PromotionCreate } from "../../types/types";
+import { processusmapper } from "../../mappers/mappers";
 
 interface UpdatePromotioProps {
   promotionData: PromotionCreate;
@@ -25,7 +26,7 @@ const UpdatePromotion = ({
   dispatchPromotion,
 }: UpdatePromotioProps) => {
   const dispatch = useAppDispatch();
-  const formations = useAppSelector<Formation[]>(getFormations);
+
   const salles = useAppSelector<Domaine[]>(getSalles);
   const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
 
@@ -44,7 +45,6 @@ const UpdatePromotion = ({
   };
 
   const canSave =
-    promotion.codeFormation != "" &&
     promotion.siglePromotion != "" &&
     promotion.anneeUniversitaire != "" &&
     promotion.nbMaxEtudiant != 0 &&
@@ -68,15 +68,13 @@ const UpdatePromotion = ({
     dispatch(getDomaineDiplomeAsync());
   }, [dispatch]);
 
-  // const formatDate = (date: string | Date | null) => {
-  //   if (date === null) return "";
-  //   date instanceof Date ? date.toISOString().split("T")[0] : date;
-  // };
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier une promotion</h3>
+        
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             <div className="flex flex-row justify-between">
@@ -144,28 +142,7 @@ const UpdatePromotion = ({
               </select>
             </label>
             {/* Champs ajoutés */}
-            <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Formation</span>
-              <select
-                required
-                className="select w-[80%] max-w-full"
-                name="codeFormation"
-                value={promotion.codeFormation}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Sélectionnez une formation
-                </option>
-                {formations.map((formation) => (
-                  <option
-                    key={formation.codeFormation}
-                    value={formation.codeFormation}
-                  >
-                    {formation.codeFormation}
-                  </option>
-                ))}
-              </select>
-            </label>
+
             <label className="flex flex-row items-center gap-2">
               <span className="font-semibold w-[15%]">Responsable</span>
               <select
@@ -199,7 +176,7 @@ const UpdatePromotion = ({
                 </option>
                 {processusStage.map((ps) => (
                   <option key={ps.rvLowValue} value={ps.rvLowValue}>
-                    {ps.rvMeaning}
+                    {processusmapper(ps.rvLowValue)}
                   </option>
                 ))}
               </select>

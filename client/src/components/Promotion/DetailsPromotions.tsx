@@ -1,3 +1,4 @@
+import { processusmapper } from "../../mappers/mappers";
 import { Promotion } from "../../types/types";
 
 interface PromotionProp {
@@ -51,12 +52,12 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             {promotion.commentaire && (
               <div className="text-base font-medium text-gray-900">
                 <dt>Commentaire:</dt>
-                <dd className="mt-1 text-gray-500">{promotion.commentaire}</dd>
+                <dd className="mt-1 text-gray-500">{ promotion.commentaire}</dd>
               </div>
             )}
             <div className="text-base font-medium text-gray-900">
               <dt>Stage :</dt>
-              <dd className="mt-1 text-gray-500">{promotion.processusStage}</dd>
+              <dd className="mt-1 text-gray-500">{processusmapper(promotion.processusStage)}</dd>
             </div>
             <div className="divider divider-start xl:col-span-2 sm:col-span-3 col-span-1 text-lg text-gray-400 ">
               Formation
@@ -75,9 +76,9 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             </div>
 
             <div className="text-base font-medium text-gray-900">
-              <dt>No :</dt>
+              <dt>Email :</dt>
               <dd className="mt-1 text-gray-500">
-                {promotion.noEnseignant}
+                {promotion.emailEnseignant}
               </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
@@ -88,7 +89,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             </div>
 
             <div className="divider divider-start xl:col-span-2 sm:col-span-3 col-span-1 text-lg text-gray-400 ">
-              Rectrutement
+              Recrutement
             </div>
 
             <div className="text-base font-medium text-gray-900">

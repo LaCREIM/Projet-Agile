@@ -7,6 +7,9 @@ import com.example.backendagile.mapper.QuestionStdMapper;
 import com.example.backendagile.repositories.QuestionRepository;
 import com.example.backendagile.repositories.QualificatifRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,23 +46,23 @@ public class QuestionStdService {
      */
     public QuestionStdDTO createStandardQuestion(QuestionStdDTO questionStdDTO) {
         Optional<Qualificatif> qualificatifOpt = qualificatifRepository.findById(questionStdDTO.getIdQualificatif());
-        
+
         if (qualificatifOpt.isEmpty()) {
             throw new IllegalArgumentException("Le qualificatif spécifié n'existe pas.");
         }
-    
+
         // Vérifie si max/min sont bien renseignés
         Qualificatif qualificatif = qualificatifOpt.get();
         if (qualificatif.getMaximal() == null || qualificatif.getMinimal() == null) {
             throw new IllegalArgumentException("Les qualificatifs max/min ne sont pas définis dans l'entité.");
         }
-    
+
         Question question = questionStdMapper.toEntity(questionStdDTO, qualificatif);
         Question savedQuestion = questionRepository.save(question);
-    
+
         return questionStdMapper.toDto(savedQuestion);
     }
-    
+
 
     /**
      * Mettre à jour une question standard existante
@@ -69,24 +72,23 @@ public class QuestionStdService {
         if (existingQuestionOpt.isEmpty()) {
             throw new IllegalArgumentException("Aucune question trouvée avec cet ID.");
         }
-    
+
         Optional<Qualificatif> qualificatifOpt = qualificatifRepository.findById(questionDto.getIdQualificatif());
         if (qualificatifOpt.isEmpty()) {
             throw new IllegalArgumentException("Le qualificatif spécifié n'existe pas.");
         }
-    
+
         Question question = existingQuestionOpt.get();
         question.setIdQualificatif(qualificatifOpt.get());
         question.setIntitule(questionDto.getIntitule());
-    
+
         return questionRepository.save(question);
     }
-    
+
     public Optional<QuestionStdDTO> getQuestionById(Long id) {
         return questionRepository.findById(id)
                 .map(questionStdMapper::toDto);
     }
-    
 
 
     /**
@@ -94,5 +96,10 @@ public class QuestionStdService {
      */
     public void deleteById(Long id) {
         questionRepository.deleteById(id);
+    }
+
+
+    public List<Question> getStandardQuestionsPaged(int page, int size) {
+        return questionRepository.findAllWithPagination(page, size);
     }
 }

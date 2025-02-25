@@ -22,43 +22,43 @@ export function AdminLayout() {
 }
 export const projects = [
   {
-    title: "Gestion Enseignants",
+    title: "Gestion des enseignants",
     icon: <AiOutlineTeam size={60} className="mx-auto" />,
     description: "Gérer les utilisateurs des enseignants.",
     link: "/admin/home/enseignants",
   },
   {
-    title: "Gestion Promotions",
+    title: "Gestion des promotions",
     icon: <LuSchool size={60} className="mx-auto" />,
     description: "Gérer les promotions.",
     link: "/admin/home/promotions",
   },
   {
-    title: "Gestion Étudiants",
+    title: "Gestion des étudiants",
     icon: <IoSchool size={60} className="mx-auto" />,
     description: "Gérer les étudiants.",
     link: "/admin/home/etudiants",
   },
   {
-    title: "Gestion Qualificatifs",
+    title: "Gestion des qualificatifs",
     icon: <FaArrowsLeftRightToLine size={60} className="mx-auto" />,
     description: "Gérer les qualificatifs.",
     link: "/admin/home/qualificatifs",
   },
   {
-    title: "Gestion Questions",
+    title: "Gestion des questions",
     icon: <PiSealQuestionFill size={60} className="mx-auto" />,
     description: "Gérer les questions.",
     link: "/admin/home/questions",
   },
   {
-    title: "Gestion Rubriques",
+    title: "Gestion des rubriques",
     icon: <BsCardHeading size={60} className="mx-auto" />,
     description: "Gestion les rubriques.",
     link: "/admin/home/rubriques",
   },
   {
-    title: "Gestion Évaluations",
+    title: "Gestion des évaluations",
     icon: <FaFileAlt size={60} className="mx-auto" />,
     description: "Gérer les évaluations.",
     link: "/admin/home/evaluations",

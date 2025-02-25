@@ -20,13 +20,14 @@ interface AddStudentProps {
   promotions: Promotion[]
 }
 
-const AddStudent = ({promotions}: AddStudentProps) => {
+const AddEtudiant = ({promotions}: AddStudentProps) => {
   const dispatch = useAppDispatch();
 
   const [student, setStudent] = useState<Etudiant>({
     noEtudiant: "",
     nom: "",
     prenom: "",
+    motPasse:"",
     sexe: "",
     dateNaissance: null,
     lieuNaissance: "",
@@ -36,6 +37,7 @@ const AddStudent = ({promotions}: AddStudentProps) => {
     email: "",
     emailUbo: "",
     adresse: "",
+
     codePostal: "",
     ville: "",
     paysOrigine: "",
@@ -100,6 +102,8 @@ const AddStudent = ({promotions}: AddStudentProps) => {
     student.mobile.trim() !== "" &&
     student.anneeUniversitaire.trim() !== "" &&
     student.codeFormation.trim() !== "";
+    student.motPasse.trim() !== "";
+
 
 
   return (
@@ -145,6 +149,18 @@ const AddStudent = ({promotions}: AddStudentProps) => {
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: YI98765"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Password</span>
+              <input
+                required
+                type="text"
+                name="password"
+                value={student.motPasse}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Entrez un mot de passe"
               />
             </label>
 
@@ -405,4 +421,4 @@ const AddStudent = ({promotions}: AddStudentProps) => {
   );
 };
 
-export default AddStudent;
+export default AddEtudiant;
