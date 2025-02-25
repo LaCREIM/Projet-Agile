@@ -40,6 +40,7 @@ public class LoginController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Login successful");
             response.put("token", token);
+            response.put("role", auth.getRole());
 
             return ResponseEntity.ok()
                     .header("Set-Cookie", String.format("token=%s; HttpOnly; Secure; Path=/; Max-Age=%d", token, cookie.getMaxAge()))
