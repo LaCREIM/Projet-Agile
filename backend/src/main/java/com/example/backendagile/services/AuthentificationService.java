@@ -13,9 +13,8 @@ public class AuthentificationService {
     @Autowired
     private AuthentificationRepository authentificationRepository;
 
-    public boolean authenticate(String loginConnection, String motPasse) {
-        Authentification auth = authentificationRepository.findByLoginConnectionAndMotPasse(loginConnection, motPasse);
-        return auth != null;
+    public Authentification authenticate(String loginConnection, String motPasse) {
+        return authentificationRepository.findByLoginConnectionAndMotPasse(loginConnection, motPasse);
     }
 
     public Authentification save(String role, String loginConnection, String pseudoConnection, String motPasse, Enseignant noEnseignant, Etudiant noEtudiant) {
