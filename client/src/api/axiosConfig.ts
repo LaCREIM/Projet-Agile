@@ -6,11 +6,12 @@ const API_BASE_URL = "http://localhost:8080/api/";
 
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true, 
+    baseURL: API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    withCredentials: true,
 });
 
 export default axiosInstance;
