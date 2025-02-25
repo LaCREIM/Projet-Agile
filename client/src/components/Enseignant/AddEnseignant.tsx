@@ -7,7 +7,7 @@ import {
 import { Chercheur, Enseignant, Intervenant } from "../../types/types";
 import ChercheurInfo from "./ChercheurInfo";
 import IntervenantInfo from "./IntervenantInfo";
-
+import { Eye, EyeOff } from "lucide-react";
 const AddEnseignant = () => {
   const dispatch = useAppDispatch();
   const [enseignant, setEnseignant] = useState<Enseignant>({
@@ -21,15 +21,16 @@ const AddEnseignant = () => {
     ville: "",  // Ajouté
     pays: "FR",
     mobile: "",
-    password: "",
-    telephone: "", 
-    emailUbo: "",  
-    emailPerso: "",  
-    intSocNom: "", 
-    intNoInsee: 0, 
-    intFonction: "", 
+    telephone: "",  // Ajouté
+    emailUbo: "",  // Correspondance avec l'interface
+    emailPerso: "",  // Correspondance avec l'interface
+    intSocNom: "", // Ajouté pour Intervenant
+    intNoInsee: 0, // Ajouté pour Intervenant
+    intFonction: "", // Ajouté pour Intervenant
+    motPasse: "",  // Ajouté
+
   });
-  
+  const [showPassword, setShowPassword] = useState(false);
 
   const [chercheur, setChercheur] = useState<Chercheur>({
     encUboEmail: "",
@@ -226,17 +227,38 @@ const AddEnseignant = () => {
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Password</span>
+              <span className="font-semibold">Ville</span>
               <input
                 required
                 type="text"
-                name="password"
-                value={enseignant.password}
+                name="ville"
+                value={enseignant.ville}
                 onChange={handleChange}
                 className="grow"
-                placeholder="Ex: Entrez un mot de passe"
+                placeholder="Ex: Brest"
               />
             </label>
+
+            <label className="input input-bordered flex items-center gap-2 relative">
+                <span className="font-semibold">Mot de passe</span>
+                <input
+                  required
+                  type={showPassword ? "text" : "password"}
+                  name="motPasse"
+                  value={enseignant.motPasse}
+                  onChange={handleChange}
+                  className="grow pr-10"
+                  placeholder="Mot de passe"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </label>
+
 
             <label className="flex items-center gap-2">
               <select

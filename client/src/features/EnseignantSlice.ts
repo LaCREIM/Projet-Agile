@@ -33,6 +33,7 @@ export const getEnseignantAsync = createAsyncThunk<
             const response = await axiosInstance.get<Enseignant[]>(`/enseignants`, {
                 params: { page, size },
             });
+
             return response.data;
         } catch (error: any) {
             console.error("Error fetching professors:", error);
@@ -62,6 +63,7 @@ export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { re
     "enseignants/createEnseignantAsync",
     async (enseignant, { rejectWithValue }) => {
         try {
+            console.log("Adding professor:", enseignant);
             const response = await axiosInstance.post('/enseignants', enseignant);
             return response.data;
         } catch (error: any) {

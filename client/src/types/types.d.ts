@@ -98,6 +98,7 @@ export interface Enseignant {
     telephone: string;
     emailUbo: string;
     emailPerso: string;
+    motPasse: string;
 }
 
 export interface EnseignantJn {
