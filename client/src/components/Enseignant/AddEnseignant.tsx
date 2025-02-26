@@ -27,7 +27,8 @@ const AddEnseignant = () => {
     intSocNom: "", // Ajouté pour Intervenant
     intNoInsee: 0, // Ajouté pour Intervenant
     intFonction: "", // Ajouté pour Intervenant
-    motPasse: "",  // Ajouté
+    password: "",  // Ajouté
+    motPasse: "",  // Correspondance avec l'interface
 
   });
   const [showPassword, setShowPassword] = useState(false);
