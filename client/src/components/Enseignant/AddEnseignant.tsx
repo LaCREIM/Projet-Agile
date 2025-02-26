@@ -46,13 +46,13 @@ const AddEnseignant = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-  
+
     setEnseignant((prev) => {
       const updatedEnseignant = {
         ...prev,
         [name]: value,
       };
-  
+
       // Correspondance explicite des valeurs pour Chercheur
       if (updatedEnseignant.type.toUpperCase() === "ENC") {
         setChercheur((prevChercheur) => ({
@@ -62,7 +62,7 @@ const AddEnseignant = () => {
           encUboTel: updatedEnseignant.telephone,
         }));
       }
-  
+
       if (updatedEnseignant.type.toUpperCase() === "INT") {
         setIntervenant((prevIntervenant) => ({
           ...prevIntervenant,
@@ -71,18 +71,18 @@ const AddEnseignant = () => {
           intSocNom: updatedEnseignant.intSocNom || "",
         }));
       }
-      
-  
+
+
       console.log("Nouvel état de enseignant :", updatedEnseignant);
       return updatedEnseignant;
     });
-  }; 
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
     }
-    
+
     if (
       enseignant.nom &&
       enseignant.prenom &&
@@ -100,15 +100,15 @@ const AddEnseignant = () => {
         enseignant.type === "ENC"
           ? { ...enseignant, ...chercheur }
           : { ...enseignant, ...intervenant };
-  
+
       await dispatch(postEnseignantAsync(enseignantComplet));
       dispatch(getEnseignantAsync({ page: 1, size: 10 }));
     } else {
       console.error("Tous les champs requis doivent être remplis.");
     }
   };
-  
-  
+
+
 
   const canSave = [
     { champ: "nom", valeur: enseignant.nom.trim() },
@@ -123,7 +123,7 @@ const AddEnseignant = () => {
     // console.log(`Validation du champ ${field.champ} :`, Boolean(field.valeur)); // Debugging
     return Boolean(field.valeur);
   });
-  
+
 
 
   return (
@@ -131,8 +131,7 @@ const AddEnseignant = () => {
       <div className="modal-box w-[50em] max-w-5xl ">
         <h3 className="font-bold text-lg my-4">Ajouter un enseignant</h3>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-row justify-between">
+            <div className="grid grid-cols-2 gap-5">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Nom</span>
                 <input
@@ -157,7 +156,7 @@ const AddEnseignant = () => {
                   placeholder="Ex: Jean"
                 />
               </label>
-            </div>
+
 
             <label className="flex items-center gap-2">
               <select
@@ -165,7 +164,7 @@ const AddEnseignant = () => {
                 name="sexe"
                 value={enseignant.sexe}
                 onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
+                className="select select-bordered"
               >
                 <option disabled value="">
                   Sélectionnez un sexe
@@ -266,7 +265,7 @@ const AddEnseignant = () => {
                 name="type"
                 value={enseignant.type}
                 onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
+                className="select select-bordered"
               >
                 <option disabled value="">
                   Sélectionnez un type
