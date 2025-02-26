@@ -10,9 +10,9 @@ import { PromotionDetails } from "./types/types";
 import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
 import QuestionHome from "./components/Questions/QuestionHome";
 import EvaluationHome from "./components/Evaluations/EvaluationHome";
-// import RubriqueHome from "./components/Rubriques/RubriqueHome";
 import LoginForm from "./components/Auth/LoginForm";
 import NotFound from "./layouts/NotFound";
+import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
@@ -46,7 +46,7 @@ function App() {
               <Route path="qualificatifs" element={<QualificatifHome />} />
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
-              {/* <Route path="rubriques" element={<RubriqueHome />} /> */}
+              <Route path="rubriques" element={<RubriqueHome />} />
             </Route>
             <Route path="*" element={<NotFound/>} />
           </Route>

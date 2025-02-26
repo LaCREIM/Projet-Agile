@@ -3,8 +3,8 @@ import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteRubriqueAsync, fetchRubriquesAsync } from "../../features/RubriqueSlice";
+import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriquesAsync, RubriqueQuestion, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { RootState } from "../../api/store";
@@ -15,21 +15,17 @@ const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
   const dispatch = useAppDispatch();
   const rubriques = useAppSelector((state: RootState) => state.rubriques.rubriques);
+  const questions = useAppSelector(getQuestionsRubrique);
+  const [questionPass, setQuestionPass] = useState<RubriqueQuestion[]>([])
   const [modal, setModal] = useState<{ rubrique: Rubrique | null; index: number }>({
     rubrique: null,
     index: -1,
   });
 
-  const [modalUpdate, setModalUpdate] = useState<{ rubrique: Rubrique | null; index: number }>({
-    rubrique: null,
-    index: -1,
-  });
-
-  const updateRubriqueModalRef = useRef<HTMLDialogElement | null>(null);
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(fetchRubriquesAsync());
+    dispatch(getRubriquesAsync());
   }, [dispatch]);
 
   useEffect(() => {
@@ -37,34 +33,43 @@ const RubriqueHome = () => {
       rubriqueDetailsModalRef.current.showModal();
     }
 
-    if (modalUpdate.rubrique && updateRubriqueModalRef.current) {
-      updateRubriqueModalRef.current.showModal();
-    }
-  }, [modal, modalUpdate]);
+  }, [modal]);
 
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
 
-  const handleClick = (rubrique: Rubrique, index: number) => {
+  const handleClick = async (rubrique: Rubrique, index: number) => {
     setModal({ rubrique, index });
+
+    dispatch(setQuestions([]));
+
+    await dispatch(getQuestionsStandardAsync(rubrique.id));
   };
 
-  const handleClickUpdate = (rubrique: Rubrique, index: number) => {
-    setModalUpdate({ rubrique, index });
-  };
+  useEffect(() => {
+    console.log("DEBUG - Nouvelle valeur de questions :", questions);
+    console.log("DEBUG - Modal rubrique sélectionnée :", modal.rubrique);
+
+    if (modal.rubrique) {
+      setQuestionPass(questions.length > 0 ? questions : []);
+    }
+  }, [questions, modal.rubrique]);
+
 
   const handleDelete = async (rubrique: Rubrique, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
       const response = await dispatch(deleteRubriqueAsync(rubrique.id));
 
-      if (response?.payload === "La rubrique est deja utilisée.") {
-        toast.error("Cette rubrique est déjà utilisée et ne peut pas être supprimée.");
-      } else if (response?.payload === "La rubrique a été supprimée avec succès.") {
+      if (response?.type == "rubriques/delete/rejected") {
+        toast.error(
+          "Cette rubrique est déjà utilisée et ne peut pas être supprimée."
+        );
+      } else if (response?.type == "rubriques/delete/fulfilled") {
         toast.success("Rubrique supprimée avec succès.");
-        await dispatch(fetchRubriquesAsync());
+        await dispatch(getRubriquesAsync());
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
@@ -86,13 +91,13 @@ const RubriqueHome = () => {
           </button>
         </div>
 
-        <div className="overflow-y-auto w-[90%]">
+        <div className="overflow-y-auto w-[70%]">
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Description</th>
-                <th className="text-center">Actions</th>
+                <th></th>
+                <th>Designantion</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -105,18 +110,11 @@ const RubriqueHome = () => {
               ) : (
                 rubriques.map((rubrique: Rubrique, index: number) => (
                   <tr key={rubrique.id} className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75">
-                    <td className="px-4 py-2">{rubrique.type || "N/A"}</td>
-                    <td className="px-4 py-2">{rubrique.designation || "N/A"}</td>
-                    <td className="flex gap-3 justify-center items-center">
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClickUpdate(rubrique, index);
-                          openModal(`updateRubrique-${index}`);
-                        }}
-                      />
 
+                    <th className="px-4 py-2">{index + 1}</th>
+                    <td className="px-4 py-2">{rubrique.designation}</td>
+                    <td className="flex gap-3  items-center">
+                      
                       <FontAwesomeIcon
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
@@ -133,13 +131,12 @@ const RubriqueHome = () => {
                       />
                     </td>
 
-                    {/* Modal de mise à jour */}
                     <dialog id={`updateRubrique-${index}`} className="modal">
                       <UpdateRubrique rubriqueData={rubrique} />
                     </dialog>
 
                     <dialog id={`inspect-${index}`} className="modal">
-                      {modal.rubrique && <DetailsRubrique rubrique={modal.rubrique} />}
+                      {modal.rubrique && <DetailsRubrique rubrique={modal.rubrique} questions={questionPass} />}
                     </dialog>
                   </tr>
                 ))

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { updateRubriqueAsync, fetchRubriquesAsync } from "../../features/RubriqueSlice";
+import { updateRubriqueAsync, getRubriquesAsync } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
 import { toast } from "react-toastify";
 
@@ -25,7 +25,7 @@ const UpdateRubrique = ({ rubriqueData }: UpdateRubriqueProps) => {
     if (rubrique.type && rubrique.designation) {
       try {
         await dispatch(updateRubriqueAsync({ id: rubrique.id, designation: rubrique.designation }));
-        dispatch(fetchRubriquesAsync());
+        dispatch(getRubriquesAsync());
         toast.success("Rubrique mise à jour avec succès !");
       } catch (error) {
         toast.error("Erreur lors de la mise à jour.");
