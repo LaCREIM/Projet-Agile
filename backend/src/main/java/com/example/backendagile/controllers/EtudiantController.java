@@ -1,19 +1,14 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.EtudiantDTO;
-import com.example.backendagile.dto.PromotionDTO;
-import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Etudiant;
-import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.entities.Role;
 import com.example.backendagile.mapper.EtudiantMapper;
 import com.example.backendagile.services.AuthentificationService;
 import com.example.backendagile.services.EtudiantService;
-import com.example.backendagile.services.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -28,12 +23,6 @@ public class EtudiantController {
 
     @Autowired
     private EtudiantService etudiantService;
-
-    @Autowired
-    private PromotionMapper promotionMapper;
-
-    @Autowired
-    private PromotionService promotionService;
 
     @Autowired
     private AuthentificationService authentificationService;
@@ -103,7 +92,7 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Étudiant non trouvé avec cet ID.");
         }
         try {
-            EtudiantDTO updatedEtudiant = etudiantService.update(id, etudiantDTO);
+             etudiantService.update(id, etudiantDTO);
             return ResponseEntity.ok("Étudiant mis à jour avec succès.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant. " + e.getMessage());
