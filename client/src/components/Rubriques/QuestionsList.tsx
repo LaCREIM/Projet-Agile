@@ -8,9 +8,10 @@ import { QuestionOrderDetails } from "./DetailsRubriques";
 interface QuestionListProps {
   questions: QuestionOrderDetails[];
   isEditing: boolean;
+  handleDeleteQuestion: (idRubrique: number, idQuestion: number) => void;
 }
 
-const QuestionsList = ({ questions, isEditing }: QuestionListProps) => {
+const QuestionsList = ({ questions, isEditing, handleDeleteQuestion }: QuestionListProps) => {
   return (
     <div className="w-full space-y-4">
       <SortableContext
@@ -22,6 +23,7 @@ const QuestionsList = ({ questions, isEditing }: QuestionListProps) => {
             key={qst.idQuestion}
             question={qst}
             isEditing={isEditing}
+            handleDeleteQuestion={handleDeleteQuestion}
           />
         ))}
       </SortableContext>

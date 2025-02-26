@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 import { Question, Rubrique } from "../types/types";
 import { RootState } from "../api/store";
+import { RequestQuestionOrderDetails } from "../components/Rubriques/DetailsRubriques";
 
 export interface QuestionStdDTO {
   idQualificatif: number;
@@ -84,6 +85,42 @@ export const updateRubriqueAsync = createAsyncThunk<
   async ({ id, designation }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(`/rubriquesStd/${id}`, { designation });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
+    }
+  }
+);
+
+export const updateRubriqueQuestionsAsync = createAsyncThunk<
+  any,
+  RequestQuestionOrderDetails[],
+  { rejectValue: string }
+>(
+  "rubriques-questions/update",
+  async (dataTable, { rejectWithValue }) => {
+    try {
+      console.log("from slice",dataTable);
+      
+      const response = await axiosInstance.post(`/rubrique-questions/standard/save-update`, dataTable);
+      console.log(response);
+      
+      return response.data;
+    } catch (error: any) {  
+      return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
+    }
+  }
+);
+
+export const deleteRubriqueQuestionsAsync = createAsyncThunk<
+  any,
+  { idRubrique: number, idQuestion: number },
+  { rejectValue: string }
+>(
+  "rubriques-questions/delete",
+  async ({idQuestion, idRubrique}, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(`/rubrique-questions/standard/${idRubrique}/${idQuestion}`);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
