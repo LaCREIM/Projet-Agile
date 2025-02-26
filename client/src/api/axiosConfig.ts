@@ -2,8 +2,10 @@ import axios from "axios";
 
 
 
-// const API_BASE_URL = "https://652a-2a04-cec0-109b-4f22-4002-928b-2789-2c5f.ngrok-free.app/api";
-const API_BASE_URL = "http://localhost:8080/api/";
+
+const API_BASE_URL = "https://24c9-2a04-cec0-109e-ba57-ca30-67a2-84a0-15a1.ngrok-free.app/api";
+// const API_BASE_URL = "http://localhost:8080/api/";
+
 
 
 

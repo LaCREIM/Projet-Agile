@@ -4,17 +4,16 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriquesAsync, RubriqueQuestion, setQuestions } from "../../features/RubriqueSlice";
+import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
-import { RootState } from "../../api/store";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
   const dispatch = useAppDispatch();
-  const rubriques = useAppSelector((state: RootState) => state.rubriques.rubriques);
+  const rubriques = useAppSelector(getRubriques);
   const questions = useAppSelector(getQuestionsRubrique);
   const [questionPass, setQuestionPass] = useState<RubriqueQuestion[]>([])
   const [modal, setModal] = useState<{ rubrique: Rubrique | null; index: number }>({
