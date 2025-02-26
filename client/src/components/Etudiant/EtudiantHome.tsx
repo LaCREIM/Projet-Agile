@@ -89,7 +89,7 @@ const StudentHome = ({
                 getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
             );
         }
-    }, [currentPage, dispatch, etudiants.length, pro, promotionDetails]);
+    }, [currentPage, dispatch]);
 
     useEffect(() => {
         if (
