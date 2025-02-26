@@ -56,7 +56,8 @@ const EnseignantsHome = () => {
 
     useEffect(() => {
         setFilteredEnseignants(enseignants);
-    }, [enseignants]);
+    }, [enseignants]);console.log(enseignants);
+
 
     useEffect(() => {
         if (modal.enseignant && enseignantDetailsModalRef.current) {
@@ -165,7 +166,6 @@ const EnseignantsHome = () => {
                     >
                         <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Email</th>
@@ -200,7 +200,6 @@ const EnseignantsHome = () => {
                                         key={enseignant.id}
                                         className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                                     >
-                                        <td className="px-4 py-2">{enseignant.id}</td>
                                         <td className="px-4 py-2">{enseignant.nom}</td>
                                         <td className="px-4 py-2">{enseignant.prenom}</td>
                                         <td className="px-4 py-2">{enseignant.emailUbo}</td>

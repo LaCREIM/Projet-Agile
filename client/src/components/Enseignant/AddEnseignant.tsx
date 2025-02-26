@@ -7,7 +7,7 @@ import {
 import { Chercheur, Enseignant, Intervenant } from "../../types/types";
 import ChercheurInfo from "./ChercheurInfo";
 import IntervenantInfo from "./IntervenantInfo";
-
+import { Eye, EyeOff } from "lucide-react";
 const AddEnseignant = () => {
   const dispatch = useAppDispatch();
   const [enseignant, setEnseignant] = useState<Enseignant>({
@@ -21,15 +21,17 @@ const AddEnseignant = () => {
     ville: "",  // Ajouté
     pays: "FR",
     mobile: "",
-    password: "",
-    telephone: "", 
-    emailUbo: "",  
-    emailPerso: "",  
-    intSocNom: "", 
-    intNoInsee: 0, 
-    intFonction: "", 
+    telephone: "",  // Ajouté
+    emailUbo: "",  // Correspondance avec l'interface
+    emailPerso: "",  // Correspondance avec l'interface
+    intSocNom: "", // Ajouté pour Intervenant
+    intNoInsee: 0, // Ajouté pour Intervenant
+    intFonction: "", // Ajouté pour Intervenant
+    password: "",  // Ajouté
+    motPasse: "",  // Correspondance avec l'interface
+
   });
-  
+  const [showPassword, setShowPassword] = useState(false);
 
   const [chercheur, setChercheur] = useState<Chercheur>({
     encUboEmail: "",
@@ -45,13 +47,13 @@ const AddEnseignant = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-  
+
     setEnseignant((prev) => {
       const updatedEnseignant = {
         ...prev,
         [name]: value,
       };
-  
+
       // Correspondance explicite des valeurs pour Chercheur
       if (updatedEnseignant.type.toUpperCase() === "ENC") {
         setChercheur((prevChercheur) => ({
@@ -61,7 +63,7 @@ const AddEnseignant = () => {
           encUboTel: updatedEnseignant.telephone,
         }));
       }
-  
+
       if (updatedEnseignant.type.toUpperCase() === "INT") {
         setIntervenant((prevIntervenant) => ({
           ...prevIntervenant,
@@ -70,17 +72,19 @@ const AddEnseignant = () => {
           intSocNom: updatedEnseignant.intSocNom || "",
         }));
       }
-      
-  
+
+
       console.log("Nouvel état de enseignant :", updatedEnseignant);
       return updatedEnseignant;
     });
+
   }; 
   const handleSubmit = async () => {
+
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
     }
-    
+
     if (
       enseignant.nom &&
       enseignant.prenom &&
@@ -98,15 +102,15 @@ const AddEnseignant = () => {
         enseignant.type === "ENC"
           ? { ...enseignant, ...chercheur }
           : { ...enseignant, ...intervenant };
-  
+
       await dispatch(postEnseignantAsync(enseignantComplet));
       dispatch(getEnseignantAsync({ page: 1, size: 10 }));
     } else {
       console.error("Tous les champs requis doivent être remplis.");
     }
   };
-  
-  
+
+
 
   const canSave = [
     { champ: "nom", valeur: enseignant.nom.trim() },
@@ -121,7 +125,7 @@ const AddEnseignant = () => {
     // console.log(`Validation du champ ${field.champ} :`, Boolean(field.valeur)); // Debugging
     return Boolean(field.valeur);
   });
-  
+
 
 
   return (
@@ -129,8 +133,7 @@ const AddEnseignant = () => {
       <div className="modal-box w-[50em] max-w-5xl ">
         <h3 className="font-bold text-lg my-4">Ajouter un enseignant</h3>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-row justify-between">
+            <div className="grid grid-cols-2 gap-5">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">Nom</span>
                 <input
@@ -155,7 +158,7 @@ const AddEnseignant = () => {
                   placeholder="Ex: Jean"
                 />
               </label>
-            </div>
+
 
             <label className="flex items-center gap-2">
               <select
@@ -163,7 +166,7 @@ const AddEnseignant = () => {
                 name="sexe"
                 value={enseignant.sexe}
                 onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
+                className="select select-bordered"
               >
                 <option disabled value="">
                   Sélectionnez un sexe
@@ -225,17 +228,38 @@ const AddEnseignant = () => {
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Password</span>
+              <span className="font-semibold">Ville</span>
               <input
                 required
                 type="text"
-                name="password"
-                value={enseignant.password}
+                name="ville"
+                value={enseignant.ville}
                 onChange={handleChange}
                 className="grow"
-                placeholder="Ex: Entrez un mot de passe"
+                placeholder="Ex: Brest"
               />
             </label>
+
+            <label className="input input-bordered flex items-center gap-2 relative">
+                <span className="font-semibold">Mot de passe</span>
+                <input
+                  required
+                  type={showPassword ? "text" : "password"}
+                  name="motPasse"
+                  value={enseignant.motPasse}
+                  onChange={handleChange}
+                  className="grow pr-10"
+                  placeholder="Mot de passe"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </label>
+
 
             <label className="flex items-center gap-2">
               <select
@@ -243,7 +267,7 @@ const AddEnseignant = () => {
                 name="type"
                 value={enseignant.type}
                 onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
+                className="select select-bordered"
               >
                 <option disabled value="">
                   Sélectionnez un type

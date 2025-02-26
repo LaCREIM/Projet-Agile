@@ -17,9 +17,7 @@ const store = configureStore({
     question:questionReducer,
     rubriques:rubriqueReducer
   },
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
-  devTools: true
+
 });
 
 export type RootState = ReturnType<typeof store.getState>;

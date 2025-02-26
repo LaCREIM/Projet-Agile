@@ -1,11 +1,11 @@
-import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route, BrowserRouter as Router, useNavigate } from "react-router-dom";
 import { AdminLayout } from "./layouts/AdminLayout";
 import EnseignantsHome from "./components/Enseignant/EnseignantsHome";
 import PromotionHome from "./components/Promotion/PromotionHome";
 import RootLayout from "./layouts/RootLayout";
 import { Dashboard } from "./components/Admin/Dashboard";
 import StudentHome from "./components/Etudiant/EtudiantHome.tsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PromotionDetails } from "./types/types";
 import QualificatifHome from "./components/Qualificatifs/QualificatifHome";
 import QuestionHome from "./components/Questions/QuestionHome";
@@ -13,14 +13,16 @@ import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import LoginForm from "./components/Auth/LoginForm";
 import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
+
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
     codeFormation: "",
   } as PromotionDetails);
+
   return (
-    <>
-      <Router basename="/">
+    <Router basename="/">
+      <AuthChecker>
         <Routes>
           <Route path="/" element={<RootLayout />}>
             <Route index element={<LoginForm />} />
@@ -48,12 +50,25 @@ function App() {
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="rubriques" element={<RubriqueHome />} />
             </Route>
-            <Route path="*" element={<NotFound/>} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </Router>
-    </>
+      </AuthChecker>
+    </Router>
   );
+}
+
+function AuthChecker({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  return <>{children}</>;
 }
 
 export default App;
