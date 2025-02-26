@@ -387,6 +387,7 @@ const AddEtudiant = ({promotions}: AddStudentProps) => {
                   <option value={2}>2</option>
                 </select>
               </label>
+
             </div>
           </form>
           <div className="modal-action">

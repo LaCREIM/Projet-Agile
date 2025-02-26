@@ -4,45 +4,34 @@ import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddEnseignant from "./AddEnseignant";
 import DetailsEnseignant from "./EnseignantDetails";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {
-    faEye,
-    faPenToSquare,
-    faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import {faEye, faPenToSquare, faTrash} from "@fortawesome/free-solid-svg-icons";
 import UpdateEnseignant from "./UpdateEnseignant";
 import {
     deleteEnseignantAsync,
     getEnseignantAsync,
+    getEnseignants,
+    getTotalePages
 } from "../../features/EnseignantSlice";
 import {Enseignant, Chercheur, Intervenant} from "../../types/types";
 import {ToastContainer, toast} from "react-toastify";
-import {RootState} from "../../api/store";
 import {motion} from "framer-motion";
 import {FaSearch} from "react-icons/fa";
 
 const EnseignantsHome = () => {
     document.title = "UBO | Enseignants";
     const dispatch = useAppDispatch();
-    const enseignants = useAppSelector(
-        (state: RootState) => state.enseignants.enseignants
-    );
+    const enseignants = useAppSelector(getEnseignants);
+    const totalPages = useAppSelector(getTotalePages);
     const [search, setSearch] = useState<string>("");
-    const [filteredEnseignants, setFilteredEnseignants] = useState<Enseignant[]>(
-        []
-    );
+    const [filteredEnseignants, setFilteredEnseignants] = useState<Enseignant[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
-    const [modal, setModal] = useState<{
-        enseignant: Enseignant | null;
-        index: number;
-    }>({
+    const [modal, setModal] = useState<{ enseignant: Enseignant | null; index: number }>({
         enseignant: null,
         index: -1,
     });
 
-    const [modalUpdate, setModalUpdate] = useState<{
-        enseignant: Enseignant | null;
-        index: number;
-    }>({
+    const [modalUpdate, setModalUpdate] = useState<{ enseignant: Enseignant | null; index: number }>({
         enseignant: null,
         index: -1,
     });
@@ -51,13 +40,8 @@ const EnseignantsHome = () => {
     const enseignantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
     useEffect(() => {
-        dispatch(getEnseignantAsync({page: 1, size: 10}));
-    }, [dispatch]);
-
-    useEffect(() => {
         setFilteredEnseignants(enseignants);
-    }, [enseignants]);console.log(enseignants);
-
+    }, [enseignants]);
 
     useEffect(() => {
         if (modal.enseignant && enseignantDetailsModalRef.current) {
@@ -68,6 +52,11 @@ const EnseignantsHome = () => {
             updateEnseignantModalRef.current.showModal();
         }
     }, [modal, modalUpdate]);
+
+    useEffect(() => {
+        dispatch(getEnseignantAsync({page: currentPage, size: 10}));
+    }, [dispatch, currentPage]);
+
 
     const openModal = (id: string) => {
         const dialog = document.getElementById(id) as HTMLDialogElement;
@@ -90,26 +79,11 @@ const EnseignantsHome = () => {
             toast.error("Cet enseignant ne peut pas être supprimé.");
         } else if (response?.payload === "deleted") {
             toast.success("Enseignant supprimé avec succès.");
-            dispatch(getEnseignantAsync({page: 1, size: 10}));
+            dispatch(getEnseignantAsync({page: currentPage, size: 10}));
         }
     };
 
-    const MotionVariant = {
-        initial: {
-            opacity: 0,
-            y: 30,
-        },
-        final: () => ({
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.3,
-            },
-        }),
-    };
-    const handleSearchChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const {value} = e.target;
         setSearch(value);
         if (value.trim() === "") {
@@ -126,6 +100,11 @@ const EnseignantsHome = () => {
             );
         }
     };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+
     return (
         <>
             <ToastContainer theme="colored"/>
@@ -151,7 +130,6 @@ const EnseignantsHome = () => {
                             className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                             onClick={() => openModal("addEnseignant")}
                         >
-
                             <IoIosPersonAdd/>
                         </button>
                     </div>
@@ -159,9 +137,12 @@ const EnseignantsHome = () => {
 
                 <div className="overflow-y-auto w-[90%]">
                     <motion.table
-                        variants={MotionVariant}
+                        variants={{
+                            initial: {opacity: 0, y: 30},
+                            final: {opacity: 1, y: 0, transition: {duration: 0.3}},
+                        }}
                         initial="initial"
-                        animate={MotionVariant.final()}
+                        animate="final"
                         className="table table-zebra"
                     >
                         <thead>
@@ -177,93 +158,102 @@ const EnseignantsHome = () => {
                         <tbody>
                         {enseignants.length === 0 ? (
                             <tr>
-                                <td
-                                    colSpan={11}
-                                    className="uppercase tracking-widest text-center "
-                                >
+                                <td colSpan={11} className="uppercase tracking-widest text-center ">
                                     <span className="loading loading-dots loading-lg"></span>
                                 </td>
                             </tr>
                         ) : filteredEnseignants.length === 0 ? (
                             <tr>
-                                <td
-                                    colSpan={11}
-                                    className="uppercase tracking-widest text-center text-gray-500"
-                                >
+                                <td colSpan={11} className="uppercase tracking-widest text-center text-gray-500">
                                     Pas d'enseignants trouvés.
                                 </td>
                             </tr>
                         ) : (
-                            filteredEnseignants.map(
-                                (enseignant: Enseignant, index: number) => (
-                                    <tr
-                                        key={enseignant.id}
-                                        className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                                    >
-                                        <td className="px-4 py-2">{enseignant.nom}</td>
-                                        <td className="px-4 py-2">{enseignant.prenom}</td>
-                                        <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                                        <td className="px-4 py-2">{enseignant.mobile}</td>
-                                        <td className="px-4 py-2">{enseignant.type}</td>
-                                        <td className="flex gap-3 justify-center items-center">
-                                            <FontAwesomeIcon
-                                                icon={faPenToSquare}
-                                                className="text-black text-base cursor-pointer"
-                                                onClick={() => {
-                                                    handleClickUpdate(enseignant, index);
-                                                    openModal(`updateEnseignant-${index}`);
-                                                }}
-                                            />
+                            filteredEnseignants.map((enseignant: Enseignant, index: number) => (
+                                <tr
+                                    key={enseignant.id}
+                                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                                >
+                                    <td className="px-4 py-2">{enseignant.nom}</td>
+                                    <td className="px-4 py-2">{enseignant.prenom}</td>
+                                    <td className="px-4 py-2">{enseignant.emailUbo}</td>
+                                    <td className="px-4 py-2">{enseignant.mobile}</td>
+                                    <td className="px-4 py-2">{enseignant.type}</td>
+                                    <td className="flex gap-3 justify-center items-center">
+                                        <FontAwesomeIcon
+                                            icon={faPenToSquare}
+                                            className="text-black text-base cursor-pointer"
+                                            onClick={() => {
+                                                handleClickUpdate(enseignant, index);
+                                                openModal(`updateEnseignant-${index}`);
+                                            }}
+                                        />
 
-                                            <FontAwesomeIcon
-                                                icon={faEye}
-                                                className="text-black text-base cursor-pointer"
-                                                onClick={() => {
-                                                    handleClick(enseignant, index);
-                                                    openModal(`inspect-${index}`);
-                                                }}
-                                            />
+                                        <FontAwesomeIcon
+                                            icon={faEye}
+                                            className="text-black text-base cursor-pointer"
+                                            onClick={() => {
+                                                handleClick(enseignant, index);
+                                                openModal(`inspect-${index}`);
+                                            }}
+                                        />
 
-                                            <FontAwesomeIcon
-                                                icon={faTrash}
-                                                className="text-black text-base cursor-pointer"
-                                                onClick={(e) => handleDelete(enseignant, e)}
-                                            />
-                                        </td>
+                                        <FontAwesomeIcon
+                                            icon={faTrash}
+                                            className="text-black text-base cursor-pointer"
+                                            onClick={(e) => handleDelete(enseignant, e)}
+                                        />
+                                    </td>
 
-                                        {/* Modal de mise à jour */}
-                                        <dialog
-                                            id={`updateEnseignant-${index}`}
-                                            className="modal"
-                                        >
-                                            <UpdateEnseignant
-                                                typeData={
-                                                    enseignant.type.toUpperCase() === "INT"
-                                                        ? ({
-                                                            intFonction: enseignant.intFonction,
-                                                            intNoInsee: enseignant.intNoInsee,
-                                                            intSocNom: enseignant.intSocNom,
-                                                        } as Intervenant)
-                                                        : ({
-                                                            encPersoEmail: enseignant.emailPerso,
-                                                            encUboEmail: enseignant.emailUbo,
-                                                            encUboTel: enseignant.telephone,
-                                                        } as Chercheur)
-                                                }
-                                                enseignantData={enseignant}
-                                            />
-                                        </dialog>
+                                    {/* Modal de mise à jour */}
+                                    <dialog id={`updateEnseignant-${index}`} className="modal">
+                                        <UpdateEnseignant
+                                            typeData={
+                                                enseignant.type.toUpperCase() === "INT"
+                                                    ? ({
+                                                        intFonction: enseignant.intFonction,
+                                                        intNoInsee: enseignant.intNoInsee,
+                                                        intSocNom: enseignant.intSocNom,
+                                                    } as Intervenant)
+                                                    : ({
+                                                        encPersoEmail: enseignant.emailPerso,
+                                                        encUboEmail: enseignant.emailUbo,
+                                                        encUboTel: enseignant.telephone,
+                                                    } as Chercheur)
+                                            }
+                                            enseignantData={enseignant}
+                                        />
+                                    </dialog>
 
-                                        {/* Modal de détails */}
-                                        <dialog id={`inspect-${index}`} className="modal">
-                                            <DetailsEnseignant enseignant={enseignant}/>
-                                        </dialog>
-                                    </tr>
-                                )
-                            )
+                                    {/* Modal de détails */}
+                                    <dialog id={`inspect-${index}`} className="modal">
+                                        <DetailsEnseignant enseignant={enseignant}/>
+                                    </dialog>
+                                </tr>
+                            ))
                         )}
                         </tbody>
                     </motion.table>
+                </div>
+
+                <div className="flex justify-center mt-4">
+                    <button
+                        className="btn"
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                        Precedent
+                    </button>
+                    <span className="mx-2">
+                                Page {currentPage} sur {totalPages}
+                            </span>
+                    <button
+                        className="btn"
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                        Suivant
+                    </button>
                 </div>
             </div>
 
