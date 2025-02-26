@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { Rubrique } from "../../types/types";
-import { RubriqueQuestion } from "../../features/RubriqueSlice";
+import {
+  getRubriquesAsync,
+  RubriqueQuestion,
+  updateRubriqueAsync,
+} from "../../features/RubriqueSlice";
 import QuestionsList from "./QuestionsList";
 import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useAppDispatch } from "../../hook/hooks";
+import { toast, ToastContainer } from "react-toastify";
 
 interface RubriqueDetailsProps {
   rubrique: Rubrique;
@@ -21,13 +27,14 @@ export interface QuestionOrderDetails {
 }
 
 const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
+  const dispatch = useAppDispatch();
   // État des questions triées
   const [questionsOrder, setQuestionsOrder] = useState<QuestionOrderDetails[]>(
     []
   );
   // État pour gérer l'édition
   const [isEditing, setIsEditing] = useState(false);
-  const [rubriqueData, setRubrique] = useState({
+  const [rubriqueData, setRubriqueData] = useState({
     ...rubrique,
   });
 
@@ -44,6 +51,10 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
 
     setQuestionsOrder(formattedQuestions);
   }, [questions]);
+
+  useEffect(() => {
+    setRubriqueData({ ...rubrique });
+  }, [rubrique]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (!isEditing) return;
@@ -62,14 +73,38 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
     });
   };
 
+  const handeEdit = async () => {
+    if (isEditing === true) {
+      const response = await dispatch(
+        updateRubriqueAsync({
+          id: rubriqueData.id,
+          designation: rubriqueData.designation,
+        })
+      );
+      
+      if (response.type === "rubriques/update/fulfilled") {
+        dispatch(getRubriquesAsync());
+        toast.success("Rubrique mise à jour avec succès!");
+        setIsEditing(false);
+      } else {
+        console.error("Échec de la mise à jour de la rubrique");
+      }
+      setIsEditing(false);
+    }else{
+      setIsEditing(true);
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setRubrique({ ...rubriqueData, [name]: value });
+    setRubriqueData({ ...rubriqueData, [name]: value });
   };
 
   return (
+    <>
+      <ToastContainer theme="colored" />
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl space-y-5 hover:cursor-default h-fit">
         <h3 className="font-bold text-center text-lg">
@@ -81,12 +116,15 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
           {isEditing ? (
             <input
               type="text"
-              value={rubrique.designation}
+              name="designation"
+              value={rubriqueData.designation}
               onChange={handleChange}
               className="input input-bordered"
             />
           ) : (
-            <span className="mt-1 text-gray-500">{rubrique.designation}</span>
+            <span className="mt-1 text-gray-500">
+              {rubriqueData.designation}
+            </span>
           )}
         </div>
 
@@ -94,12 +132,7 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
           <div className="flex flex-row justify-between items-center">
             <span className="font-semibold">Questions :</span>
             {isEditing && (
-              <button
-                className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-                // onClick={handleSubmit}
-                // type="submit"
-                // disabled={!canSave}
-              >
+              <button className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200">
                 +
               </button>
             )}
@@ -130,10 +163,11 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
             <button
               type="button"
               className="btn btn-neutral"
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={handeEdit}
             >
               {isEditing ? "Enregistrer" : "Modifier"}
             </button>
+
             <button className="btn" onClick={() => setIsEditing(false)}>
               Fermer
             </button>
@@ -141,6 +175,8 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
         </div>
       </div>
     </div>
+    
+    </>
   );
 };
 

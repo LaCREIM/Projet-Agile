@@ -191,6 +191,66 @@ const StudentHome = ({
             return;
         }
 
+
+        <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
+          {!promotionDetails.codeFormation ? (
+            <div className="flex lg:flex-row sm:flex-col items-center gap-5 justify-between  w-1/2">
+              <select
+                defaultValue="default"
+                className="select hover:cursor-pointer shadow-md w-1/2"
+                onChange={handlePromotionChange}
+              >
+                <option value="default" disabled>
+                  Sélectionnez une promotion
+                </option>
+                <option
+                  value="-1"
+                  onClick={() =>
+                    setPro({
+                      anneeUniversitaire: "-1",
+                      codeFormation: "",
+                    } as PromotionDetails)
+                  }
+                >
+                  Toutes les promotions
+                </option>
+                {promotions.map((promotion, idx) => (
+                  <option
+                    key={idx}
+                    value={JSON.stringify({
+                      anneeUniversitaire: promotion.anneeUniversitaire,
+                      codeFormation: promotion.codeFormation,
+                    })}
+                  >
+                    {promotion.anneeUniversitaire} : {promotion.codeFormation}
+                  </option>
+                ))}
+              </select>
+              <div className="w-1/2 block hover:cursor-text">
+                <label className="input input-bordered flex items-center gap-2 shadow-md">
+                  <input
+                    disabled={etudiants.length == 0}
+                    name="search"
+                    value={search}
+                    onChange={handleSearchChange}
+                    type="text"
+                    className="grow placeholder:font-medium "
+                    placeholder="Rechercher..."
+                  />
+                  <FaSearch />
+                </label>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-row items-center justify-between w-1/2">
+              <div
+                className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
+                onClick={() => {
+                  setPromotionDetails({
+                    anneeUniversitaire: "-1",
+                    codeFormation: "",
+                  } as PromotionDetails);
+                  switchStudent("-1", "");
         setfilteredEtudiants(
             etudiants.filter(
                 (etu) =>
@@ -309,6 +369,7 @@ const StudentHome = ({
                         variants={MotionVariant}
                         initial="initial"
                         animate={MotionVariant.final()}
+
                     >
                         <thead>
                         <tr>
