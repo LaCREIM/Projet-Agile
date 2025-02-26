@@ -14,7 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -35,9 +38,12 @@ public class EnseignantController {
      * 🔹 Récupérer une liste paginée d'enseignants (retourne `Enseignant` directement) avec pagination
      */
     @GetMapping("/paged")
-    public ResponseEntity<List<Enseignant>> getAllEnseignantsPaged(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Map<String, Object>> getAllEnseignantsPaged(@RequestParam int page, @RequestParam int size) {
         List<Enseignant> enseignants = enseignantService.getEnseignantPaged(page, size);
-        return ResponseEntity.ok(enseignants);
+        Map<String, Object> response = new HashMap<>();
+        response.put("enseignants", enseignants);
+        response.put("totalPages", enseignantService.getTotalPages(size));
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -116,7 +122,7 @@ public class EnseignantController {
     }
 
     /**
-     * 🔹 Supprimer un enseignant par son ID 
+     * 🔹 Supprimer un enseignant par son ID
      */
 
    /* @DeleteMapping("/{id}")
@@ -134,29 +140,27 @@ public ResponseEntity<?> deleteEnseignant(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Erreur lors de la suppression : " + e.getMessage());
     }
-}*/ 
+}*/
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEnseignant(@PathVariable Long id) {
+        Optional<Enseignant> enseignant = enseignantService.findById(id);
 
-@DeleteMapping("/{id}")
-public ResponseEntity<?> deleteEnseignant(@PathVariable Long id) {
-    Optional<Enseignant> enseignant = enseignantService.findById(id);
+        if (enseignant.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("L'enseignant avec l'ID " + id + " n'existe pas.");
+        }
 
-    if (enseignant.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("L'enseignant avec l'ID " + id + " n'existe pas.");
+        try {
+            enseignantService.deleteById(id);
+            return ResponseEntity.ok("L'enseignant avec l'ID " + id + " a été supprimé avec succès.");
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Cet enseignant est responsable d'une promotion et ne peut pas être supprimé.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la suppression : " + e.getMessage());
+        }
     }
-
-    try {
-        enseignantService.deleteById(id);
-        return ResponseEntity.ok("L'enseignant avec l'ID " + id + " a été supprimé avec succès.");
-    } catch (DataIntegrityViolationException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Cet enseignant est responsable d'une promotion et ne peut pas être supprimé.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erreur lors de la suppression : " + e.getMessage());
-    }
-}
-
 
 
 }

@@ -291,7 +291,7 @@ const AddEtudiant = ({promotions}: AddStudentProps) => {
                                 onChange={handleChange}
                             >
                                 <option value="" disabled>
-                                    Sélectionnez un pays
+                                    Sélectionnez le pays d'origine
                                 </option>
                                 {pays.map((pays, idx) => (
                                     <option key={idx} value={pays.rvLowValue}>
