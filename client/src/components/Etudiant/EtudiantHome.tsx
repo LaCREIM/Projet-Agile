@@ -222,7 +222,7 @@ const StudentHome = ({
                     } as PromotionDetails)
                   }
                 >
-                  Tous les promotions
+                  Toutes les promotions
                 </option>
                 {promotions.map((promotion, idx) => (
                   <option

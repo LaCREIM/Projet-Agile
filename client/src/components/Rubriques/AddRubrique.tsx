@@ -70,7 +70,9 @@ const AddRubrique = () => {
 
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn">Annuler</button>
+            <button  className="btn">
+              Annuler
+            </button>
             <button
               className="btn btn-neutral"
               onClick={handleSubmit}
