@@ -1,33 +1,33 @@
-import React, {useEffect, useState, useRef} from "react";
-import {motion} from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import {
     deleteEtudiantAsync,
     getEtudiantAsync,
     getEtudiants,
     getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
-import {Etudiant} from "../../types/types";
+import { Etudiant } from "../../types/types";
 
 import {
     getPromotionAsync,
     getPromotions,
 } from "../../features/PromotionSlice";
 
-import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import AddEtudiant from "./AddEtudiant.tsx";
 import EtudiantDetails from "./EtudiantDetails";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {HiOutlineChevronLeft} from "react-icons/hi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HiOutlineChevronLeft } from "react-icons/hi";
 import {
     faEye,
     faPenToSquare,
     faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import UpdateEtudiant from "./UpdateEtudiant.tsx";
-import {PromotionDetails} from "../../types/types";
-import {ToastContainer, toast} from "react-toastify";
-import {FaSearch} from "react-icons/fa";
-import {IoMdPersonAdd} from "react-icons/io";
+import { PromotionDetails } from "../../types/types";
+import { ToastContainer, toast } from "react-toastify";
+import { FaSearch } from "react-icons/fa";
+import { IoMdPersonAdd } from "react-icons/io";
 
 interface StudentHomeProps {
     promotionDetails: PromotionDetails;
@@ -36,13 +36,14 @@ interface StudentHomeProps {
 }
 
 const StudentHome = ({
-                         promotionDetails,
-                         setPromotionDetails,
-                         switchStudent,
-                     }: StudentHomeProps) => {
+    promotionDetails,
+    setPromotionDetails,
+    switchStudent,
+}: StudentHomeProps) => {
     document.title = "UBO | Étudiants";
     const dispatch = useAppDispatch();
     const etudiants = useAppSelector(getEtudiants);
+    const totalPages = useAppSelector((state) => state.etudiants.totalPages);
     const promotions = useAppSelector(getPromotions);
     const [search, setSearch] = useState<string>("");
 
@@ -51,17 +52,19 @@ const StudentHome = ({
     const [modal, setModal] = useState<{
         etudiant: Etudiant | null;
         index: number;
-    }>({etudiant: null, index: -1});
+    }>({ etudiant: null, index: -1 });
 
     const [modalUpdate, setModalUpdate] = useState<{
         etudiant: Etudiant | null;
         index: number;
-    }>({etudiant: null, index: -1});
+    }>({ etudiant: null, index: -1 });
 
     const [pro, setPro] = useState<PromotionDetails>({
         anneeUniversitaire: "-1",
         codeFormation: "",
     } as PromotionDetails);
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
     const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
@@ -69,13 +72,13 @@ const StudentHome = ({
     useEffect(() => {
         dispatch(getPromotionAsync());
         if (etudiants.length === 0) {
-            dispatch(getEtudiantAsync());
+            dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
         }
         if (
             pro.anneeUniversitaire === "-1" &&
             promotionDetails.anneeUniversitaire === "-1"
         ) {
-            dispatch(getEtudiantAsync());
+            dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
         } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
             dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
         } else if (
@@ -86,7 +89,7 @@ const StudentHome = ({
                 getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
             );
         }
-    }, [dispatch, pro, promotionDetails]);
+    }, [currentPage, dispatch, etudiants.length, pro, promotionDetails]);
 
     useEffect(() => {
         if (
@@ -106,23 +109,27 @@ const StudentHome = ({
         }
     }, [modal, modalUpdate]);
 
+    useEffect(() => {
+        dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
+    }, [dispatch, currentPage]);
+
     const openModal = (name: string) => {
         const dialog = document.getElementById(name) as HTMLDialogElement;
         if (dialog) dialog.showModal();
     };
 
     const handleClick = (etudiant: Etudiant, index: number) => {
-        setModal({etudiant, index});
+        setModal({ etudiant, index });
     };
 
     const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-        setModalUpdate({etudiant, index});
+        setModalUpdate({ etudiant, index });
     };
 
     const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
         e.stopPropagation();
         const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-        dispatch(getEtudiantAsync());
+        dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
         if (
             response?.payload ===
             "Can not delete this student because it's related to an internship"
@@ -191,6 +198,10 @@ const StudentHome = ({
                     (etu.prenom?.toLowerCase().includes(value) ?? false)
             )
         );
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
     };
 
     return (
@@ -388,6 +399,25 @@ const StudentHome = ({
                         )}
                         </tbody>
                     </motion.table>
+                </div>
+                <div className="flex justify-center mt-4">
+                    <button
+                        className="btn"
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                        Precedent
+                    </button>
+                    <span className="mx-2">
+                        Page {currentPage} sur {totalPages}
+                    </span>
+                    <button
+                        className="btn"
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                        Suivant
+                    </button>
                 </div>
             </motion.div>
             <dialog id="addStudent" className="modal">
