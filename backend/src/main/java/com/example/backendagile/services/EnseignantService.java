@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class EnseignantService {
 
@@ -56,23 +58,23 @@ public void deleteById(Long id) {
     }
 }*/
 
-@Transactional
-public void deleteById(Long id) {
-    Optional<Enseignant> enseignantOpt = enseignantRepository.findById(id);
+    @Transactional
+    public void deleteById(Long id) {
+        Optional<Enseignant> enseignantOpt = enseignantRepository.findById(id);
 
-    if (enseignantOpt.isPresent()) {
-        Enseignant enseignant = enseignantOpt.get();
-        Long formationsCount = promotionRepository.countByEnseignant(enseignant);
-        if (formationsCount > 0) {
-            throw new DataIntegrityViolationException("Cet enseignant est responsable d'une formation et ne peut pas être supprimé.");
+        if (enseignantOpt.isPresent()) {
+            Enseignant enseignant = enseignantOpt.get();
+            Long formationsCount = promotionRepository.countByEnseignant(enseignant);
+            if (formationsCount > 0) {
+                throw new DataIntegrityViolationException("Cet enseignant est responsable d'une formation et ne peut pas être supprimé.");
+            }
+            authentificationRepository.deleteByEnseignant(enseignant);
+
+            enseignantRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("L'enseignant avec l'ID " + id + " n'existe pas.");
         }
-        authentificationRepository.deleteByEnseignant(enseignant);
-
-        enseignantRepository.deleteById(id);
-    } else {
-        throw new EntityNotFoundException("L'enseignant avec l'ID " + id + " n'existe pas.");
     }
-}
 
 
     public List<Enseignant> getByNomAndPrenom(String nom, String prenom) {
@@ -85,5 +87,9 @@ public void deleteById(Long id) {
 
     public List<Enseignant> getEnseignant() {
         return enseignantRepository.findAll();
+    }
+
+    public Object getTotalPages(int size) {
+        return Math.ceil((double) enseignantRepository.count() / size);
     }
 }

@@ -137,4 +137,8 @@ public void deleteById(String id) {
     public Optional<Etudiant> findByEmail(String emailUbo) {
         return etudiantRepository.findByEmail(emailUbo).stream().findFirst();
     }
+
+    public Object getTotalPages(int size) {
+        return Math.ceil((double) etudiantRepository.count() / size);
+    }
 }
