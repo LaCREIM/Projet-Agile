@@ -1,400 +1,397 @@
-import React, {useEffect, useState, useRef} from "react";
-import {motion} from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import {
-    deleteEtudiantAsync,
-    getEtudiantAsync,
-    getEtudiants,
-    getEtudiantByPromotionAsync,
+  deleteEtudiantAsync,
+  getEtudiantAsync,
+  getEtudiants,
+  getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
-import {Etudiant} from "../../types/types";
+import { Etudiant } from "../../types/types";
 
 import {
-    getPromotionAsync,
-    getPromotions,
+  getPromotionAsync,
+  getPromotions,
 } from "../../features/PromotionSlice";
 
-import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import AddEtudiant from "./AddEtudiant.tsx";
 import EtudiantDetails from "./EtudiantDetails";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {HiOutlineChevronLeft} from "react-icons/hi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HiOutlineChevronLeft } from "react-icons/hi";
 import {
-    faEye,
-    faPenToSquare,
-    faTrash,
+  faEye,
+  faPenToSquare,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import UpdateEtudiant from "./UpdateEtudiant.tsx";
-import {PromotionDetails} from "../../types/types";
-import {ToastContainer, toast} from "react-toastify";
-import {FaSearch} from "react-icons/fa";
-import {IoMdPersonAdd} from "react-icons/io";
+import { PromotionDetails } from "../../types/types";
+import { ToastContainer, toast } from "react-toastify";
+import { FaSearch } from "react-icons/fa";
+import { IoMdPersonAdd } from "react-icons/io";
 
 interface StudentHomeProps {
-    promotionDetails: PromotionDetails;
-    setPromotionDetails: (promotionDetails: PromotionDetails) => void;
-    switchStudent: (anneePro: string, siglePro: string) => void;
+  promotionDetails: PromotionDetails;
+  setPromotionDetails: (promotionDetails: PromotionDetails) => void;
+  switchStudent: (anneePro: string, siglePro: string) => void;
 }
 
 const StudentHome = ({
-                         promotionDetails,
-                         setPromotionDetails,
-                         switchStudent,
-                     }: StudentHomeProps) => {
-    document.title = "UBO | Étudiants";
-    const dispatch = useAppDispatch();
-    const etudiants = useAppSelector(getEtudiants);
-    const promotions = useAppSelector(getPromotions);
-    const [search, setSearch] = useState<string>("");
+  promotionDetails,
+  setPromotionDetails,
+  switchStudent,
+}: StudentHomeProps) => {
+  document.title = "UBO | Étudiants";
+  const dispatch = useAppDispatch();
+  const etudiants = useAppSelector(getEtudiants);
+  const promotions = useAppSelector(getPromotions);
+  const [search, setSearch] = useState<string>("");
 
-    const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
+  const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
 
-    const [modal, setModal] = useState<{
-        etudiant: Etudiant | null;
-        index: number;
-    }>({etudiant: null, index: -1});
+  const [modal, setModal] = useState<{
+    etudiant: Etudiant | null;
+    index: number;
+  }>({ etudiant: null, index: -1 });
 
-    const [modalUpdate, setModalUpdate] = useState<{
-        etudiant: Etudiant | null;
-        index: number;
-    }>({etudiant: null, index: -1});
+  const [modalUpdate, setModalUpdate] = useState<{
+    etudiant: Etudiant | null;
+    index: number;
+  }>({ etudiant: null, index: -1 });
 
-    const [pro, setPro] = useState<PromotionDetails>({
+  const [pro, setPro] = useState<PromotionDetails>({
+    anneeUniversitaire: "-1",
+    codeFormation: "",
+  } as PromotionDetails);
+
+  const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
+  const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
+
+  useEffect(() => {
+    dispatch(getPromotionAsync());
+    if (etudiants.length === 0) {
+      dispatch(getEtudiantAsync());
+    }
+    if (
+      pro.anneeUniversitaire === "-1" &&
+      promotionDetails.anneeUniversitaire === "-1"
+    ) {
+      dispatch(getEtudiantAsync());
+    } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
+      dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
+    } else if (
+      promotionDetails.anneePro !== "-1" &&
+      promotionDetails.codeFormation !== ""
+    ) {
+      dispatch(
+        getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
+      );
+    }
+  }, [dispatch, pro, promotionDetails]);
+
+  useEffect(() => {
+    if (
+      modal.etudiant &&
+      modal.index !== -1 &&
+      etudiantDetailsModalRef.current
+    ) {
+      etudiantDetailsModalRef.current.showModal();
+    }
+
+    if (
+      modalUpdate.etudiant &&
+      modalUpdate.index !== -1 &&
+      updateStudentModalRef.current
+    ) {
+      updateStudentModalRef.current.showModal();
+    }
+  }, [modal, modalUpdate]);
+
+  const openModal = (name: string) => {
+    const dialog = document.getElementById(name) as HTMLDialogElement;
+    if (dialog) dialog.showModal();
+  };
+
+  const handleClick = (etudiant: Etudiant, index: number) => {
+    setModal({ etudiant, index });
+  };
+
+  const handleClickUpdate = (etudiant: Etudiant, index: number) => {
+    setModalUpdate({ etudiant, index });
+  };
+
+  const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
+    console.log(response);
+    
+    if (response?.type === "etudiants/deleteEtudiantAsync/rejected") {
+      toast.error(
+        "Impossible de supprimer cet étudiant"
+      );
+    }
+    if (response?.payload === "etudiants/deleteEtudiantAsync/fulfilled") {
+      toast.success("Etudiant supprimé avec succès");
+      dispatch(getEtudiantAsync());
+    }
+  };
+
+  const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "-1") {
+      setPro({
         anneeUniversitaire: "-1",
         codeFormation: "",
-    } as PromotionDetails);
+      } as PromotionDetails);
+    } else {
+      try {
+        const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
+        setPro(selectedPromotion);
+        console.log("Selected promotion:", selectedPromotion);
+      } catch (error) {
+        console.error("Error parsing promotion details:", error);
+      }
+    }
+  };
 
-    const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
-    const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
+  const MotionVariant = {
+    initial: {
+      opacity: 0,
+      y: 30,
+    },
+    final: () => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+      },
+    }),
+  };
 
-    useEffect(() => {
-        dispatch(getPromotionAsync());
-        if (etudiants.length === 0) {
-            dispatch(getEtudiantAsync());
-        }
-        if (
-            pro.anneeUniversitaire === "-1" &&
-            promotionDetails.anneeUniversitaire === "-1"
-        ) {
-            dispatch(getEtudiantAsync());
-        } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
-            dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
-        } else if (
-            promotionDetails.anneePro !== "-1" &&
-            promotionDetails.codeFormation !== ""
-        ) {
-            dispatch(
-                getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
-            );
-        }
-    }, [dispatch, pro, promotionDetails]);
+  useEffect(() => {
+    setfilteredEtudiants(etudiants);
+  }, [etudiants]);
 
-    useEffect(() => {
-        if (
-            modal.etudiant &&
-            modal.index !== -1 &&
-            etudiantDetailsModalRef.current
-        ) {
-            etudiantDetailsModalRef.current.showModal();
-        }
+  const handleSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const value = e.target.value.toLowerCase().trim();
+    setSearch(value);
 
-        if (
-            modalUpdate.etudiant &&
-            modalUpdate.index !== -1 &&
-            updateStudentModalRef.current
-        ) {
-            updateStudentModalRef.current.showModal();
-        }
-    }, [modal, modalUpdate]);
+    if (!value) {
+      setfilteredEtudiants(etudiants);
+      return;
+    }
 
-    const openModal = (name: string) => {
-        const dialog = document.getElementById(name) as HTMLDialogElement;
-        if (dialog) dialog.showModal();
-    };
-
-    const handleClick = (etudiant: Etudiant, index: number) => {
-        setModal({etudiant, index});
-    };
-
-    const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-        setModalUpdate({etudiant, index});
-    };
-
-    const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-        dispatch(getEtudiantAsync());
-        if (
-            response?.payload ===
-            "Can not delete this student because it's related to an internship"
-        ) {
-            toast.error(
-                "Impossible de supprimer cet étudiant car il est lié à un stage"
-            );
-        }
-        if (response?.payload === "Etudiant deleted successfully") {
-            toast.success("Etudiant supprimé avec succès");
-        }
-    };
-
-    const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedValue = e.target.value;
-
-        if (selectedValue === "-1") {
-            setPro({
-                anneeUniversitaire: "-1",
-                codeFormation: "",
-            } as PromotionDetails);
-        } else {
-            try {
-                const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
-                setPro(selectedPromotion);
-                console.log("Selected promotion:", selectedPromotion);
-            } catch (error) {
-                console.error("Error parsing promotion details:", error);
-            }
-        }
-    };
-
-    const MotionVariant = {
-        initial: {
-            opacity: 0,
-            y: 30,
-        },
-        final: () => ({
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.3,
-            },
-        }),
-    };
-
-    useEffect(() => {
-        setfilteredEtudiants(etudiants);
-    }, [etudiants]);
-
-    const handleSearchChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const value = e.target.value.toLowerCase().trim();
-        setSearch(value);
-
-        if (!value) {
-            setfilteredEtudiants(etudiants);
-            return;
-        }
-
-        setfilteredEtudiants(
-            etudiants.filter(
-                (etu) =>
-                    (etu.nom?.toLowerCase().includes(value) ?? false) ||
-                    (etu.prenom?.toLowerCase().includes(value) ?? false)
-            )
-        );
-    };
-
-    return (
-        <>
-            <motion.div
-                className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
-                <ToastContainer theme="colored"/>
-                {promotionDetails.codeFormation ? (
-                    <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
-                ) : (
-                    <h1>Liste des étudiants</h1>
-                )}
-
-                <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
-                    {!promotionDetails.codeFormation ? (
-                        <div className="flex flex-row items-center justify-between  w-1/2 ">
-                            <select
-                                defaultValue="default"
-                                className="select hover:cursor-pointer shadow-md"
-                                onChange={handlePromotionChange}
-                            >
-                                <option value="default" disabled>
-                                    Sélectionnez une promotion
-                                </option>
-                                <option
-                                    value="-1"
-                                    onClick={() =>
-                                        setPro({
-                                            anneeUniversitaire: "-1",
-                                            codeFormation: "",
-                                        } as PromotionDetails)
-                                    }
-                                >
-                                    Tous les promotions
-                                </option>
-                                {promotions.map((promotion, idx) => (
-                                    <option
-                                        key={idx}
-                                        value={JSON.stringify({
-                                            anneeUniversitaire: promotion.anneeUniversitaire,
-                                            codeFormation: promotion.codeFormation,
-                                        })}
-                                    >
-                                        {promotion.anneeUniversitaire} : {promotion.codeFormation}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="w-1/2 block hover:cursor-text">
-                                <label className="input input-bordered flex items-center gap-2 shadow-md">
-                                    <input
-                                        disabled={etudiants.length == 0}
-                                        name="search"
-                                        value={search}
-                                        onChange={handleSearchChange}
-                                        type="text"
-                                        className="grow placeholder:font-medium "
-                                        placeholder="Rechercher..."
-                                    />
-                                    <FaSearch/>
-                                </label>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-row items-center justify-between w-1/2">
-                            <div
-                                className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
-                                onClick={() => {
-                                    setPromotionDetails({
-                                        anneeUniversitaire: "-1",
-                                        codeFormation: "",
-                                    } as PromotionDetails);
-                                    switchStudent("-1", "");
-                                }}
-                            >
-                                <HiOutlineChevronLeft className="text-lg " size={20}/>{" "}
-                                Retournez à la liste des promotions
-                            </div>
-                            <div className="w-1/2 block hover:cursor-text">
-                                <label className="input input-bordered flex items-center gap-2 shadow-md">
-                                    <input
-                                        disabled={etudiants.length == 0}
-                                        name="search"
-                                        value={search}
-                                        onChange={handleSearchChange}
-                                        type="text"
-                                        className="grow placeholder:font-medium "
-                                        placeholder="Rechercher..."
-                                    />
-                                    <FaSearch/>
-                                </label>
-                            </div>
-                        </div>
-                    )}
-                    <div className="tooltip" data-tip="Ajouter un etudiant">
-
-                        <IoMdPersonAdd
-                            className="text-4xl text-gray-500 hover:text-gray-700 cursor-pointer"
-                            onClick={() => openModal("addStudent")}
-                        />
-                    </div>
-                </div>
-                <div className="overflow-y-auto w-[90%] py-5">
-                    <motion.table
-                        className="table table-zebra"
-                        variants={MotionVariant}
-                        initial="initial"
-                        animate={MotionVariant.final()}
-                    >
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Nationalité</th>
-                            <th>Email</th>
-                            <th>Promotion</th>
-                            <th>Université</th>
-                            <th className="text-center">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {etudiants.length === 0 ? (
-                            <tr>
-                                <td colSpan={11} className="text-center w-full">
-                                    <span className="loading loading-dots loading-lg"></span>
-                                </td>
-                            </tr>
-                        ) : filteredEtudiants.length === 0 ? (
-                            <tr>
-                                <td
-                                    colSpan={11}
-                                    className="uppercase tracking-widest text-center text-gray-500"
-                                >
-                                    Pas d'étudiants trouvés.
-                                </td>
-                            </tr>
-                        ) : (
-                            filteredEtudiants.map((etudiant: Etudiant, index: number) => (
-                                <tr
-                                    key={index}
-                                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                                >
-                                    <td className="px-4 py-2">{index + 1}</td>
-                                    <td className="px-4 py-2">{etudiant.nom}</td>
-                                    <td className="px-4 py-2">{etudiant.prenom}</td>
-                                    <td className="px-4 py-2">
-                                        {etudiant.nationalite || "Française"}
-                                    </td>
-                                    <td className="px-4 py-2">{etudiant.email}</td>
-                                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
-                                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
-                                    <td
-                                        className="flex gap-3 justify-center items-center"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faPenToSquare}
-                                            className="text-black text-base cursor-pointer"
-                                            onClick={() => {
-                                                handleClickUpdate(etudiant, index);
-                                                openModal(`updateStudent-${etudiant.noEtudiant}`);
-                                            }}
-                                        />
-                                        <FontAwesomeIcon
-                                            icon={faTrash}
-                                            className="text-black text-base cursor-pointer"
-                                            onClick={(e) => handleDelete(etudiant, e)}
-                                        />
-                                        <FontAwesomeIcon
-                                            icon={faEye}
-                                            className="text-black text-base cursor-pointer"
-                                            onClick={() => {
-                                                handleClick(etudiant, index);
-                                                openModal(`inspect-${etudiant.noEtudiant}`);
-                                            }}
-                                        />
-                                    </td>
-                                    <dialog
-                                        id={`updateStudent-${etudiant.noEtudiant}`}
-                                        className="modal"
-                                    >
-                                        <UpdateEtudiant
-                                            promotions={promotions}
-                                            studentData={etudiant}
-                                        />
-                                    </dialog>
-                                    <dialog
-                                        id={`inspect-${etudiant.noEtudiant}`}
-                                        className="modal"
-                                    >
-                                        <EtudiantDetails etudiant={etudiant}/>
-                                    </dialog>
-                                </tr>
-                            ))
-                        )}
-                        </tbody>
-                    </motion.table>
-                </div>
-            </motion.div>
-            <dialog id="addStudent" className="modal">
-                <AddEtudiant promotions={promotions}/>
-            </dialog>
-        </>
+    setfilteredEtudiants(
+      etudiants.filter(
+        (etu) =>
+          (etu.nom?.toLowerCase().includes(value) ?? false) ||
+          (etu.prenom?.toLowerCase().includes(value) ?? false)
+      )
     );
+  };
+
+  return (
+    <>
+      <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
+        <ToastContainer theme="colored" />
+        {promotionDetails.codeFormation ? (
+          <h1>Liste des étudiants de {promotionDetails.codeFormation} - {promotionDetails.anneeUniversitaire} </h1>
+        ) : (
+          <h1>Liste des étudiants</h1>
+        )}
+
+        <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
+          {!promotionDetails.codeFormation ? (
+            <div className="flex lg:flex-row sm:flex-col items-center gap-5 justify-between  w-1/2">
+              <select
+                defaultValue="default"
+                className="select hover:cursor-pointer shadow-md w-1/2"
+                onChange={handlePromotionChange}
+              >
+                <option value="default" disabled>
+                  Sélectionnez une promotion
+                </option>
+                <option
+                  value="-1"
+                  onClick={() =>
+                    setPro({
+                      anneeUniversitaire: "-1",
+                      codeFormation: "",
+                    } as PromotionDetails)
+                  }
+                >
+                  Tous les promotions
+                </option>
+                {promotions.map((promotion, idx) => (
+                  <option
+                    key={idx}
+                    value={JSON.stringify({
+                      anneeUniversitaire: promotion.anneeUniversitaire,
+                      codeFormation: promotion.codeFormation,
+                    })}
+                  >
+                    {promotion.anneeUniversitaire} : {promotion.codeFormation}
+                  </option>
+                ))}
+              </select>
+              <div className="w-1/2 block hover:cursor-text">
+                <label className="input input-bordered flex items-center gap-2 shadow-md">
+                  <input
+                    disabled={etudiants.length == 0}
+                    name="search"
+                    value={search}
+                    onChange={handleSearchChange}
+                    type="text"
+                    className="grow placeholder:font-medium "
+                    placeholder="Rechercher..."
+                  />
+                  <FaSearch />
+                </label>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-row items-center justify-between w-1/2">
+              <div
+                className="flex flex-row justify-between items-center hover:cursor-pointer hover:text-gray-500 duration-150"
+                onClick={() => {
+                  setPromotionDetails({
+                    anneeUniversitaire: "-1",
+                    codeFormation: "",
+                  } as PromotionDetails);
+                  switchStudent("-1", "");
+                }}
+              >
+                <HiOutlineChevronLeft className="text-lg " size={20} />{" "}
+                Retournez à la liste des promotions
+              </div>
+              <div className="w-1/2 block hover:cursor-text">
+                <label className="input input-bordered flex items-center gap-2 shadow-md">
+                  <input
+                    disabled={etudiants.length == 0}
+                    name="search"
+                    value={search}
+                    onChange={handleSearchChange}
+                    type="text"
+                    className="grow placeholder:font-medium "
+                    placeholder="Rechercher..."
+                  />
+                  <FaSearch />
+                </label>
+              </div>
+            </div>
+          )}
+          <div className="tooltip" data-tip="Ajouter un etudiant">
+            <IoMdPersonAdd
+              className="text-4xl text-gray-500 hover:text-gray-700 cursor-pointer"
+              onClick={() => openModal("addStudent")}
+            />
+          </div>
+        </div>
+        <div className="overflow-y-auto w-[90%] py-5">
+          <motion.table
+            className="table table-zebra"
+            variants={MotionVariant}
+            initial="initial"
+            animate={MotionVariant.final()}
+          >
+            <thead>
+              <tr>
+                <th></th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Nationalité</th>
+                <th>Email</th>
+                <th>Promotion</th>
+                <th>Université</th>
+                <th className="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {etudiants.length === 0 ? (
+                <tr>
+                  <td colSpan={11} className="text-center w-full">
+                    <span className="loading loading-dots loading-lg"></span>
+                  </td>
+                </tr>
+              ) : filteredEtudiants.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={11}
+                    className="uppercase tracking-widest text-center text-gray-500"
+                  >
+                    Pas d'étudiants trouvés.
+                  </td>
+                </tr>
+              ) : (
+                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
+                  <tr
+                    key={index}
+                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                  >
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{etudiant.nom}</td>
+                    <td className="px-4 py-2">{etudiant.prenom}</td>
+                    <td className="px-4 py-2">
+                      {etudiant.nationalite || "Française"}
+                    </td>
+                    <td className="px-4 py-2">{etudiant.email}</td>
+                    <td className="px-4 py-2">{etudiant.codeFormation} - {etudiant.anneeUniversitaire}</td>
+                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
+                    <td
+                      className="flex gap-3 justify-center items-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className="text-black text-base cursor-pointer"
+                        onClick={() => {
+                          handleClickUpdate(etudiant, index);
+                          openModal(`updateStudent-${etudiant.noEtudiant}`);
+                        }}
+                      />
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className="text-black text-base cursor-pointer"
+                        onClick={(e) => handleDelete(etudiant, e)}
+                      />
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        className="text-black text-base cursor-pointer"
+                        onClick={() => {
+                          handleClick(etudiant, index);
+                          openModal(`inspect-${etudiant.noEtudiant}`);
+                        }}
+                      />
+                    </td>
+                    <dialog
+                      id={`updateStudent-${etudiant.noEtudiant}`}
+                      className="modal"
+                    >
+                      <UpdateEtudiant
+                        promotions={promotions}
+                        studentData={etudiant}
+                      />
+                    </dialog>
+                    <dialog
+                      id={`inspect-${etudiant.noEtudiant}`}
+                      className="modal"
+                    >
+                      <EtudiantDetails etudiant={etudiant} />
+                    </dialog>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </motion.table>
+        </div>
+      </motion.div>
+      <dialog id="addStudent" className="modal">
+        <AddEtudiant promotions={promotions} />
+      </dialog>
+    </>
+  );
 };
 
 export default StudentHome;
