@@ -2,6 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.EtudiantDTO;
 import com.example.backendagile.dto.PromotionDTO;
+import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.entities.Role;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -40,10 +43,13 @@ public class EtudiantController {
     /**
      * Récupérer une liste paginée d'étudiants
      */
-    @GetMapping
-    public ResponseEntity<List<EtudiantDTO>> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
+    @GetMapping("/paged")
+    public ResponseEntity<Map<String, Object>> getAllEtudiants(@RequestParam int page, @RequestParam int size) {
         List<EtudiantDTO> etudiants = etudiantService.getEtudiantsPaged(page, size);
-        return ResponseEntity.ok(etudiants);
+        Map<String, Object> response = new HashMap<>();
+        response.put("etudiants", etudiants);
+        response.put("totalPages", etudiantService.getTotalPages(size));
+        return ResponseEntity.ok(response);
     }
 
     /**
