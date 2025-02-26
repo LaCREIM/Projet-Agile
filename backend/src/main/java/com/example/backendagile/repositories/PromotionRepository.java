@@ -1,5 +1,6 @@
 package com.example.backendagile.repositories;
 
+import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.entities.PromotionId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,9 @@ public interface PromotionRepository extends JpaRepository<Promotion, PromotionI
 
     @Query("SELECT p FROM Promotion p WHERE p.siglePromotion LIKE %:siglePromotion%")
     List<Promotion> findByNameContaining(@Param("siglePromotion") String siglePromotion);
+  
+    @Query("SELECT COUNT(p) FROM Promotion p WHERE p.enseignant = :enseignant")
+    Long countByEnseignant(@Param("enseignant") Enseignant enseignant);
 }
+
+

@@ -20,21 +20,19 @@ public class RubriqueQuestionStdController {
         this.rubriqueQuestionStdService = rubriqueQuestionStdService;
     }
     
+  
     @GetMapping("/{idRubrique}")
-    public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
-        try {
-            List<RubriqueQuestionStdDTO> questions = rubriqueQuestionStdService.getQuestionsByRubrique(idRubrique);
-            if (questions.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Collections.singletonMap("message", "Aucune question standard trouvée pour cette rubrique."));
-            }
-            return ResponseEntity.ok(questions);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", "Une erreur est survenue."));
-        }
+public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
+    try {
+        List<RubriqueQuestionStdDTO> questions = rubriqueQuestionStdService.getQuestionsByRubrique(idRubrique);
+        return ResponseEntity.ok(questions); // Retourne [] si la liste est vide
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("error", "Une erreur est survenue."));
     }
-    
+}
+
+
     
     @GetMapping
     public ResponseEntity<List<RubriqueQuestionStdDTO>> getAllRubriquesQuestionStd() {
@@ -47,6 +45,7 @@ public class RubriqueQuestionStdController {
         rubriqueQuestionStdService.saveOrUpdateRubriqueQuestions(rubriqueQuestionDtos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  
     }
+
     @DeleteMapping("/{idRubrique}/{idQuestion}")
 public ResponseEntity<String> deleteRubriqueQuestion(
         @PathVariable Long idRubrique,
