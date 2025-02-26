@@ -1,33 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import React, {useEffect, useState, useRef} from "react";
+import {motion} from "framer-motion";
 import {
     deleteEtudiantAsync,
     getEtudiantAsync,
     getEtudiants,
     getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
-import { Etudiant } from "../../types/types";
+import {Etudiant} from "../../types/types";
 
 import {
     getPromotionAsync,
     getPromotions,
 } from "../../features/PromotionSlice";
 
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import AddEtudiant from "./AddEtudiant.tsx";
 import EtudiantDetails from "./EtudiantDetails";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { HiOutlineChevronLeft } from "react-icons/hi";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {HiOutlineChevronLeft} from "react-icons/hi";
 import {
     faEye,
     faPenToSquare,
     faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import UpdateEtudiant from "./UpdateEtudiant.tsx";
-import { PromotionDetails } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
-import { FaSearch } from "react-icons/fa";
-import { IoMdPersonAdd } from "react-icons/io";
+import {PromotionDetails} from "../../types/types";
+import {ToastContainer, toast} from "react-toastify";
+import {FaSearch} from "react-icons/fa";
+import {IoMdPersonAdd} from "react-icons/io";
 
 interface StudentHomeProps {
     promotionDetails: PromotionDetails;
@@ -36,10 +36,10 @@ interface StudentHomeProps {
 }
 
 const StudentHome = ({
-    promotionDetails,
-    setPromotionDetails,
-    switchStudent,
-}: StudentHomeProps) => {
+                         promotionDetails,
+                         setPromotionDetails,
+                         switchStudent,
+                     }: StudentHomeProps) => {
     document.title = "UBO | Étudiants";
     const dispatch = useAppDispatch();
     const etudiants = useAppSelector(getEtudiants);
@@ -52,12 +52,12 @@ const StudentHome = ({
     const [modal, setModal] = useState<{
         etudiant: Etudiant | null;
         index: number;
-    }>({ etudiant: null, index: -1 });
+    }>({etudiant: null, index: -1});
 
     const [modalUpdate, setModalUpdate] = useState<{
         etudiant: Etudiant | null;
         index: number;
-    }>({ etudiant: null, index: -1 });
+    }>({etudiant: null, index: -1});
 
     const [pro, setPro] = useState<PromotionDetails>({
         anneeUniversitaire: "-1",
@@ -72,13 +72,13 @@ const StudentHome = ({
     useEffect(() => {
         dispatch(getPromotionAsync());
         if (etudiants.length === 0) {
-            dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         }
         if (
             pro.anneeUniversitaire === "-1" &&
             promotionDetails.anneeUniversitaire === "-1"
         ) {
-            dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
             dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
         } else if (
@@ -89,7 +89,7 @@ const StudentHome = ({
                 getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
             );
         }
-    }, [currentPage, dispatch]);
+    }, [currentPage, dispatch, pro, promotionDetails]);
 
     useEffect(() => {
         if (
@@ -110,8 +110,18 @@ const StudentHome = ({
     }, [modal, modalUpdate]);
 
     useEffect(() => {
-        dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
-    }, [dispatch, currentPage]);
+        if (
+            promotionDetails.anneePro == "-1" &&
+            promotionDetails.codeFormation == ""
+        ) {
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
+        }
+        else {
+            // disable pagination for promotion
+            dispatch(getEtudiantByPromotionAsync(promotionDetails));
+        }
+
+    }, [dispatch, currentPage, promotionDetails.anneePro, promotionDetails.codeFormation]);
 
     const openModal = (name: string) => {
         const dialog = document.getElementById(name) as HTMLDialogElement;
@@ -119,17 +129,17 @@ const StudentHome = ({
     };
 
     const handleClick = (etudiant: Etudiant, index: number) => {
-        setModal({ etudiant, index });
+        setModal({etudiant, index});
     };
 
     const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-        setModalUpdate({ etudiant, index });
+        setModalUpdate({etudiant, index});
     };
 
     const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
         e.stopPropagation();
         const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-        dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
+        dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         if (
             response?.payload ===
             "Can not delete this student because it's related to an internship"
@@ -323,13 +333,7 @@ const StudentHome = ({
                         </tr>
                         </thead>
                         <tbody>
-                        {etudiants.length === 0 ? (
-                            <tr>
-                                <td colSpan={11} className="text-center w-full">
-                                    <span className="loading loading-dots loading-lg"></span>
-                                </td>
-                            </tr>
-                        ) : filteredEtudiants.length === 0 ? (
+                        {etudiants.length === 0 || filteredEtudiants.length === 0 ? (
                             <tr>
                                 <td
                                     colSpan={11}
