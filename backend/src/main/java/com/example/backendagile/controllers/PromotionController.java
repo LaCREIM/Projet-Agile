@@ -56,8 +56,7 @@ public class PromotionController {
      */
     @GetMapping("/{anneeUniversitaire}/{codeFormation}")
     public PromotionDTO getPromotionById(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
-        PromotionDTO promotion = promotionService.getPromotionById(anneeUniversitaire, codeFormation);
-        return promotion;
+        return promotionService.getPromotionById(anneeUniversitaire, codeFormation);
     }
 
     /**
