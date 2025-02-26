@@ -30,7 +30,7 @@ public class Authentification {
     private String motPasse;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "NO_ENSEIGNANT")
     private com.example.backendagile.entities.Enseignant noEnseignant;
 
