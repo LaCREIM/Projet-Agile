@@ -35,7 +35,7 @@ public class Authentification {
     private com.example.backendagile.entities.Enseignant noEnseignant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "NO_ETUDIANT")
     private com.example.backendagile.entities.Etudiant noEtudiant;
 
