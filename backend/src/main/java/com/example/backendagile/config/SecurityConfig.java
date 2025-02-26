@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**")
+                        .anyRequest()
                         .permitAll()
                 )
                 .formLogin(AbstractHttpConfigurer::disable) // Disable default form login
@@ -52,7 +52,8 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        return source;    }
+        return source;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
