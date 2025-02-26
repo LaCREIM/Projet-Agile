@@ -14,7 +14,7 @@ import {
     deleteEnseignantAsync,
     getEnseignantAsync,
 } from "../../features/EnseignantSlice";
-import {Enseignant, Chercheur, Intervenant} from "../../types/types";
+import {Enseignant } from "../../types/types";
 import {ToastContainer, toast} from "react-toastify";
 import {RootState} from "../../api/store";
 import {motion} from "framer-motion";
@@ -85,14 +85,14 @@ const EnseignantsHome = () => {
     const handleDelete = async (enseignant: Enseignant, e: React.MouseEvent) => {
         e.stopPropagation();
         const response = await dispatch(deleteEnseignantAsync(enseignant));
-
-        if (response?.payload === "not deleted") {
-            toast.error("Cet enseignant ne peut pas être supprimé.");
-        } else if (response?.payload === "deleted") {
+    
+        if (deleteEnseignantAsync.fulfilled.match(response)) {
             toast.success("Enseignant supprimé avec succès.");
-            dispatch(getEnseignantAsync({page: 1, size: 10}));
+        } else {
+            toast.error("Cet enseignant ne peut pas être supprimé.");
         }
     };
+    
 
     const MotionVariant = {
         initial: {
@@ -232,27 +232,13 @@ const EnseignantsHome = () => {
                                         </td>
 
                                         {/* Modal de mise à jour */}
-                                        <dialog
-                                            id={`updateEnseignant-${index}`}
-                                            className="modal"
-                                        >
-                                            <UpdateEnseignant
-                                                typeData={
-                                                    enseignant.type.toUpperCase() === "INT"
-                                                        ? ({
-                                                            intFonction: enseignant.intFonction,
-                                                            intNoInsee: enseignant.intNoInsee,
-                                                            intSocNom: enseignant.intSocNom,
-                                                        } as Intervenant)
-                                                        : ({
-                                                            encPersoEmail: enseignant.emailPerso,
-                                                            encUboEmail: enseignant.emailUbo,
-                                                            encUboTel: enseignant.telephone,
-                                                        } as Chercheur)
-                                                }
-                                                enseignantData={enseignant}
-                                            />
-                                        </dialog>
+                                        <dialog id={`updateEnseignant-${index}`} className="modal">
+                                                <UpdateEnseignant
+                                                    enseignantData={enseignant}
+                                                />
+                                            </dialog>
+
+
 
                                         {/* Modal de détails */}
                                         <dialog id={`inspect-${index}`} className="modal">
