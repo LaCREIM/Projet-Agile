@@ -80,4 +80,12 @@ public class QualificatifController {
         }
         return ResponseEntity.ok("Qualificatif supprimé avec succès.");
     }
+
+    /**
+     * 🔹 Vérifier si un qualificatif est utilisé dans une question (retourne `Boolean` directement)
+     */
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> existsDansQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(qualificatifService.existsDansQuestion(id));
+    }
 }

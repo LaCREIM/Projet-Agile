@@ -254,7 +254,7 @@ const UpdateEnseignant = ({
 
           <div className="modal-action">
             <form method="dialog" className="flex flex-row gap-5">
-              <button type="button" className="btn">
+              <button className="btn">
                 Annuler
               </button>
               <button onClick={handleSubmit} className="btn btn-neutral" disabled={!canSave}>

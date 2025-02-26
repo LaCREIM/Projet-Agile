@@ -207,6 +207,7 @@ const PromotionHome = () => {
                                 onClick={() => openModal("addPromotion")}
                             >
 
+
                                 <MdAddCircleOutline/>
                             </button>
 
@@ -254,7 +255,7 @@ const PromotionHome = () => {
                                             className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                                         >
                                             <td className="px-4 py-2">
-                                                {promotion.siglePromotion}
+                                                {promotion.codeFormation}
                                             </td>
                                             <td className="px-4 py-2">
                                                 {promotion.anneeUniversitaire}

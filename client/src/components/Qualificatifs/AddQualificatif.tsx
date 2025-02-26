@@ -24,10 +24,10 @@ const AddQualificatif = () => {
   const canSave = qualificatif.maximal != "" && qualificatif.minimal != "";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (canSave) {
-      console.log("heeeere");
-      
+
+    console.log(e);
+    
+    if (canSave) {      
       await dispatch(createQualificatifAsync(qualificatif));
       dispatch(fetchQualificatifsAsync());
       setQualificatif({

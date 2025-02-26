@@ -282,6 +282,7 @@ export interface Rubrique {
     noEnseignant: Enseignant;
     designation: string;
     ordre: number;
+    questions: Question[];
 }
 
 export interface RubriqueQuestionId extends Serializable {
