@@ -1,5 +1,6 @@
 package com.example.backendagile.repositories;
 
+import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.entities.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +24,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
                 ) WHERE rnum > :startRow
             """, nativeQuery = true)
     List<Question> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
+
+    @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
+    Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
+
 }
