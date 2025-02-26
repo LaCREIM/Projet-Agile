@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
@@ -58,8 +58,10 @@ const RubriqueHome = () => {
   }, [questions, modal.rubrique]);
 
 
-  const handleDelete = async (rubrique: Rubrique) => {
+  const handleDelete = async (rubrique: Rubrique, e : React.MouseEvent) => {
 
+    console.log(e);
+    
     try {
       const response = await dispatch(deleteRubriqueAsync(rubrique.id));
 
@@ -127,7 +129,7 @@ const RubriqueHome = () => {
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(rubrique)}
+                        onClick={(e) => handleDelete(rubrique, e)}
                       />
                     </td>
 
@@ -149,6 +151,7 @@ const RubriqueHome = () => {
       <dialog id="addRubrique" className="modal">
         <AddRubrique />
       </dialog>
+
     </>
   );
 };
