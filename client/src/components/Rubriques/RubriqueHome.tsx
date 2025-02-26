@@ -58,8 +58,8 @@ const RubriqueHome = () => {
   }, [questions, modal.rubrique]);
 
 
-  const handleDelete = async (rubrique: Rubrique, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDelete = async (rubrique: Rubrique) => {
+
     try {
       const response = await dispatch(deleteRubriqueAsync(rubrique.id));
 
@@ -127,7 +127,7 @@ const RubriqueHome = () => {
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(rubrique, e)}
+                        onClick={(e) => handleDelete(rubrique)}
                       />
                     </td>
 

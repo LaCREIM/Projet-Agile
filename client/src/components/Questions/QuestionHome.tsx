@@ -124,6 +124,7 @@ const QuestionHome = () => {
           <table className="table table-zebra">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Intitulé</th>
                 <th>Qualificatif</th>
                 <th className="text-center">Actions</th>
@@ -145,6 +146,7 @@ const QuestionHome = () => {
                     key={question.id}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
+                    <th className="px-4 py-2">{question.id}</th>
                     <td className="px-4 py-2">{question.intitule || "N/A"}</td>
                     <td className="px-4 py-2">
                       {question.idQualificatif?.maximal +

@@ -122,17 +122,16 @@ const StudentHome = ({
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
     const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-    dispatch(getEtudiantAsync());
-    if (
-      response?.payload ===
-      "Can not delete this student because it's related to an internship"
-    ) {
+    console.log(response);
+    
+    if (response?.type === "etudiants/deleteEtudiantAsync/rejected") {
       toast.error(
-        "Impossible de supprimer cet étudiant car il est lié à un stage"
+        "Impossible de supprimer cet étudiant"
       );
     }
-    if (response?.payload === "Etudiant deleted successfully") {
+    if (response?.payload === "etudiants/deleteEtudiantAsync/fulfilled") {
       toast.success("Etudiant supprimé avec succès");
+      dispatch(getEtudiantAsync());
     }
   };
 
@@ -198,7 +197,7 @@ const StudentHome = ({
       <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
         <ToastContainer theme="colored" />
         {promotionDetails.codeFormation ? (
-          <h1>Liste des étudiants de {promotionDetails.codeFormation} </h1>
+          <h1>Liste des étudiants de {promotionDetails.codeFormation} - {promotionDetails.anneeUniversitaire} </h1>
         ) : (
           <h1>Liste des étudiants</h1>
         )}
@@ -338,7 +337,7 @@ const StudentHome = ({
                       {etudiant.nationalite || "Française"}
                     </td>
                     <td className="px-4 py-2">{etudiant.email}</td>
-                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
+                    <td className="px-4 py-2">{etudiant.codeFormation} - {etudiant.anneeUniversitaire}</td>
                     <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
                     <td
                       className="flex gap-3 justify-center items-center"

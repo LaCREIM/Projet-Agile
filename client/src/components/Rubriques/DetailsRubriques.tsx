@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Rubrique } from "../../types/types";
-import {
-  RubriqueQuestion,
-} from "../../features/RubriqueSlice";
+import { RubriqueQuestion } from "../../features/RubriqueSlice";
 import QuestionsList from "./QuestionsList";
 import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -23,17 +21,15 @@ export interface QuestionOrderDetails {
 }
 
 const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
-
   // État des questions triées
   const [questionsOrder, setQuestionsOrder] = useState<QuestionOrderDetails[]>(
     []
   );
   // État pour gérer l'édition
   const [isEditing, setIsEditing] = useState(false);
-   const [rubriqueData, setRubrique] = useState({
-      ...rubrique,
-    });
-
+  const [rubriqueData, setRubrique] = useState({
+    ...rubrique,
+  });
 
   useEffect(() => {
     const formattedQuestions = questions.map((q) => ({
@@ -50,7 +46,7 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
   }, [questions]);
 
   const handleDragEnd = (event: DragEndEvent) => {
-    if (!isEditing) return; 
+    if (!isEditing) return;
 
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -61,17 +57,17 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
       );
       const newIndex = prev.findIndex((q) => q.idQuestion === Number(over.id));
       console.log(arrayMove(prev, oldIndex, newIndex));
-      
+
       return arrayMove(prev, oldIndex, newIndex);
     });
   };
 
   const handleChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-      const { name, value } = e.target;
-      setRubrique({ ...rubriqueData, [name]: value });
-    };
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setRubrique({ ...rubriqueData, [name]: value });
+  };
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -94,8 +90,20 @@ const DetailsRubrique = ({ rubrique, questions }: RubriqueDetailsProps) => {
           )}
         </div>
 
-        <div className="text-base font-medium text-gray-900">
-          <span className="font-semibold">Questions :</span>
+        <div className="text-base font-medium text-gray-900 flex flex-col gap-5">
+          <div className="flex flex-row justify-between items-center">
+            <span className="font-semibold">Questions :</span>
+            {isEditing && (
+              <button
+                className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+                // onClick={handleSubmit}
+                // type="submit"
+                // disabled={!canSave}
+              >
+                +
+              </button>
+            )}
+          </div>
           {questionsOrder.length > 0 ? (
             <DndContext
               onDragEnd={handleDragEnd}
