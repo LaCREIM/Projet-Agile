@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { editEnseignantAsync, getEnseignantAsync } from "../../features/EnseignantSlice";
+import { getEnseignantAsync, postEnseignantAsync } from "../../features/EnseignantSlice";
 import { Intervenant, Chercheur, Enseignant } from "../../types/types";
 import { toast } from "react-toastify";
 
@@ -53,7 +53,7 @@ const UpdateEnseignant = ({
             }),
       };
   
-      await dispatch(editEnseignantAsync(enseignantComplet));
+      await dispatch(postEnseignantAsync(enseignantComplet));
       dispatch(getEnseignantAsync({ page: 1, size: 10 }));
     } else {
       toast.error("Tous les champs requis doivent être remplis.");
