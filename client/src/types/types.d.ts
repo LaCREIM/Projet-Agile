@@ -82,20 +82,17 @@ export interface ElementConstitutif {
 
 export interface Enseignant {
     password: string;
-    intSocNom: any;
-    intNoInsee: any;
-    intFonction: any;
     id: number;
-    type: string;
-    sexe: string;
     nom: string;
     prenom: string;
-    adresse: string;
-    codePostal: string;
+    sexe: string;
+    type: string;
     ville: string;
     pays: string;
     mobile: string;
     telephone: string;
+    codePostal: string;
+    adresse: string;
     emailUbo: string;
     emailPerso: string;
     motPasse: string;
