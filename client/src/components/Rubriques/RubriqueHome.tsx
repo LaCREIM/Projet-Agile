@@ -9,12 +9,17 @@ import { Rubrique } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
+import { RootState } from "../../api/store";
+import { fetchQuestionsAsync } from "../../features/QuestionSlice";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
   const dispatch = useAppDispatch();
   const rubriques = useAppSelector(getRubriques);
   const questions = useAppSelector(getQuestionsRubrique);
+  const allQuestions = useAppSelector(
+      (state: RootState) => state.question.questions
+    );
   const [questionPass, setQuestionPass] = useState<RubriqueQuestion[]>([])
   const [modal, setModal] = useState<{ rubrique: Rubrique | null; index: number }>({
     rubrique: null,
@@ -25,6 +30,7 @@ const RubriqueHome = () => {
 
   useEffect(() => {
     dispatch(getRubriquesAsync());
+    dispatch(fetchQuestionsAsync());
   }, [dispatch]);
 
   useEffect(() => {
@@ -48,9 +54,6 @@ const RubriqueHome = () => {
   };
 
   useEffect(() => {
-    console.log("DEBUG - Nouvelle valeur de questions :", questions);
-    console.log("DEBUG - Modal rubrique sélectionnée :", modal.rubrique);
-
     if (modal.rubrique) {
       setQuestionPass(questions.length > 0 ? questions : []);
     }
@@ -58,9 +61,7 @@ const RubriqueHome = () => {
 
 
   const handleDelete = async (rubrique: Rubrique, e : React.MouseEvent) => {
-
     console.log(e);
-    
     try {
       const response = await dispatch(deleteRubriqueAsync(rubrique.id));
 
@@ -137,7 +138,7 @@ const RubriqueHome = () => {
                     </dialog>
 
                     <dialog id={`inspect-${index}`} className="modal">
-                      {modal.rubrique && <DetailsRubrique rubrique={modal.rubrique} questions={questionPass} />}
+                      {modal.rubrique && <DetailsRubrique rubrique={modal.rubrique} questions={questionPass} allQuestions={allQuestions} />}
                     </dialog>
                   </tr>
                 ))

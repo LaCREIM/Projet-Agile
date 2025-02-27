@@ -18,6 +18,8 @@ interface AddStudentProps {
 const AddEtudiant = ({promotions}: AddStudentProps) => {
     const dispatch = useAppDispatch();
     const formations = useAppSelector(getFormations);
+    console.log(promotions);
+    
 
     const [student, setStudent] = useState<Etudiant>({
         noEtudiant: "",
@@ -59,7 +61,7 @@ const AddEtudiant = ({promotions}: AddStudentProps) => {
             console.log(student);
             await dispatch(postEtudiantAsync(student));
         }
-        dispatch(getEtudiantAsync());
+        dispatch(getEtudiantAsync({page: 1, size: 10}));
     };
 
     const pays = useAppSelector(getPays);
@@ -146,7 +148,7 @@ const AddEtudiant = ({promotions}: AddStudentProps) => {
                   required
                   type="password"
                   name="motPasse"
-                  value={student.password}
+                  value={student.motPasse}
                   onChange={handleChange}
                   className="grow"
                   placeholder="Ex: Entrez un mot de passe"
@@ -387,7 +389,6 @@ const AddEtudiant = ({promotions}: AddStudentProps) => {
                   <option value={2}>2</option>
                 </select>
               </label>
-
             </div>
           </form>
           <div className="modal-action">

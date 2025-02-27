@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 
-const API_BASE_URL = "https://24c9-2a04-cec0-109e-ba57-ca30-67a2-84a0-15a1.ngrok-free.app/api";
+const API_BASE_URL = "https://7269-2a04-cec0-109e-ba57-3106-e42e-ffe3-cd4c.ngrok-free.app/api";
 // const API_BASE_URL = "http://localhost:8080/api/";
 
 

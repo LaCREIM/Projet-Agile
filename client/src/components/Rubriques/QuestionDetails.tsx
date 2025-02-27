@@ -7,11 +7,15 @@ import { FaMinus } from "react-icons/fa6";
 interface QuestionProps {
   question: QuestionOrderDetails;
   isEditing: boolean;
+  handleDeleteQuestion: (idRubrique: number, idQuestion: number) => void;
 }
 
-const QuestionDetails = ({ question, isEditing }: QuestionProps) => {
+const QuestionDetails = ({ question, isEditing, handleDeleteQuestion }: QuestionProps) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: question.idQuestion });
+    useSortable({
+      id: question.idQuestion,
+
+    });
 
   const style = {
     transition,
@@ -21,8 +25,6 @@ const QuestionDetails = ({ question, isEditing }: QuestionProps) => {
   return (
     <div
       ref={setNodeRef}
-      {...(isEditing ? attributes : {})}
-      {...(isEditing ? listeners : {})}
       style={style}
       className={`flex flex-row justify-between gap-3 items-center px-4 py-3 bg-gray-100 rounded-md ${
         isEditing ? "cursor-grab hover:bg-gray-200" : ""
@@ -30,7 +32,16 @@ const QuestionDetails = ({ question, isEditing }: QuestionProps) => {
     >
       <div className="flex flex-row items-center gap-3">
         {isEditing && (
-          <FaMinus size={15} className="hover:cursor-pointer" />
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("Button clicked");
+              handleDeleteQuestion(question.idRubrique, question.idQuestion);
+            }}
+            className="hover:cursor-pointer hover:bg-gray-300 transition-all duration-200 rounded-full p-1"
+          >
+            <FaMinus size={15} />
+          </button>
         )}
         <div>
           <span className="font-medium">{question.intitule} :</span>
@@ -40,7 +51,12 @@ const QuestionDetails = ({ question, isEditing }: QuestionProps) => {
         </div>
       </div>
       {isEditing && (
-        <MdDragIndicator size={20} className="cursor-grab justify-end" />
+        <MdDragIndicator
+          size={23}
+          className="cursor-grab justify-end text-gray-500"
+          {...listeners} // Appliquer les events de drag SEULEMENT ici
+          {...attributes}
+        />
       )}
     </div>
   );
