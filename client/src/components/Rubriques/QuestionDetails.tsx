@@ -32,6 +32,10 @@ const QuestionDetails = ({ question, isEditing, handleDeleteQuestion }: Question
     >
       <div className="flex flex-row items-center gap-3">
         {isEditing && (
+          <div
+                  className="tooltip tooltip-top"
+                  data-tip="Séparer"
+                >
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -42,6 +46,7 @@ const QuestionDetails = ({ question, isEditing, handleDeleteQuestion }: Question
           >
             <FaMinus size={15} />
           </button>
+          </div>
         )}
         <div>
           <span className="font-medium">{question.intitule} :</span>

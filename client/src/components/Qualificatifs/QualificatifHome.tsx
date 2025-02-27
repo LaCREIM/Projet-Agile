@@ -52,7 +52,9 @@ const QualificatifHome = () => {
       
 
       if (response?.type === "qualificatifs/delete/rejected") {
-        toast.error("Ce qualificatif ne peut pas être supprimé.");
+        toast.error(
+          "Ce qualificatif ne peut pas être supprimé, car il est deja utilisé."
+        );
       } else if (response?.type === "qualificatifs/delete/fulfilled") {
         dispatch(fetchQualificatifsAsync());
         toast.success("Qualificatif supprimé avec succès.");
