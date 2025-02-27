@@ -25,4 +25,6 @@ public interface EnseignantRepository extends JpaRepository<Enseignant, Long> {
     List<Enseignant> findByNomAndPrenom(String nom, String prenom);
 
     List<Enseignant> findByEmailUbo(@NotBlank @Email String emailUbo);
+    List<Enseignant> findByEmailPerso(@NotBlank @Email String emailPerso);
+
 }

@@ -27,4 +27,6 @@ List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") Stri
     List<Etudiant> findByNomAndPrenom(String nom, String prenom);
 
     List<Etudiant> findByEmail(@NotBlank String email);
+
+    Etudiant findByNoEtudiant(String noEtudiant);
 }
