@@ -80,13 +80,13 @@ public class EnseignantController {
     public ResponseEntity<String> createEnseignant(@Valid @RequestBody EnseignantDTO enseignantDTO) {
         try {
             // Check if an Enseignant with the same emailUBO already exists
-            Optional<Enseignant> existingEnseignant = enseignantService.findByEmailUbo(enseignantDTO.getEmailUbo());
+            Optional<Enseignant> existingEnseignant = enseignantService.findByEmailUbo(enseignantDTO.getEmailUbo().trim());
             if (existingEnseignant.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("L'email UBO existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Enseignant already exists
+                        .body("L'email UBO existe déjà ! Veuillez en choisir un autre."); // Return 409 Confli40ct if the Enseignant already exists
             }
             // Check if an Enseignant with the same email Personel already exists
-            Optional<Enseignant> existingEnseignant2 = enseignantService.findByEmailPerso(enseignantDTO.getEmailPerso());
+            Optional<Enseignant> existingEnseignant2 = enseignantService.findByEmailPerso(enseignantDTO.getEmailPerso().trim());
             if (existingEnseignant2.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("L'email Personnel existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Enseignant already exists

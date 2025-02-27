@@ -41,7 +41,7 @@ public class RubriqueStdController {
     @PostMapping
     public ResponseEntity<String> createStandardRubrique(@RequestBody RubriqueStdDTO rubriqueStdDTO) {
         try {
-            Optional<Rubrique> existingRubrique = rubriqueStdService.findByDesignation(rubriqueStdDTO.getDesignation());
+            Optional<Rubrique> existingRubrique = rubriqueStdService.findByDesignation(rubriqueStdDTO.getDesignation().trim());
             if(existingRubrique.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
             }
