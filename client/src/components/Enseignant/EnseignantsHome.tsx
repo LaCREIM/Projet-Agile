@@ -114,7 +114,7 @@ const EnseignantsHome = () => {
                     <div className="w-1/3 block hover:cursor-text">
                         <label className="input input-bordered flex items-center gap-2 shadow-md">
                             <input
-                                disabled={enseignants.length == 0}
+                                disabled={enseignants?.length == 0}
                                 name="search"
                                 value={search}
                                 onChange={handleSearchChange}
