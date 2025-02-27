@@ -55,11 +55,10 @@ const DetailsRubrique = ({
   const [newQuestionsOrder, setNewQuestionsOrder] = useState<
     RequestQuestionOrderDetails[]
   >([]);
-  
-  const [addQuestion, setAddQuestion] = useState<
-    RequestQuestionOrderDetails[]
-  >([]);
 
+  const [addQuestion, setAddQuestion] = useState<RequestQuestionOrderDetails[]>(
+    []
+  );
 
   const [isEditing, setIsEditing] = useState(false);
   const [rubriqueData, setRubriqueData] = useState({ ...rubrique });
@@ -190,22 +189,21 @@ const DetailsRubrique = ({
       designationRubrique: rubrique.designation,
       idQuestion: questionToAdd.id,
       questionStdDTO: {
-        idQualificatif:  questionToAdd.idQualificatif.id,
+        idQualificatif: questionToAdd.idQualificatif.id,
         intitule: questionToAdd.intitule,
-        maxQualificatif:  questionToAdd.idQualificatif.maximal,
+        maxQualificatif: questionToAdd.idQualificatif.maximal,
         minQualificatif: questionToAdd.idQualificatif.minimal,
       },
       ordre: questionsOrder.length + 1,
     };
 
-    // Met à jour l'état de addQuestion
+    setUnusedQuestions(unusedQuestions.filter((q) => q.id !== questionToAdd.id));
     setAddQuestion((prev) => [...prev, newQuestion]);
 
-    // Envoie la mise à jour au store Redux
+
     const res = await dispatch(updateRubriqueQuestionsAsync([newQuestion]));
 
     if (res?.type === "rubriques-questions/update/fulfilled") {
-      // Mise à jour locale des questions affichées
       setQuestionsOrder((prev) => [
         ...prev,
         {
@@ -218,8 +216,6 @@ const DetailsRubrique = ({
           qualificatifMin: questionToAdd.idQualificatif.minimal,
         },
       ]);
-
-      toast.success("Question ajoutée avec succès !");
     } else {
       toast.error("Erreur lors de l'ajout de la question.");
     }
@@ -260,8 +256,10 @@ const DetailsRubrique = ({
     }
   };
 
-  const unusedQuestions = allQuestions.filter(
-    (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+  const [unusedQuestions, setUnusedQuestions] = useState(
+    allQuestions.filter(
+      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+    )
   );
 
   return (
