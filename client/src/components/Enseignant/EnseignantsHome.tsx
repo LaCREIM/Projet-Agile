@@ -89,7 +89,7 @@ const EnseignantsHome = () => {
         if (deleteEnseignantAsync.fulfilled.match(response)) {
             toast.success("Enseignant supprimé avec succès.");
         } else {
-            toast.error("Cet enseignant ne peut pas être supprimé.");
+            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
         }
     };
     

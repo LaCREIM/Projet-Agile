@@ -228,7 +228,6 @@ const AddEnseignant = () => {
                 <option disabled value="">
                   Sélectionnez un type
                 </option>
-                <option disabled value="">Sélectionnez un type</option>
               <option value="MCF">Maître de Conférences</option>
               <option value="INT">Intervenant-Exterieur</option>
               <option value="PR">Professeur des Universités</option>

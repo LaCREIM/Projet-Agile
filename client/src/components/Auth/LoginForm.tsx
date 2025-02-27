@@ -10,7 +10,7 @@ const LoginForm = () => {
         <LoginPoster />
         <div className="flex flex-col w-3/4 mx-auto items-center justify-center text-center py-[20%] h-full">
           <div className="w-full flex flex-col gap-10  ">
-            <h1 className="text-4xl  font-semibold">Bienvenue !</h1>
+            <h1 className="text-4xl  font-semibold">Bienvenue ------- change me ----- !</h1>
             <LoginInformation />
           </div>
         </div>
