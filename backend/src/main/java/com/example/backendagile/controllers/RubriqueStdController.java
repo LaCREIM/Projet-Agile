@@ -39,10 +39,14 @@ public class RubriqueStdController {
      * Créer une rubrique standard
      */
     @PostMapping
-    public ResponseEntity<RubriqueStdDTO> createStandardRubrique(@RequestBody RubriqueStdDTO rubriqueStdDTO) {
+    public ResponseEntity<String> createStandardRubrique(@RequestBody RubriqueStdDTO rubriqueStdDTO) {
         try {
+            Optional<Rubrique> existingRubrique = rubriqueStdService.findByDesignation(rubriqueStdDTO.getDesignation());
+            if(existingRubrique.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
+            }
             RubriqueStdDTO createdRubrique = rubriqueStdService.createStandardRubrique(rubriqueStdDTO);
-            return ResponseEntity.status(201).body(createdRubrique);
+            return ResponseEntity.status(201).body("La rubrique a été créée avec succès.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

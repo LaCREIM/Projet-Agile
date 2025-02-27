@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface RubriqueStdRepository extends JpaRepository<Rubrique, Long> {
     List<Rubrique> findByType(String type);
+
+    List<Rubrique> findRubriqueByDesignation(String designation);
 }
