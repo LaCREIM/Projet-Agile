@@ -38,7 +38,7 @@ const QuestionDetails = ({ question, isEditing, handleDeleteQuestion }: Question
               console.log("Button clicked");
               handleDeleteQuestion(question.idRubrique, question.idQuestion);
             }}
-            className="hover:cursor-pointer hover:bg-red-500 hover:text-white rounded-full p-1"
+            className="hover:cursor-pointer hover:bg-gray-300 transition-all duration-200 rounded-full p-1"
           >
             <FaMinus size={15} />
           </button>
@@ -52,8 +52,8 @@ const QuestionDetails = ({ question, isEditing, handleDeleteQuestion }: Question
       </div>
       {isEditing && (
         <MdDragIndicator
-          size={20}
-          className="cursor-grab justify-end"
+          size={23}
+          className="cursor-grab justify-end text-gray-500"
           {...listeners} // Appliquer les events de drag SEULEMENT ici
           {...attributes}
         />
