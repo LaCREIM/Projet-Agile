@@ -81,8 +81,12 @@ public void deleteById(Long id) {
         return enseignantRepository.findByNomAndPrenom(nom, prenom);
     }
 
-    public Optional<Enseignant> findByEmail(String emailUbo) {
+    public Optional<Enseignant> findByEmailUbo(String emailUbo) {
         return enseignantRepository.findByEmailUbo(emailUbo).stream().findFirst();
+    }
+
+    public Optional<Enseignant> findByEmailPerso(String emailPerso) {
+        return enseignantRepository.findByEmailPerso(emailPerso).stream().findFirst();
     }
 
     public List<Enseignant> getEnseignant() {

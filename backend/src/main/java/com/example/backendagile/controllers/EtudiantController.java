@@ -64,7 +64,7 @@ public class EtudiantController {
             Etudiant existingEtudiant1 = etudiantRepository.findByNoEtudiant(etudiantDTO.getNoEtudiant());
             if (existingEtudiant1!=null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Le numero etudiant existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+                        .body("Le numéro d'étudiant existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
 
             // Check if an Etudiant with the same email already exists

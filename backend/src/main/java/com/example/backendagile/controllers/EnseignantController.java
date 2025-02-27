@@ -77,13 +77,19 @@ public class EnseignantController {
      */
     @PostMapping
     @Transactional
-    public ResponseEntity<Enseignant> createEnseignant(@Valid @RequestBody EnseignantDTO enseignantDTO) {
+    public ResponseEntity<String> createEnseignant(@Valid @RequestBody EnseignantDTO enseignantDTO) {
         try {
-            // Check if an Enseignant with the same email already exists
-            Optional<Enseignant> existingEnseignant = enseignantService.findByEmail(enseignantDTO.getEmailUbo());
+            // Check if an Enseignant with the same emailUBO already exists
+            Optional<Enseignant> existingEnseignant = enseignantService.findByEmailUbo(enseignantDTO.getEmailUbo());
             if (existingEnseignant.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(null); // Return 409 Conflict if the Enseignant already exists
+                        .body("L'email UBO existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Enseignant already exists
+            }
+            // Check if an Enseignant with the same email Personel already exists
+            Optional<Enseignant> existingEnseignant2 = enseignantService.findByEmailPerso(enseignantDTO.getEmailPerso());
+            if (existingEnseignant2.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("L'email Personnel existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Enseignant already exists
             }
             Enseignant enseignant = enseignantMapper.toEntity(enseignantDTO);
             Enseignant savedEnseignant = enseignantService.save(enseignant);
@@ -99,7 +105,7 @@ public class EnseignantController {
                     enseignant,
                     null
             );
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedEnseignant);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Enseignant créé avec succès.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
