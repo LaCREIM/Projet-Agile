@@ -18,7 +18,7 @@ interface AddStudentProps {
 const AddEtudiant = ({promotions}: AddStudentProps) => {
     const dispatch = useAppDispatch();
     const formations = useAppSelector(getFormations);
-    console.log(promotions);
+    // // console.log(promotions);
     
 
     const [student, setStudent] = useState<Etudiant>({
