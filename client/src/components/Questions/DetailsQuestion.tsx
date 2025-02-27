@@ -16,10 +16,7 @@ const DetailsQuestion = ({ question }: QuestionDetailsProps) => {
         </div>
         <div className="flex-grow overflow-auto">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 sm:col-gap-6 xl:grid-cols-2">
-            <div className="text-base font-medium text-gray-900">
-              <dt>Type :</dt>
-              <dd className="mt-1 text-gray-500">{question.type}</dd>
-            </div>
+            
             <div className="text-base font-medium text-gray-900">
               <dt>Intitulé :</dt>
               <dd className="mt-1 text-gray-500">{question.intitule}</dd>

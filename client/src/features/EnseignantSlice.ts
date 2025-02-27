@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosConfig';
-import { Enseignant } from "../types/types";
-import { RootState } from "../api/store";
+import {Enseignant} from "../types/types";
+import {RootState} from "../api/store";
 
-
+interface EnseignantResponse {
+    enseignants: Enseignant[];
+    totalPages: number;
+}
 
 interface EnseignantState {
     enseignants: Enseignant[];
     allEnseignants: Enseignant[];
-
+    totalPages: number;
     loading: boolean;
     error: string | null;
 }
@@ -17,21 +20,22 @@ interface EnseignantState {
 const initialState: EnseignantState = {
     enseignants: [],
     allEnseignants: [],
+    totalPages: 1,
     loading: false,
     error: null,
 };
 
 // Actions asynchrones
 export const getEnseignantAsync = createAsyncThunk<
-    Enseignant[],
+    EnseignantResponse,
     { page: number; size: number },
     { rejectValue: string }
 >(
     "enseignants/getEnseignantAsync",
-    async ({ page, size }, { rejectWithValue }) => {
+    async ({page, size}, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<Enseignant[]>(`/enseignants`, {
-                params: { page, size },
+            const response = await axiosInstance.get<EnseignantResponse>(`/enseignants/paged`, {
+                params: {page, size},
             });
 
             return response.data;
@@ -47,7 +51,7 @@ export const getAllEnseignantAsync = createAsyncThunk<
     { rejectValue: string }
 >(
     "enseignants/getAllEnseignantAsync",
-    async (_, { rejectWithValue }) => {
+    async (_, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<Enseignant[]>(`/enseignants`);
             return response.data;
@@ -61,7 +65,7 @@ export const getAllEnseignantAsync = createAsyncThunk<
 
 export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
     "enseignants/createEnseignantAsync",
-    async (enseignant, { rejectWithValue }) => {
+    async (enseignant, {rejectWithValue}) => {
         try {
             console.log("Adding professor:", enseignant);
             const response = await axiosInstance.post('/enseignants', enseignant);
@@ -75,7 +79,7 @@ export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { re
 
 export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
     "enseignants/editEnseignantAsync",
-    async (enseignant, { rejectWithValue }) => {
+    async (enseignant, {rejectWithValue}) => {
         try {
             console.log("Updating enseignant:", enseignant);
 
@@ -108,10 +112,10 @@ export const deleteEnseignantAsync = createAsyncThunk<
       return enseignant.id; // Retourner l'ID supprimé pour mise à jour du state
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la suppression.");
+
     }
   }
 );
-
 
 
 const enseignantSlice = createSlice({
@@ -120,9 +124,10 @@ const enseignantSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
+            .addCase(getEnseignantAsync.fulfilled, (state, action: PayloadAction<EnseignantResponse>) => {
                 state.loading = false;
-                state.enseignants = action.payload;
+                state.enseignants = action.payload.enseignants;
+                state.totalPages = action.payload.totalPages;
             })
             .addCase(getAllEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
                 state.loading = false;
@@ -136,6 +141,7 @@ const enseignantSlice = createSlice({
 
 
 export const getEnseignants = (state: RootState) => state.enseignants.enseignants;
+export const getTotalePages = (state: RootState) => state.enseignants.totalPages;
 export const getAllEnseignant = (state: RootState) => state.enseignants.allEnseignants;
 
 export default enseignantSlice.reducer;

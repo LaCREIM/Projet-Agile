@@ -1,16 +1,20 @@
 package com.example.backendagile.services;
 
 import com.example.backendagile.dto.EtudiantDTO;
+//import com.example.backendagile.entities.Authentification;
 import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.entities.PromotionId;
 import com.example.backendagile.mapper.EtudiantMapper;
+import com.example.backendagile.repositories.AuthentificationRepository;
 import com.example.backendagile.repositories.EtudiantRepository;
 import com.example.backendagile.repositories.PromotionRepository;
-import jakarta.validation.constraints.NotBlank;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+//import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +30,8 @@ public class EtudiantService {
 
     @Autowired
     private EtudiantMapper etudiantMapper;
+    @Autowired
+    private AuthentificationRepository authentificationRepository;
 
     /**
      * Récupérer une liste paginée d'étudiants
@@ -97,9 +103,22 @@ public class EtudiantService {
     /**
      * Supprimer un étudiant par son ID
      */
-    public void deleteById(String id) {
+@Transactional
+public void deleteById(String id) {
+    Optional<Etudiant> etudiantOpt = etudiantRepository.findById(id);
+
+    if (etudiantOpt.isPresent()) {
+        Etudiant etudiant = etudiantOpt.get();
+
+        etudiant.setPromotion(null);
+        etudiantRepository.save(etudiant); 
+
+        authentificationRepository.deleteByEtudiant(etudiant);
         etudiantRepository.deleteById(id);
+    } else {
+        throw new EntityNotFoundException("L'étudiant avec l'ID " + id + " n'existe pas.");
     }
+}
 
     /**
      * Récupérer les étudiants par promotion
@@ -117,5 +136,9 @@ public class EtudiantService {
 
     public Optional<Etudiant> findByEmail(String emailUbo) {
         return etudiantRepository.findByEmail(emailUbo).stream().findFirst();
+    }
+
+    public Object getTotalPages(int size) {
+        return Math.ceil((double) etudiantRepository.count() / size);
     }
 }

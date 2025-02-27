@@ -43,6 +43,7 @@ const StudentHome = ({
     document.title = "UBO | Étudiants";
     const dispatch = useAppDispatch();
     const etudiants = useAppSelector(getEtudiants);
+    const totalPages = useAppSelector((state) => state.etudiants.totalPages);
     const promotions = useAppSelector(getPromotions);
     const [search, setSearch] = useState<string>("");
 
@@ -63,19 +64,21 @@ const StudentHome = ({
         codeFormation: "",
     } as PromotionDetails);
 
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
     const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
     const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
     useEffect(() => {
         dispatch(getPromotionAsync());
         if (etudiants.length === 0) {
-            dispatch(getEtudiantAsync());
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         }
         if (
             pro.anneeUniversitaire === "-1" &&
             promotionDetails.anneeUniversitaire === "-1"
         ) {
-            dispatch(getEtudiantAsync());
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         } else if (pro.anneeUniversitaire !== "-1" && pro.codeFormation !== "") {
             dispatch(getEtudiantByPromotionAsync(pro as PromotionDetails));
         } else if (
@@ -86,7 +89,7 @@ const StudentHome = ({
                 getEtudiantByPromotionAsync(promotionDetails as PromotionDetails)
             );
         }
-    }, [dispatch, pro, promotionDetails]);
+    }, [currentPage, dispatch, pro, promotionDetails]);
 
     useEffect(() => {
         if (
@@ -106,6 +109,20 @@ const StudentHome = ({
         }
     }, [modal, modalUpdate]);
 
+    useEffect(() => {
+        if (
+            promotionDetails.anneePro == "-1" &&
+            promotionDetails.codeFormation == ""
+        ) {
+            dispatch(getEtudiantAsync({page: currentPage, size: 10}));
+        }
+        else {
+            // disable pagination for promotion
+            dispatch(getEtudiantByPromotionAsync(promotionDetails));
+        }
+
+    }, [dispatch, currentPage, promotionDetails.anneePro, promotionDetails.codeFormation]);
+
     const openModal = (name: string) => {
         const dialog = document.getElementById(name) as HTMLDialogElement;
         if (dialog) dialog.showModal();
@@ -122,7 +139,7 @@ const StudentHome = ({
     const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
         e.stopPropagation();
         const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-        dispatch(getEtudiantAsync());
+        dispatch(getEtudiantAsync({page: currentPage, size: 10}));
         if (
             response?.payload ===
             "Can not delete this student because it's related to an internship"
@@ -191,6 +208,10 @@ const StudentHome = ({
                     (etu.prenom?.toLowerCase().includes(value) ?? false)
             )
         );
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
     };
 
     return (
@@ -312,13 +333,7 @@ const StudentHome = ({
                         </tr>
                         </thead>
                         <tbody>
-                        {etudiants.length === 0 ? (
-                            <tr>
-                                <td colSpan={11} className="text-center w-full">
-                                    <span className="loading loading-dots loading-lg"></span>
-                                </td>
-                            </tr>
-                        ) : filteredEtudiants.length === 0 ? (
+                        {etudiants.length === 0 || filteredEtudiants.length === 0 ? (
                             <tr>
                                 <td
                                     colSpan={11}
@@ -388,6 +403,25 @@ const StudentHome = ({
                         )}
                         </tbody>
                     </motion.table>
+                </div>
+                <div className="flex justify-center mt-4">
+                    <button
+                        className="btn"
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                        Precedent
+                    </button>
+                    <span className="mx-2">
+                        Page {currentPage} sur {totalPages}
+                    </span>
+                    <button
+                        className="btn"
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                        Suivant
+                    </button>
                 </div>
             </motion.div>
             <dialog id="addStudent" className="modal">

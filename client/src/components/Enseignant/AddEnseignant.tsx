@@ -40,6 +40,7 @@ const AddEnseignant = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
+
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
     }
@@ -245,14 +246,18 @@ const AddEnseignant = () => {
           </div>
 
           <div className="modal-action">
+            <form action="">
+
+
             <button className="btn">Annuler</button>
             <button
               type="submit"
               className="btn btn-neutral disabled:cursor-not-allowed"
               disabled={!canSave}
-            >
+              >
               Ajouter
             </button>{" "}
+              </form>
           </div>
         </form>
       </div>

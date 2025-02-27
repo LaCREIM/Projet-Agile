@@ -1,22 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Rubrique } from "../types/types";
+import { Question, Rubrique } from "../types/types";
+import { RootState } from "../api/store";
+import { RequestQuestionOrderDetails } from "../components/Rubriques/DetailsRubriques";
+
+export interface QuestionStdDTO {
+  idQualificatif: number;
+  intitule: string;
+  maxQualificatif: string;
+  minQualificatif: string;
+}
+
+export interface RubriqueQuestion {
+  id: number;
+  idRubrique: number;
+  designationRubrique: string;
+  idQuestion: number;
+  questionStdDTO: QuestionStdDTO;
+  ordre: number;
+}
 
 interface RubriqueState {
   rubriques: Rubrique[];
+  questions: Question[];
+  rubriqueQuestions: RubriqueQuestion[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: RubriqueState = {
   rubriques: [],
+  questions: [],
+  rubriqueQuestions: [],
   loading: false,
   error: null,
 };
 
-// **Thunk: Récupérer toutes les rubriques**
-export const fetchRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValue: string }>(
+export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValue: string }>(
   "rubriques/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
@@ -28,7 +49,21 @@ export const fetchRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectVa
   }
 );
 
-// **Thunk: Créer une rubrique**
+export const getQuestionsStandardAsync = createAsyncThunk<RubriqueQuestion[], number, { rejectValue: any }>(
+  "standard/getQuestionsStandardAsync",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/rubrique-questions/standard/${id}`);
+      console.log(response);
+      if(response.data.length > 0) return response.data;
+      return []
+    } catch (error: any) {
+      // return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions de la rubrique"+id);
+      return rejectWithValue([] as RubriqueQuestion[]);
+    }
+  }
+);
+
 export const createRubriqueAsync = createAsyncThunk<Rubrique, { designation: string }, { rejectValue: string }>(
   "rubriques/create",
   async (rubriqueData, { rejectWithValue }) => {
@@ -41,7 +76,6 @@ export const createRubriqueAsync = createAsyncThunk<Rubrique, { designation: str
   }
 );
 
-// **Thunk: Mettre à jour une rubrique**
 export const updateRubriqueAsync = createAsyncThunk<
   Rubrique,
   { id: number; designation: string },
@@ -58,13 +92,49 @@ export const updateRubriqueAsync = createAsyncThunk<
   }
 );
 
-// **Thunk: Supprimer une rubrique**
+export const updateRubriqueQuestionsAsync = createAsyncThunk<
+  any,
+  RequestQuestionOrderDetails[],
+  { rejectValue: string }
+>(
+  "rubriques-questions/update",
+  async (dataTable, { rejectWithValue }) => {
+    try {
+      console.log("from slice",dataTable);
+      
+      const response = await axiosInstance.post(`/rubrique-questions/standard/save-update`, dataTable);
+      console.log(response);
+      
+      return response.data;
+    } catch (error: any) {  
+      return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
+    }
+  }
+);
+
+export const deleteRubriqueQuestionsAsync = createAsyncThunk<
+  any,
+  { idRubrique: number, idQuestion: number },
+  { rejectValue: string }
+>(
+  "rubriques-questions/delete",
+  async ({idQuestion, idRubrique}, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(`/rubrique-questions/standard/${idRubrique}/${idQuestion}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
+    }
+  }
+);
+
 export const deleteRubriqueAsync = createAsyncThunk<number, number, { rejectValue: string }>(
   "rubriques/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/rubriquesStd/${id}`);
-      return id;
+      const response =await axiosInstance.delete(`/rubriquesStd/${id}`);
+       console.log(response.data);
+       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la suppression de la rubrique");
     }
@@ -74,20 +144,31 @@ export const deleteRubriqueAsync = createAsyncThunk<number, number, { rejectValu
 const rubriqueSlice = createSlice({
   name: "rubriques",
   initialState,
-  reducers: {},
+  reducers: {
+    setQuestions: (state, action) => {
+      state.questions = action.payload; // Met à jour directement la liste des questions
+    },
+  },
   extraReducers: (builder) => {
     // **Récupérer toutes les rubriques**
-    builder.addCase(fetchRubriquesAsync.pending, (state) => {
+    builder.addCase(getRubriquesAsync.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(fetchRubriquesAsync.fulfilled, (state, action: PayloadAction<Rubrique[]>) => {
+    builder.addCase(getRubriquesAsync.fulfilled, (state, action: PayloadAction<Rubrique[]>) => {
       state.rubriques = action.payload;
       state.loading = false;
     });
-    builder.addCase(fetchRubriquesAsync.rejected, (state, action) => {
+    builder.addCase(getRubriquesAsync.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    });
+
+    builder.addCase(getQuestionsStandardAsync.fulfilled, (state, action: PayloadAction<RubriqueQuestion[]>) => {
+      state.rubriqueQuestions = action.payload;
+    })
+    .addCase(getQuestionsStandardAsync.rejected, (state) => {
+      state.questions = []; // Vide les questions en cas d'échec
     });
 
     // **Créer une rubrique**
@@ -118,5 +199,9 @@ const rubriqueSlice = createSlice({
     });
   },
 });
+
+export const getRubriques = (state : RootState) => state.rubriques.rubriques;
+export const getQuestionsRubrique = (state : RootState) => state.rubriques.rubriqueQuestions;
+export const { setQuestions } = rubriqueSlice.actions;
 
 export default rubriqueSlice.reducer;

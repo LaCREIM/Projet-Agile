@@ -3,6 +3,7 @@ package com.example.backendagile.repositories;
 
 import com.example.backendagile.entities.Authentification;
 import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.entities.Etudiant;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,6 +18,9 @@ public interface AuthentificationRepository extends JpaRepository<Authentificati
 @Modifying
 @Query("DELETE FROM Authentification a WHERE a.noEnseignant = :enseignant")
 void deleteByEnseignant(@Param("enseignant") Enseignant enseignant);
+@Modifying
+@Query("DELETE FROM Authentification a WHERE a.noEtudiant = :etudiant")
+void deleteByEtudiant(@Param("etudiant") Etudiant etudiant);
 
 
 }

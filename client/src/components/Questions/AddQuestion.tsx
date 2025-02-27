@@ -54,8 +54,8 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+    console.log(e);
+    
     if (canSave) {
       await dispatch(createQuestionAsync(question));
       setQuestion({

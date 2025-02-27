@@ -127,6 +127,7 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
             <form method="dialog" className="flex flex-row gap-5">
               <button type="button" className="btn">Annuler</button>
               <button onClick={handleSubmit} className="btn btn-neutral" disabled={!canSave}>Mettre à jour</button>
+
             </form>
           </div>
         </form>

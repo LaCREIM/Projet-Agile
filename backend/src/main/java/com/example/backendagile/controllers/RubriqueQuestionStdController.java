@@ -25,7 +25,7 @@ public class RubriqueQuestionStdController {
 public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
     try {
         List<RubriqueQuestionStdDTO> questions = rubriqueQuestionStdService.getQuestionsByRubrique(idRubrique);
-        return ResponseEntity.ok(questions); // Retourne [] si la liste est vide
+        return ResponseEntity.ok(questions); 
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Collections.singletonMap("error", "Une erreur est survenue."));

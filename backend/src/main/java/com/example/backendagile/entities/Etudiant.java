@@ -21,7 +21,7 @@ public class Etudiant {
     private String noEtudiant;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumns({
         @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
         @JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE")

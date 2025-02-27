@@ -48,20 +48,16 @@ const QualificatifHome = () => {
     e.stopPropagation();
     try {
       const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
+      console.log(response);
+      
 
-      if (response?.payload === "not deleted") {
-        toast.error("Ce qualificatif ne peut pas être supprimé.");
-      } else if (response?.payload === "deleted") {
+      if (response?.type === "qualificatifs/delete/rejected") {
+        toast.error(
+          "Ce qualificatif ne peut pas être supprimé, car il est deja utilisé."
+        );
+      } else if (response?.type === "qualificatifs/delete/fulfilled") {
+        dispatch(fetchQualificatifsAsync());
         toast.success("Qualificatif supprimé avec succès.");
-        const refreshResponse = await dispatch(fetchQualificatifsAsync());
-        if (refreshResponse?.payload) {
-          console.log(
-            "Liste des qualificatifs rafraîchie :",
-            refreshResponse.payload
-          );
-        } else {
-          console.warn("Échec du rafraîchissement.");
-        }
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
@@ -149,8 +145,8 @@ const QualificatifHome = () => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Maximal</th>
                 <th>Minimal</th>
+                <th>Maximal</th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
@@ -190,7 +186,6 @@ const QualificatifHome = () => {
                           />
                         )}
                       </td>
-
                       <td className="px-4 py-2">
                         {updatingIndex !== index ? (
                           <span>{qualificatif.maximal}</span>
@@ -208,7 +203,6 @@ const QualificatifHome = () => {
                           />
                         )}
                       </td>
-
                       <td className="px-4 py-2 flex gap-3 justify-center items-center">
                         {updatingIndex === index ? (
                           <>

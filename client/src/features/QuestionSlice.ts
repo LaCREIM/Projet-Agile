@@ -15,7 +15,6 @@ const initialState: QuestionState = {
   error: null,
 };
 
-// **Thunk: Récupération de toutes les questions**
 export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectValue: string }>(
   "questions/fetchAll",
   async (_, { rejectWithValue }) => {
@@ -28,7 +27,7 @@ export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectVa
   }
 );
 
-// **Thunk: Création d'une question**
+
 export const createQuestionAsync = createAsyncThunk<Question, Question, { rejectValue: string }>(
   "questions/create",
   async (question, { rejectWithValue }) => {
