@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-
 import {
   deletePromotionAsync,
   getPromotionAsync,
@@ -32,7 +31,7 @@ import {
 } from "../../features/EnseignantSlice";
 import { FaSearch } from "react-icons/fa";
 import { diplomeMapper } from "../../mappers/mappers";
-import { MdAddCircleOutline } from "react-icons/md";
+import { IoMdAdd } from "react-icons/io";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
@@ -45,6 +44,9 @@ const PromotionHome = () => {
   );
   const [showStudents, setShowStudent] = useState<boolean>(false);
   const [filteredPromotions, setFilteredPromotions] = useState<Promotion[]>([]);
+  const [sortField, setSortField] = useState<string>("codeFormation");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
+
 
   const MotionVariant = {
     initial: {
@@ -172,6 +174,19 @@ const PromotionHome = () => {
     }
   };
 
+  const handleSortChange = (field: string) => {
+    const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(order);
+    const sortedPromotions = [...filteredPromotions].sort((a, b) => {
+      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+    setFilteredPromotions(sortedPromotions);
+  };
+
+
   return (
     <>
       <ToastContainer theme="colored" />
@@ -204,7 +219,7 @@ const PromotionHome = () => {
                 className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                 onClick={() => openModal("addPromotion")}
               >
-                <MdAddCircleOutline />
+                <IoMdAdd />
               </button>
             </div>
           </div>
@@ -217,12 +232,24 @@ const PromotionHome = () => {
             >
               <thead>
                 <tr>
-                  <th>Code</th>
-                  <th>Promotion</th>
-                  <th>Diplome</th>
-                  <th>Formation</th>
-                  <th>Responsable</th>
-                  <th>Email</th>
+                  <th onClick={() => handleSortChange("codeFormation")}>
+                    Code {sortField === "codeFormation" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("anneeUniversitaire")}>
+                    Promotion {sortField === "anneeUniversitaire" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("diplome")}>
+                    Diplome {sortField === "diplome" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("nomFormation")}>
+                    Formation {sortField === "nomFormation" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("nom")}>
+                    Responsable {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("emailEnseignant")}>
+                    Email {sortField === "emailEnseignant" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
                   <th className="text-center">Actions</th>
                 </tr>
               </thead>
@@ -270,10 +297,7 @@ const PromotionHome = () => {
                           className="flex flex-row gap-3 justify-center items-center"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div
-                            className="tooltip"
-                            data-tip="Voir les étudiants"
-                          >
+                          <div className="tooltip" data-tip="Voir les étudiants">
                             <FontAwesomeIcon
                               icon={faGraduationCap}
                               className="text-black text-base cursor-pointer"
