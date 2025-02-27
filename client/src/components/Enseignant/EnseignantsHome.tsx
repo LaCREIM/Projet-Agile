@@ -80,7 +80,7 @@ const EnseignantsHome = () => {
             dispatch(getEnseignantAsync({page: currentPage, size: 10}));
 
         } else {
-            toast.error("Cet enseignant ne peut pas être supprimé.");
+            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
         }
     };
     
