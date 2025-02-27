@@ -297,54 +297,57 @@ const PromotionHome = () => {
                           className="flex flex-row gap-3 justify-center items-center"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="tooltip" data-tip="Voir les étudiants">
-                            <FontAwesomeIcon
-                              icon={faGraduationCap}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() =>
-                                switchToStudent(
-                                  promotion.anneeUniversitaire,
-                                  promotion.codeFormation
-                                )
-                              }
-                            />
-                          </div>
-                          <FontAwesomeIcon
-                            icon={faEye}
-                            className="text-black text-base cursor-pointer"
-                            onClick={() => {
-                              handleClick({} as Promotion, index);
-                              handleClickUpdate({} as Promotion, index);
-                              handleClick(promotion, index);
-                              openModal(
-                                `detailsPromotion-${
-                                  (promotion.anneeUniversitaire,
-                                  promotion.siglePromotion)
-                                }`
-                              );
-                            }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="text-black text-base cursor-pointer"
-                            onClick={() => {
-                              handleClick({} as Promotion, index);
-                              handleClickUpdate({} as Promotion, index);
-                              handleClickUpdate(promotion, index);
-                              openModal(
-                                `updatePromotion-${
-                                  (promotion.anneeUniversitaire,
-                                  promotion.siglePromotion)
-                                }`
-                              );
-                            }}
-                          />
+                         <div className="tooltip" data-tip="Voir les étudiants">
+                        <FontAwesomeIcon
+                          icon={faGraduationCap}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() =>
+                            switchToStudent(
+                              promotion.anneeUniversitaire,
+                              promotion.codeFormation
+                            )
+                          }
+                        />
+                      </div>
 
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            className="text-black text-base cursor-pointer"
-                            onClick={(e) => handleDelete(promotion, e)}
-                          />
+                      <div className="tooltip" data-tip="Voir les détails">
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClick({} as Promotion, index);
+                            handleClickUpdate({} as Promotion, index);
+                            handleClick(promotion, index);
+                            openModal(
+                              `detailsPromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="tooltip" data-tip="Modifier ">
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClick({} as Promotion, index);
+                            handleClickUpdate({} as Promotion, index);
+                            handleClickUpdate(promotion, index);
+                            openModal(
+                              `updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="tooltip tooltip-left" data-tip="Supprimer">
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-black text-base cursor-pointer"
+                          onClick={(e) => handleDelete(promotion, e)}
+                        />
+                      </div>
+
                         </td>
                         <dialog
                           id={`updatePromotion-${
