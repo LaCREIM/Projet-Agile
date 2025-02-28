@@ -62,7 +62,7 @@ public class EtudiantController {
         try {
             // Check if an Etudiant with the same Id already exists
             Optional<Etudiant> existingEtudiant1 = etudiantRepository.findByNoEtudiant(etudiantDTO.getNoEtudiant().trim()).stream().findFirst();
-            if (existingEtudiant1!=null) {
+            if (existingEtudiant1.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Le numéro d'étudiant existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
@@ -71,7 +71,14 @@ public class EtudiantController {
             Optional<Etudiant> existingEtudiant = etudiantService.findByEmail(etudiantDTO.getEmail().trim());
             if (existingEtudiant.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+                        .body("L'email Personnel existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+            }
+
+            // Check if an Etudiant with the same email already exists
+            Optional<Etudiant> existingEtudiant2 = etudiantService.findByEmail(etudiantDTO.getEmailUbo().trim());
+            if (existingEtudiant2.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("L'email UBO existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
 
             EtudiantDTO savedEtudiant = etudiantService.save(etudiantDTO); // Save the Etudiant entity first
