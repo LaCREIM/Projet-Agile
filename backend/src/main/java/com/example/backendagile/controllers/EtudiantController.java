@@ -122,11 +122,12 @@ public class EtudiantController {
         return ResponseEntity.ok("Étudiant supprimé avec succès.");
     }
 
+    
     @GetMapping("/search")
-    public ResponseEntity<List<Etudiant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
-        List<Etudiant> result = etudiantService.getByNomAndPrenom(nom, prenom);
-        return ResponseEntity.ok(result);
-    }
+public ResponseEntity<List<Etudiant>> searchEtudiants(@RequestParam String keyword) {
+    List<Etudiant> result = etudiantService.searchEtudiants(keyword);
+    return ResponseEntity.ok(result);
+}
 
 }
 
