@@ -27,6 +27,17 @@ List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") Stri
     List<Etudiant> findByNomAndPrenom(String nom, String prenom);
 
     List<Etudiant> findByEmail(@NotBlank String email);
+    
+    @Query("SELECT e FROM Etudiant e " +
+       "WHERE LOWER(e.nom) LIKE %:keyword% " +
+       "OR LOWER(e.prenom) LIKE %:keyword% " +
+       "OR LOWER(e.nationalite) LIKE %:keyword% " +
+       "OR LOWER(e.email) LIKE %:keyword% " +
+       "OR LOWER(e.promotion.id.anneeUniversitaire) LIKE %:keyword% " +
+       "OR LOWER(e.promotion.id.codeFormation) LIKE %:keyword% " +
+       "OR LOWER(e.universiteOrigine) LIKE %:keyword%")
+List<Etudiant> searchEtudiants(@Param("keyword") String keyword);
+
 
     Etudiant findByNoEtudiant(String noEtudiant);
 }
