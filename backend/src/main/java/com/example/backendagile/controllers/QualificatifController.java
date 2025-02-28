@@ -51,7 +51,7 @@ public class QualificatifController {
         try{
             Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(qualificatifDTO.getMinimal().trim(), qualificatifDTO.getMaximal().trim());
             if(existingQualificatif.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("La Qualificatif existe déjà.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Le qualificatif existe déjà.");
             }
 
             Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
@@ -72,10 +72,21 @@ public class QualificatifController {
         if (!qualificatifService.findById(id).isPresent()) {
             return ResponseEntity.status(404).body("Aucun qualificatif trouvé avec cet ID.");
         }
-        Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
-        qualificatif.setId(id);
-        qualificatifService.save(qualificatif);
-        return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
+
+        try{
+            Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(qualificatifDTO.getMinimal().trim(), qualificatifDTO.getMaximal().trim());
+            if(existingQualificatif.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Le qualificatif existe déjà.");
+            }
+            Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
+            qualificatif.setId(id);
+            qualificatifService.save(qualificatif);
+            return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     /**

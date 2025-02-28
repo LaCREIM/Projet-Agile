@@ -102,6 +102,13 @@ public class EtudiantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Étudiant non trouvé avec cet ID.");
         }
         try {
+
+            // Check if an Etudiant with the same email already exists
+            Optional<Etudiant> existingEtudiant = etudiantService.findByEmailandId(etudiantDTO.getEmail().trim(), etudiantDTO.getNoEtudiant().trim());
+            if (existingEtudiant.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+            }
              etudiantService.update(id, etudiantDTO);
             return ResponseEntity.ok("Étudiant mis à jour avec succès.");
         } catch (RuntimeException e) {
