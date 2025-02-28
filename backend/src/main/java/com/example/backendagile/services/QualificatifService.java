@@ -37,4 +37,8 @@ public class QualificatifService {
     public Boolean existsDansQuestion(Long id) {
         return questionRepository.existsByQualificatifId(id);
     }
+
+    public Optional<Qualificatif> findByMinimalAndMaximal(String minimal, String maximal) {
+        return Optional.ofNullable(qualificatifRepository.findByDesignation(minimal, maximal));
+    }
 }

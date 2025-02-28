@@ -141,4 +141,8 @@ public void deleteById(String id) {
     public Object getTotalPages(int size) {
         return Math.ceil((double) etudiantRepository.count() / size);
     }
+
+    public List<Etudiant> searchEtudiants(String keyword) {
+        return etudiantRepository.searchEtudiants(keyword.toLowerCase());
+    }
 }

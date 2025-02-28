@@ -4,6 +4,7 @@ import com.example.backendagile.dto.EtudiantDTO;
 import com.example.backendagile.entities.Etudiant;
 import com.example.backendagile.entities.Role;
 import com.example.backendagile.mapper.EtudiantMapper;
+import com.example.backendagile.repositories.EtudiantRepository;
 import com.example.backendagile.services.AuthentificationService;
 import com.example.backendagile.services.EtudiantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class EtudiantController {
     private AuthentificationService authentificationService;
     @Autowired
     private EtudiantMapper etudiantMapper;
+    @Autowired
+    private EtudiantRepository etudiantRepository;
 
     /**
      * Récupérer une liste paginée d'étudiants
@@ -55,13 +58,20 @@ public class EtudiantController {
      * Créer un nouvel étudiant (avec sa promotion)
      */
     @PostMapping
-    public ResponseEntity<EtudiantDTO> createEtudiant(@Valid @RequestBody EtudiantDTO etudiantDTO) {
+    public ResponseEntity<String> createEtudiant(@Valid @RequestBody EtudiantDTO etudiantDTO) {
         try {
+            // Check if an Etudiant with the same Id already exists
+            Optional<Etudiant> existingEtudiant1 = etudiantRepository.findByNoEtudiant(etudiantDTO.getNoEtudiant().trim()).stream().findFirst();
+            if (existingEtudiant1!=null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Le numéro d'étudiant existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+            }
+
             // Check if an Etudiant with the same email already exists
-            Optional<Etudiant> existingEtudiant = etudiantService.findByEmail(etudiantDTO.getEmail());
+            Optional<Etudiant> existingEtudiant = etudiantService.findByEmail(etudiantDTO.getEmail().trim());
             if (existingEtudiant.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(null); // Return 409 Conflict if the Etudiant already exists
+                        .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
 
             EtudiantDTO savedEtudiant = etudiantService.save(etudiantDTO); // Save the Etudiant entity first
@@ -77,7 +87,7 @@ public class EtudiantController {
                     null,
                     etudiantMapper.toEntity(savedEtudiant, null)
             );
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedEtudiant);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Étudiant créé avec succès.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -122,11 +132,12 @@ public class EtudiantController {
         return ResponseEntity.ok("Étudiant supprimé avec succès.");
     }
 
+    
     @GetMapping("/search")
-    public ResponseEntity<List<Etudiant>> getByNomAndPrenom(@RequestParam String nom, @RequestParam String prenom) {
-        List<Etudiant> result = etudiantService.getByNomAndPrenom(nom, prenom);
-        return ResponseEntity.ok(result);
-    }
+public ResponseEntity<List<Etudiant>> searchEtudiants(@RequestParam String keyword) {
+    List<Etudiant> result = etudiantService.searchEtudiants(keyword);
+    return ResponseEntity.ok(result);
+}
 
 }
 

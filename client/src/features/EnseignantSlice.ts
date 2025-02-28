@@ -97,21 +97,24 @@ export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectVa
 );
 
 
-export const deleteEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
-    "enseignants/deleteEnseignantAsync",
-    async (enseignant, {rejectWithValue}) => {
-        try {
-            console.log("Deleting enseignant:", enseignant);
-            if (!enseignant.id) {
-                throw new Error("L'enseignant n'a pas d'ID valide.");
-            }
-            const response = await axiosInstance.delete(`/enseignants/${enseignant.id}`);
-            return response.data;
-        } catch (error: any) {
-            console.error("Error deleting enseignant:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while deleting the enseignant.");
-        }
+export const deleteEnseignantAsync = createAsyncThunk<
+  number, // Retourne l'ID supprimé
+  Enseignant,
+  { rejectValue: string }
+>(
+  "enseignants/deleteEnseignantAsync",
+  async (enseignant, { rejectWithValue }) => {
+    try {
+      if (!enseignant.id) {
+        throw new Error("L'enseignant n'a pas d'ID valide.");
+      }
+      await axiosInstance.delete(`/enseignants/${enseignant.id}`);
+      return enseignant.id; // Retourner l'ID supprimé pour mise à jour du state
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la suppression.");
+
     }
+  }
 );
 
 
@@ -130,9 +133,12 @@ const enseignantSlice = createSlice({
                 state.loading = false;
                 state.allEnseignants = action.payload;
             })
-
+            .addCase(deleteEnseignantAsync.fulfilled, (state, action: PayloadAction<number>) => {
+                state.enseignants = state.enseignants.filter(ens => ens.id !== action.payload);
+            });
     },
 });
+
 
 export const getEnseignants = (state: RootState) => state.enseignants.enseignants;
 export const getTotalePages = (state: RootState) => state.enseignants.totalPages;

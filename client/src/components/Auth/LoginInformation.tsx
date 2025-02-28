@@ -55,7 +55,7 @@ const LoginInformation = () => {
 
         console.log("User data:", userData);
 
-        navigate("/admin/home/etudiants");
+        navigate("/admin");
     };
 
     return (
@@ -67,7 +67,7 @@ const LoginInformation = () => {
                 type="text"
                 name="username"
                 value={info.username}
-                placeholder="Username"
+                placeholder="Nom d'utilisateur"
                 onChange={handleInputChange}
                 className="input input-bordered w-full focus:outline-none"
                 required
@@ -78,7 +78,7 @@ const LoginInformation = () => {
                 name="password"
                 value={info.password}
                 onChange={handleInputChange}
-                placeholder="Password"
+                placeholder="mot de Passe"
                 className="input input-bordered w-full focus:outline-none"
                 required
             />
@@ -88,7 +88,7 @@ const LoginInformation = () => {
                     onClick={handleSubmit}
                     className="px-4 py-2 hover:cursor-pointer disabled:cursor-not-allowed w-1/2 mt-[5%] text-center mx-auto rounded-md border border-black bg-white text-neutral-700 text-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                 >
-                    Login
+                    Connexion
                 </button>
             </div>
         </form>

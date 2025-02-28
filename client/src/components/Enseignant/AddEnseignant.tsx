@@ -4,9 +4,8 @@ import {
   getEnseignantAsync,
   postEnseignantAsync,
 } from "../../features/EnseignantSlice";
-import { Chercheur, Enseignant, Intervenant } from "../../types/types";
-import ChercheurInfo from "./ChercheurInfo";
-import IntervenantInfo from "./IntervenantInfo";
+import { Enseignant } from "../../types/types";
+import EnseignantInfo from "./EnseignantInfo";
 import { Eye, EyeOff } from "lucide-react";
 const AddEnseignant = () => {
   const dispatch = useAppDispatch();
@@ -24,62 +23,23 @@ const AddEnseignant = () => {
     telephone: "",  // Ajouté
     emailUbo: "",  // Correspondance avec l'interface
     emailPerso: "",  // Correspondance avec l'interface
-    intSocNom: "", // Ajouté pour Intervenant
-    intNoInsee: 0, // Ajouté pour Intervenant
-    intFonction: "", // Ajouté pour Intervenant
     password: "",  // Ajouté
     motPasse: "",  // Correspondance avec l'interface
 
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  const [chercheur, setChercheur] = useState<Chercheur>({
-    encUboEmail: "",
-    encUboTel: "",
-    encPersoEmail: "",
-  });
-
-  const [intervenant, setIntervenant] = useState<Intervenant>({
-    intFonction: "",
-    intNoInsee: 0,
-    intSocNom: "",
-  });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    setEnseignant((prev) => {
-      const updatedEnseignant = {
-        ...prev,
-        [name]: value,
-      };
-
-      // Correspondance explicite des valeurs pour Chercheur
-      if (updatedEnseignant.type.toUpperCase() === "ENC") {
-        setChercheur((prevChercheur) => ({
-          ...prevChercheur,
-          encUboEmail: updatedEnseignant.emailUbo,
-          encPersoEmail: updatedEnseignant.emailPerso,
-          encUboTel: updatedEnseignant.telephone,
-        }));
-      }
-
-      if (updatedEnseignant.type.toUpperCase() === "INT") {
-        setIntervenant((prevIntervenant) => ({
-          ...prevIntervenant,
-          intFonction: updatedEnseignant.intFonction || "",
-          intNoInsee: Number(updatedEnseignant.intNoInsee) || 0,
-          intSocNom: updatedEnseignant.intSocNom || "",
-        }));
-      }
-
-
-      console.log("Nouvel état de enseignant :", updatedEnseignant);
-      return updatedEnseignant;
-    });
-
-  }; 
-  const handleSubmit = async () => {
+  
+    setEnseignant((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // ⚠️ Empêcher le rechargement de la page
 
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
@@ -94,16 +54,13 @@ const AddEnseignant = () => {
       enseignant.codePostal &&
       enseignant.mobile &&
       enseignant.type &&
-      (enseignant.type === "ENC"
-        ? chercheur.encUboEmail && chercheur.encUboTel && chercheur.encPersoEmail
-        : intervenant.intFonction && intervenant.intNoInsee && intervenant.intSocNom)
-    ) {
-      const enseignantComplet =
-        enseignant.type === "ENC"
-          ? { ...enseignant, ...chercheur }
-          : { ...enseignant, ...intervenant };
+      enseignant.emailUbo && 
+      enseignant.telephone && 
+      enseignant.emailPerso
+            ) {
+   
 
-      await dispatch(postEnseignantAsync(enseignantComplet));
+      await dispatch(postEnseignantAsync(enseignant));
       dispatch(getEnseignantAsync({ page: 1, size: 10 }));
     } else {
       console.error("Tous les champs requis doivent être remplis.");
@@ -272,23 +229,19 @@ const AddEnseignant = () => {
                 <option disabled value="">
                   Sélectionnez un type
                 </option>
-                <option value="ENC">Chercheur</option>
-                <option value="INT">Intervenant</option>
+              <option value="MCF">Maître de Conférences</option>
+              <option value="INT">Intervenant-Exterieur</option>
+              <option value="PR">Professeur des Universités</option>
+              <option value="PRAST">Professionnel Associé</option>
+              <option value="PRAG">Professeur Agrégé</option>
               </select>
             </label>
 
-            {enseignant.type === "ENC" && (
-              <ChercheurInfo
+              <EnseignantInfo
                 setEnseignant={setEnseignant}
-                setChercheur={setChercheur}
               />
-            )}
-            {enseignant.type === "INT" && (
-              <IntervenantInfo
-                setEnseignant={setEnseignant}
-                setIntervenant={setIntervenant}
-              />
-            )}
+            
+
           </div>
 
           <div className="modal-action">

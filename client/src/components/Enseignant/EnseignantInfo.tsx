@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Chercheur, Enseignant } from "../../types/types";
 
-interface ChercheurInfoProps {
-  setChercheur: (c: Chercheur) => void;
+interface EnseignantInfoProps {
   setEnseignant: (e: (prevEnseignant: Enseignant) => Enseignant) => void;
 }
 
@@ -22,7 +21,7 @@ const FormVariant = {
   }),
 };
 
-const ChercheurInfo = ({ setChercheur, setEnseignant }: ChercheurInfoProps) => {
+const EnseignantInfo = ({ setEnseignant }: EnseignantInfoProps) => {
   const [chercheurInfo, setChercheurInfo] = useState<Chercheur>({
     encUboEmail: "",
     encUboTel: "",
@@ -31,25 +30,17 @@ const ChercheurInfo = ({ setChercheur, setEnseignant }: ChercheurInfoProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    // Mise à jour locale de l'état chercheur
-    setChercheurInfo((prev) => {
-      const updatedInfo = { ...prev, [name]: value };
-
-      // Mise à jour de l'état parent pour chercheur
-      setChercheur(updatedInfo);
-
-      // Synchronisation explicite avec l'objet enseignant
-      setEnseignant((prevEnseignant) => ({
-        ...prevEnseignant,
-        emailUbo: updatedInfo.encUboEmail,
-        emailPerso: updatedInfo.encPersoEmail,
-        telephone: updatedInfo.encUboTel,
-      }));
-
-      return updatedInfo;
-    });
+    setChercheurInfo((prev) => ({ ...prev, [name]: value }));
   };
+
+  useEffect(() => {
+    setEnseignant((prevEnseignant) => ({
+      ...prevEnseignant,
+      emailUbo: chercheurInfo.encUboEmail,
+      emailPerso: chercheurInfo.encPersoEmail,
+      telephone: chercheurInfo.encUboTel,
+    }));
+  }, [chercheurInfo, setEnseignant]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -107,4 +98,4 @@ const ChercheurInfo = ({ setChercheur, setEnseignant }: ChercheurInfoProps) => {
   );
 };
 
-export default ChercheurInfo;
+export default EnseignantInfo;

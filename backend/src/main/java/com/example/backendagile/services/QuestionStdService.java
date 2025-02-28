@@ -102,4 +102,8 @@ public class QuestionStdService {
     public List<Question> getStandardQuestionsPaged(int page, int size) {
         return questionRepository.findAllWithPagination(page, size);
     }
+
+    public Optional<Question> findByIntitule(String intitule) {
+        return questionRepository.findQuestionByIntitule(intitule).stream().findFirst();
+    }
 }
