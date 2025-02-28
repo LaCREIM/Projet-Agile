@@ -4,6 +4,7 @@ import com.example.backendagile.dto.PromotionDTO;
 import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +65,10 @@ public class PromotionController {
      * @return a {@link ResponseEntity} containing the created {@link Promotion}
      */
     @PostMapping
-    public ResponseEntity<Promotion> createPromotion(@RequestBody PromotionDTO promotion) {
+    public ResponseEntity<Promotion> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
+        if (promotion.getCodeFormation() == null || promotion.getCodeFormation().isEmpty()) {
+            throw new IllegalArgumentException("Code Formation cannot be null or empty");
+        }
         Promotion savedPromotion = promotionService.createPromotion(promotion);
         return ResponseEntity.ok(savedPromotion);
     }
