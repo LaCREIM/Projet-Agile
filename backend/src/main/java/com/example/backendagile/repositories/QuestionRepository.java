@@ -28,4 +28,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
     @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
     Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
 
+    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule")
+    List<Question> findQuestionByIntitule(String intitule);
 }

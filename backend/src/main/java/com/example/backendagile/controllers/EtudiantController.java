@@ -61,7 +61,7 @@ public class EtudiantController {
     public ResponseEntity<String> createEtudiant(@Valid @RequestBody EtudiantDTO etudiantDTO) {
         try {
             // Check if an Etudiant with the same Id already exists
-            Etudiant existingEtudiant1 = etudiantRepository.findByNoEtudiant(etudiantDTO.getNoEtudiant().trim());
+            Optional<Etudiant> existingEtudiant1 = etudiantRepository.findByNoEtudiant(etudiantDTO.getNoEtudiant().trim()).stream().findFirst();
             if (existingEtudiant1!=null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Le numéro d'étudiant existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
