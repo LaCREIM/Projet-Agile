@@ -38,4 +38,6 @@ List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") Stri
        "OR LOWER(e.universiteOrigine) LIKE %:keyword%")
 List<Etudiant> searchEtudiants(@Param("keyword") String keyword);
 
+
+    Etudiant findByNoEtudiant(String noEtudiant);
 }
