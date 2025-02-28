@@ -75,10 +75,6 @@ export const getEtudiantAsync = createAsyncThunk<EtudiantResponse, { page: numbe
     async ({page, size}, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<EtudiantResponse>(`/etudiants/paged?page=${page}&size=${size}`);
-            console.log("etudiant from", response
-
-            );
-
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -92,7 +88,6 @@ export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], Promotio
     async (promotionDetails, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<Etudiant[]>(`/etudiants/promotion/${promotionDetails.anneeUniversitaire}/${promotionDetails.codeFormation}`);
-            //console.log("etudiant from by", { promotionDetails, response});
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -106,7 +101,6 @@ export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectVa
     async (etudiant, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.post(`/etudiants`, etudiant);
-            //console.log(response);
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
@@ -154,8 +148,6 @@ const etudiantSlice = createSlice({
                 state.loading = false;
                 state.etudiants = action.payload.etudiants;
                 state.totalPages = action.payload.totalPages;
-                console.log("etudiant from builder", action.payload);
-                
             })
             .addCase(getDomainePaysAsync.fulfilled, (state, action: PayloadAction<Domaine_Pays[]>) => {
                 state.loading = false;

@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   deleteEtudiantAsync,
   getEtudiantAsync,
-  getEtudiants,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
 import { Etudiant } from "../../types/types";
@@ -27,7 +26,6 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSearch } from "react-icons/fa";
-import { IoMdPersonAdd } from "react-icons/io";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -46,7 +44,6 @@ const StudentHome = ({
   const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
   const [search, setSearch] = useState<string>("");
-
   const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
 
   const [modal, setModal] = useState<{
@@ -66,69 +63,38 @@ const StudentHome = ({
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const updateStudentModalRef = useRef<HTMLDialogElement | null>(null);
-  const etudiantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
+  
 
   /**********************  UseEffect *********************/
 
-  useEffect(() => {
-    if (
-      modal.etudiant &&
-      modal.index !== -1 &&
-      etudiantDetailsModalRef.current
-    ) {
-      etudiantDetailsModalRef.current.showModal();
-    }
-
-    if (
-      modalUpdate.etudiant &&
-      modalUpdate.index !== -1 &&
-      updateStudentModalRef.current
-    ) {
-      updateStudentModalRef.current.showModal();
-    }
-  }, [modal, modalUpdate]);
+ 
 
   const handleFetch = async () => {
-    const res = await dispatch(
-      getEtudiantAsync({ page: currentPage, size: 10 })
-    );
-
-    console.log("etudiants form handle Fetch:", res);
+    await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
   };
-  
-  const handleFetchByPromotion = async (promotion : PromotionDetails) => {
-    const res = await dispatch(getEtudiantByPromotionAsync(promotion));
 
-    console.log("etudiants form handle Fetch by promotions:", res);
+  const handleFetchByPromotion = async (promotion: PromotionDetails) => {
+    await dispatch(getEtudiantByPromotionAsync(promotion));
   };
 
   useEffect(() => {
-    console.log("Promotion details:", promotionDetails);
-
     dispatch(getPromotionAsync());
-
     if (
-      (promotionDetails.anneeUniversitaire == "-1" &&
-        promotionDetails.codeFormation == "") 
+      promotionDetails.anneeUniversitaire == "-1" &&
+      promotionDetails.codeFormation == ""
     ) {
       handleFetch();
-      console.log("here");
     } else {
-        handleFetchByPromotion(promotionDetails)
+      handleFetchByPromotion(promotionDetails);
     }
   }, [dispatch, currentPage, promotionDetails]);
 
   useEffect(() => {
     if (JSON.stringify(filteredEtudiants) !== JSON.stringify(etudiants)) {
       setfilteredEtudiants(etudiants);
-      console.log("Filtered students:", etudiants);
+      console.log("Filtered students:", filteredEtudiants);
     }
   }, [etudiants]);
-
-  useEffect(() => {
-    console.log("Re-render triggered. promotionDetails:", promotionDetails);
-  }, [promotionDetails]);
 
   /**********************  Functions ********************/
 
@@ -138,17 +104,21 @@ const StudentHome = ({
   };
 
   const handleClick = (etudiant: Etudiant, index: number) => {
+    setModal({ etudiant: null, index: -1 });
     setModal({ etudiant, index });
   };
 
   const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-    setModalUpdate({ etudiant, index });
+    console.log("Selected student:", etudiant);
+    setModal({ etudiant: null, index: -1 }); 
+    setModalUpdate({ etudiant, index }); 
+    console.log("Modal Update state:", modalUpdate); 
   };
 
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
     e.stopPropagation();
     const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-    dispatch(getEtudiantAsync({ page: currentPage, size: 10 }));
+    dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
     if (
       response?.payload ===
       "Can not delete this student because it's related to an internship"
@@ -217,8 +187,13 @@ const StudentHome = ({
     );
   };
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = async (newPage: number) => {
     setCurrentPage(newPage);
+    if (pro.anneeUniversitaire == "-1" && pro.codeFormation == "") {
+      await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
+    } else {
+      await dispatch(getEtudiantByPromotionAsync(pro));
+    }
   };
 
   return (
@@ -239,20 +214,16 @@ const StudentHome = ({
             promotionDetails.codeFormation != "" &&
             promotionDetails.anneeUniversitaire != ""
           ) ? (
-            <div className="flex flex-row items-center justify-between  w-1/2 ">
+            <div className="flex flex-row items-center gap-5 w-2/3 ">
               <select
                 defaultValue="default"
-                className="select hover:cursor-pointer shadow-md"
+                className="w-1/3 select hover:cursor-pointer shadow-md"
                 onChange={handlePromotionChange}
               >
                 <option value="default" disabled>
                   Sélectionnez une promotion
                 </option>
-                <option
-                  value="-1"
-                >
-                  Tous les promotions
-                </option>
+                <option value="-1">Tous les promotions</option>
                 {promotions.map((promotion, idx) => (
                   <option
                     key={idx}
@@ -265,7 +236,7 @@ const StudentHome = ({
                   </option>
                 ))}
               </select>
-              <div className="w-1/2 block hover:cursor-text">
+              <div className="w-1/3 block hover:cursor-text">
                 <label className="input input-bordered flex items-center gap-2 shadow-md">
                   <input
                     disabled={etudiants.length == 0}
@@ -312,10 +283,12 @@ const StudentHome = ({
             </div>
           )}
           <div className="tooltip" data-tip="Ajouter un etudiant">
-            <IoMdPersonAdd
-              className="text-4xl text-gray-500 hover:text-gray-700 cursor-pointer"
+            <button
+              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
               onClick={() => openModal("addStudent")}
-            />
+            >
+              +
+            </button>
           </div>
         </div>
         <div className="overflow-y-auto w-[90%] py-5">
@@ -327,13 +300,12 @@ const StudentHome = ({
           >
             <thead>
               <tr>
-                <th></th>
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Nationalité</th>
                 <th>Email</th>
                 <th>Promotion</th>
-                <th>Université</th>
+                <th>Université d'origine</th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
@@ -353,7 +325,6 @@ const StudentHome = ({
                     key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
-                    <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
                     <td className="px-4 py-2">
@@ -388,6 +359,8 @@ const StudentHome = ({
                         onClick={(e) => handleDelete(etudiant, e)}
                       />
                     </td>
+
+
                     <dialog
                       id={`updateStudent-${etudiant.noEtudiant}`}
                       className="modal"
@@ -395,8 +368,10 @@ const StudentHome = ({
                       <UpdateEtudiant
                         promotions={promotions}
                         studentData={etudiant}
+                        currentpage={currentPage}
                       />
                     </dialog>
+
                     <dialog
                       id={`inspect-${etudiant.noEtudiant}`}
                       className="modal"
@@ -409,7 +384,7 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center items-center mt-2">
           <button
             className="btn"
             disabled={currentPage === 1}
@@ -429,6 +404,7 @@ const StudentHome = ({
           </button>
         </div>
       </motion.div>
+
       <dialog id="addStudent" className="modal">
         <AddEtudiant promotions={promotions} />
       </dialog>
