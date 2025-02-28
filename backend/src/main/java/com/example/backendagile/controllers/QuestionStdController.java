@@ -46,10 +46,16 @@ public class QuestionStdController {
      * Créer une question standard (utilise DTO)
      */
     @PostMapping
-    public ResponseEntity<?> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
+    public ResponseEntity<String> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
         try {
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim());
+            if(existingQuestion!=null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
+            }
+
+
             QuestionStdDTO createdQuestion = questionStdService.createStandardQuestion(questionStdDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdQuestion);
+            return ResponseEntity.status(HttpStatus.CREATED).body("La question a été créée avec succès.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
