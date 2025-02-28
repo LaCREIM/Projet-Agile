@@ -1,10 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEye,
   faPenToSquare,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -111,20 +109,21 @@ const QuestionHome = () => {
       <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des questions</h1>
-        <div className="flex flex-row items-center justify-between gap-5 w-full px-14">
-          <button
-            className="flex flex-row items-center justify-center gap-5 px-4 py-2 w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-            onClick={() => openModal("addQuestion")}
-          >
-            <IoMdAdd className="text-black" /> Ajouter une question
-          </button>
+        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
+          <div className="tooltip" data-tip="Ajouter une question">
+            <button
+              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+              onClick={() => openModal("addQuestion")}
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="overflow-y-auto w-[60%]">
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Intitulé</th>
                 <th>Qualificatif</th>
                 <th className="text-center">Actions</th>
@@ -146,7 +145,6 @@ const QuestionHome = () => {
                     key={question.id}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
-                    <th className="px-4 py-2">{question.id}</th>
                     <td className="px-4 py-2">{question.intitule || "N/A"}</td>
                     <td className="px-4 py-2">
                       {question.idQualificatif?.maximal +
@@ -160,15 +158,6 @@ const QuestionHome = () => {
                         onClick={() => {
                           handleClickUpdate(question, index);
                           openModal(`updateQuestion-${index}`);
-                        }}
-                      />
-
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClick(question, index);
-                          openModal(`inspect-${index}`);
                         }}
                       />
 

@@ -126,16 +126,19 @@ const QualificatifHome = () => {
       <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des qualificatifs</h1>
-        <div className="flex flex-row items-center justify-between gap-5 w-full px-14">
-          <button
-            className="flex flex-row items-center justify-center hover:cursor-pointer gap-5 px-4 py-2 w-[17%] text-center rounded-md border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-            onClick={() => openModal("addQualificatif")}
-          >
-            <IoMdAdd className="text-black" /> Ajouter un qualificatif
-          </button>
+        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
+          
+          <div className="tooltip" data-tip="Ajouter un couple qualifactif">
+            <button
+              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+              onClick={() => openModal("addQualificatif")}
+            >
+              +
+            </button>
+          </div>
         </div>
 
-        <div className="overflow-y-auto w-[80%]">
+        <div className="overflow-y-auto w-[60%]">
           <motion.table
             className="table table-zebra"
             variants={MotionVariant}
@@ -144,7 +147,6 @@ const QualificatifHome = () => {
           >
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Minimal</th>
                 <th>Maximal</th>
                 <th className="text-center">Actions</th>
@@ -167,8 +169,6 @@ const QualificatifHome = () => {
                       key={qualificatif.id}
                       className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                     >
-                      <td className="px-4 py-2">{qualificatif.id}</td>
-
                       <td className="px-4 py-2">
                         {updatingIndex !== index ? (
                           <span>{qualificatif.minimal}</span>

@@ -8,110 +8,169 @@ import {
   getUniversite,
   updateEtudiantAsync,
 } from "../../features/EtudiantSlice";
-
-
-
 import { Etudiant, Promotion } from "../../types/types";
+import { getFormationAsync } from "../../features/PromotionSlice";
 
 interface UpdateStudentProps {
   studentData: Etudiant;
-  promotions: Promotion[]
+  promotions: Promotion[];
+  currentpage: number;
 }
 
-const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
+const UpdateEtudiant = ({
+  studentData,
+  promotions,
+  currentpage,
+}: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
-
+  const [dateError, setDateError] = useState<string | null>(null);
   const [student, setStudent] = useState<Etudiant>({
     ...studentData,
   });
+  const [canSave, setCanSave] = useState(true);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-      setStudent({ ...student, [name]: value });
+
+    if (name === "dateNaissance") {
+      const birthDate = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+
+      if (
+        age < 17 ||
+        (age === 17 &&
+          (today.getMonth() < birthDate.getMonth() ||
+            (today.getMonth() === birthDate.getMonth() &&
+              today.getDate() < birthDate.getDate())))
+      ) {
+        setDateError("L'étudiant doit avoir au moins 17 ans.");
+      } else {
+        setDateError(null);
+      }
+    }
+
+    setStudent((prevStudent) => ({
+      ...prevStudent,
+      [name]: value,
+    }));
   };
-
-
-  const canSave =
-    student.nom != "" &&
-    student.prenom != "" &&
-    student.sexe != "" &&
-    student.email != "" &&
-    student.emailUbo != "" &&
-    student.noEtudiant != "" &&
-    student.dateNaissance != null &&
-    student.lieuNaissance != "" &&
-    student.nationalite != "" &&
-    student.adresse != "" &&
-    student.ville != "" &&
-    student.codePostal != "" &&
-    student.paysOrigine != "" &&
-    student.universiteOrigine != "" &&
-    student.groupeTp != -1 &&
-    student.groupeAnglais != -1 &&
-    student.mobile != "" &&
-    student.anneeUniversitaire != "" &&
-    student.codeFormation != ""
-      
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (canSave) await dispatch(updateEtudiantAsync(student));
-    dispatch(getEtudiantAsync());
+    console.log(e);
+
+    if (canSave) {
+      await dispatch(updateEtudiantAsync(student));
+      dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
+      //resetStudent();
+    }
   };
 
-  // const promotions = useAppSelector(getPromotions);
+  const resetStudent = () => {
+    setStudent({
+      noEtudiant: "",
+      nom: "",
+      prenom: "",
+      motPasse: "",
+      sexe: "",
+      dateNaissance: null,
+      lieuNaissance: "",
+      nationalite: "",
+      telephone: "",
+      mobile: "",
+      email: "",
+      emailUbo: "",
+      adresse: "",
+      codePostal: "",
+      ville: "",
+      paysOrigine: "",
+      universiteOrigine: "",
+      groupeTp: -1,
+      groupeAnglais: -1,
+      anneeUniversitaire: "",
+      codeFormation: "",
+    });
+    setDateError(null);
+  };
+
+  const formatDate = (date: string | Date | null) => {
+    if (date === null) return "";
+    return date instanceof Date ? date.toISOString().split("T")[0] : date;
+  };
+
+  useEffect(() => {
+    console.log(student);
+    
+    if (student != null || student !== undefined)
+      setCanSave(
+        student.nom.trim() !== "" &&
+          student.prenom.trim() !== "" &&
+          student.sexe.trim() !== "" &&
+          student.email.trim() !== "" &&
+          student.emailUbo.trim() !== "" &&
+          student.noEtudiant.trim() !== "" &&
+          student.dateNaissance !== null &&
+          dateError === null &&
+          student.lieuNaissance.trim() !== "" &&
+          student.nationalite.trim() !== "" &&
+          student.adresse.trim() !== "" &&
+          student.ville.trim() !== "" &&
+          student.paysOrigine.trim() !== "" &&
+          student.universiteOrigine.trim() !== "" &&
+          student.anneeUniversitaire.trim() !== "" &&
+          student.codeFormation.trim() !== ""
+      );
+  }, [student]);
+
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
 
   useEffect(() => {
-    // dispatch(getPromotionAsync());
     dispatch(getDomainePaysAsync());
     dispatch(getDomaineUnivAsync());
+    dispatch(getFormationAsync());
   }, [dispatch]);
-
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    date instanceof Date ? date.toISOString().split("T")[0] : date;
-  };
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier un étudiant</h3>
-        
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-5">
-            {/* Nom et Prénom */}
-            <div className="flex flex-row justify-between">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Nom</span>
-                <input
-                  required
-                  type="text"
-                  name="nom"
-                  value={student.nom}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: John"
-                />
-              </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Prénom</span>
-                <input
-                  required
-                  type="text"
-                  name="prenom"
-                  value={student.prenom}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: Doe"
-                />
-              </label>
-            </div>
+          <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">No Etudiant</span>
+              <span className="font-semibold">
+                Nom <span className="text-red-500">*</span>
+              </span>
+              <input
+                required
+                type="text"
+                name="nom"
+                value={student.nom}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: John"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">
+                Prénom<span className="text-red-500">*</span>
+              </span>
+              <input
+                required
+                type="text"
+                name="prenom"
+                value={student.prenom}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Doe"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">
+                No Etudiant<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -122,27 +181,24 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 placeholder="Ex: YI98765"
               />
             </label>
-
-            {/* Sexe */}
-            <label className="flex items-center gap-2">
-              <select
-                required
-                name="sexe"
-                value={student.sexe}
-                onChange={handleChange}
-                className="select select-bordered w-full max-w-full"
-              >
-                <option disabled value="">
-                  Sélectionnez un sexe
-                </option>
-                <option value="H">Homme</option>
-                <option value="F">Femme</option>
-              </select>
-            </label>
-
-            {/* Email et Téléphone */}
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Email</span>
+              <span className="font-semibold">
+                Mot de passe<span className="text-red-500">*</span>
+              </span>
+              <input
+                required
+                type="password"
+                name="motPasse"
+                value={student.motPasse}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Entrez un mot de passe"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">
+                Email <span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="email"
@@ -154,7 +210,9 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Email Ubo</span>
+              <span className="font-semibold">
+                Email Ubo<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="email"
@@ -168,7 +226,17 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Téléphone</span>
               <input
-                required
+                type="text"
+                name="telephone"
+                value={student.telephone}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: 0700000000"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Mobile</span>
+              <input
                 type="text"
                 name="mobile"
                 value={student.mobile}
@@ -177,20 +245,26 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 placeholder="Ex: 0700000000"
               />
             </label>
-
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Date de naissance<span className="text-red-500">*</span>
+                </span>
+                <input
+                  required
+                  type="date"
+                  name="dateNaissance"
+                  value={formatDate(student.dateNaissance)}
+                  onChange={handleChange}
+                  className="grow"
+                />
+              </label>
+              {dateError && <p className="text-red-500 text-sm">{dateError}</p>}
+            </div>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Date de naissance</span>
-              <input
-                required
-                type="date"
-                name="dateNaissance"
-                value={formatDate(student.dateNaissance)}
-                onChange={handleChange}
-                className="grow"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Lieu de naissance</span>
+              <span className="font-semibold">
+                Lieu de naissance<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -202,7 +276,9 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Nationalité</span>
+              <span className="font-semibold">
+                Nationalité<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -213,9 +289,10 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 placeholder="Ex: Marocaine"
               />
             </label>
-
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Adresse</span>
+              <span className="font-semibold">
+                Adresse<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -227,7 +304,9 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Ville</span>
+              <span className="font-semibold">
+                Ville<span className="text-red-500">*</span>
+              </span>
               <input
                 required
                 type="text"
@@ -241,7 +320,6 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Code postal</span>
               <input
-                required
                 type="text"
                 name="codePostal"
                 value={student.codePostal}
@@ -250,17 +328,32 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 placeholder="Ex: 29200"
               />
             </label>
-            <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Pays</span>
+            <label className="flex items-center gap-2">
               <select
                 required
-                className="select w-[80%] max-w-full"
+                name="sexe"
+                value={student.sexe}
+                onChange={handleChange}
+                className="select select-bordered "
+              >
+                <option disabled value="">
+                  Sélectionnez un sexe <span className="text-red-500">*</span>
+                </option>
+                <option value="H">Homme</option>
+                <option value="F">Femme</option>
+              </select>
+            </label>
+            <label className="flex flex-row items-center gap-2">
+              <select
+                required
+                className="select max-w-full"
                 name="paysOrigine"
                 value={student.paysOrigine}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez un pays
+                  Sélectionnez le pays d'origine{" "}
+                  <span className="text-red-500">*</span>
                 </option>
                 {pays.map((pays, idx) => (
                   <option key={idx} value={pays.rvLowValue}>
@@ -269,58 +362,56 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 ))}
               </select>
             </label>
-
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Année Universitaire</span>
               <select
                 required
-                className="select w-[80%] max-w-full"
-                name="anneeUniversitaire"
-                value={student.anneeUniversitaire}
-                onChange={handleChange}
+                className="select"
+                name="promotion"
+                value={
+                  student.anneeUniversitaire && student.codeFormation
+                    ? `${student.anneeUniversitaire}-${student.codeFormation}`
+                    : ""
+                }
+                onChange={(e) => {
+                  const selectedPromotion = promotions.find(
+                    (p) =>
+                      `${p.anneeUniversitaire}-${p.codeFormation}` ===
+                      e.target.value
+                  );
+                  if (selectedPromotion) {
+                    setStudent((prevStudent) => ({
+                      ...prevStudent,
+                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
+                      codeFormation: selectedPromotion.codeFormation,
+                    }));
+                  }
+                }}
               >
                 <option value="" disabled>
-                  Sélectionnez l'année universitaire
+                  Sélectionner une promotion{" "}
+                  <span className="text-red-500">*</span>
                 </option>
                 {promotions.map((promotion, idx) => (
-                  <option key={idx} value={promotion.anneeUniversitaire}>
-                    {promotion.anneeUniversitaire}
+                  <option
+                    key={idx}
+                    value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
+                  >
+                    {promotion.nomFormation} - {promotion.anneeUniversitaire}
                   </option>
                 ))}
               </select>
             </label>
-
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Promotion</span>
               <select
                 required
-                className="select w-[80%] max-w-full"
-                name="codeFormation"
-                value={student.codeFormation}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Sélectionnez une promotion
-                </option>
-                {promotions.map((promotion, idx) => (
-                  <option key={idx} value={promotion.codeFormation}>
-                    {promotion.codeFormation}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className=" flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Université</span>
-              <select
-                required
-                className="select w-[80%] max-w-full"
+                className="select"
                 name="universiteOrigine"
                 value={student.universiteOrigine}
                 onChange={handleChange}
               >
                 <option value="" disabled>
-                  Sélectionnez l'université d'origine
+                  Sélectionnez l'université d'origine{" "}
+                  <span className="text-red-500">*</span>
                 </option>
                 {universite.map((univ, idx) => (
                   <option key={idx} value={univ.rvLowValue}>
@@ -329,15 +420,13 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
                 ))}
               </select>
             </label>
-            {/* Groupe TP et Anglais */}
-            <label className="flex  flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Groupe Anglais</span>
+            <label className="flex flex-row items-center gap-2">
               <select
                 required
                 name="groupeAnglais"
                 value={student.groupeAnglais}
                 onChange={handleChange}
-                className="select select-bordered w-[80%] max-w-full"
+                className="select select-bordered"
               >
                 <option value={-1} disabled>
                   Sélectionnez un groupe d'anglais
@@ -347,13 +436,11 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
               </select>
             </label>
             <label className="flex flex-row items-center gap-2">
-              <span className="font-semibold w-[15%]">Groupe TP</span>
               <select
-                required
                 name="groupeTp"
                 value={student.groupeTp}
                 onChange={handleChange}
-                className="select select-bordered w-[80%] max-w-full"
+                className="select select-bordered"
               >
                 <option value={-1} disabled>
                   Sélectionnez un groupe de TP
@@ -364,12 +451,13 @@ const UpdateEtudiant = ({ studentData, promotions }: UpdateStudentProps) => {
             </label>
           </div>
         </form>
-
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn">Annuler</button>
+            <button className="btn" >
+              Annuler
+            </button>
             <button
-              className="btn btn-neutral"
+              className="btn btn-neutral hover:cursor-pointer"
               onClick={handleSubmit}
               disabled={!canSave}
             >
