@@ -97,7 +97,6 @@ const RubriqueHome = () => {
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th></th>
                 <th>Designantion</th>
                 <th>Actions</th>
               </tr>
@@ -113,9 +112,8 @@ const RubriqueHome = () => {
                 rubriques.map((rubrique: Rubrique, index: number) => (
                   <tr key={rubrique.id} className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75">
 
-                    <th className="px-4 py-2">{index + 1}</th>
                     <td className="px-4 py-2">{rubrique.designation}</td>
-                    <td className="flex gap-3  items-center">
+                    <td className="flex gap-3 items-center">
                       
                       <FontAwesomeIcon
                         icon={faEye}

@@ -81,7 +81,6 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
 
-
               <label className="input input-bordered w-[85%] flex items-center gap-2">
                 <span className="font-semibold">Intitulé</span>
                 <input
@@ -91,7 +90,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
                   value={question.intitule}
                   onChange={handleChange}
                   className="grow "
-                  placeholder="Ex: Quelle est la capitale de la France ?"
+                  placeholder="Ex: Contenu ?"
                 />
               </label>
 

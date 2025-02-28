@@ -39,10 +39,14 @@ public class RubriqueStdController {
      * Créer une rubrique standard
      */
     @PostMapping
-    public ResponseEntity<RubriqueStdDTO> createStandardRubrique(@RequestBody RubriqueStdDTO rubriqueStdDTO) {
+    public ResponseEntity<String> createStandardRubrique(@RequestBody RubriqueStdDTO rubriqueStdDTO) {
         try {
+            Optional<Rubrique> existingRubrique = rubriqueStdService.findByDesignation(rubriqueStdDTO.getDesignation().trim());
+            if(existingRubrique.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
+            }
             RubriqueStdDTO createdRubrique = rubriqueStdService.createStandardRubrique(rubriqueStdDTO);
-            return ResponseEntity.status(201).body(createdRubrique);
+            return ResponseEntity.status(201).body("La rubrique a été créée avec succès.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -54,18 +58,18 @@ public class RubriqueStdController {
     @PutMapping("/{id}")
     public ResponseEntity<RubriqueStdDTO> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
         Optional<Rubrique> existingRubrique = rubriqueStdService.findById(id);
-    
+
         if (existingRubrique.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-    
+
         // Mise à jour de la désignation
         Rubrique updatedRubrique = rubriqueStdService.updateStandardRubrique(id, rubriqueDto.getDesignation());
-    
+
         // Conversion de l'entité mise à jour en DTO
         RubriqueStdDTO responseDto = new RubriqueStdDTO();
         responseDto.setDesignation(updatedRubrique.getDesignation());
-    
+
         return ResponseEntity.ok(responseDto);
     }
     
