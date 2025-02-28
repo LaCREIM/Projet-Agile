@@ -58,18 +58,18 @@ public class RubriqueStdController {
     @PutMapping("/{id}")
     public ResponseEntity<RubriqueStdDTO> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
         Optional<Rubrique> existingRubrique = rubriqueStdService.findById(id);
-    
+
         if (existingRubrique.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-    
+
         // Mise à jour de la désignation
         Rubrique updatedRubrique = rubriqueStdService.updateStandardRubrique(id, rubriqueDto.getDesignation());
-    
+
         // Conversion de l'entité mise à jour en DTO
         RubriqueStdDTO responseDto = new RubriqueStdDTO();
         responseDto.setDesignation(updatedRubrique.getDesignation());
-    
+
         return ResponseEntity.ok(responseDto);
     }
     

@@ -65,16 +65,21 @@ public class QuestionStdController {
      * Mettre à jour une question standard existante (utilise DTO)
      */
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionStdDTO> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
+    public ResponseEntity<String> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
         try {
+
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim());
+            if(existingQuestion!=null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
+            }
             Question updatedQuestion = questionStdService.updateStandardQuestion(id, questionDto);
-    
+
             // Créer un DTO uniquement avec les champs souhaités
             QuestionStdDTO responseDto = new QuestionStdDTO();
             responseDto.setIdQualificatif(updatedQuestion.getIdQualificatif().getId());
             responseDto.setIntitule(updatedQuestion.getIntitule());
     
-            return ResponseEntity.ok(responseDto);
+            return ResponseEntity.ok("La question a été mise à jour avec succès.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
