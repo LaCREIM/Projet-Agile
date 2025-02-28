@@ -39,5 +39,5 @@ List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") Stri
 List<Etudiant> searchEtudiants(@Param("keyword") String keyword);
 
 
-    Etudiant findByNoEtudiant(String noEtudiant);
+    List<Etudiant> findByNoEtudiant(String noEtudiant);
 }
