@@ -39,8 +39,10 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
           : {}),
       };
 
+      toast.done("Tous les champs requis doivent être remplis.");
       await dispatch(editEnseignantAsync(enseignantComplet));
       dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+
     } else {
       toast.error("Tous les champs requis doivent être remplis.");
     }
@@ -125,7 +127,7 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
 
           <div className="modal-action">
             <form method="dialog" className="flex flex-row gap-5">
-              <button type="button" className="btn">Annuler</button>
+              <button className="btn">Annuler</button>
               <button onClick={handleSubmit} className="btn btn-neutral" disabled={!canSave}>Mettre à jour</button>
 
             </form>
