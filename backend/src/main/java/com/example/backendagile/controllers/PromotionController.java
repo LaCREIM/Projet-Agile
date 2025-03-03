@@ -42,10 +42,10 @@ public class PromotionController {
         return promotionService.getAllPromotions();
     }
 
-    @GetMapping("/search")
-    public List<PromotionDTO> getPromotionsByName(@RequestParam String name) {
-        return promotionService.getPromotionsByName(name);
-    }
+//    @GetMapping("/search")
+//    public List<PromotionDTO> getPromotionsByName(@RequestParam String name) {
+//        return promotionService.getPromotionsByName(name);
+//    }
 
     /**
      * Retrieves a promotion by its ID.
@@ -104,6 +104,12 @@ public class PromotionController {
     @GetMapping("/paged")
     public List<PromotionDTO> getAllPromotionPaged(@RequestParam int page, @RequestParam int size) {
         return promotionService.getPromotionPaged(page, size);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Promotion>> searchPromotions(@RequestParam String keyword) {
+        List<Promotion> result = promotionService.searchPromotions(keyword);
+        return ResponseEntity.ok(result);
     }
 
 
