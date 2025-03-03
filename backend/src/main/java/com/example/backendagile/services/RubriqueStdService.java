@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
+import java.util.Comparator;
 @Service
 public class RubriqueStdService {
 
@@ -23,9 +24,13 @@ public class RubriqueStdService {
     /**
      * Récupérer toutes les rubriques standards
      */
-    public List<Rubrique> getStandardRubriques() {
-        return rubriqueRepository.findByType("RBS");
-    }
+   public List<Rubrique> getStandardRubriques() {
+    return rubriqueRepository.findByType("RBS")
+            .stream()
+            .sorted(Comparator.comparing(Rubrique::getDesignation, String.CASE_INSENSITIVE_ORDER))
+            .collect(Collectors.toList());
+}
+
 
     /**
      * Récupérer une rubrique standard par ID 

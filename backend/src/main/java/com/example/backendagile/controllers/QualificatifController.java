@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/qualificatifs")
@@ -112,7 +115,28 @@ public class QualificatifController {
     public ResponseEntity<Boolean> existsDansQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(qualificatifService.existsDansQuestion(id));
     }
+   
+   /*  @GetMapping("/search")
+    public ResponseEntity<List<Qualificatif>> searchQualificatifs(@RequestParam String query) {
+        List<Qualificatif> result = qualificatifService.searchQualificatifs(query);
+        return ResponseEntity.ok(result);
+    }
+*/
+@GetMapping("/search-paged")
+public ResponseEntity<Map<String, Object>> searchQualificatifsPaged(
+        @RequestParam String keyword,
+        @RequestParam int page,
+        @RequestParam int size) {
+    
+    List<Qualificatif> qualificatifs = qualificatifService.searchQualificatifsPaged(keyword, page, size);
+    int totalPages = qualificatifService.getTotalPagesForSearch(keyword, size);
 
+    Map<String, Object> response = new HashMap<>();
+    response.put("qualificatifs", qualificatifs);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
 
 
 }

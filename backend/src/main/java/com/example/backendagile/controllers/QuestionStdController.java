@@ -101,4 +101,6 @@ public class QuestionStdController {
         }
         return ResponseEntity.ok("La question a été supprimée avec succès.");
     }
+
+    
 }
