@@ -138,5 +138,22 @@ public ResponseEntity<Map<String, Object>> searchQualificatifsPaged(
     return ResponseEntity.ok(response);
 }
 
+@GetMapping("/paged")
+public ResponseEntity<Map<String, Object>> getAllQualificatifsPaged(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+    List<Qualificatif> qualificatifs = qualificatifService.getAllQualificatifsPaged(page, size);
+    
+    Map<String, Object> response = new HashMap<>();
+    response.put("qualificatifs", qualificatifs);
+    response.put("currentPage", page);
+    response.put("size", size);
+    response.put("totalPages", qualificatifService.getTotalPages(size));
+
+    return ResponseEntity.ok(response);
+}
+
+
 
 }

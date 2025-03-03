@@ -36,6 +36,14 @@ List<Qualificatif> searchWithPagination(
 
 
  long countByMinimalContainingIgnoreCaseOrMaximalContainingIgnoreCase(String minimal, String maximal);
+ @Query(value = """
+    SELECT * FROM (
+        SELECT q.*, ROWNUM rnum FROM (
+            SELECT * FROM QUALIFICATIF ORDER BY MINIMAL ASC
+        ) q WHERE ROWNUM <= :endRow
+    ) WHERE rnum > :startRow
+""", nativeQuery = true)
+List<Qualificatif> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
 
 
    
