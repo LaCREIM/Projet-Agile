@@ -35,7 +35,31 @@ const EnseignantsHome = () => {
         enseignant: null,
         index: -1,
     });
-
+    const [modalDelete, setModalDelete] = useState<{ enseignant: Enseignant | null; open: boolean }>({
+        enseignant: null,
+        open: false,
+    });
+    const openDeleteModal = (enseignant: Enseignant, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setModalDelete({ enseignant, open: true });
+    };
+    const confirmDelete = async () => {
+        if (!modalDelete.enseignant) return;
+        
+        const response = await dispatch(deleteEnseignantAsync(modalDelete.enseignant));
+    
+        if (deleteEnseignantAsync.fulfilled.match(response)) {
+            toast.success("Enseignant supprimé avec succès.");
+            dispatch(getEnseignantAsync({ page: currentPage, size: 10 }));
+        } else {
+            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
+        }
+    
+        // Fermer la modal après suppression
+        setModalDelete({ enseignant: null, open: false });
+    };
+    
+    
     const updateEnseignantModalRef = useRef<HTMLDialogElement | null>(null);
     const enseignantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -71,18 +95,22 @@ const EnseignantsHome = () => {
         setModalUpdate({enseignant, index});
     };
 
-    const handleDelete = async (enseignant: Enseignant, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const response = await dispatch(deleteEnseignantAsync(enseignant));
+    // const handleDelete = async (enseignant: Enseignant, e: React.MouseEvent) => {
+    //     e.stopPropagation();
+        
+    //     const isConfirmed = window.confirm(`Êtes-vous sûr de vouloir supprimer ${enseignant.nom} ${enseignant.prenom} ?`);
+    //     if (!isConfirmed) return;
     
-        if (deleteEnseignantAsync.fulfilled.match(response)) {
-            toast.success("Enseignant supprimé avec succès.");
-            dispatch(getEnseignantAsync({page: currentPage, size: 10}));
-
-        } else {
-            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
-        }
-    };
+    //     const response = await dispatch(deleteEnseignantAsync(enseignant));
+    
+    //     if (deleteEnseignantAsync.fulfilled.match(response)) {
+    //         toast.success("Enseignant supprimé avec succès.");
+    //         dispatch(getEnseignantAsync({page: currentPage, size: 10}));
+    //     } else {
+    //         toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
+    //     }
+    // };
+    
     
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -176,12 +204,22 @@ const EnseignantsHome = () => {
                                     key={enseignant.id}
                                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                                 >
-                                    <td className="px-4 py-2">{enseignant.nom}</td>
+                                    <td className="px-4 py-2">{enseignant.nom.toUpperCase()}</td>
                                     <td className="px-4 py-2">{enseignant.prenom}</td>
                                     <td className="px-4 py-2">{enseignant.emailUbo}</td>
                                     <td className="px-4 py-2">{enseignant.mobile}</td>
                                     <td className="px-4 py-2">{enseignant.type}</td>
                                     <td className="flex gap-3 justify-center items-center">
+                                        
+                                    <FontAwesomeIcon
+                                            icon={faEye}
+                                            className="text-black text-base cursor-pointer"
+                                            onClick={() => {
+                                                handleClick(enseignant, index);
+                                                openModal(`inspect-${index}`);
+                                            }}
+                                        />
+
                                         <FontAwesomeIcon
                                             icon={faPenToSquare}
                                             className="text-black text-base cursor-pointer"
@@ -192,18 +230,9 @@ const EnseignantsHome = () => {
                                         />
 
                                         <FontAwesomeIcon
-                                            icon={faEye}
-                                            className="text-black text-base cursor-pointer"
-                                            onClick={() => {
-                                                handleClick(enseignant, index);
-                                                openModal(`inspect-${index}`);
-                                            }}
-                                        />
-
-                                        <FontAwesomeIcon
                                             icon={faTrash}
                                             className="text-black text-base cursor-pointer"
-                                            onClick={(e) => handleDelete(enseignant, e)}
+                                            onClick={(e) => openDeleteModal(enseignant, e)}
                                         />
                                     </td>
 
@@ -251,6 +280,32 @@ const EnseignantsHome = () => {
             <dialog id="addEnseignant" className="modal">
                 <AddEnseignant/>
             </dialog>
+            {modalDelete.open && (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-70 backdrop-blur-sm">
+        <div className="bg-white p-6 rounded-xl shadow-lg w-96 border border-gray-300">
+            <h2 className="text-xl font-bold text-gray-800">Confirmation</h2>
+            <p className="mt-3 text-gray-700">
+                Êtes-vous sûr de vouloir supprimer l'enseignant : <strong>{modalDelete.enseignant?.nom} {modalDelete.enseignant?.prenom}</strong> ?
+            </p>
+
+            <div className="flex justify-end mt-6 space-x-3">
+                <button
+                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
+                    onClick={() => setModalDelete({ enseignant: null, open: false })}
+                >
+                    Annuler
+                </button>
+                <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition shadow-md"
+                    onClick={confirmDelete}
+                >
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
         </>
     );
 };

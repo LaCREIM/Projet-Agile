@@ -60,7 +60,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
               <dd className="mt-1 text-gray-500">{enseignant.type}</dd>
             </div>
 
-            {enseignant.type === "ENC" && (
+            
               <>
                 {enseignant.emailPerso && (
                   <div className="text-base font-medium text-gray-900">
@@ -87,35 +87,8 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
                   </div>
                 )}
               </>
-            )}
-            {enseignant.type === "INT" && (
-              <>
-                {enseignant.intFonction && (
-                  <div className="text-base font-medium text-gray-900">
-                    <dt>Fonction :</dt>
-                    <dd className="mt-1 text-gray-500">
-                      {enseignant.intFonction}
-                    </dd>
-                  </div>
-                )}
-                {enseignant.intNoInsee && (
-                  <div className="text-base font-medium text-gray-900">
-                    <dt>No INSEE :</dt>
-                    <dd className="mt-1 text-gray-500">
-                      {enseignant.intNoInsee}
-                    </dd>
-                  </div>
-                )}
-                {enseignant.intSocNom && (
-                  <div className="text-base font-medium text-gray-900">
-                    <dt>Societé :</dt>
-                    <dd className="mt-1 text-gray-500">
-                      {enseignant.intSocNom}
-                    </dd>
-                  </div>
-                )}
-              </>
-            )}
+          
+
           </dl>
         </div>
         <div className="modal-action">

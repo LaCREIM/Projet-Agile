@@ -118,5 +118,9 @@ public class PromotionService {
         return promotionDTOs;
     }
 
+    public List<Promotion> searchPromotions(String keyword) {
+        return promotionRepository.searchPromotions(keyword.toLowerCase());
+    }
+
 
 }

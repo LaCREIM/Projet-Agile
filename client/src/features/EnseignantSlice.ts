@@ -8,10 +8,14 @@ interface EnseignantResponse {
     enseignants: Enseignant[];
     totalPages: number;
 }
-
+export interface Domaine_Pays {
+    rvLowValue: string;
+    rvMeaning: string;
+}
 interface EnseignantState {
     enseignants: Enseignant[];
     allEnseignants: Enseignant[];
+    pays: Domaine_Pays[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -21,6 +25,7 @@ const initialState: EnseignantState = {
     enseignants: [],
     allEnseignants: [],
     totalPages: 1,
+    pays: [],
     loading: false,
     error: null,
 };
@@ -63,16 +68,35 @@ export const getAllEnseignantAsync = createAsyncThunk<
 );
 
 
-export const postEnseignantAsync = createAsyncThunk<Enseignant, Enseignant, { rejectValue: string }>(
+export const postEnseignantAsync = createAsyncThunk<
+    void, 
+    Enseignant, 
+    { rejectValue: string }
+>(
     "enseignants/createEnseignantAsync",
-    async (enseignant, {rejectWithValue}) => {
+    async (enseignant, { rejectWithValue }) => {
         try {
-            console.log("Adding professor:", enseignant);
+            //console.log("Envoi des données à l'API :", enseignant);
             const response = await axiosInstance.post('/enseignants', enseignant);
+            //console.log("Réponse reçue :", response);
             return response.data;
         } catch (error: any) {
-            console.error("Error adding professor:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while adding the professor.");
+            console.error("Erreur de l'API :", error.response?.data);
+            return rejectWithValue(error.response?.data || "Erreur inconnue lors de l'ajout.");
+        }
+    }
+);
+
+export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { rejectValue: string }>(
+    "paysOrigine/getGroupeTPAsync",
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
+           // console.log("from all", response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching groupe tps:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching pays.");
         }
     }
 );
@@ -81,7 +105,7 @@ export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectVa
     "enseignants/editEnseignantAsync",
     async (enseignant, {rejectWithValue}) => {
         try {
-            console.log("Updating enseignant:", enseignant);
+           // console.log("Updating enseignant:", enseignant);
 
             if (!enseignant.id) {
                 throw new Error("L'enseignant n'a pas d'ID valide.");
@@ -131,10 +155,15 @@ const enseignantSlice = createSlice({
             })
             .addCase(getAllEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
                 state.loading = false;
-                state.allEnseignants = action.payload;
+                state.allEnseignants 
+                = action.payload;
             })
             .addCase(deleteEnseignantAsync.fulfilled, (state, action: PayloadAction<number>) => {
                 state.enseignants = state.enseignants.filter(ens => ens.id !== action.payload);
+            })
+            .addCase(getDomainePaysAsync.fulfilled, (state, action: PayloadAction<Domaine_Pays[]>) => {
+                state.loading = false;
+                state.pays = action.payload;
             });
     },
 });
@@ -143,6 +172,6 @@ const enseignantSlice = createSlice({
 export const getEnseignants = (state: RootState) => state.enseignants.enseignants;
 export const getTotalePages = (state: RootState) => state.enseignants.totalPages;
 export const getAllEnseignant = (state: RootState) => state.enseignants.allEnseignants;
-
+export const getPays = (state: {enseignants: EnseignantState}) => state.enseignants.pays;
 export default enseignantSlice.reducer;
 

@@ -145,4 +145,8 @@ public void deleteById(String id) {
     public List<Etudiant> searchEtudiants(String keyword) {
         return etudiantRepository.searchEtudiants(keyword.toLowerCase());
     }
+
+    public Optional<Etudiant> findByEmailandId(String emailUbo, String id) {
+        return etudiantRepository.findByEmailandId(emailUbo,id).stream().findFirst();
+    }
 }

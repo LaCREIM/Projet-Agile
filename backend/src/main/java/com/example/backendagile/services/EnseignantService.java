@@ -46,17 +46,7 @@ public class EnseignantService {
 
  
 
-/*@Transactional
-public void deleteById(Long id) {
-    Optional<Enseignant> enseignant = enseignantRepository.findById(id);
-    
-    if (enseignant.isPresent()) {
-        authentificationRepository.deleteByEnseignant(enseignant.get()); 
-        enseignantRepository.deleteById(id); 
-    } else {
-        throw new EntityNotFoundException("Enseignant non trouvé");
-    }
-}*/
+
 
     @Transactional
     public void deleteById(Long id) {

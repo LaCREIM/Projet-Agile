@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -58,18 +60,18 @@ public class RubriqueStdController {
     @PutMapping("/{id}")
     public ResponseEntity<RubriqueStdDTO> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
         Optional<Rubrique> existingRubrique = rubriqueStdService.findById(id);
-    
+
         if (existingRubrique.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-    
+
         // Mise à jour de la désignation
         Rubrique updatedRubrique = rubriqueStdService.updateStandardRubrique(id, rubriqueDto.getDesignation());
-    
+
         // Conversion de l'entité mise à jour en DTO
         RubriqueStdDTO responseDto = new RubriqueStdDTO();
         responseDto.setDesignation(updatedRubrique.getDesignation());
-    
+
         return ResponseEntity.ok(responseDto);
     }
     
@@ -89,4 +91,21 @@ public class RubriqueStdController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Il faut vider la rubrique de ses questions avant de la supprimer.");
         }
     }
+
+    @GetMapping("/search-paged")
+    public ResponseEntity<Map<String, Object>> searchRubriquesPaged(
+            @RequestParam String keyword,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        List<Rubrique> rubriques = rubriqueStdService.searchRubriquePaged(keyword, page, size);
+        int totalPages = rubriqueStdService.getTotalPagesForSearch(keyword, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("rubriques", rubriques);
+        response.put("totalPages", totalPages);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.backendagile.services;
 
 import com.example.backendagile.dto.RubriqueStdDTO;
 import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.mapper.RubriqueStdMapper;
 import com.example.backendagile.repositories.RubriqueStdRepository;
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
+import java.util.Comparator;
 @Service
 public class RubriqueStdService {
 
@@ -23,9 +25,13 @@ public class RubriqueStdService {
     /**
      * Récupérer toutes les rubriques standards
      */
-    public List<Rubrique> getStandardRubriques() {
-        return rubriqueRepository.findByType("RBS");
-    }
+   public List<Rubrique> getStandardRubriques() {
+    return rubriqueRepository.findByType("RBS")
+            .stream()
+            .sorted(Comparator.comparing(Rubrique::getDesignation, String.CASE_INSENSITIVE_ORDER))
+            .collect(Collectors.toList());
+}
+
 
     /**
      * Récupérer une rubrique standard par ID 
@@ -67,5 +73,17 @@ public class RubriqueStdService {
      */
     public void deleteById(Long id) {
         rubriqueRepository.deleteById(id);
+    }
+
+    public List<Rubrique> searchRubriquePaged(String keyword, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        String formattedKeyword = "%" + keyword + "%";
+        return rubriqueRepository.searchRubriqueWithPagination(formattedKeyword, startRow, endRow);
+    }
+
+    public int getTotalPagesForSearch(String keyword, int size) {
+        long totalCount = rubriqueRepository.countByDesignationContainingIgnoreCase(keyword);
+        return (int) Math.ceil((double) totalCount / size);
     }
 }

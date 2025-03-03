@@ -1,11 +1,14 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.RubriquePrsDTO;
+import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.RubriquePrsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rubriquesPrs")
@@ -52,4 +55,21 @@ public class RubriquePrsController {
     public ResponseEntity<List<RubriquePrsDTO>> getRubriquesByEnseignant(@PathVariable Long noEnseignant) {
         return ResponseEntity.ok(rubriqueService.getRubriquesByEnseignant(noEnseignant));
     }
+    @GetMapping("/search-paged")
+    public ResponseEntity<Map<String, Object>> searchRubriquesPaged(
+            @RequestParam String keyword,
+            @RequestParam Long noEnseignant,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        List<Rubrique> rubriques = rubriqueService.searchRubriquePaged(keyword, noEnseignant,page, size);
+        int totalPages = rubriqueService.getTotalPagesForSearch(keyword, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("rubriques", rubriques);
+        response.put("totalPages", totalPages);
+
+        return ResponseEntity.ok(response);
+    }
+
 }
