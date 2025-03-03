@@ -116,6 +116,7 @@ const handleCancel = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
+
               <span className="font-semibold">Nom<span className="text-red-500">*</span></span>
               <input type="text" name="nom" value={enseignant.nom} onChange={handleChange} required className="grow" />
             </label>
@@ -123,6 +124,7 @@ const handleCancel = () => {
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Prénom<span className="text-red-500">*</span></span>
               <input type="text" name="prenom" value={enseignant.prenom} onChange={handleChange} required className="grow" />
+
             </label>
 
             <label className="flex items-center gap-2">
@@ -158,6 +160,7 @@ const handleCancel = () => {
               <span className="font-semibold">Code postal<span className="text-red-500">*</span></span>
               <input type="text" name="codePostal" value={enseignant.codePostal} onChange={handleChange} required className="grow" />
             </label>
+
 
             <label className="flex flex-row items-center gap-2">
                 <select
@@ -195,6 +198,7 @@ const handleCancel = () => {
             </label>
 
             <label className="flex items-center gap-2">
+
               <select name="type" value={enseignant.type} onChange={handleChange} required className="select select-bordered">
                 <option value="">Type d'enseignant<span className="text-red-500">*</span></option>
                 <option value="MCF">Maître de Conférences</option>
@@ -204,6 +208,7 @@ const handleCancel = () => {
                 <option value="PRAG">Professeur Agrégé</option>
               </select>
             </label>
+
 
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Email UBO<span className="text-red-500">*</span></span>
@@ -221,6 +226,7 @@ const handleCancel = () => {
             <button  className="btn" onClick={handleCancel}>Annuler</button>
             <button  className="btn btn-neutral disabled:cursor-not-allowed" disabled={!canSave}>Ajouter</button>
           </form>
+
           </div>
         </form>
       </div>

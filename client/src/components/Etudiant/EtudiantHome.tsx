@@ -40,7 +40,7 @@ const StudentHome = ({
 }: StudentHomeProps) => {
   document.title = "UBO | Étudiants";
   const dispatch = useAppDispatch();
-  const etudiants = useAppSelector((state) => state.etudiants.etudiants) || [];
+  const etudiants = useAppSelector((state) => state.etudiants.etudiants);
   const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
   const [search, setSearch] = useState<string>("");
@@ -63,11 +63,9 @@ const StudentHome = ({
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  
-
   /**********************  UseEffect *********************/
 
- 
+  console.log(etudiants);
 
   const handleFetch = async () => {
     await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
@@ -84,17 +82,12 @@ const StudentHome = ({
       promotionDetails.codeFormation == ""
     ) {
       handleFetch();
+      setfilteredEtudiants(etudiants);
     } else {
       handleFetchByPromotion(promotionDetails);
+      setfilteredEtudiants(etudiants);
     }
   }, [dispatch, currentPage, promotionDetails]);
-
-  useEffect(() => {
-    if (JSON.stringify(filteredEtudiants) !== JSON.stringify(etudiants)) {
-      setfilteredEtudiants(etudiants);
-      console.log("Filtered students:", filteredEtudiants);
-    }
-  }, [etudiants]);
 
   /**********************  Functions ********************/
 
@@ -110,9 +103,9 @@ const StudentHome = ({
 
   const handleClickUpdate = (etudiant: Etudiant, index: number) => {
     console.log("Selected student:", etudiant);
-    setModal({ etudiant: null, index: -1 }); 
-    setModalUpdate({ etudiant, index }); 
-    console.log("Modal Update state:", modalUpdate); 
+    setModal({ etudiant: null, index: -1 });
+    setModalUpdate({ etudiant, index });
+    console.log("Modal Update state:", modalUpdate);
   };
 
   const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
@@ -145,7 +138,6 @@ const StudentHome = ({
       try {
         const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
         setPro(selectedPromotion);
-        console.log("Selected promotion:", selectedPromotion);
         handleFetchByPromotion(selectedPromotion);
       } catch (error) {
         console.error("Error parsing promotion details:", error);
@@ -167,24 +159,9 @@ const StudentHome = ({
     }),
   };
 
-  const handleSearchChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const value = e.target.value.toLowerCase().trim();
-    setSearch(value);
-
-    if (!value) {
-      setfilteredEtudiants(etudiants);
-      return;
-    }
-
-    setfilteredEtudiants(
-      etudiants.filter(
-        (etu) =>
-          (etu.nom?.toLowerCase().includes(value) ?? false) ||
-          (etu.prenom?.toLowerCase().includes(value) ?? false)
-      )
-    );
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(searchEtudiantsAsync(e.target.value));
+    setSearch(e.target.value.toLowerCase().trim());
   };
 
   const handlePageChange = async (newPage: number) => {
@@ -310,7 +287,7 @@ const StudentHome = ({
               </tr>
             </thead>
             <tbody>
-              {etudiants.length === 0 || filteredEtudiants.length === 0 ? (
+              {etudiants.length === 0 ? (
                 <tr>
                   <td
                     colSpan={11}
@@ -320,66 +297,68 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
-                  <tr
-                    key={index}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                  >
-                    <td className="px-4 py-2">{etudiant.nom}</td>
-                    <td className="px-4 py-2">{etudiant.prenom}</td>
-                    <td className="px-4 py-2">
-                      {etudiant.nationalite || "Française"}
-                    </td>
-                    <td className="px-4 py-2">{etudiant.email}</td>
-                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
-                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
-                    <td
-                      className="flex gap-3 justify-center items-center"
-                      onClick={(e) => e.stopPropagation()}
+                etudiants
+                  .map((etudiant: Etudiant, index: number) => (
+                    <tr
+                      key={index}
+                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                     >
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClick(etudiant, index);
-                          openModal(`inspect-${etudiant.noEtudiant}`);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClickUpdate(etudiant, index);
-                          openModal(`updateStudent-${etudiant.noEtudiant}`);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(etudiant, e)}
-                      />
-                    </td>
+                      <td className="px-4 py-2">{etudiant.nom}</td>
+                      <td className="px-4 py-2">{etudiant.prenom}</td>
+                      <td className="px-4 py-2">
+                        {etudiant.nationalite || "Française"}
+                      </td>
+                      <td className="px-4 py-2">{etudiant.email}</td>
+                      <td className="px-4 py-2">{etudiant.codeFormation}</td>
+                      <td className="px-4 py-2">
+                        {etudiant.universiteOrigine}
+                      </td>
+                      <td
+                        className="flex gap-3 justify-center items-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClick(etudiant, index);
+                            openModal(`inspect-${etudiant.noEtudiant}`);
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClickUpdate(etudiant, index);
+                            openModal(`updateStudent-${etudiant.noEtudiant}`);
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-black text-base cursor-pointer"
+                          onClick={(e) => handleDelete(etudiant, e)}
+                        />
+                      </td>
 
+                      <dialog
+                        id={`updateStudent-${etudiant.noEtudiant}`}
+                        className="modal"
+                      >
+                        <UpdateEtudiant
+                          promotions={promotions}
+                          studentData={etudiant}
+                          currentpage={currentPage}
+                        />
+                      </dialog>
 
-                    <dialog
-                      id={`updateStudent-${etudiant.noEtudiant}`}
-                      className="modal"
-                    >
-                      <UpdateEtudiant
-                        promotions={promotions}
-                        studentData={etudiant}
-                        currentpage={currentPage}
-                      />
-                    </dialog>
-
-                    <dialog
-                      id={`inspect-${etudiant.noEtudiant}`}
-                      className="modal"
-                    >
-                      <EtudiantDetails etudiant={etudiant} />
-                    </dialog>
-                  </tr>
-                ))
+                      <dialog
+                        id={`inspect-${etudiant.noEtudiant}`}
+                        className="modal"
+                      >
+                        <EtudiantDetails etudiant={etudiant} />
+                      </dialog>
+                    </tr>
+                  ))
               )}
             </tbody>
           </motion.table>

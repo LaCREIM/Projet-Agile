@@ -154,6 +154,7 @@ export interface Etudiant {
     universiteOrigine: string;
     groupeTp: number;
     groupeAnglais: number;
+    [key: string]: any;
 }
 
 export interface Evaluation {
@@ -203,6 +204,7 @@ export interface Promotion {
     prenom: string;
     type: string;
     emailEnseignant: string;
+    [key: string]: any;
 }
 
 export interface PromotionCreate {

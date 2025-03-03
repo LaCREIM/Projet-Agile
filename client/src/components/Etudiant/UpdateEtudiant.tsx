@@ -4,6 +4,7 @@ import {
   getDomainePaysAsync,
   getDomaineUnivAsync,
   getEtudiantAsync,
+  getEtudiantByIdAsync,
   getPays,
   getUniversite,
   updateEtudiantAsync,
@@ -22,116 +23,96 @@ const UpdateEtudiant = ({
   promotions,
   currentpage,
 }: UpdateStudentProps) => {
-  const dispatch = useAppDispatch();
-  const [dateError, setDateError] = useState<string | null>(null);
-  const [student, setStudent] = useState<Etudiant>({
-    ...studentData,
-  });
-  const [canSave, setCanSave] = useState(true);
+   const dispatch = useAppDispatch();
+   const [dateError, setDateError] = useState<string | null>(null);
+   const [student, setStudent] = useState<Etudiant>(studentData);
+   const pays = useAppSelector(getPays);
+   const universite = useAppSelector(getUniversite);
+   const [canSave, setCanSave] = useState(true);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+   const handleChange = (
+     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+   ) => {
+     const { name, value } = e.target;
 
-    if (name === "dateNaissance") {
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
+     // Restrict mobile and telephone to 10 digits
+     if (
+       (name === "telephone" || name === "mobile") &&
+       !/^\d{0,10}$/.test(value)
+     ) {
+       return; // Prevent updating state if input is invalid
+     }
 
-      if (
-        age < 17 ||
-        (age === 17 &&
-          (today.getMonth() < birthDate.getMonth() ||
-            (today.getMonth() === birthDate.getMonth() &&
-              today.getDate() < birthDate.getDate())))
-      ) {
-        setDateError("L'étudiant doit avoir au moins 17 ans.");
-      } else {
-        setDateError(null);
-      }
-    }
+     if (name === "dateNaissance") {
+       const birthDate = new Date(value);
+       const today = new Date();
+       const age = today.getFullYear() - birthDate.getFullYear();
 
-    setStudent((prevStudent) => ({
-      ...prevStudent,
-      [name]: value,
-    }));
-  };
+       if (
+         age < 17 ||
+         (age === 17 &&
+           (today.getMonth() < birthDate.getMonth() ||
+             (today.getMonth() === birthDate.getMonth() &&
+               today.getDate() < birthDate.getDate())))
+       ) {
+         setDateError("L'étudiant doit avoir au moins 17 ans.");
+       } else {
+         setDateError(null);
+       }
+     }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    console.log(e);
+     setStudent((prevStudent) => ({
+       ...prevStudent,
+       [name]: value,
+     }));
+   };
 
-    if (canSave) {
-      await dispatch(updateEtudiantAsync(student));
-      dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
-      //resetStudent();
-    }
-  };
 
-  const resetStudent = () => {
-    setStudent({
-      noEtudiant: "",
-      nom: "",
-      prenom: "",
-      motPasse: "",
-      sexe: "",
-      dateNaissance: null,
-      lieuNaissance: "",
-      nationalite: "",
-      telephone: "",
-      mobile: "",
-      email: "",
-      emailUbo: "",
-      adresse: "",
-      codePostal: "",
-      ville: "",
-      paysOrigine: "",
-      universiteOrigine: "",
-      groupeTp: -1,
-      groupeAnglais: -1,
-      anneeUniversitaire: "",
-      codeFormation: "",
-    });
-    setDateError(null);
-  };
+   const handleSubmit = async (e: React.FormEvent) => {
+     if (canSave) {
+       await dispatch(updateEtudiantAsync(student));
+       dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
+     }
+   };
 
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    return date instanceof Date ? date.toISOString().split("T")[0] : date;
-  };
+   const formatDate = (date: string | Date | null) => {
+     if (date === null) return "";
+     return date instanceof Date ? date.toISOString().split("T")[0] : date;
+   };
 
-  useEffect(() => {
-    console.log(student);
-    
-    if (student != null || student !== undefined)
-      setCanSave(
-        student.nom.trim() !== "" &&
-          student.prenom.trim() !== "" &&
-          student.sexe.trim() !== "" &&
-          student.email.trim() !== "" &&
-          student.emailUbo.trim() !== "" &&
-          student.noEtudiant.trim() !== "" &&
-          student.dateNaissance !== null &&
-          dateError === null &&
-          student.lieuNaissance.trim() !== "" &&
-          student.nationalite.trim() !== "" &&
-          student.adresse.trim() !== "" &&
-          student.ville.trim() !== "" &&
-          student.paysOrigine.trim() !== "" &&
-          student.universiteOrigine.trim() !== "" &&
-          student.anneeUniversitaire.trim() !== "" &&
-          student.codeFormation.trim() !== ""
-      );
-  }, [student]);
+   useEffect(() => {
+     if (Object.keys(student).length !== 0)
+       setCanSave(
+         student.nom.trim() !== "" &&
+           student.prenom.trim() !== "" &&
+           student.sexe.trim() !== "" &&
+           student.email.trim() !== "" &&
+           student.emailUbo.trim() !== "" &&
+           student.noEtudiant.trim() !== "" &&
+           student.dateNaissance !== null &&
+           dateError === null &&
+           student.lieuNaissance.trim() !== "" &&
+           student.nationalite.trim() !== "" &&
+           student.adresse.trim() !== "" &&
+           student.ville.trim() !== "" &&
+           student.paysOrigine.trim() !== "" &&
+           student.universiteOrigine.trim() !== "" &&
+           student.anneeUniversitaire.trim() !== "" &&
+           student.codeFormation.trim() !== ""
+       );
+   }, [student, dateError]);
 
-  const pays = useAppSelector(getPays);
-  const universite = useAppSelector(getUniversite);
+   useEffect(() => {
+     dispatch(getDomainePaysAsync());
+     dispatch(getDomaineUnivAsync());
+     dispatch(getFormationAsync());
+     dispatch(getEtudiantByIdAsync(studentData.noEtudiant));
+   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(getDomainePaysAsync());
-    dispatch(getDomaineUnivAsync());
-    dispatch(getFormationAsync());
-  }, [dispatch]);
+   useEffect(() => {
+     setStudent(studentData);
+   }, [studentData]);
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -254,7 +235,7 @@ const UpdateEtudiant = ({
                   required
                   type="date"
                   name="dateNaissance"
-                  value={formatDate(student.dateNaissance)}
+                  value={formatDate(studentData.dateNaissance)}
                   onChange={handleChange}
                   className="grow"
                 />
@@ -379,11 +360,9 @@ const UpdateEtudiant = ({
                       e.target.value
                   );
                   if (selectedPromotion) {
-                    setStudent((prevStudent) => ({
-                      ...prevStudent,
-                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
-                      codeFormation: selectedPromotion.codeFormation,
-                    }));
+                    student["anneeUniversitaire"] =
+                      selectedPromotion.anneeUniversitaire;
+                    student["codeFormation"] = selectedPromotion.codeFormation;
                   }
                 }}
               >
@@ -453,9 +432,7 @@ const UpdateEtudiant = ({
         </form>
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn" >
-              Annuler
-            </button>
+            <button className="btn">Annuler</button>
             <button
               className="btn btn-neutral hover:cursor-pointer"
               onClick={handleSubmit}
