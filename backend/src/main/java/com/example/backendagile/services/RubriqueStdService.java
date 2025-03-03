@@ -2,6 +2,7 @@ package com.example.backendagile.services;
 
 import com.example.backendagile.dto.RubriqueStdDTO;
 import com.example.backendagile.entities.Enseignant;
+import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.mapper.RubriqueStdMapper;
 import com.example.backendagile.repositories.RubriqueStdRepository;
@@ -72,5 +73,17 @@ public class RubriqueStdService {
      */
     public void deleteById(Long id) {
         rubriqueRepository.deleteById(id);
+    }
+
+    public List<Rubrique> searchRubriquePaged(String keyword, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        String formattedKeyword = "%" + keyword + "%";
+        return rubriqueRepository.searchRubriqueWithPagination(formattedKeyword, startRow, endRow);
+    }
+
+    public int getTotalPagesForSearch(String keyword, int size) {
+        long totalCount = rubriqueRepository.countByDesignationContainingIgnoreCase(keyword);
+        return (int) Math.ceil((double) totalCount / size);
     }
 }
