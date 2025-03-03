@@ -65,5 +65,16 @@ public class QualificatifService {
         return (int) Math.ceil((double) totalCount / size);
     }
     
+    public List<Qualificatif> getAllQualificatifsPaged(int page, int size) {
+        int startRow = (page) * size;
+        int endRow = startRow + size;
+        return qualificatifRepository.findAllWithPagination(startRow, endRow);
+    }
+    
+    public int getTotalPages(int size) {
+        long totalItems = qualificatifRepository.count();
+        return (int) Math.ceil((double) totalItems / size);
+    }
+    
     
 }
