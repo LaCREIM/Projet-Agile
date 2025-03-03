@@ -28,6 +28,20 @@ public interface PromotionRepository extends JpaRepository<Promotion, PromotionI
   
     @Query("SELECT COUNT(p) FROM Promotion p WHERE p.enseignant = :enseignant")
     Long countByEnseignant(@Param("enseignant") Enseignant enseignant);
+
+    @Query("SELECT p FROM Promotion p ORDER BY p.id.anneeUniversitaire DESC")
+    List<Promotion> findAllPromotions();
+
+    @Query("SELECT p FROM Promotion p " +
+            "JOIN Formation f ON f.codeFormation = p.id.codeFormation " +
+            "WHERE LOWER(p.id.codeFormation) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.id.anneeUniversitaire) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.enseignant.emailUbo) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.enseignant.nom) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.enseignant.prenom) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(f.nomFormation) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Promotion> searchPromotions(@Param("keyword") String keyword);
+
 }
 
 

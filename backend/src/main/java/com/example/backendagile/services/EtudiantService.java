@@ -141,4 +141,12 @@ public void deleteById(String id) {
     public Object getTotalPages(int size) {
         return Math.ceil((double) etudiantRepository.count() / size);
     }
+
+    public List<Etudiant> searchEtudiants(String keyword) {
+        return etudiantRepository.searchEtudiants(keyword.toLowerCase());
+    }
+
+    public Optional<Etudiant> findByEmailandId(String emailUbo, String id) {
+        return etudiantRepository.findByEmailandId(emailUbo,id).stream().findFirst();
+    }
 }

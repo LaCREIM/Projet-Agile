@@ -1,6 +1,7 @@
 package com.example.backendagile.services;
 
 import com.example.backendagile.dto.RubriqueStdDTO;
+import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.mapper.RubriqueStdMapper;
 import com.example.backendagile.repositories.RubriqueStdRepository;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
+import java.util.Comparator;
 @Service
 public class RubriqueStdService {
 
@@ -22,9 +24,13 @@ public class RubriqueStdService {
     /**
      * Récupérer toutes les rubriques standards
      */
-    public List<Rubrique> getStandardRubriques() {
-        return rubriqueRepository.findByType("RBS");
-    }
+   public List<Rubrique> getStandardRubriques() {
+    return rubriqueRepository.findByType("RBS")
+            .stream()
+            .sorted(Comparator.comparing(Rubrique::getDesignation, String.CASE_INSENSITIVE_ORDER))
+            .collect(Collectors.toList());
+}
+
 
     /**
      * Récupérer une rubrique standard par ID 
@@ -55,6 +61,10 @@ public class RubriqueStdService {
         rubrique.setDesignation(newDesignation);
 
         return rubriqueRepository.save(rubrique);
+    }
+
+    public Optional<Rubrique> findByDesignation(String designation) {
+        return rubriqueRepository.findRubriqueByDesignation(designation).stream().findFirst();
     }
 
     /**

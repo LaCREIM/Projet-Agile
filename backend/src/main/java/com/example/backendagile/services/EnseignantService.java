@@ -46,17 +46,7 @@ public class EnseignantService {
 
  
 
-/*@Transactional
-public void deleteById(Long id) {
-    Optional<Enseignant> enseignant = enseignantRepository.findById(id);
-    
-    if (enseignant.isPresent()) {
-        authentificationRepository.deleteByEnseignant(enseignant.get()); 
-        enseignantRepository.deleteById(id); 
-    } else {
-        throw new EntityNotFoundException("Enseignant non trouvé");
-    }
-}*/
+
 
     @Transactional
     public void deleteById(Long id) {
@@ -81,8 +71,12 @@ public void deleteById(Long id) {
         return enseignantRepository.findByNomAndPrenom(nom, prenom);
     }
 
-    public Optional<Enseignant> findByEmail(String emailUbo) {
+    public Optional<Enseignant> findByEmailUbo(String emailUbo) {
         return enseignantRepository.findByEmailUbo(emailUbo).stream().findFirst();
+    }
+
+    public Optional<Enseignant> findByEmailPerso(String emailPerso) {
+        return enseignantRepository.findByEmailPerso(emailPerso).stream().findFirst();
     }
 
     public List<Enseignant> getEnseignant() {

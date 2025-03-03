@@ -2,6 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.QualificatifDTO;
 import com.example.backendagile.entities.Qualificatif;
+import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.mapper.QualificatifMapper;
 import com.example.backendagile.services.QualificatifService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/qualificatifs")
@@ -45,10 +49,22 @@ public class QualificatifController {
      * 🔸 Créer un nouveau qualificatif (utilise `QualificatifDTO` pour la requête)
      */
     @PostMapping
-    public ResponseEntity<Qualificatif> createQualificatif(@RequestBody QualificatifDTO qualificatifDTO) {
-        Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
-        Qualificatif savedQualificatif = qualificatifService.save(qualificatif);
-        return ResponseEntity.status(201).body(savedQualificatif);
+    public ResponseEntity<String> createQualificatif(@RequestBody QualificatifDTO qualificatifDTO) {
+
+        try{
+            Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(qualificatifDTO.getMinimal().trim(), qualificatifDTO.getMaximal().trim());
+            if(existingQualificatif.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Le qualificatif existe déjà.");
+            }
+
+            Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
+            Qualificatif savedQualificatif = qualificatifService.save(qualificatif);
+            return ResponseEntity.status(201).body("Le qualificatif a été créé avec succès.");
+        } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+
     }
 
     /**
@@ -59,10 +75,21 @@ public class QualificatifController {
         if (!qualificatifService.findById(id).isPresent()) {
             return ResponseEntity.status(404).body("Aucun qualificatif trouvé avec cet ID.");
         }
-        Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
-        qualificatif.setId(id);
-        qualificatifService.save(qualificatif);
-        return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
+
+        try{
+            Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(qualificatifDTO.getMinimal().trim(), qualificatifDTO.getMaximal().trim());
+            if(existingQualificatif.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Le qualificatif existe déjà.");
+            }
+            Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
+            qualificatif.setId(id);
+            qualificatifService.save(qualificatif);
+            return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     /**
@@ -88,4 +115,28 @@ public class QualificatifController {
     public ResponseEntity<Boolean> existsDansQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(qualificatifService.existsDansQuestion(id));
     }
+   
+   /*  @GetMapping("/search")
+    public ResponseEntity<List<Qualificatif>> searchQualificatifs(@RequestParam String query) {
+        List<Qualificatif> result = qualificatifService.searchQualificatifs(query);
+        return ResponseEntity.ok(result);
+    }
+*/
+@GetMapping("/search-paged")
+public ResponseEntity<Map<String, Object>> searchQualificatifsPaged(
+        @RequestParam String keyword,
+        @RequestParam int page,
+        @RequestParam int size) {
+    
+    List<Qualificatif> qualificatifs = qualificatifService.searchQualificatifsPaged(keyword, page, size);
+    int totalPages = qualificatifService.getTotalPagesForSearch(keyword, size);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("qualificatifs", qualificatifs);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
+
+
 }

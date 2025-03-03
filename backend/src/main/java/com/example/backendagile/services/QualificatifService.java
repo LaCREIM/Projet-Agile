@@ -4,10 +4,15 @@ import com.example.backendagile.entities.Qualificatif;
 import com.example.backendagile.repositories.QualificatifRepository;
 import com.example.backendagile.repositories.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.Comparator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class QualificatifService {
@@ -18,9 +23,6 @@ public class QualificatifService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    public List<Qualificatif> findAll() {
-        return qualificatifRepository.findAll();
-    }
 
     public Optional<Qualificatif> findById(Long id) {
         return qualificatifRepository.findById(id);
@@ -37,4 +39,31 @@ public class QualificatifService {
     public Boolean existsDansQuestion(Long id) {
         return questionRepository.existsByQualificatifId(id);
     }
+
+    public Optional<Qualificatif> findByMinimalAndMaximal(String minimal, String maximal) {
+        return Optional.ofNullable(qualificatifRepository.findByDesignation(minimal, maximal));
+    }
+     public List<Qualificatif> findAll() {
+        List<Qualificatif> qualificatifs = qualificatifRepository.findAll();
+        return qualificatifs.stream()
+                .sorted(Comparator.comparing(Qualificatif::getMinimal, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+    }
+
+   /*  public List<Qualificatif> searchQualificatifs(String searchTerm) {
+        return qualificatifRepository.findByMinimalContainingIgnoreCaseOrMaximalContainingIgnoreCase(searchTerm, searchTerm);
+    }
+    */
+    public List<Qualificatif> searchQualificatifsPaged(String keyword, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        String formattedKeyword = "%" + keyword + "%";  
+        return qualificatifRepository.searchWithPagination(formattedKeyword, startRow, endRow);
+    }
+    public int getTotalPagesForSearch(String keyword, int size) {
+        long totalCount = qualificatifRepository.countByMinimalContainingIgnoreCaseOrMaximalContainingIgnoreCase(keyword, keyword);
+        return (int) Math.ceil((double) totalCount / size);
+    }
+    
+    
 }

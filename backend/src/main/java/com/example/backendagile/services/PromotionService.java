@@ -12,6 +12,7 @@ import com.example.backendagile.repositories.PromotionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -47,10 +48,8 @@ public class PromotionService {
      * @return A list of {@link PromotionDTO} objects representing all promotions.
      */
     public List<PromotionDTO> getAllPromotions() {
-        List<Promotion> promotions = promotionRepository.findAll();
-        System.out.println(promotions);
-        List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt -> promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
-        return promotionDTOs;
+        List<Promotion> promotions = promotionRepository.findAllPromotions();
+        return promotions.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
     }
 
     /**
@@ -117,6 +116,10 @@ public class PromotionService {
         List<Promotion> promotions = promotionRepository.findAllWithPagination(startRow, endRow);
         List<PromotionDTO> promotionDTOs = promotions.stream().map(pmt -> promotionMapper.fromPromotion(pmt)).collect(Collectors.toList());
         return promotionDTOs;
+    }
+
+    public List<Promotion> searchPromotions(String keyword) {
+        return promotionRepository.searchPromotions(keyword.toLowerCase());
     }
 
 

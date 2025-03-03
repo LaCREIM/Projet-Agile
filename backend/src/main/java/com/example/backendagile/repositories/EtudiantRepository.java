@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.List;
 import java.util.Optional;
 //import org.springframework.data.domain.Page;
@@ -27,4 +29,21 @@ List<Etudiant> findByPromotionCodeAndFormation(@Param("anneeUniversitaire") Stri
     List<Etudiant> findByNomAndPrenom(String nom, String prenom);
 
     List<Etudiant> findByEmail(@NotBlank String email);
+    
+    @Query("SELECT e FROM Etudiant e " +
+       "WHERE LOWER(e.nom) LIKE %:keyword% " +
+       "OR LOWER(e.prenom) LIKE %:keyword% " +
+       "OR LOWER(e.nationalite) LIKE %:keyword% " +
+       "OR LOWER(e.email) LIKE %:keyword% " +
+       "OR LOWER(e.promotion.id.anneeUniversitaire) LIKE %:keyword% " +
+       "OR LOWER(e.promotion.id.codeFormation) LIKE %:keyword% " +
+       "OR LOWER(e.universiteOrigine) LIKE %:keyword%")
+List<Etudiant> searchEtudiants(@Param("keyword") String keyword);
+
+
+    List<Etudiant> findByNoEtudiant(String noEtudiant);
+
+    @Query("SELECT e FROM Etudiant e WHERE e.email = :email AND e.noEtudiant != :id")
+    List<Etudiant> findByEmailandId(@NotBlank String email, String id);
+
 }

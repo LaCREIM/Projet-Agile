@@ -13,8 +13,10 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long>, PagingAndSortingRepository<Question, Long> {
-    @Query("SELECT q FROM Question q WHERE q.type = 'QUS' AND q.noEnseignant IS NULL")
+
+    @Query("SELECT q FROM Question q WHERE q.type = 'QUS' ORDER BY q.intitule ASC")
     List<Question> findStandardQuestions();
+
 
     @Query(value = """
                 SELECT * FROM (
@@ -28,4 +30,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
     @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
     Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
 
+    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule")
+    List<Question> findQuestionByIntitule(String intitule);
+    
 }
