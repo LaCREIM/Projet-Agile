@@ -70,4 +70,15 @@ public class RubriquePrsService {
                 .collect(Collectors.toList());
     }
 
+    public List<Rubrique> searchRubriquePaged(String keyword, Long noEnseignat, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        String formattedKeyword = "%" + keyword + "%";
+        return rubriqueRepository.searchRubriqueWithPagination(formattedKeyword,noEnseignat, startRow, endRow);
+    }
+
+    public int getTotalPagesForSearch(String keyword, int size) {
+        long totalCount = rubriqueRepository.countByDesignationContainingIgnoreCase(keyword);
+        return (int) Math.ceil((double) totalCount / size);
+    }
 }
