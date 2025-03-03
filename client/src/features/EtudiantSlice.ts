@@ -83,6 +83,37 @@ export const getEtudiantAsync = createAsyncThunk<EtudiantResponse, { page: numbe
     }
 );
 
+export const getEtudiantByIdAsync = createAsyncThunk<Etudiant, string, {
+    rejectValue: string
+}>(
+    "etudiants/getEtudiantByIdAsync",
+    async (id, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<Etudiant>(`/etudiants/${id}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+export const searchEtudiantsAsync = createAsyncThunk<EtudiantResponse, { page: number; size: number }, {
+    rejectValue: string
+}>(
+    "etudiants/searchEtudiantsAsync",
+    async ({ page, size }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<EtudiantResponse>(`/etudiants/search?page=${page}&size=${size}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+
 export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], PromotionDetails, { rejectValue: string }>(
     "students/getEtudiantByPromotionAsync",
     async (promotionDetails, {rejectWithValue}) => {
@@ -172,15 +203,19 @@ const etudiantSlice = createSlice({
                     state.etudiants[index] = action.payload;
                 }
             })
-
             .addCase(deleteEtudiantAsync.fulfilled, (state, action: PayloadAction<string>) => {
                 state.etudiants = state.etudiants.filter((e) => e.noEtudiant !== action.payload);
+            })
+            .addCase(getEtudiantByIdAsync.fulfilled, (state, action: PayloadAction<Etudiant> ) => {
+                state.etudiant = action.payload;
             })
 
     },
 });
 
 export const getEtudiants = (state: { etudiants: EtudiantState }) => state.etudiants.etudiants;
+
+export const getEtudiant = (state: { etudiants: EtudiantState }) => state.etudiants.etudiant;
 
 export const getPays = (state: { etudiants: EtudiantState }) => state.etudiants.pays;
 

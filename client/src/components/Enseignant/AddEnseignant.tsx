@@ -90,32 +90,31 @@ const AddEnseignant = () => {
       <div className="modal-box w-[50em] max-w-5xl ">
         <h3 className="font-bold text-lg my-4">Ajouter un enseignant</h3>
         <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-5">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Nom</span>
-                <input
-                  required
-                  type="text"
-                  name="nom"
-                  value={enseignant.nom}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: Dupont"
-                />
-              </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Prénom</span>
-                <input
-                  required
-                  type="text"
-                  name="prenom"
-                  value={enseignant.prenom}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: Jean"
-                />
-              </label>
-
+          <div className="grid grid-cols-2 gap-5">
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Nom</span>
+              <input
+                required
+                type="text"
+                name="nom"
+                value={enseignant.nom}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Dupont"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Prénom</span>
+              <input
+                required
+                type="text"
+                name="prenom"
+                value={enseignant.prenom}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Jean"
+              />
+            </label>
 
             <label className="flex items-center gap-2">
               <select
@@ -198,25 +197,24 @@ const AddEnseignant = () => {
             </label>
 
             <label className="input input-bordered flex items-center gap-2 relative">
-                <span className="font-semibold">Mot de passe</span>
-                <input
-                  required
-                  type={showPassword ? "text" : "password"}
-                  name="motPasse"
-                  value={enseignant.motPasse}
-                  onChange={handleChange}
-                  className="grow pr-10"
-                  placeholder="Mot de passe"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </label>
-
+              <span className="font-semibold">Mot de passe</span>
+              <input
+                required
+                type={showPassword ? "text" : "password"}
+                name="motPasse"
+                value={enseignant.motPasse}
+                onChange={handleChange}
+                className="grow pr-10"
+                placeholder="Mot de passe"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </label>
 
             <label className="flex items-center gap-2">
               <select
@@ -229,34 +227,28 @@ const AddEnseignant = () => {
                 <option disabled value="">
                   Sélectionnez un type
                 </option>
-              <option value="MCF">Maître de Conférences</option>
-              <option value="INT">Intervenant-Exterieur</option>
-              <option value="PR">Professeur des Universités</option>
-              <option value="PRAST">Professionnel Associé</option>
-              <option value="PRAG">Professeur Agrégé</option>
+                <option value="MCF">Maître de Conférences</option>
+                <option value="INT">Intervenant-Exterieur</option>
+                <option value="PR">Professeur des Universités</option>
+                <option value="PRAST">Professionnel Associé</option>
+                <option value="PRAG">Professeur Agrégé</option>
               </select>
             </label>
 
-              <EnseignantInfo
-                setEnseignant={setEnseignant}
-              />
-            
-
+            <EnseignantInfo setEnseignant={setEnseignant} />
           </div>
 
           <div className="modal-action">
-            <form action="">
-
-
-            <button className="btn">Annuler</button>
-            <button
-              type="submit"
-              className="btn btn-neutral disabled:cursor-not-allowed"
-              disabled={!canSave}
+            <form method="dialog">
+              <button className="btn">Annuler</button>
+              <button
+                type="submit"
+                className="btn btn-neutral disabled:cursor-not-allowed"
+                disabled={!canSave}
               >
-              Ajouter
-            </button>{" "}
-              </form>
+                Ajouter
+              </button>{" "}
+            </form>
           </div>
         </form>
       </div>

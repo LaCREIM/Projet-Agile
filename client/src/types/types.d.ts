@@ -204,6 +204,7 @@ export interface Promotion {
     prenom: string;
     type: string;
     emailEnseignant: string;
+    [key: string]: any;
 }
 
 export interface PromotionCreate {
