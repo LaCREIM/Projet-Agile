@@ -40,7 +40,7 @@ const StudentHome = ({
 }: StudentHomeProps) => {
   document.title = "UBO | Étudiants";
   const dispatch = useAppDispatch();
-  const etudiants = useAppSelector((state) => state.etudiants.etudiants) || [];
+  const etudiants = useAppSelector((state) => state.etudiants.etudiants);
   const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
   const [search, setSearch] = useState<string>("");
@@ -67,7 +67,7 @@ const StudentHome = ({
 
   /**********************  UseEffect *********************/
 
- 
+ console.log(etudiants);
 
   const handleFetch = async () => {
     await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
@@ -79,6 +79,8 @@ const StudentHome = ({
 
   useEffect(() => {
     dispatch(getPromotionAsync());
+    
+    
     if (
       promotionDetails.anneeUniversitaire == "-1" &&
       promotionDetails.codeFormation == ""
@@ -89,12 +91,7 @@ const StudentHome = ({
     }
   }, [dispatch, currentPage, promotionDetails]);
 
-  useEffect(() => {
-    if (JSON.stringify(filteredEtudiants) !== JSON.stringify(etudiants)) {
-      setfilteredEtudiants(etudiants);
-      console.log("Filtered students:", filteredEtudiants);
-    }
-  }, [etudiants]);
+  
 
   /**********************  Functions ********************/
 
@@ -145,7 +142,6 @@ const StudentHome = ({
       try {
         const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
         setPro(selectedPromotion);
-        console.log("Selected promotion:", selectedPromotion);
         handleFetchByPromotion(selectedPromotion);
       } catch (error) {
         console.error("Error parsing promotion details:", error);
@@ -310,7 +306,7 @@ const StudentHome = ({
               </tr>
             </thead>
             <tbody>
-              {etudiants.length === 0 || filteredEtudiants.length === 0 ? (
+              {etudiants.length === 0  ? (
                 <tr>
                   <td
                     colSpan={11}
@@ -320,7 +316,7 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
+                etudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
                     key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"

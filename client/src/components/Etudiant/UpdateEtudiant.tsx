@@ -24,9 +24,11 @@ const UpdateEtudiant = ({
 }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
   const [dateError, setDateError] = useState<string | null>(null);
-  const [student, setStudent] = useState<Etudiant>({
-    ...studentData,
-  });
+
+  
+
+  console.log("got student",studentData);
+  
   const [canSave, setCanSave] = useState(true);
 
   const handleChange = (
@@ -52,48 +54,19 @@ const UpdateEtudiant = ({
       }
     }
 
-    setStudent((prevStudent) => ({
-      ...prevStudent,
-      [name]: value,
-    }));
+    studentData[name] = value;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log(e);
 
     if (canSave) {
-      await dispatch(updateEtudiantAsync(student));
+      await dispatch(updateEtudiantAsync(studentData));
       dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
-      //resetStudent();
     }
   };
 
-  const resetStudent = () => {
-    setStudent({
-      noEtudiant: "",
-      nom: "",
-      prenom: "",
-      motPasse: "",
-      sexe: "",
-      dateNaissance: null,
-      lieuNaissance: "",
-      nationalite: "",
-      telephone: "",
-      mobile: "",
-      email: "",
-      emailUbo: "",
-      adresse: "",
-      codePostal: "",
-      ville: "",
-      paysOrigine: "",
-      universiteOrigine: "",
-      groupeTp: -1,
-      groupeAnglais: -1,
-      anneeUniversitaire: "",
-      codeFormation: "",
-    });
-    setDateError(null);
-  };
+  
 
   const formatDate = (date: string | Date | null) => {
     if (date === null) return "";
@@ -101,28 +74,28 @@ const UpdateEtudiant = ({
   };
 
   useEffect(() => {
-    console.log(student);
+    console.log(studentData);
     
-    if (student != null || student !== undefined)
+    if (studentData != null || studentData !== undefined)
       setCanSave(
-        student.nom.trim() !== "" &&
-          student.prenom.trim() !== "" &&
-          student.sexe.trim() !== "" &&
-          student.email.trim() !== "" &&
-          student.emailUbo.trim() !== "" &&
-          student.noEtudiant.trim() !== "" &&
-          student.dateNaissance !== null &&
+        studentData.nom.trim() !== "" &&
+          studentData.prenom.trim() !== "" &&
+          studentData.sexe.trim() !== "" &&
+          studentData.email.trim() !== "" &&
+          studentData.emailUbo.trim() !== "" &&
+          studentData.noEtudiant.trim() !== "" &&
+          studentData.dateNaissance !== null &&
           dateError === null &&
-          student.lieuNaissance.trim() !== "" &&
-          student.nationalite.trim() !== "" &&
-          student.adresse.trim() !== "" &&
-          student.ville.trim() !== "" &&
-          student.paysOrigine.trim() !== "" &&
-          student.universiteOrigine.trim() !== "" &&
-          student.anneeUniversitaire.trim() !== "" &&
-          student.codeFormation.trim() !== ""
+          studentData.lieuNaissance.trim() !== "" &&
+          studentData.nationalite.trim() !== "" &&
+          studentData.adresse.trim() !== "" &&
+          studentData.ville.trim() !== "" &&
+          studentData.paysOrigine.trim() !== "" &&
+          studentData.universiteOrigine.trim() !== "" &&
+          studentData.anneeUniversitaire.trim() !== "" &&
+          studentData.codeFormation.trim() !== ""
       );
-  }, [student]);
+  }, [studentData]);
 
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
@@ -147,7 +120,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="nom"
-                value={student.nom}
+                value={studentData.nom}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: John"
@@ -161,7 +134,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="prenom"
-                value={student.prenom}
+                value={studentData.prenom}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Doe"
@@ -175,7 +148,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="noEtudiant"
-                value={student.noEtudiant}
+                value={studentData.noEtudiant}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: YI98765"
@@ -189,7 +162,7 @@ const UpdateEtudiant = ({
                 required
                 type="password"
                 name="motPasse"
-                value={student.motPasse}
+                value={studentData.motPasse}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Entrez un mot de passe"
@@ -203,7 +176,7 @@ const UpdateEtudiant = ({
                 required
                 type="email"
                 name="email"
-                value={student.email}
+                value={studentData.email}
                 onChange={handleChange}
                 className="grow"
                 placeholder="john.doe@gamil.com"
@@ -217,7 +190,7 @@ const UpdateEtudiant = ({
                 required
                 type="email"
                 name="emailUbo"
-                value={student.emailUbo}
+                value={studentData.emailUbo}
                 onChange={handleChange}
                 className="grow"
                 placeholder="john.doe@univ.fr"
@@ -228,7 +201,7 @@ const UpdateEtudiant = ({
               <input
                 type="text"
                 name="telephone"
-                value={student.telephone}
+                value={studentData.telephone}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 0700000000"
@@ -239,7 +212,7 @@ const UpdateEtudiant = ({
               <input
                 type="text"
                 name="mobile"
-                value={student.mobile}
+                value={studentData.mobile}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 0700000000"
@@ -254,7 +227,7 @@ const UpdateEtudiant = ({
                   required
                   type="date"
                   name="dateNaissance"
-                  value={formatDate(student.dateNaissance)}
+                  value={formatDate(studentData.dateNaissance)}
                   onChange={handleChange}
                   className="grow"
                 />
@@ -269,7 +242,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="lieuNaissance"
-                value={student.lieuNaissance}
+                value={studentData.lieuNaissance}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Paris"
@@ -283,7 +256,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="nationalite"
-                value={student.nationalite}
+                value={studentData.nationalite}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Marocaine"
@@ -297,7 +270,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="adresse"
-                value={student.adresse}
+                value={studentData.adresse}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 12 rue..."
@@ -311,7 +284,7 @@ const UpdateEtudiant = ({
                 required
                 type="text"
                 name="ville"
-                value={student.ville}
+                value={studentData.ville}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: Brest"
@@ -322,7 +295,7 @@ const UpdateEtudiant = ({
               <input
                 type="text"
                 name="codePostal"
-                value={student.codePostal}
+                value={studentData.codePostal}
                 onChange={handleChange}
                 className="grow"
                 placeholder="Ex: 29200"
@@ -332,7 +305,7 @@ const UpdateEtudiant = ({
               <select
                 required
                 name="sexe"
-                value={student.sexe}
+                value={studentData.sexe}
                 onChange={handleChange}
                 className="select select-bordered "
               >
@@ -348,7 +321,7 @@ const UpdateEtudiant = ({
                 required
                 className="select max-w-full"
                 name="paysOrigine"
-                value={student.paysOrigine}
+                value={studentData.paysOrigine}
                 onChange={handleChange}
               >
                 <option value="" disabled>
@@ -368,8 +341,8 @@ const UpdateEtudiant = ({
                 className="select"
                 name="promotion"
                 value={
-                  student.anneeUniversitaire && student.codeFormation
-                    ? `${student.anneeUniversitaire}-${student.codeFormation}`
+                  studentData.anneeUniversitaire && studentData.codeFormation
+                    ? `${studentData.anneeUniversitaire}-${studentData.codeFormation}`
                     : ""
                 }
                 onChange={(e) => {
@@ -379,11 +352,9 @@ const UpdateEtudiant = ({
                       e.target.value
                   );
                   if (selectedPromotion) {
-                    setStudent((prevStudent) => ({
-                      ...prevStudent,
-                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
-                      codeFormation: selectedPromotion.codeFormation,
-                    }));
+                    studentData["anneeUniversitaire"] =
+                      selectedPromotion.anneeUniversitaire;
+                    studentData["codeFormation"] = selectedPromotion.codeFormation
                   }
                 }}
               >
@@ -406,7 +377,7 @@ const UpdateEtudiant = ({
                 required
                 className="select"
                 name="universiteOrigine"
-                value={student.universiteOrigine}
+                value={studentData.universiteOrigine}
                 onChange={handleChange}
               >
                 <option value="" disabled>
@@ -424,7 +395,7 @@ const UpdateEtudiant = ({
               <select
                 required
                 name="groupeAnglais"
-                value={student.groupeAnglais}
+                value={studentData.groupeAnglais}
                 onChange={handleChange}
                 className="select select-bordered"
               >
@@ -438,7 +409,7 @@ const UpdateEtudiant = ({
             <label className="flex flex-row items-center gap-2">
               <select
                 name="groupeTp"
-                value={student.groupeTp}
+                value={studentData.groupeTp}
                 onChange={handleChange}
                 className="select select-bordered"
               >

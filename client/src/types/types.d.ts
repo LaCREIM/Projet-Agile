@@ -154,6 +154,7 @@ export interface Etudiant {
     universiteOrigine: string;
     groupeTp: number;
     groupeAnglais: number;
+    [key: string]: any;
 }
 
 export interface Evaluation {
