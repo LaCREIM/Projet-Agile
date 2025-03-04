@@ -98,8 +98,9 @@ public class QuestionPrsService {
         return questionRepository.findQuestionsPaged(noEnseignant,startRow, endRow);
     }
    
-    public int getTotalPages(int size) {
-        long totalQuestions = questionRepository.countByType("QUP");
+    public int getTotalPages(Long noEnseignant, int size) {
+        long totalQuestions = questionRepository.countByTypeForEnseignant(noEnseignant);
         return (int) Math.ceil((double) totalQuestions / size);
     }
+    
 }

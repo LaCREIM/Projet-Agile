@@ -14,14 +14,14 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long>, PagingAndSortingRepository<Question, Long> {
 
-    @Query("SELECT q FROM Question q WHERE q.type = 'QUS' ORDER BY q.intitule ASC")
+    @Query("SELECT q FROM Question q WHERE q.type = 'QUS' ORDER BY UPPER(q.intitule) ASC")
     List<Question> findStandardQuestions();
 
 
 @Query(value = """
             SELECT * FROM (
                 SELECT q.*, ROWNUM rnum FROM (
-                    SELECT * FROM QUESTION WHERE TYPE = 'QUS' ORDER BY INTITULE
+                    SELECT * FROM QUESTION WHERE TYPE = 'QUS' ORDER BY UPPER(INTITULE)
                 ) q WHERE ROWNUM <= :endRow
             ) WHERE rnum > :startRow
             """, nativeQuery = true)
@@ -48,7 +48,7 @@ long countByType(String type);
                       UPPER(qual.MINIMAL) LIKE UPPER('%' || :keyword || '%') OR
                       UPPER(qual.MAXIMAL) LIKE UPPER('%' || :keyword || '%')
                   )
-                ORDER BY qu.INTITULE
+                ORDER BY UPPER(qu.INTITULE)
             ) q WHERE ROWNUM <= :endRow
         ) WHERE rnum > :startRow
         """, nativeQuery = true)
