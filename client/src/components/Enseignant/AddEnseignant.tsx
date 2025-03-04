@@ -5,8 +5,7 @@ import { Enseignant } from "../../types/types";
 import { Eye, EyeOff } from "lucide-react";
 import { getPays } from "../../features/EnseignantSlice";
 
-const AddEnseignant = () => {
-  const dispatch = useAppDispatch();
+const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatch = useAppDispatch();
   const enseignantNull: Enseignant = {
     id: 0,
     type: "",
@@ -83,29 +82,42 @@ const [errors, setErrors] = useState<{ [key: string]: string }>({});
     return Object.keys(newErrors).length === 0;
   };
   const handleSubmit = async (e: React.FormEvent) => {
-
+    e.preventDefault();
+  
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
       return;
     }
-
+  
     if (!validateFields()) {
       console.error("Validation échouée.");
       return;
     }
+  
     try {
-      const response = await dispatch(postEnseignantAsync(enseignant));
-      if (response.meta.requestStatus === "fulfilled") {
-        dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+      const response = await dispatch(postEnseignantAsync(enseignant)).unwrap();
+  
+      console.log("Réponse reçue :", response);
+  
+      if (response !== undefined) {
+        // Rafraîchir la liste des enseignants après un ajout réussi
+        await dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+  
+        // Réinitialisation des champs
         setEnseignant(enseignantNull);
         setErrors({});
-      } else {
-        console.error("L'ajout a échoué :", response);
+        onClose();
+
+        // 🔹 Fermer le formulaire après soumission réussie
+
+        console.log("Enseignant ajouté avec succès et formulaire fermé !");
       }
     } catch (error) {
       console.error("Erreur lors de l'ajout :", error);
     }
   };
+  
+  
   useEffect(() => {
     dispatch(getDomainePaysAsync());
 }, [dispatch]);

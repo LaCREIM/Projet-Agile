@@ -52,8 +52,6 @@ public class QuestionStdController {
             if(existingQuestion.isPresent()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
-
-
             QuestionStdDTO createdQuestion = questionStdService.createStandardQuestion(questionStdDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("La question a été créée avec succès.");
         } catch (IllegalArgumentException e) {
