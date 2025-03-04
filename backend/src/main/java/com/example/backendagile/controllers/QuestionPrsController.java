@@ -24,23 +24,24 @@ public class QuestionPrsController {
        /**
      * Récupérer toutes les questions standards PAGINÉES et ordonnées alphabétiquement
      */
-@GetMapping("/paged")
-public ResponseEntity<Map<String, Object>> getAllQuestionsPaged(
-        @RequestParam Long noEnseignant,
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size) {
-
-    List<Question> questions = questionPrsService.getQuestionsPaged(noEnseignant,page, size);
-    int totalPages = questionPrsService.getTotalPages(size);
-
-    Map<String, Object> response = new HashMap<>();
-    response.put("questions", questions);
-    response.put("currentPage", page);
-    response.put("size", size);
-    response.put("totalPages", totalPages);
-
-    return ResponseEntity.ok(response);
-}
+    @GetMapping("/paged")
+    public ResponseEntity<Map<String, Object>> getAllQuestionsPaged(
+            @RequestParam Long noEnseignant,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+    
+        List<Question> questions = questionPrsService.getQuestionsPaged(noEnseignant, page, size);
+        int totalPages = questionPrsService.getTotalPages(noEnseignant, size); 
+    
+        Map<String, Object> response = new HashMap<>();
+        response.put("questions", questions);
+        response.put("currentPage", page);
+        response.put("size", size);
+        response.put("totalPages", totalPages);
+    
+        return ResponseEntity.ok(response);
+    }
+    
 
 
     /**
