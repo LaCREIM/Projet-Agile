@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/questionsStd")
@@ -18,13 +20,51 @@ public class QuestionStdController {
     @Autowired
     private QuestionStdService questionStdService;
 
-    @GetMapping("/paged")
-    public ResponseEntity<List<Question>> getStandardQuestionsPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<Question> questions = questionStdService.getStandardQuestionsPaged(page, size);
-        return ResponseEntity.ok(questions);
-    }
+  
+
+    /**
+     * Récupérer toutes les questions standards PAGINÉES et ordonnées alphabétiquement
+     */
+@GetMapping("/paged")
+public ResponseEntity<Map<String, Object>> getAllQuestionsPaged(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+    List<Question> questions = questionStdService.getQuestionsPaged(page, size);
+    int totalPages = questionStdService.getTotalPages(size);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("questions", questions);
+    response.put("currentPage", page);
+    response.put("size", size);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
+
+
+    /**
+     * Permet de faire une recherche dont les résultats sont PAGINÉES et ordonnés par intitulé alphabetiquement
+     */
+@GetMapping("/search-paged")
+public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
+        @RequestParam String keyword,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+    List<Question> questions = questionStdService.searchQuestionsPaged(keyword, page, size);
+    int totalPages = questionStdService.getSearchTotalPages(keyword, size);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("questions", questions);
+    response.put("currentPage", page);
+    response.put("size", size);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
+
+
     /**
      * Récupérer toutes les questions standards (renvoie les entités)
      */
