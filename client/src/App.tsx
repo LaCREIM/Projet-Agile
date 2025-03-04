@@ -13,6 +13,7 @@ import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import LoginForm from "./components/Auth/LoginForm";
 import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
@@ -23,6 +24,8 @@ function App() {
   return (
     <Router basename="/">
       <AuthChecker>
+        <ToastContainer theme="colored" />
+
         <Routes>
           <Route path="/" element={<RootLayout />}>
             <Route index element={<LoginForm />} />

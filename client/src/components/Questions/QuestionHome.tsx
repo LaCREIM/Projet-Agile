@@ -106,7 +106,6 @@ const QuestionHome = () => {
 
   return (
     <>
-      <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des questions</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">

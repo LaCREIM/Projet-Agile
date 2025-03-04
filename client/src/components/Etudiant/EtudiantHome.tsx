@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  deleteEtudiantAsync,
+
   getEtudiantAsync,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
@@ -24,8 +24,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
 import { FaSearch } from "react-icons/fa";
+import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -65,9 +65,11 @@ const StudentHome = ({
 
   /**********************  UseEffect *********************/
 
-  console.log(etudiants);
-
   const handleFetch = async () => {
+    await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
+  };
+
+  const handleFetchByPage = async (currentPage: number) => {
     await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
   };
 
@@ -77,6 +79,9 @@ const StudentHome = ({
 
   useEffect(() => {
     dispatch(getPromotionAsync());
+    console.log(filteredEtudiants);
+    console.log(modal);
+
     if (
       promotionDetails.anneeUniversitaire == "-1" &&
       promotionDetails.codeFormation == ""
@@ -102,29 +107,11 @@ const StudentHome = ({
   };
 
   const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-    console.log("Selected student:", etudiant);
     setModal({ etudiant: null, index: -1 });
     setModalUpdate({ etudiant, index });
-    console.log("Modal Update state:", modalUpdate);
   };
 
-  const handleDelete = async (etudiant: Etudiant, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const response = await dispatch(deleteEtudiantAsync(etudiant.noEtudiant));
-    dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
-    if (
-      response?.payload ===
-      "Can not delete this student because it's related to an internship"
-    ) {
-      toast.error(
-        "Impossible de supprimer cet étudiant car il est lié à un stage"
-      );
-    }
-    if (response?.payload === "Etudiant deleted successfully") {
-      toast.success("Etudiant supprimé avec succès");
-    }
-  };
-
+ 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
 
@@ -160,7 +147,7 @@ const StudentHome = ({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(searchEtudiantsAsync(e.target.value));
+    // dispatch(searchEtudiantsAsync(e.target.value));
     setSearch(e.target.value.toLowerCase().trim());
   };
 
@@ -176,7 +163,6 @@ const StudentHome = ({
   return (
     <>
       <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <ToastContainer theme="colored" />
         {promotionDetails.codeFormation ? (
           <h1>
             Liste des étudiants de {promotionDetails.codeFormation} -{" "}
@@ -297,68 +283,78 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                etudiants
-                  .map((etudiant: Etudiant, index: number) => (
-                    <tr
-                      key={index}
-                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                etudiants.map((etudiant: Etudiant, index: number) => (
+                  <tr
+                    key={index}
+                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                  >
+                    <td className="px-4 py-2">{etudiant.nom}</td>
+                    <td className="px-4 py-2">{etudiant.prenom}</td>
+                    <td className="px-4 py-2">
+                      {etudiant.nationalite || "Française"}
+                    </td>
+                    <td className="px-4 py-2">{etudiant.email}</td>
+                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
+                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
+                    <td
+                      className="flex gap-3 justify-center items-center"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <td className="px-4 py-2">{etudiant.nom}</td>
-                      <td className="px-4 py-2">{etudiant.prenom}</td>
-                      <td className="px-4 py-2">
-                        {etudiant.nationalite || "Française"}
-                      </td>
-                      <td className="px-4 py-2">{etudiant.email}</td>
-                      <td className="px-4 py-2">{etudiant.codeFormation}</td>
-                      <td className="px-4 py-2">
-                        {etudiant.universiteOrigine}
-                      </td>
-                      <td
-                        className="flex gap-3 justify-center items-center"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick(etudiant, index);
-                            openModal(`inspect-${etudiant.noEtudiant}`);
-                          }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faPenToSquare}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClickUpdate(etudiant, index);
-                            openModal(`updateStudent-${etudiant.noEtudiant}`);
-                          }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-black text-base cursor-pointer"
-                          onClick={(e) => handleDelete(etudiant, e)}
-                        />
-                      </td>
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        className="text-black text-base cursor-pointer"
+                        onClick={() => {
+                          handleClick(etudiant, index);
+                          openModal(`inspect-${etudiant.noEtudiant}`);
+                        }}
+                      />
+                      <FontAwesomeIcon
+                        icon={faPenToSquare}
+                        className="text-black text-base cursor-pointer"
+                        onClick={() => {
+                          handleClickUpdate(etudiant, index);
+                          openModal(`updateStudent-${etudiant.noEtudiant}`);
+                        }}
+                      />
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className="text-black text-base cursor-pointer"
+                        onClick={() =>
+                          openModal(`delete-${etudiant.noEtudiant}`)
+                        }
+                      />
+                    </td>
 
-                      <dialog
-                        id={`updateStudent-${etudiant.noEtudiant}`}
-                        className="modal"
-                      >
-                        <UpdateEtudiant
-                          promotions={promotions}
-                          studentData={etudiant}
-                          currentpage={currentPage}
-                        />
-                      </dialog>
+                    <dialog
+                      id={`updateStudent-${etudiant.noEtudiant}`}
+                      className="modal"
+                    >
+                      <UpdateEtudiant
+                        promotions={promotions}
+                        studentData={etudiant}
+                        currentpage={currentPage}
+                      />
+                    </dialog>
 
-                      <dialog
-                        id={`inspect-${etudiant.noEtudiant}`}
-                        className="modal"
-                      >
-                        <EtudiantDetails etudiant={etudiant} />
-                      </dialog>
-                    </tr>
-                  ))
+                    <dialog
+                      id={`inspect-${etudiant.noEtudiant}`}
+                      className="modal"
+                    >
+                      <EtudiantDetails etudiant={etudiant} />
+                    </dialog>
+
+                    <dialog
+                      id={`delete-${etudiant.noEtudiant}`}
+                      className="modal"
+                    >
+                      <DeleteEtudiantConfirmation
+                        etudiant={etudiant}
+                        handleFetchByPage={handleFetchByPage}
+                        currentPage={currentPage}
+                      />
+                    </dialog>
+                  </tr>
+                ))
               )}
             </tbody>
           </motion.table>
@@ -369,7 +365,7 @@ const StudentHome = ({
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
           >
-            Precedent
+            Précédent
           </button>
           <span className="mx-2">
             Page {currentPage} sur {totalPages}

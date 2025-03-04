@@ -5,6 +5,7 @@ import {
   createQuestionAsync,
 } from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
+import { toast } from "react-toastify";
 
 
 
@@ -57,7 +58,14 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     console.log(e);
     
     if (canSave) {
-      await dispatch(createQuestionAsync(question));
+      const res = await dispatch(createQuestionAsync(question));
+      
+      if (res?.type === "questions/create/rejected") {
+        toast.error(res.payload as string);
+      } else if (res?.type === "questions/create/fulfilled") {
+        toast.success(res.payload as string);
+      }
+      
       setQuestion({
         id: 0,
         type: "",

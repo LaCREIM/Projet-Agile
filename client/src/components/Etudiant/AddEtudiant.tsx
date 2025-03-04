@@ -9,9 +9,8 @@ import {
   postEtudiantAsync,
 } from "../../features/EtudiantSlice";
 import { Etudiant, Promotion } from "../../types/types";
-import {
-  getFormationAsync,
-} from "../../features/PromotionSlice";
+import { getFormationAsync } from "../../features/PromotionSlice";
+import { toast } from "react-toastify";
 
 interface AddStudentProps {
   promotions: Promotion[];
@@ -78,12 +77,17 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
 
   const handleSubmit = async () => {
     if (canSave) {
-      console.log(student);
       const res = await dispatch(postEtudiantAsync(student));
+      if (res?.type === "etudiants/postEtudiantAsync/rejected") {
+        console.log("hola");
+        toast.error("Erreur lors de la suppression !");
+      } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
+        toast.success("Étudiant supprimé avec succès !");
+      }
       console.log(res);
       resetStudent();
+      dispatch(getEtudiantAsync({ page: 1, size: 10 }));
     }
-    dispatch(getEtudiantAsync({ page: 1, size: 10 }));
   };
 
   const pays = useAppSelector(getPays);
@@ -147,7 +151,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
   student.motPasse.trim() !== "";
 
   return (
-    <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
+    <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un étudiant</h3>
         <form onSubmit={handleSubmit}>
