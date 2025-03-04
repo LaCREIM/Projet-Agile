@@ -9,6 +9,7 @@ import {
 import {
   deleteQuestionAsync,
   fetchQuestionsAsync,
+  getQuestionAsync
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
@@ -30,11 +31,20 @@ const QuestionHome = () => {
     question: null,
     index: -1,
   });
+  const [modalUpdate, setModalUpdate] = useState<{
+    question: Question | null;
+    index: number;
+  }>({
+    question: null,
+    index: -1,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const questionsPerPage = 5;
+  const totalPages = Math.ceil(questions.length / questionsPerPage);
 
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
 
   useEffect(() => {
-    // Fetch Enseignants and Qualificatifs from API when component mounts
     const fetchData = async () => {
       const qualificatifsData = await dispatch(fetchQualificatifsAsync());
       if (Array.isArray(qualificatifsData?.payload))
@@ -43,14 +53,6 @@ const QuestionHome = () => {
 
     fetchData();
   }, [dispatch]);
-
-  const [modalUpdate, setModalUpdate] = useState<{
-    question: Question | null;
-    index: number;
-  }>({
-    question: null,
-    index: -1,
-  });
 
   const updateQuestionModalRef = useRef<HTMLDialogElement | null>(null);
   const questionDetailsModalRef = useRef<HTMLDialogElement | null>(null);
@@ -88,13 +90,12 @@ const QuestionHome = () => {
       const response = await dispatch(deleteQuestionAsync(question.id));
 
       console.log(response);
-      
 
       if (response?.payload === "La question est déjà utilisée.") {
         toast.error(
           "Cette question est déjà utilisée et ne peut pas être supprimée."
         );
-      } else{
+      } else {
         toast.success("Question supprimée avec succès.");
         dispatch(fetchQuestionsAsync());
       }
@@ -103,6 +104,19 @@ const QuestionHome = () => {
       toast.error("Une erreur est survenue lors de la suppression.");
     }
   };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const paginatedQuestions = questions.slice(
+    (currentPage - 1) * questionsPerPage,
+    currentPage * questionsPerPage
+  );
 
   return (
     <>
@@ -129,7 +143,7 @@ const QuestionHome = () => {
               </tr>
             </thead>
             <tbody>
-              {questions.length === 0 ? (
+              {paginatedQuestions.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
@@ -139,16 +153,16 @@ const QuestionHome = () => {
                   </td>
                 </tr>
               ) : (
-                questions.map((question: Question, index: number) => (
+                paginatedQuestions.map((question: Question, index: number) => (
                   <tr
                     key={question.id}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{question.intitule || "N/A"}</td>
                     <td className="px-4 py-2">
-                      {question.idQualificatif?.maximal +
+                      {question?.idQualificatif?.maximal +
                         " - " +
-                        question.idQualificatif.minimal || "N/A"}
+                        question?.idQualificatif?.minimal || "N/A"}
                     </td>
                     <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
@@ -159,32 +173,37 @@ const QuestionHome = () => {
                           openModal(`updateQuestion-${index}`);
                         }}
                       />
-
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
                         onClick={(e) => handleDelete(question, e)}
                       />
                     </td>
-
-                    {/* Modal de mise à jour */}
-                    <dialog id={`updateQuestion-${index}`} className="modal">
-                      <UpdateQuestion
-                        questionData={question}
-                        qualificatifs={qualificatifs}
-                      />
-                    </dialog>
-
-                    <dialog id={`inspect-${index}`} className="modal">
-                      {modal.question && (
-                        <DetailsQuestion question={modal.question} />
-                      )}
-                    </dialog>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex justify-center gap-4 mt-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="btn"
+          >
+            Précédent
+          </button>
+          <span>
+            Page {currentPage} sur {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="btn"
+          >
+            Suivant
+          </button>
         </div>
       </div>
 
@@ -194,5 +213,6 @@ const QuestionHome = () => {
     </>
   );
 };
+
 
 export default QuestionHome;

@@ -5,15 +5,18 @@ import { Question } from "../types/types";
 
 interface QuestionState {
   questions: Question[];
+  totalPages: number;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: QuestionState = {
   questions: [],
+  totalPages: 0,  // Ajout du total de pages
   loading: false,
   error: null,
 };
+
 
 export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectValue: string }>(
   "questions/fetchAll",
@@ -26,6 +29,26 @@ export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectVa
     }
   }
 );
+export const getQuestionAsync = createAsyncThunk<
+    { content: Question[]; totalPages: number },  // Type correct de retour
+    { page: number; size: number },
+    { rejectValue: string }
+>(
+    "questions/getQuestionAsync",
+    async ({ page, size }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<{ content: Question[]; totalPages: number }>(
+                `/questions/paged`,
+                { params: { page, size } }
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error("Erreur lors de la récupération des questions:", error);
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions.");
+        }
+    }
+);
+
 
 
 export const createQuestionAsync = createAsyncThunk<Question, Question, { rejectValue: string }>(
@@ -90,7 +113,7 @@ const questionSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // **Récupérer toutes les questions**
+    // **Récupérer toutes les questions (ancienne méthode sans pagination)**
     builder.addCase(fetchQuestionsAsync.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -100,6 +123,21 @@ const questionSlice = createSlice({
       state.loading = false;
     });
     builder.addCase(fetchQuestionsAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // **Récupérer les questions paginées**
+    builder.addCase(getQuestionAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getQuestionAsync.fulfilled, (state, action: PayloadAction<{ content: Question[]; totalPages: number }>) => {
+      state.questions = action.payload.content; // Mise à jour de la liste des questions
+      state.totalPages = action.payload.totalPages; // Mise à jour du total de pages
+      state.loading = false;
+    });
+    builder.addCase(getQuestionAsync.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
@@ -122,6 +160,8 @@ const questionSlice = createSlice({
     builder.addCase(updateQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
     });
+
+    // **Supprimer une question**
     builder.addCase(deleteQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
     });
@@ -129,3 +169,4 @@ const questionSlice = createSlice({
 });
 
 export default questionSlice.reducer;
+

@@ -290,7 +290,7 @@ const EnseignantsHome = () => {
                                                 <UpdateEnseignant
                                                     enseignantData={enseignant}
                                                 />
-                                            </dialog>
+                                         </dialog>
 
 
 
