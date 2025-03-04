@@ -49,7 +49,7 @@ public class QuestionStdController {
     public ResponseEntity<String> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
         try {
             Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim());
-            if(existingQuestion!=null){
+            if(existingQuestion.isPresent()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
 
