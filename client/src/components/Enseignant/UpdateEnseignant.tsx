@@ -83,7 +83,7 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
           </label>
 
           <label className="input input-bordered flex items-center gap-2">
-            <span className="font-semibold">Téléphone</span>
+            <span className="font-semibold">Mobile</span>
             <input required type="number" name="mobile" value={enseignant.mobile} onChange={handleChange} className="grow" placeholder="Ex: 0701010101" />
           </label>
 
@@ -119,7 +119,7 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
                 <input type="email" name="emailUbo" value={enseignant.emailUbo} onChange={handleChange} className="grow" placeholder="Ex: john.doe@ubo.fr" />
               </label>
               <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Téléphone UBO</span>
+                <span className="font-semibold">Téléphone</span>
                 <input type="text" name="telephone" value={enseignant.telephone} onChange={handleChange} className="grow" placeholder="Ex: 02 98 XX XX XX" />
               </label>
             </div>

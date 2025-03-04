@@ -25,7 +25,22 @@ const EnseignantsHome = () => {
     const [search, setSearch] = useState<string>("");
     const [filteredEnseignants, setFilteredEnseignants] = useState<Enseignant[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
-
+    const modalVariant = {
+        hidden: { opacity: 0, scale: 0.8 }, // Opacité 0 au départ pour éviter les flashs
+        visible: { 
+          opacity: 1, 
+          scale: 1, 
+          transition: { duration: 0.3, ease: "easeOut" } 
+        },
+        exit: { 
+          opacity: 0, 
+          scale: 0.8, 
+          transition: { duration: 0.2, ease: "easeIn" } 
+        },
+      };
+      
+    
+      
     const [modal, setModal] = useState<{ enseignant: Enseignant | null; index: number }>({
         enseignant: null,
         index: -1,
@@ -254,6 +269,8 @@ const EnseignantsHome = () => {
                         )}
                         </tbody>
                     </motion.table>
+
+
                 </div>
 
                 <div className="flex justify-center mt-4">
@@ -281,31 +298,57 @@ const EnseignantsHome = () => {
                 <AddEnseignant />
             </dialog>
 
+
             {modalDelete.open && (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-70 backdrop-blur-sm">
-        <div className="bg-white p-6 rounded-xl shadow-lg w-96 border border-gray-300">
+    <>
+        {/* Fond semi-transparent avec flou */}
+        <motion.div
+            className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-40"
+            onClick={() => setModalDelete({ enseignant: null, open: false })}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.4, transition: { duration: 0.3 } }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+        />
+
+
+        {/* Modal de confirmation */}
+        <motion.div
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                       bg-white p-6 rounded-xl shadow-lg w-96 border border-gray-300 
+                       z-50 flex flex-col gap-5 pointer-events-auto"
+            variants={modalVariant}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+        >
             <h2 className="text-xl font-bold text-gray-800">Confirmation</h2>
-            <p className="mt-3 text-gray-700">
+            <p className="text-gray-700">
                 Êtes-vous sûr de vouloir supprimer l'enseignant : <strong>{modalDelete.enseignant?.nom} {modalDelete.enseignant?.prenom}</strong> ?
             </p>
 
-            <div className="flex justify-end mt-6 space-x-3">
-                <button
+            <div className="flex justify-end space-x-3">
+                <motion.button
                     className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setModalDelete({ enseignant: null, open: false })}
                 >
                     Annuler
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                     className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition shadow-md"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={confirmDelete}
                 >
                     Supprimer
-                </button>
+                </motion.button>
             </div>
-        </div>
-    </div>
+        </motion.div>
+    </>
 )}
+
+
 
         </>
     );

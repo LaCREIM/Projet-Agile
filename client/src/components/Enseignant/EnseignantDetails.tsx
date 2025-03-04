@@ -30,7 +30,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
               <dd className="mt-1 text-gray-500">{enseignant.sexe}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Téléphone :</dt>
+              <dt>Mobile :</dt>
               <dd className="mt-1 text-gray-500">{enseignant.mobile}</dd>
             </div>
 
@@ -80,7 +80,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
                 )}
                 {enseignant.telephone && (
                   <div className="text-base font-medium text-gray-900">
-                    <dt>Numéro téléphone :</dt>
+                    <dt>Numéro de téléphone :</dt>
                     <dd className="mt-1 text-gray-500">
                       {enseignant.telephone}
                     </dd>
