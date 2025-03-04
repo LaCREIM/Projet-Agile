@@ -22,9 +22,9 @@ public class EtudiantDTO {
     private String lieuNaissance;
     @NotBlank
     private String nationalite;
-    @NotBlank
+
     private String telephone;
-    @NotBlank
+
     private String mobile;
     @NotBlank
     private String email;
