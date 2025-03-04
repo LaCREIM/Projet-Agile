@@ -11,6 +11,7 @@ import {
 } from "../../features/EtudiantSlice";
 import { Etudiant, Promotion } from "../../types/types";
 import { getFormationAsync } from "../../features/PromotionSlice";
+import { toast } from "react-toastify";
 
 interface UpdateStudentProps {
   studentData: Etudiant;
@@ -23,96 +24,102 @@ const UpdateEtudiant = ({
   promotions,
   currentpage,
 }: UpdateStudentProps) => {
-   const dispatch = useAppDispatch();
-   const [dateError, setDateError] = useState<string | null>(null);
-   const [student, setStudent] = useState<Etudiant>(studentData);
-   const pays = useAppSelector(getPays);
-   const universite = useAppSelector(getUniversite);
-   const [canSave, setCanSave] = useState(true);
+  const dispatch = useAppDispatch();
+  const [dateError, setDateError] = useState<string | null>(null);
+  const [student, setStudent] = useState<Etudiant>(studentData);
+  const pays = useAppSelector(getPays);
+  const universite = useAppSelector(getUniversite);
+  const [canSave, setCanSave] = useState(true);
 
-   const handleChange = (
-     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-   ) => {
-     const { name, value } = e.target;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
 
-     // Restrict mobile and telephone to 10 digits
-     if (
-       (name === "telephone" || name === "mobile") &&
-       !/^\d{0,10}$/.test(value)
-     ) {
-       return; // Prevent updating state if input is invalid
-     }
+    if (
+      (name === "telephone" || name === "mobile") &&
+      !/^\d{0,10}$/.test(value)
+    ) {
+      return;
+    }
 
-     if (name === "dateNaissance") {
-       const birthDate = new Date(value);
-       const today = new Date();
-       const age = today.getFullYear() - birthDate.getFullYear();
+    if (name === "dateNaissance") {
+      const birthDate = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
 
-       if (
-         age < 17 ||
-         (age === 17 &&
-           (today.getMonth() < birthDate.getMonth() ||
-             (today.getMonth() === birthDate.getMonth() &&
-               today.getDate() < birthDate.getDate())))
-       ) {
-         setDateError("L'étudiant doit avoir au moins 17 ans.");
-       } else {
-         setDateError(null);
-       }
-     }
+      if (
+        age < 17 ||
+        (age === 17 &&
+          (today.getMonth() < birthDate.getMonth() ||
+            (today.getMonth() === birthDate.getMonth() &&
+              today.getDate() < birthDate.getDate())))
+      ) {
+        setDateError("L'étudiant doit avoir au moins 17 ans.");
+      } else {
+        setDateError(null);
+      }
+    }
 
-     setStudent((prevStudent) => ({
-       ...prevStudent,
-       [name]: value,
-     }));
-   };
+    setStudent((prevStudent) => ({
+      ...prevStudent,
+      [name]: value,
+    }));
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log(e);
+    
+    if (canSave) {
+      const res = await dispatch(updateEtudiantAsync(student));
+      console.log(res);
+      
+      if (res?.type === "etudiants/updateEtudiantAsync/rejected") {
+        toast.error(res?.payload as string);
+      } else if (res?.type === "etudiants/updateEtudiantAsync/fulfilled") {
+        toast.success(res?.payload as string);
+        dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
+      }
+    }
+  };
 
-   const handleSubmit = async (e: React.FormEvent) => {
-     if (canSave) {
-       await dispatch(updateEtudiantAsync(student));
-       dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
-     }
-   };
+  const formatDate = (date: string | Date | null) => {
+    if (date === null) return "";
+    return date instanceof Date ? date.toISOString().split("T")[0] : date;
+  };
 
-   const formatDate = (date: string | Date | null) => {
-     if (date === null) return "";
-     return date instanceof Date ? date.toISOString().split("T")[0] : date;
-   };
+  useEffect(() => {
+    if (Object.keys(student).length !== 0)
+      setCanSave(
+        student.nom.trim() !== "" &&
+          student.prenom.trim() !== "" &&
+          student.sexe.trim() !== "" &&
+          student.email.trim() !== "" &&
+          student.emailUbo.trim() !== "" &&
+          student.noEtudiant.trim() !== "" &&
+          student.dateNaissance !== null &&
+          dateError === null &&
+          student.lieuNaissance.trim() !== "" &&
+          student.nationalite.trim() !== "" &&
+          student.adresse.trim() !== "" &&
+          student.ville.trim() !== "" &&
+          student.paysOrigine.trim() !== "" &&
+          student.universiteOrigine.trim() !== "" &&
+          student.anneeUniversitaire.trim() !== "" &&
+          student.codeFormation.trim() !== ""
+      );
+  }, [student, dateError]);
 
-   useEffect(() => {
-     if (Object.keys(student).length !== 0)
-       setCanSave(
-         student.nom.trim() !== "" &&
-           student.prenom.trim() !== "" &&
-           student.sexe.trim() !== "" &&
-           student.email.trim() !== "" &&
-           student.emailUbo.trim() !== "" &&
-           student.noEtudiant.trim() !== "" &&
-           student.dateNaissance !== null &&
-           dateError === null &&
-           student.lieuNaissance.trim() !== "" &&
-           student.nationalite.trim() !== "" &&
-           student.adresse.trim() !== "" &&
-           student.ville.trim() !== "" &&
-           student.paysOrigine.trim() !== "" &&
-           student.universiteOrigine.trim() !== "" &&
-           student.anneeUniversitaire.trim() !== "" &&
-           student.codeFormation.trim() !== ""
-       );
-   }, [student, dateError]);
+  useEffect(() => {
+    dispatch(getDomainePaysAsync());
+    dispatch(getDomaineUnivAsync());
+    dispatch(getFormationAsync());
+    dispatch(getEtudiantByIdAsync(studentData.noEtudiant));
+  }, [dispatch]);
 
-   useEffect(() => {
-     dispatch(getDomainePaysAsync());
-     dispatch(getDomaineUnivAsync());
-     dispatch(getFormationAsync());
-     dispatch(getEtudiantByIdAsync(studentData.noEtudiant));
-   }, [dispatch]);
-
-   useEffect(() => {
-     setStudent(studentData);
-   }, [studentData]);
-
+  useEffect(() => {
+    setStudent(studentData);
+  }, [studentData]);
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
@@ -235,7 +242,7 @@ const UpdateEtudiant = ({
                   required
                   type="date"
                   name="dateNaissance"
-                  value={formatDate(studentData.dateNaissance)}
+                  value={formatDate(student.dateNaissance)}
                   onChange={handleChange}
                   className="grow"
                 />

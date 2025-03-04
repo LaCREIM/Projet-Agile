@@ -163,7 +163,7 @@ export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValu
             //console.log(response);
             return response.data;
         } catch (error: any) {
-            console.error("Error posting student:", error);
+            console.error("Error deleting student:", error);
             return rejectWithValue(error.response?.data || "An error occurred while posting the student.");
         }
     }
