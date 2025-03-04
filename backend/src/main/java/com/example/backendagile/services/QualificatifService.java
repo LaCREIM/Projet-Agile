@@ -66,8 +66,8 @@ public class QualificatifService {
     }
     
     public List<Qualificatif> getAllQualificatifsPaged(int page, int size) {
-        int startRow = (page) * size;
-        int endRow = startRow + size;
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
         return qualificatifRepository.findAllWithPagination(startRow, endRow);
     }
     
