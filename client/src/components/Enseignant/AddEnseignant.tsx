@@ -49,7 +49,11 @@ const [errors, setErrors] = useState<{ [key: string]: string }>({});
     { champ: "emailUbo", valeur: enseignant.emailUbo.trim() },
     { champ: "codePostal", valeur: enseignant.codePostal.trim() },
     { champ: "mobile", valeur: enseignant.mobile.trim() },
+    { champ: "telephone", valeur: enseignant.telephone.trim()},
     { champ: "type", valeur: enseignant.type },
+    { champ: "pays", valeur: enseignant.pays },
+    { champ: "ville", valeur: enseignant.ville.trim() },
+    { champ: "motPasse", valeur: enseignant.motPasse.trim() },
   ].every((field) => Boolean(field.valeur));
 
   const validateFields = () => {
@@ -79,7 +83,6 @@ const [errors, setErrors] = useState<{ [key: string]: string }>({});
     return Object.keys(newErrors).length === 0;
   };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
     if (!canSave) {
       console.error("Tous les champs requis doivent être remplis correctement.");
@@ -94,7 +97,8 @@ const [errors, setErrors] = useState<{ [key: string]: string }>({});
       const response = await dispatch(postEnseignantAsync(enseignant));
       if (response.meta.requestStatus === "fulfilled") {
         dispatch(getEnseignantAsync({ page: 1, size: 10 }));
-      
+        setEnseignant(enseignantNull);
+        setErrors({});
       } else {
         console.error("L'ajout a échoué :", response);
       }
@@ -109,6 +113,7 @@ const handleCancel = () => {
   setEnseignant(enseignantNull);
   setErrors({});
 };
+
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -145,21 +150,34 @@ const handleCancel = () => {
                 </p>
               )}
             </div>
-
+            <div className="relative">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Téléphone</span>
               <input type="number" name="telephone" value={enseignant.telephone} onChange={handleChange} required className="grow" />
             </label>
+            {errors.telephone && (
+              <p className="text-red-500 text-xs absolute bottom-[-1.2rem] left-0">
+                {errors.telephone}
+              </p>
+            )}
+            </div>
 
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Adresse<span className="text-red-500">*</span></span>
               <input type="text" name="adresse" value={enseignant.adresse} onChange={handleChange} required className="grow" />
             </label>
 
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Code postal<span className="text-red-500">*</span></span>
-              <input type="text" name="codePostal" value={enseignant.codePostal} onChange={handleChange} required className="grow" />
-            </label>
+            <div className="relative">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Code postal<span className="text-red-500">*</span></span>
+                <input type="text" name="codePostal" value={enseignant.codePostal} onChange={handleChange} required className="grow" />
+              </label>
+              {errors.codePostal && (
+                <p className="text-red-500 text-xs absolute bottom-[-1.2rem] left-0">
+                  {errors.codePostal}
+                </p>
+              )}
+            </div>
 
 
             <label className="flex flex-row items-center gap-2">
@@ -215,16 +233,24 @@ const handleCancel = () => {
               <input type="email" name="emailUbo" value={enseignant.emailUbo} onChange={handleChange} required className="grow" />
             </label>
 
-            <label className="input input-bordered flex items-center gap-2">
+           <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">Email Personnel</span>
               <input type="email" name="emailPerso" value={enseignant.emailPerso} onChange={handleChange} className="grow" />
             </label>
           </div>
 
           <div className="modal-action">
-          <form method="dialog">
-            <button  className="btn" onClick={handleCancel}>Annuler</button>
-            <button  className="btn btn-neutral disabled:cursor-not-allowed" disabled={!canSave}>Ajouter</button>
+          <form method="dialog" className="flex flex-row gap-5">
+          <div className="modal-action">
+              <button className="btn" onClick={handleCancel}>Annuler</button>
+              <button
+                className="btn btn-neutral disabled:cursor-not-allowed"
+                onClick={handleSubmit}
+                disabled={!canSave}
+              >
+                Ajouter
+              </button>
+          </div>
           </form>
 
           </div>

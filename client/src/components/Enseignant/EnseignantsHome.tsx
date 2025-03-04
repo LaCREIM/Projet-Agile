@@ -278,8 +278,9 @@ const EnseignantsHome = () => {
             </div>
 
             <dialog id="addEnseignant" className="modal">
-                <AddEnseignant/>
+                <AddEnseignant />
             </dialog>
+
             {modalDelete.open && (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-70 backdrop-blur-sm">
         <div className="bg-white p-6 rounded-xl shadow-lg w-96 border border-gray-300">
