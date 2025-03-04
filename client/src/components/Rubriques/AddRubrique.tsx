@@ -47,7 +47,6 @@ const AddRubrique = () => {
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
-      <ToastContainer theme="colored" />
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une Rubrique</h3>
 
