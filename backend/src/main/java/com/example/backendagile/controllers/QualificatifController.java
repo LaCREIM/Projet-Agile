@@ -140,7 +140,7 @@ public ResponseEntity<Map<String, Object>> searchQualificatifsPaged(
 
 @GetMapping("/paged")
 public ResponseEntity<Map<String, Object>> getAllQualificatifsPaged(
-        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size) {
 
     List<Qualificatif> qualificatifs = qualificatifService.getAllQualificatifsPaged(page, size);
