@@ -171,7 +171,7 @@ const QualificatifHome = () => {
                     >
                       <td className="px-4 py-2">
                         {updatingIndex !== index ? (
-                          <span>{qualificatif.minimal}</span>
+                          <span>{qualificatif?.minimal}</span>
                         ) : (
                           <motion.input
                             variants={MotionVariant}
@@ -188,7 +188,7 @@ const QualificatifHome = () => {
                       </td>
                       <td className="px-4 py-2">
                         {updatingIndex !== index ? (
-                          <span>{qualificatif.maximal}</span>
+                          <span>{qualificatif?.maximal}</span>
                         ) : (
                           <motion.input
                             variants={MotionVariant}
