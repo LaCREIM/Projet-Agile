@@ -67,7 +67,7 @@ const EnseignantsHome = () => {
             toast.success("Enseignant supprimé avec succès.");
             dispatch(getEnseignantAsync({ page: currentPage, size: 10 }));
         } else {
-            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
+            toast.error("Cet enseignant ne peut pas être supprimé, il est responsable à une promotion.");
         }
     
         // Fermer la modal après suppression
@@ -100,7 +100,13 @@ const EnseignantsHome = () => {
     const openModal = (id: string) => {
         const dialog = document.getElementById(id) as HTMLDialogElement;
         if (dialog) dialog.showModal();
-    };
+      };
+      
+      const closeModal = (id: string) => {
+        const dialog = document.getElementById(id) as HTMLDialogElement;
+        if (dialog) dialog.close();
+      };
+      
 
     const handleClick = (enseignant: Enseignant, index: number) => {
         setModal({enseignant, index});
@@ -146,10 +152,28 @@ const EnseignantsHome = () => {
         }
     };
 
+
+
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
     };
-
+    const [sortField, setSortField] = useState<string | null>(null);
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    
+    const handleSortChange = (field: keyof Enseignant) => {
+        const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+        setSortField(field);
+        setSortOrder(order);
+    
+        const sortedEnseignants = [...filteredEnseignants].sort((a, b) => {
+            if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+            if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+            return 0;
+        });
+    
+        setFilteredEnseignants(sortedEnseignants);
+    };
+    
     return (
         <>
             <ToastContainer theme="colored"/>
@@ -190,16 +214,26 @@ const EnseignantsHome = () => {
                         animate="final"
                         className="table table-zebra"
                     >
-                        <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Email</th>
-                            <th>Téléphone</th>
-                            <th>Type</th>
-                            <th className="text-center">Actions</th>
-                        </tr>
-                        </thead>
+                            <thead>
+                                <tr>
+                                    <th onClick={() => handleSortChange("nom")} className="cursor-pointer">
+                                        Nom {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
+                                    </th>
+                                    <th onClick={() => handleSortChange("prenom")} className="cursor-pointer">
+                                        Prénom {sortField === "prenom" && (sortOrder === "asc" ? "↑" : "↓")}
+                                    </th>
+                                    <th onClick={() => handleSortChange("emailUbo")} className="cursor-pointer">
+                                        Email {sortField === "emailUbo" && (sortOrder === "asc" ? "↑" : "↓")}
+                                    </th>
+                                    <th onClick={() => handleSortChange("mobile")} className="cursor-pointer">
+                                        Téléphone {sortField === "mobile" && (sortOrder === "asc" ? "↑" : "↓")}
+                                    </th>
+                                    <th onClick={() => handleSortChange("type")} className="cursor-pointer">
+                                        Type {sortField === "type" && (sortOrder === "asc" ? "↑" : "↓")}
+                                    </th>
+                                    <th className="text-center">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                         {enseignants.length === 0 ? (
                             <tr>
@@ -295,7 +329,7 @@ const EnseignantsHome = () => {
             </div>
 
             <dialog id="addEnseignant" className="modal">
-                <AddEnseignant />
+                <AddEnseignant onClose={() => closeModal("addEnseignant")}/>
             </dialog>
 
 
