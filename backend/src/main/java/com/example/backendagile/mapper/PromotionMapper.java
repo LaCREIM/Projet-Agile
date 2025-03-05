@@ -69,7 +69,7 @@ public class PromotionMapper {
         newPromotion.setId(promotionId);
 
         // Gestion de l'enseignant
-        if (promotionDTO.getNoEnseignant() != null && promotionDTO.getNoEnseignant() > 0) {
+        if (promotionDTO.getNoEnseignant() != null && promotionDTO.getNoEnseignant() > 0 && promotionDTO.getNom() != null && promotionDTO.getPrenom() !=null) {
             Optional<Enseignant> enseignant = enseignantService.findById(promotionDTO.getNoEnseignant());
             newPromotion.setEnseignant(enseignant.orElse(null));
         }
