@@ -20,20 +20,13 @@ const UpdateQuestion = ({
   const dispatch = useAppDispatch();
   const [question, setQuestion] = useState<Question>({ ...questionData });
 
-
-  const [question, setQuestion] = useState<Question>({
-    ...questionData,
-  });
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-
     const { name, value } = e.target;
     setQuestion((prev) => ({ ...prev, [name]: value }));
     console.log(question);
   };
-
 
   const handleSelectQualificatif = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -41,7 +34,6 @@ const UpdateQuestion = ({
     const selectedQualificatif = qualificatifs.find(
       (qual) => qual.id === Number(e.target.value)
     );
-
 
     if (selectedQualificatif) {
       setQuestion((prev) => ({
@@ -51,34 +43,30 @@ const UpdateQuestion = ({
     }
   };
 
+  const canSave =
+    question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
 
-  const handleSubmit = async () => {
-    if (question.intitule) {
-      try {
-        await dispatch(
-          updateQuestionAsync({ id: question.id, data: question })
-        );
-        dispatch(fetchQuestionsAsync());
-        toast.success("Question mise à jour avec succès !");
-      } catch (error) {
-        toast.error("Erreur lors de la mise à jour.");
+  const handleSubmit = async (e: React.FormEvent) => {
+    if (canSave) {
+      const res = await dispatch(
+        updateQuestionAsync({ id: question.id, data: question })
+      );
+      console.log(res);
+      
+      if (res?.type === "questions/update/rejected") {
+        toast.error(res.payload as string);
+      } else if (res?.type === "questions/update/fulfilled") {
+        toast.success(res.payload as string);
       }
-    } else {
-
-      toast.error("Tous les champs doivent être remplis.");
-      return;
+      dispatch(fetchQuestionsAsync());
     }
-
-  const canSave = question.intitule;
-
+  };
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[40%] max-w-5xl">
-
         <h3 className="font-bold text-lg my-4">Modifier la question</h3>
         <form className="flex flex-col gap-5">
-
           <label className="input input-bordered w-[85%] flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
             <input
@@ -88,7 +76,7 @@ const UpdateQuestion = ({
               value={question.intitule}
               onChange={handleChange}
               className="grow"
-              placeholder="Ex: Quelle est la capitale de la France ?"
+              placeholder="Ex: Contenu ?"
             />
           </label>
 
@@ -98,7 +86,6 @@ const UpdateQuestion = ({
             <select
               required
               onChange={handleSelectQualificatif}
-
               value={question.idQualificatif?.id || ""}
               className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
             >
@@ -113,8 +100,17 @@ const UpdateQuestion = ({
 
           {/* Boutons d'action */}
           <div className="modal-action">
-            <button type="button" className="btn">Annuler</button>
-            <button type="submit" className="btn btn-neutral">Mettre à jour</button>
+            <form method="dialog" className="flex flex-row gap-5">
+              <button className="btn">Annuler</button>
+
+              <button
+                onClick={handleSubmit}
+                disabled={!canSave}
+                className="btn btn-neutral"
+              >
+                Mettre à jour
+              </button>
+            </form>
           </div>
         </form>
       </div>

@@ -5,12 +5,11 @@ import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
-  deleteQuestionAsync,
   fetchQuestionsAsync,
   getQuestionPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { RootState } from "../../api/store";
 
 import UpdateQuestion from "./UpdateQuestion";
@@ -57,7 +56,7 @@ const QuestionHome = () => {
   const questionDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(getQuestionPersoAsync({idEnseignant: 1000, page:1, size:10}));
+    dispatch(fetchQuestionsAsync());
   }, [dispatch]);
 
   useEffect(() => {
@@ -212,15 +211,7 @@ const QuestionHome = () => {
           </button>
         </div>
       </div>
-      <dialog id="updateQuestionModal" className="modal" ref={updateQuestionModalRef}>
-          {modalUpdate.question ? (
-            <UpdateQuestion
-              key={modalUpdate.question.id} // Clé unique pour forcer le re-render
-              questionData={modalUpdate.question}
-              qualificatifs={qualificatifs}
-            />
-          ) : null}
-        </dialog>
+      
 
 
       <dialog id="addQuestion" className="modal">
