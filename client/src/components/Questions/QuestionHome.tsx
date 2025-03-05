@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
@@ -75,6 +76,11 @@ const QuestionHome = () => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
+  const closeModal = (id: string) => {
+  const dialog = document.getElementById(id) as HTMLDialogElement;
+  if (dialog) dialog.close();
+};
+
 
   const handleClick = (question: Question, index: number) => {
     setModal({ question, index });
@@ -82,8 +88,16 @@ const QuestionHome = () => {
 
   const handleClickUpdate = (question: Question, index: number) => {
     setModalUpdate({ question, index });
+  
+    // Assure-toi que le modal prend en compte le nouvel état avant de s'afficher
+    setTimeout(() => {
+      const dialog = document.getElementById("updateQuestionModal") as HTMLDialogElement;
+      if (dialog) dialog.showModal();
+    }, 100);
   };
-
+  
+  
+  
   const handleDelete = async (question: Question, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -180,6 +194,7 @@ const QuestionHome = () => {
                         onClick={(e) => handleDelete(question, e)}
                       />
                     </td>
+                    
                   </tr>
                 ))
               )}
@@ -207,6 +222,16 @@ const QuestionHome = () => {
           </button>
         </div>
       </div>
+      <dialog id="updateQuestionModal" className="modal" ref={updateQuestionModalRef}>
+          {modalUpdate.question ? (
+            <UpdateQuestion
+              key={modalUpdate.question.id} // Clé unique pour forcer le re-render
+              questionData={modalUpdate.question}
+              qualificatifs={qualificatifs}
+            />
+          ) : null}
+        </dialog>
+
 
       <dialog id="addQuestion" className="modal">
         <AddQuestion qualificatifs={qualificatifs} />
