@@ -1,16 +1,15 @@
 import { useState } from "react";
 import {
-  fetchQualificatifsAsync,
   createQualificatifAsync,
   fetchQualificatifsPagedAsync,
 } from "../../features/QualificatifSlice";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
 
-interface AddQualifivcatifProps {
+interface AddQualificatifProps {
   currentPage: number;
 }
-const AddQualificatif = ({ currentPage }: number) => {
+const AddQualificatif = ({ currentPage }: AddQualificatifProps) => {
   const [qualificatif, setQualificatif] = useState({
     id: 0,
     maximal: "",
@@ -60,19 +59,6 @@ const AddQualificatif = ({ currentPage }: number) => {
         <h3 className="font-bold text-lg my-4">Ajouter un qualificatif</h3>
         <div className="flex flex-row justify-center items-center gap-5">
           <label className="input input-bordered flex items-center gap-2">
-            <span className="font-semibold">Maximal</span>
-            <input
-              required
-              type="text"
-              name="maximal"
-              value={qualificatif.maximal}
-              onChange={handleChange}
-              className="grow"
-              placeholder="Ex: Excellent"
-            />
-          </label>
-
-          <label className="input input-bordered flex items-center gap-2">
             <span className="font-semibold">Minimal</span>
             <input
               required
@@ -82,6 +68,18 @@ const AddQualificatif = ({ currentPage }: number) => {
               onChange={handleChange}
               className="grow"
               placeholder="Ex: Insuffisant"
+            />
+          </label>
+          <label className="input input-bordered flex items-center gap-2">
+            <span className="font-semibold">Maximal</span>
+            <input
+              required
+              type="text"
+              name="maximal"
+              value={qualificatif.maximal}
+              onChange={handleChange}
+              className="grow"
+              placeholder="Ex: Excellent"
             />
           </label>
         </div>

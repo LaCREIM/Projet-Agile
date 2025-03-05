@@ -189,7 +189,6 @@ const PromotionHome = () => {
 
   return (
     <>
-      <ToastContainer theme="colored" />
       {showStudents ? (
         <StudentHome
           promotionDetails={promotionDetails}
@@ -197,7 +196,7 @@ const PromotionHome = () => {
           switchStudent={switchToStudent}
         />
       ) : (
-        <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
+        <div className="flex flex-col text-xl gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
           <h1>Liste des promotions</h1>
           <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-[5%]">
             <div className="w-1/3 block hover:cursor-text">

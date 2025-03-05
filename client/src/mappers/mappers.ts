@@ -7,7 +7,15 @@ export const diplomeMapper = (diplome : string) =>{
 
     return mapping[diplome] || "Inconnu";
 }
+export const sexeMapper = (sexe : string) =>{
+    const mapping: Record<string, string> = {
+        H: "Homme",
+        M: "Homme",
+        F: "Femme",
+    };
 
+    return mapping[sexe] || "Inconnu";
+}
 export const processusmapper = (pros: string)=>{
     const mapping: Record<string, string> = {
         TUT: "Tutteurs attribués",
@@ -19,3 +27,19 @@ export const processusmapper = (pros: string)=>{
 
     return mapping[pros] || "Inconnu";
 }
+
+export const universiteMapper = (code: string): string => {
+    const mapping: Record<string, string> = {
+        UAE: "Université Abdelmalek Essaâdi",
+        UCAM: "Université Cadi Ayyad",
+        UCD: "Université Chouaïb Doukkali",
+        UH1: "Université Hassan 1er",
+        UH2M: "Université Hassan II Mohammedia",
+        UIT: "Université Ibn Tofail",
+        UIZ: "Université Ibn Zohr",
+        UM5A: "Université Mohammed V Agdal",
+        USMBA: "Université Sidi Mohammed Ben Abdellah",
+    };
+
+    return mapping[code] || "Inconnu";
+};

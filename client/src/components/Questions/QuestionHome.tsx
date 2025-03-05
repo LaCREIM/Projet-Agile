@@ -11,7 +11,7 @@ import {
   fetchQuestionsAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { RootState } from "../../api/store";
 import DetailsQuestion from "./DetailsQuestion";
 import UpdateQuestion from "./UpdateQuestion";
@@ -106,7 +106,7 @@ const QuestionHome = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+      <div className="flex flex-col text-xl gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des questions</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
           <div className="tooltip" data-tip="Ajouter une question">

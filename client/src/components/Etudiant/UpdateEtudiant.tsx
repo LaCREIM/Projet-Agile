@@ -25,22 +25,81 @@ const UpdateEtudiant = ({
   currentpage,
 }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
-  const [dateError, setDateError] = useState<string | null>(null);
+  
   const [student, setStudent] = useState<Etudiant>(studentData);
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
   const [canSave, setCanSave] = useState(true);
+  const [errors, setErrors] = useState({
+      dateError: null as string | null,
+      telephoneError: null as string | null,
+      mobileError: null as string | null,
+      groupeTpError: null as string | null,
+      groupeAnglaisError: null as string | null,
+      emailError: null as string | null,
+      emailUboError: null as string | null,
+    });
+
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\s/g, "");
+    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
+    return formatted.trim(); 
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
 
-    if (
-      (name === "telephone" || name === "mobile") &&
-      !/^\d{0,10}$/.test(value)
-    ) {
-      return;
+    if (name === "emailUbo") {
+      const uboRegex = /^[a-zA-Z0-9._%+-]+@univ-brest\.fr$/;
+      if (!uboRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailUboError: "L'email UBO doit être au format xxxx@univ-brest.fr.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailUboError: null,
+        }));
+      }
+    }
+
+    if (name === "email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailError: "Veuillez entrer une adresse email valide.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailError: null,
+        }));
+      }
+    }
+
+    if (name === "telephone" || name === "mobile") {
+      const formattedValue = formatPhoneNumber(value);
+      setStudent((prevStudent) => ({
+        ...prevStudent,
+        [name]: formattedValue,
+      }));
+
+      if (!/^\d{2}( \d{2}){4}$/.test(formattedValue)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: "Le numéro doit contenir exactement 10 chiffres.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: null,
+        }));
+      }
+      return; 
     }
 
     if (name === "dateNaissance") {
@@ -55,9 +114,15 @@ const UpdateEtudiant = ({
             (today.getMonth() === birthDate.getMonth() &&
               today.getDate() < birthDate.getDate())))
       ) {
-        setDateError("L'étudiant doit avoir au moins 17 ans.");
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          dateError: "L'étudiant doit avoir au moins 17 ans.",
+        }));
       } else {
-        setDateError(null);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          dateError: null,
+        }));
       }
     }
 
@@ -71,7 +136,12 @@ const UpdateEtudiant = ({
     console.log(e);
     
     if (canSave) {
-      const res = await dispatch(updateEtudiantAsync(student));
+      const cleanedStudent = {
+        ...student,
+        telephone: student.telephone.replace(/\s/g, ""),
+        mobile: student.mobile.replace(/\s/g, ""),
+      };
+      const res = await dispatch(updateEtudiantAsync(cleanedStudent));
       console.log(res);
       
       if (res?.type === "etudiants/updateEtudiantAsync/rejected") {
@@ -91,24 +161,29 @@ const UpdateEtudiant = ({
   useEffect(() => {
     if (Object.keys(student).length !== 0)
       setCanSave(
-        student.nom.trim() !== "" &&
-          student.prenom.trim() !== "" &&
-          student.sexe.trim() !== "" &&
-          student.email.trim() !== "" &&
-          student.emailUbo.trim() !== "" &&
-          student.noEtudiant.trim() !== "" &&
-          student.dateNaissance !== null &&
-          dateError === null &&
-          student.lieuNaissance.trim() !== "" &&
-          student.nationalite.trim() !== "" &&
-          student.adresse.trim() !== "" &&
-          student.ville.trim() !== "" &&
-          student.paysOrigine.trim() !== "" &&
-          student.universiteOrigine.trim() !== "" &&
-          student.anneeUniversitaire.trim() !== "" &&
-          student.codeFormation.trim() !== ""
+        student?.nom?.trim() !== "" &&
+          student?.prenom?.trim() !== "" &&
+          student?.sexe?.trim() !== "" &&
+          student?.email?.trim() !== "" &&
+          student?.emailUbo?.trim() !== "" &&
+          student?.noEtudiant?.trim() !== "" &&
+          student?.dateNaissance !== null &&
+          formatDate(student.dateNaissance) !== "" &&
+          errors.dateError === null &&
+          errors.emailError === null &&
+          errors.emailUboError === null &&
+          errors.mobileError === null &&
+          errors.telephoneError === null &&
+          student?.lieuNaissance?.trim() !== "" &&
+          student?.nationalite?.trim() !== "" &&
+          student?.adresse?.trim() !== "" &&
+          student?.ville?.trim() !== "" &&
+          student?.paysOrigine?.trim() !== "" &&
+          student?.universiteOrigine?.trim() !== "" &&
+          student?.anneeUniversitaire?.trim() !== "" &&
+          student?.codeFormation?.trim() !== ""
       );
-  }, [student, dateError]);
+  }, [student, errors]);
 
   useEffect(() => {
     dispatch(getDomainePaysAsync());
@@ -129,7 +204,7 @@ const UpdateEtudiant = ({
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Nom <span className="text-red-500">*</span>
+                Nom <span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -143,7 +218,7 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Prénom<span className="text-red-500">*</span>
+                Prénom<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -157,9 +232,10 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                No Etudiant<span className="text-red-500">*</span>
+                No Etudiant<span className="text-red-500"> *</span>
               </span>
               <input
+                disabled
                 required
                 type="text"
                 name="noEtudiant"
@@ -171,7 +247,7 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Mot de passe<span className="text-red-500">*</span>
+                Mot de passe<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -183,60 +259,82 @@ const UpdateEtudiant = ({
                 placeholder="Ex: Entrez un mot de passe"
               />
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Email <span className="text-red-500">*</span>
-              </span>
-              <input
-                required
-                type="email"
-                name="email"
-                value={student.email}
-                onChange={handleChange}
-                className="grow"
-                placeholder="john.doe@gamil.com"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Email Ubo<span className="text-red-500">*</span>
-              </span>
-              <input
-                required
-                type="email"
-                name="emailUbo"
-                value={student.emailUbo}
-                onChange={handleChange}
-                className="grow"
-                placeholder="john.doe@univ.fr"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Téléphone</span>
-              <input
-                type="text"
-                name="telephone"
-                value={student.telephone}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 0700000000"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Mobile</span>
-              <input
-                type="text"
-                name="mobile"
-                value={student.mobile}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 0700000000"
-              />
-            </label>
             <div className="flex flex-col gap-1">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">
-                  Date de naissance<span className="text-red-500">*</span>
+                  Email <span className="text-red-500"> *</span>
+                </span>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  value={student.email}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="john.doe@gamil.com"
+                />
+              </label>
+              {errors.emailError && (
+                <p className="text-red-500 text-sm">{errors.emailError}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Email Ubo<span className="text-red-500"> *</span>
+                </span>
+                <input
+                  required
+                  type="email"
+                  name="emailUbo"
+                  value={student.emailUbo}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="john.doe@univ.fr"
+                />
+              </label>
+              {errors.emailUboError && (
+                <p className="text-red-500 text-sm">{errors.emailUboError}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Téléphone</span>
+                <input
+                  type="text"
+                  name="telephone"
+                  value={student.telephone}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 0700000000"
+                />
+              </label>
+              {errors.telephoneError && (
+                <p className="text-red-500 text-sm">{errors.telephoneError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Mobile</span>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={student.mobile}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 0700000000"
+                />
+              </label>
+              {errors.mobileError && (
+                <p className="text-red-500 text-sm">{errors.mobileError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Date de naissance<span className="text-red-500"> *</span>
                 </span>
                 <input
                   required
@@ -247,11 +345,13 @@ const UpdateEtudiant = ({
                   className="grow"
                 />
               </label>
-              {dateError && <p className="text-red-500 text-sm">{dateError}</p>}
+              {errors.dateError && (
+                <p className="text-red-500 text-sm">{errors.dateError}</p>
+              )}
             </div>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Lieu de naissance<span className="text-red-500">*</span>
+                Lieu de naissance<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -265,7 +365,7 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Nationalité<span className="text-red-500">*</span>
+                Nationalité<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -279,7 +379,7 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Adresse<span className="text-red-500">*</span>
+                Adresse<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -293,7 +393,7 @@ const UpdateEtudiant = ({
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Ville<span className="text-red-500">*</span>
+                Ville<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -325,7 +425,7 @@ const UpdateEtudiant = ({
                 className="select select-bordered "
               >
                 <option disabled value="">
-                  Sélectionnez un sexe <span className="text-red-500">*</span>
+                  Sélectionnez un sexe <span className="text-red-500"> *</span>
                 </option>
                 <option value="H">Homme</option>
                 <option value="F">Femme</option>
@@ -367,15 +467,17 @@ const UpdateEtudiant = ({
                       e.target.value
                   );
                   if (selectedPromotion) {
-                    student["anneeUniversitaire"] =
-                      selectedPromotion.anneeUniversitaire;
-                    student["codeFormation"] = selectedPromotion.codeFormation;
+                    setStudent((prevStudent) => ({
+                      ...prevStudent,
+                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
+                      codeFormation: selectedPromotion.codeFormation,
+                    }));
                   }
                 }}
               >
                 <option value="" disabled>
                   Sélectionner une promotion{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-red-500"> *</span>
                 </option>
                 {promotions.map((promotion, idx) => (
                   <option
@@ -397,7 +499,7 @@ const UpdateEtudiant = ({
               >
                 <option value="" disabled>
                   Sélectionnez l'université d'origine{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-red-500"> *</span>
                 </option>
                 {universite.map((univ, idx) => (
                   <option key={idx} value={univ.rvLowValue}>
