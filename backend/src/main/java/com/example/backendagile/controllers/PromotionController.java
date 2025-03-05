@@ -5,6 +5,7 @@ import com.example.backendagile.entities.Promotion;
 import com.example.backendagile.services.FormationService;
 import com.example.backendagile.services.PromotionService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * REST controller for managing promotions and related operations.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/promotions")
 public class PromotionController {
@@ -91,15 +93,19 @@ public class PromotionController {
 
 
     @PutMapping("/{anneeUniversitaire}/{codeFormation}")
-    public ResponseEntity<String> updatePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation, @RequestBody PromotionDTO promotion) {
+    public ResponseEntity<Map<String, String>> updatePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation, @RequestBody PromotionDTO promotion) {
         try {
-            PromotionDTO updatedPromotion = promotionService.updatePromotion(anneeUniversitaire, codeFormation, promotion);
-            return ResponseEntity.ok("Promotion mise à jour avec succès");
+            promotionService.updatePromotion(anneeUniversitaire, codeFormation, promotion);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Promotion mise à jour avec succès");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de la promotion");
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Erreur lors de la mise à jour de la promotion");
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-
 
     /**
      * Deletes a promotion by its ID.

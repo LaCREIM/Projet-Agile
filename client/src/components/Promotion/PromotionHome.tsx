@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from "react";
 import {motion} from "framer-motion";
 import {
+    anneesUniv,
     getPromotionAsync,
     getPromotions,
 } from "../../features/PromotionSlice";
@@ -45,6 +46,8 @@ const PromotionHome = () => {
     const [filteredPromotions, setFilteredPromotions] = useState<Promotion[]>([]);
     const [sortField, setSortField] = useState<string>("codeFormation");
     const [sortOrder, setSortOrder] = useState<string>("asc");
+
+    const isEditable = (promotion: Promotion) => anneesUniv.find(el => el == promotion.anneeUniversitaire);
 
 
     const MotionVariant = {
@@ -309,25 +312,28 @@ const PromotionHome = () => {
                                                     />
                                                 </div>
 
-                                                <div className="tooltip" data-tip="Modifier ">
+                                                <div className="tooltip"
+                                                     data-tip={isEditable(promotion) ? "Modifier" : "Promotion non modifiable"}>
                                                     <FontAwesomeIcon
                                                         icon={faPenToSquare}
-                                                        className="text-black text-base cursor-pointer"
+                                                        className={`text-black text-base cursor-pointer ${!isEditable(promotion) ? 'text-gray-400 cursor-not-allowed' : ''}`}
                                                         onClick={() => {
                                                             handleClick({} as Promotion, index);
                                                             handleClickUpdate({} as Promotion, index);
                                                             handleClickUpdate(promotion, index);
-                                                            openModal(
-                                                                `updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
-                                                            );
+                                                            if (isEditable(promotion)) {
+                                                                openModal(
+                                                                    `updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                                                                );
+                                                            }
                                                         }}
                                                     />
                                                 </div>
 
-                                                <div className="tooltip tooltip-left" data-tip="Supprimer">
+                                                <div className="tooltip tooltip-left" data-tip={isEditable(promotion) ? "Supprimer" : "Promotion non supprimable"}>
                                                     <FontAwesomeIcon
                                                         icon={faTrash}
-                                                        className="text-black text-base cursor-pointer"
+                                                        className={`text-black text-base cursor-pointer  ${!isEditable(promotion) ? 'text-gray-400 cursor-not-allowed' : ''}`}
                                                         onClick={() => openModal(`delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`)}
                                                     />
                                                 </div>

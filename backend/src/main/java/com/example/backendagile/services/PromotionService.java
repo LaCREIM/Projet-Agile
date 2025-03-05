@@ -87,12 +87,10 @@ public class PromotionService {
      */
     public PromotionDTO updatePromotion(String anneeUniversitaire, String codeFormation, PromotionDTO updatedPromotion) {
         PromotionId key = new PromotionId(anneeUniversitaire, codeFormation);
-        Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
+        promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
         Enseignant enseignant = enseignantRepository.findById(updatedPromotion.getNoEnseignant()).orElseThrow(() -> new RuntimeException("Enseignant Not Found"));
         Promotion newpromotion = promotionMapper.fromPromotionDTO(updatedPromotion);
         newpromotion.setEnseignant(enseignant);
-        PromotionId key2 = new PromotionId(updatedPromotion.getAnneeUniversitaire(), updatedPromotion.getCodeFormation());
-        newpromotion.setId(key2);
         promotionRepository.save(newpromotion);
         return promotionMapper.fromPromotion(newpromotion);
     }

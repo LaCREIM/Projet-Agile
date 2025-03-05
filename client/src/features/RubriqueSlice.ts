@@ -54,14 +54,14 @@ export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValu
 
 export const searchRubriquesAsync = createAsyncThunk<
   { rubriques: Rubrique[]; totalPages: number },
-  { keyword: string; page: number; size: number },
+  { page: number; size: number },
   { rejectValue: string }
 >(
   "rubriques/search",
-  async ({ keyword, page, size }, { rejectWithValue }) => {
+  async ({page, size }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/search-paged", {
-        params: { keyword, page, size },
+      const response = await axiosInstance.get("/rubriquesStd/paged", {
+        params: { page, size },
       });
       return response.data; // L'API renvoie un objet contenant rubriques et totalPages
     } catch (error: any) {
