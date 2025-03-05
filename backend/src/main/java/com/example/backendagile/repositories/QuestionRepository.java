@@ -32,9 +32,10 @@ long countByType(String type);
     @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
     Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
 
-    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule")
-    List<Question> findQuestionByIntitule(String intitule);
-    
+    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule and q.idQualificatif.id = :idQualificatif")
+    List<Question> findQuestionByIntitule(String intitule , Long idQualificatif);
+
+
 
     @Query(value = """
         SELECT * FROM (
