@@ -29,8 +29,9 @@ export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectVa
     }
   }
 );
+
 export const getQuestionAsync = createAsyncThunk<
-    { content: Question[]; totalPages: number },  // Type correct de retour
+    { content: Question[]; totalPages: number },  
     { page: number; size: number },
     { rejectValue: string }
 >(
@@ -41,10 +42,33 @@ export const getQuestionAsync = createAsyncThunk<
                 `/questions/paged`,
                 { params: { page, size } }
             );
+            
             return response.data;
         } catch (error: any) {
             console.error("Erreur lors de la récupération des questions:", error);
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions.");
+        }
+    }
+);
+
+export const getQuestionPersoAsync = createAsyncThunk<
+    { content: Question[]; totalPages: number },  
+    { idEnseignant: number, page: number; size: number },
+    { rejectValue: string }
+>(
+    "questions/getQuestionPersoAsync",
+    async ({ idEnseignant, page, size }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<{ content: Question[]; totalPages: number }>(
+                `/questionsPrs/paged?noEnseignant=${1000}&page=${page}&size=${size}`,
+                { params: { page, size } }
+            );
+          console.log(response.data);
+
+            return response.data;
+        } catch (error: any) {
+            console.error("Erreur lors de la récupération des questions:", error);
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions perso.");
         }
     }
 );
@@ -56,10 +80,30 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
   async (question, { rejectWithValue }) => {
     try {
       const questionSTd = {
-        idQualificatif: question.idQualificatif.id, // Assurez-vous qu'il est bien un Long
+        idQualificatif: question.idQualificatif.id, 
         intitule: question.intitule
       };
       const response = await axiosInstance.post("/questionsStd", questionSTd);
+      console.log(response.data);
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la création de la question");
+    }
+  }
+);
+
+export const createQuestionPersoAsync = createAsyncThunk<Question, Question, { rejectValue: string }>(
+  "questions/createQuestionPersoAsync",
+  async (question, { rejectWithValue }) => {
+    try {
+      const questionPrs = {
+        idQualificatif: question.idQualificatif.id, 
+        intitule: question.intitule,
+        idEnseignant: 1000
+        // idEnseignant: question.noEnseignant.id
+      };
+      const response = await axiosInstance.post("/questionsPrs", questionPrs);
       console.log(response.data);
 
       return response.data;
@@ -90,6 +134,29 @@ export const updateQuestionAsync = createAsyncThunk<
   }
 );
 
+export const updateQuestionPersoAsync = createAsyncThunk<
+  Question,
+  { id: number; data: Question },
+  { rejectValue: string }
+>(
+  "questions/updateQuestionPersoAsync",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const questionPrs = {
+        idQualificatif: data.idQualificatif.id, 
+        intitule: data.intitule,
+        idEnseignant: 1000
+        // idEnseignant: data.noEnseignant.id
+
+      };
+      const response = await axiosInstance.put(`/questionsPrs/${id}`, questionPrs);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la question");
+    }
+  }
+);
+
 // **Thunk: Suppression d'une question**
 export const deleteQuestionAsync = createAsyncThunk<
   void,
@@ -100,6 +167,23 @@ export const deleteQuestionAsync = createAsyncThunk<
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(`/questionsStd/${id}`);
+      console.log(response);
+
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la suppression de la question");
+    }
+  }
+);
+
+export const deleteQuestionPersoAsync = createAsyncThunk<
+  void,
+  number,
+  { rejectValue: string }
+>(
+  "questions/deleteQuestionPersoAsync",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete(`/questionsPrs/${id}`);
       console.log(response);
 
     } catch (error: any) {

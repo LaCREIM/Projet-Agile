@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-
   getEtudiantAsync,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
@@ -26,6 +25,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
 import { FaSearch } from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
+import { role } from "../../App.tsx";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -96,9 +96,9 @@ const StudentHome = ({
     }
   }, [dispatch, currentPage, promotionDetails]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setfilteredEtudiants(etudiants);
-  },[etudiants])
+  }, [etudiants]);
 
   /**********************  Functions ********************/
 
@@ -117,7 +117,6 @@ const StudentHome = ({
     setModalUpdate({ etudiant, index });
   };
 
- 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
 
@@ -346,21 +345,25 @@ const StudentHome = ({
                           openModal(`inspect-${etudiant.noEtudiant}`);
                         }}
                       />
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClickUpdate(etudiant, index);
-                          openModal(`updateStudent-${etudiant.noEtudiant}`);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() =>
-                          openModal(`delete-${etudiant.noEtudiant}`)
-                        }
-                      />
+                      {role === "ADM" && (
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClickUpdate(etudiant, index);
+                            openModal(`updateStudent-${etudiant.noEtudiant}`);
+                          }}
+                        />
+                      )}
+                      {role === "ADM" && (
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() =>
+                            openModal(`delete-${etudiant.noEtudiant}`)
+                          }
+                        />
+                      )}
                     </td>
 
                     <dialog

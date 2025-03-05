@@ -60,8 +60,15 @@ const DetailsRubrique = ({
     []
   );
 
+  const [unusedQuestions, setUnusedQuestions] = useState(
+    allQuestions.filter(
+      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+    )
+  );
+
   const [isEditing, setIsEditing] = useState(false);
   const [rubriqueData, setRubriqueData] = useState({ ...rubrique });
+  const [canSave, setCanSave] = useState(false);
 
   const [selectedQuestion, setSelectedQuestion] = useState(-1);
 
@@ -94,10 +101,42 @@ const DetailsRubrique = ({
     setNewQuestionsOrder(newFormattedQuestions);
   }, [questions, rubrique.designation]);
 
+   useEffect(() => {
+     setCanSave(rubriqueData?.designation?.trim() !== "");
+     console.log(canSave);
+   }, [rubriqueData]);
+
   useEffect(() => {
     setRubriqueData({ ...rubrique });
   }, [rubrique]);
 
+
+  useEffect(() => {
+    const newQuestionsOrder: RequestQuestionOrderDetails[] = questionsOrder.map(
+      (q, idx) => ({
+        idRubrique: q.idRubrique,
+        designationRubrique: "Rubrique par défaut",
+        idQuestion: q.idQuestion,
+        questionStdDTO: {
+          idQualificatif: -1,
+          intitule: q.intitule,
+          maxQualificatif: "",
+          minQualificatif: "",
+        },
+        ordre: idx + 1,
+      })
+    );
+    setNewQuestionsOrder(newQuestionsOrder);
+  }, [questionsOrder]);
+
+  useEffect(() => {
+    const unused = allQuestions.filter(
+      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+    );
+    setUnusedQuestions(unused);
+  }, [questions, allQuestions]);
+  
+  
   const handleDragEnd = async (event: DragEndEvent) => {
     if (!isEditing) return;
 
@@ -117,23 +156,7 @@ const DetailsRubrique = ({
     });
   };
 
-  useEffect(() => {
-    const newQuestionsOrder: RequestQuestionOrderDetails[] = questionsOrder.map(
-      (q, idx) => ({
-        idRubrique: q.idRubrique,
-        designationRubrique: "Rubrique par défaut",
-        idQuestion: q.idQuestion,
-        questionStdDTO: {
-          idQualificatif: -1,
-          intitule: q.intitule,
-          maxQualificatif: "",
-          minQualificatif: "",
-        },
-        ordre: idx + 1,
-      })
-    );
-    setNewQuestionsOrder(newQuestionsOrder);
-  }, [questionsOrder]);
+  
 
   const handleEdit = async () => {
     if (isEditing) {
@@ -174,8 +197,6 @@ const DetailsRubrique = ({
   };
 
   const handleAddQuestion = async () => {
-    console.log("Selected question:", selectedQuestion);
-
     if (selectedQuestion === -1) return;
 
     const questionToAdd = unusedQuestions.find(
@@ -197,9 +218,9 @@ const DetailsRubrique = ({
       ordre: questionsOrder.length + 1,
     };
 
-    setUnusedQuestions(unusedQuestions.filter((q) => q.id !== questionToAdd.id));
-    setAddQuestion((prev) => [...prev, newQuestion]);
+    setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
 
+    setAddQuestion((prev) => [...prev, newQuestion]);
 
     const res = await dispatch(updateRubriqueQuestionsAsync([newQuestion]));
 
@@ -220,7 +241,6 @@ const DetailsRubrique = ({
       toast.error("Erreur lors de l'ajout de la question.");
     }
 
-    // Réinitialisation de la sélection
     setSelectedQuestion(-1);
   };
 
@@ -233,6 +253,12 @@ const DetailsRubrique = ({
     );
 
     if (response?.type === "rubriques-questions/delete/fulfilled") {
+      // Réajouter la question supprimée à unusedQuestions
+      const removedQuestion = allQuestions.find((q) => q.id === idQuestion);
+      if (removedQuestion) {
+        setUnusedQuestions((prev) => [...prev, removedQuestion]);
+      }
+
       setQuestionsOrder((prev) => {
         const updatedOrder = prev
           .filter((q) => q.idQuestion !== idQuestion)
@@ -255,11 +281,10 @@ const DetailsRubrique = ({
     }
   };
 
-  const [unusedQuestions, setUnusedQuestions] = useState(
-    allQuestions.filter(
-      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
-    )
-  );
+  
+
+
+ 
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -269,7 +294,9 @@ const DetailsRubrique = ({
         </h3>
 
         <div className="text-base font-medium text-gray-900 space-x-1">
-          <span className="font-semibold">Désignation :</span>
+          <span className="font-semibold">
+            Désignation {isEditing && <span className="text-red-500">*</span>}
+          </span>
           {isEditing ? (
             <input
               type="text"
@@ -340,11 +367,23 @@ const DetailsRubrique = ({
               type="button"
               className="btn btn-neutral"
               onClick={handleEdit}
+              disabled={isEditing === true && !canSave}
             >
               {isEditing ? "Enregistrer" : "Modifier"}
             </button>
 
-            <button className="btn">Fermer</button>
+            {isEditing && (
+              <button
+                className="btn bg-white"
+                type="button"
+                onClick={() => setIsEditing(false)}
+              >
+                Annuler
+              </button>
+            )}
+            <button className="btn " onClick={() => setIsEditing(false)}>
+              Fermer
+            </button>
           </form>
         </div>
       </div>

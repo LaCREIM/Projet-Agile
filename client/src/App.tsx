@@ -26,7 +26,7 @@ function App() {
   return (
     <Router basename="/">
       <AuthChecker>
-        <ToastContainer theme="colored" />
+        <ToastContainer theme="colored" autoClose={10000} />
 
         <Routes>
           <Route path="/" element={<RootLayout />}>

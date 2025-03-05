@@ -69,10 +69,20 @@ export function AdminLayout() {
           [
             "Gestion des questions",
             "Gestion des rubriques",
-            "Consultation des promotions"
+            "Consultation des promotions",
           ].includes(project.title)
         )
-      : allProjects;
+      : allProjects.filter((project) =>
+          [
+            "Gestion des questions",
+            "Gestion des rubriques",
+            "Gestion des promotions",
+            "Gestion des qualificatifs",
+            "Gestion des enseignants",
+            "Gestion des étudiants",
+            "Gestion des évaluations",
+          ].includes(project.title)
+        );
   return (
     <>
       <NavBar />

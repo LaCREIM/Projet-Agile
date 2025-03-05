@@ -1,29 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { updateQuestionAsync, fetchQuestionsAsync } from "../../features/QuestionSlice";
+import {
+  updateQuestionAsync,
+  fetchQuestionsAsync,
+} from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
-
 
 interface UpdateQuestionProps {
   questionData: Question;
   qualificatifs: Qualificatif[];
 }
 
-const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) => {
+const UpdateQuestion = ({
+  questionData,
+  qualificatifs,
+}: UpdateQuestionProps) => {
   const dispatch = useAppDispatch();
 
   const [question, setQuestion] = useState<Question>({
     ...questionData,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setQuestion({ ...question, [name]: value });
   };
-
-
 
   const handleSelectQualificatif = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -41,9 +46,11 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
   };
 
   const handleSubmit = async () => {
-    if (question.type && question.intitule) {
+    if (question.intitule) {
       try {
-        await dispatch(updateQuestionAsync({ id: question.id, data: question }));
+        await dispatch(
+          updateQuestionAsync({ id: question.id, data: question })
+        );
         dispatch(fetchQuestionsAsync());
         toast.success("Question mise à jour avec succès !");
       } catch (error) {
@@ -54,12 +61,12 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
     }
   };
 
-  const canSave = question.type && question.intitule;
+  const canSave = question.intitule;
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[40%] max-w-5xl">
-        <h3 className="font-bold text-lg my-4">Modifier une question</h3>
+        <h3 className="font-bold text-lg my-4">Modifier la question</h3>
         <form className="flex flex-col gap-5">
           <label className="input input-bordered w-[85%] flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
@@ -79,13 +86,13 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
             <select
               required
               onChange={handleSelectQualificatif}
-              value={question?.idQualificatif?.id} // <-- Utilise l'état actuel
+              value={question.idQualificatif?.id}
               className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
             >
               <option value="">Sélectionnez un qualificatif</option>
               {qualificatifs.map((qual) => (
                 <option key={qual.id} value={qual.id}>
-                  {qual.maximal} - {qual.minimal}
+                  {qual.minimal} - {qual.maximal}
                 </option>
               ))}
             </select>

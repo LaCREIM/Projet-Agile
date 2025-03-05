@@ -15,7 +15,6 @@ import { cn } from "../../lib/utils";
 
 export function Dashboard() {
   const role = localStorage.getItem("role")
-  console.log(role);
   
   const allLinks = [
     {
@@ -83,7 +82,18 @@ export function Dashboard() {
             "Logout",
           ].includes(link.label)
         )
-      : allLinks;
+      : allLinks.filter((link) =>
+          [
+            "Gestion des questions",
+            "Gestion des rubriques",
+            "Gestion des promotions",
+            "Gestion des qualificatifs",
+            "Gestion des enseignants",
+            "Gestion des étudiants",
+            "Gestion des évaluations",
+            "Logout",
+          ].includes(link.label)
+        );
 
   const [open, setOpen] = useState(false);
   return (

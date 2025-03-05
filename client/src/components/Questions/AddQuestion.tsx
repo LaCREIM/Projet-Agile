@@ -114,7 +114,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
                 <option value={-1}>Sélectionnez un qualificatif</option>
                 {qualificatifs.map((qual) => (
                   <option key={qual.id} value={qual.id}>
-                    {qual.maximal} - {qual.minimal}
+                    {qual.minimal} - {qual.maximal}
                   </option>
                 ))}
               </select>

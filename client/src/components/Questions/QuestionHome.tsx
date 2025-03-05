@@ -2,21 +2,19 @@ import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   deleteQuestionAsync,
   fetchQuestionsAsync,
-  getQuestionAsync
+  getQuestionPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
 import { RootState } from "../../api/store";
-import DetailsQuestion from "./DetailsQuestion";
+
 import UpdateQuestion from "./UpdateQuestion";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
+import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
 
 const QuestionHome = () => {
   document.title = "UBO | Questions";
@@ -39,7 +37,7 @@ const QuestionHome = () => {
     index: -1,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 5;
+  const questionsPerPage = 10;
   const totalPages = Math.ceil(questions.length / questionsPerPage);
 
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
@@ -58,7 +56,7 @@ const QuestionHome = () => {
   const questionDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(fetchQuestionsAsync());
+    dispatch(getQuestionPersoAsync({idEnseignant: 1000, page:1, size:10}));
   }, [dispatch]);
 
   useEffect(() => {
@@ -82,27 +80,6 @@ const QuestionHome = () => {
 
   const handleClickUpdate = (question: Question, index: number) => {
     setModalUpdate({ question, index });
-  };
-
-  const handleDelete = async (question: Question, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      const response = await dispatch(deleteQuestionAsync(question.id));
-
-      console.log(response);
-
-      if (response?.payload === "La question est déjà utilisée.") {
-        toast.error(
-          "Cette question est déjà utilisée et ne peut pas être supprimée."
-        );
-      } else {
-        toast.success("Question supprimée avec succès.");
-        dispatch(fetchQuestionsAsync());
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
   };
 
   const handleNextPage = () => {
@@ -176,9 +153,22 @@ const QuestionHome = () => {
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(question, e)}
+                        onClick={() => openModal(`delete-${index}`)}
                       />
                     </td>
+                    <dialog id={`updateQuestion-${index}`} className="modal">
+                      <UpdateQuestion
+                        questionData={question}
+                        qualificatifs={qualificatifs}
+                      />
+                    </dialog>
+
+                    <dialog id={`delete-${index}`} className="modal">
+                      <DeleteQuestionConfirmation
+                        question={question}
+                        currentPage={currentPage}
+                      />
+                    </dialog>
                   </tr>
                 ))
               )}
@@ -213,6 +203,5 @@ const QuestionHome = () => {
     </>
   );
 };
-
 
 export default QuestionHome;
