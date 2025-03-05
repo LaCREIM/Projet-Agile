@@ -31,6 +31,14 @@ public class DroitId implements java.io.Serializable {
         this.noEnseignant = noEnseignant;
     }
 
+    public DroitId(Long idEvaluation, Integer noEnseignant) {
+        this.idEvaluation = idEvaluation;
+        this.noEnseignant = noEnseignant;
+    }
+
+    public DroitId() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
