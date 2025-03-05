@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from "react";
 import {motion} from "framer-motion";
 import {
-        getPromotionAsync,
+    getPromotionAsync,
     getPromotions,
 } from "../../features/PromotionSlice";
 import {ToastContainer} from "react-toastify";
@@ -334,10 +334,7 @@ const PromotionHome = () => {
 
                                             </td>
                                             <dialog
-                                                id={`updatePromotion-${
-                                                    (promotion.anneeUniversitaire,
-                                                        promotion.siglePromotion)
-                                                }`}
+                                                id={`updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`}
                                                 className="modal"
                                             >
                                                 <UpdatePromotion
@@ -353,12 +350,12 @@ const PromotionHome = () => {
                                                 <DetailsPromotions promotion={promotion}/>
                                             </dialog>
                                             <dialog
-                                            id={`delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`}
-                                            className="modal"
-                                        >
-                                            <DeletePromotionConfirmation
-                                                promotion={promotion}                                         />
-                                        </dialog>
+                                                id={`delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`}
+                                                className="modal"
+                                            >
+                                                <DeletePromotionConfirmation
+                                                    promotion={promotion}/>
+                                            </dialog>
                                         </tr>
                                     )
                                 )
