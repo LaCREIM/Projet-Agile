@@ -74,7 +74,8 @@ WHERE qu.TYPE = 'QUP'
 """, nativeQuery = true)
 long countSearchQuestions(@Param("noEnseignant") Long noEnseignant, @Param("keyword") String keyword);
 
-
+    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule and q.idQualificatif.id = :idQualificatif")
+    List<Question> findQuestionByIntitule(String intitule , Long idQualificatif);
 }
 
 

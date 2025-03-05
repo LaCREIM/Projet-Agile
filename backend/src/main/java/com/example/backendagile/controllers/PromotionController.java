@@ -65,12 +65,21 @@ public class PromotionController {
      * @return a {@link ResponseEntity} containing the created {@link Promotion}
      */
     @PostMapping
-    public ResponseEntity<Promotion> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
+    public ResponseEntity<String> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
         if (promotion.getCodeFormation() == null || promotion.getCodeFormation().isEmpty()) {
             throw new IllegalArgumentException("Code Formation cannot be null or empty");
         }
-        Promotion savedPromotion = promotionService.createPromotion(promotion);
-        return ResponseEntity.ok(savedPromotion);
+        try {
+            PromotionDTO promotionDTO =  promotionService.getPromotionById(promotion.getAnneeUniversitaire(), promotion.getCodeFormation());
+            if(promotionDTO!=null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Promotion existe déjà");
+            }
+            Promotion savedPromotion = promotionService.createPromotion(promotion);
+            return ResponseEntity.ok("Promotion créée avec succès");
+            } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
 
@@ -92,10 +101,11 @@ public class PromotionController {
      * @return a {@link ResponseEntity} with a 204 status upon successful deletion
      */
     @DeleteMapping("/{anneeUniversitaire}/{codeFormation}")
-    public ResponseEntity<?> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
+    public ResponseEntity<String> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
         try {
             promotionService.deletePromotion(anneeUniversitaire, codeFormation);
-            return new ResponseEntity<>("deleted", HttpStatus.NO_CONTENT);
+            return ResponseEntity.ok("La Promtion a été supprimée avec succès.");
+
         } catch (Exception e) {
             return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
         }

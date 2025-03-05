@@ -78,7 +78,7 @@ const LoginInformation = () => {
                 name="password"
                 value={info.password}
                 onChange={handleInputChange}
-                placeholder="mot de Passe"
+                placeholder="Mot de Passe"
                 className="input input-bordered w-full focus:outline-none"
                 required
             />
