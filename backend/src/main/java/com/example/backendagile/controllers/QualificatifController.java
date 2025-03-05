@@ -116,12 +116,7 @@ public class QualificatifController {
         return ResponseEntity.ok(qualificatifService.existsDansQuestion(id));
     }
    
-   /*  @GetMapping("/search")
-    public ResponseEntity<List<Qualificatif>> searchQualificatifs(@RequestParam String query) {
-        List<Qualificatif> result = qualificatifService.searchQualificatifs(query);
-        return ResponseEntity.ok(result);
-    }
-*/
+
 @GetMapping("/search-paged")
 public ResponseEntity<Map<String, Object>> searchQualificatifsPaged(
         @RequestParam String keyword,

@@ -79,7 +79,7 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
             <select
               required
               onChange={handleSelectQualificatif}
-              value={question.idQualificatif.id} // <-- Utilise l'état actuel
+              value={question?.idQualificatif?.id} // <-- Utilise l'état actuel
               className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
             >
               <option value="">Sélectionnez un qualificatif</option>
