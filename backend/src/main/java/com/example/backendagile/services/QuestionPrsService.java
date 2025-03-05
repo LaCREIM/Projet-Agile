@@ -51,6 +51,8 @@ public class QuestionPrsService {
         Question existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Question Not Found"));
 
+
+
         // Mettre à jour les propriétés existantes
         existingQuestion.setIntitule(questionPrsDTO.getIntitule());
         existingQuestion.setType("QUP");
@@ -72,11 +74,39 @@ public class QuestionPrsService {
                 .collect(Collectors.toList());
     }
 
-
+/* 
     public List<QuestionPrsDTO> getAllQuestionsPaged(int page, int size) {
         return questionRepository.findAllPaged(page, size)
                 .stream()
                 .map(questionMapper::fromQuestion)
                 .collect(Collectors.toList());
+    }*/
+
+    public List<Question> searchPersonalQuestionsPaged(Long noEnseignant, String keyword, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return questionRepository.searchQuestionsPaged(noEnseignant, keyword, startRow, endRow);
     }
+    
+    public int getSearchTotalPages(Long noEnseignant, String keyword, int size) {
+        long total = questionRepository.countSearchQuestions(noEnseignant, keyword);
+        return (int) Math.ceil((double) total / size);
+    }
+    
+
+    public List<Question> getQuestionsPaged(Long noEnseignant,int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return questionRepository.findQuestionsPaged(noEnseignant,startRow, endRow);
+    }
+   
+    public int getTotalPages(Long noEnseignant, int size) {
+        long totalQuestions = questionRepository.countByTypeForEnseignant(noEnseignant);
+        return (int) Math.ceil((double) totalQuestions / size);
+    }
+
+    public Optional<Question> findByIntitule(String intitule , Long idQualificatif) {
+        return questionRepository.findQuestionByIntitule(intitule, idQualificatif).stream().findFirst();
+    }
+    
 }

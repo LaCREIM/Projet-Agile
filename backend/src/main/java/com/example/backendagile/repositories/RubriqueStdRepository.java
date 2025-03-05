@@ -20,4 +20,16 @@ public interface RubriqueStdRepository extends JpaRepository<Rubrique, Long> {
     @Param("endRow") int endRow);
 
     long countByDesignationContainingIgnoreCase(String designation);
+
+
+
+    @Query(value = """
+    SELECT * FROM (
+        SELECT r.*, ROWNUM rnum FROM (
+            SELECT * FROM RUBRIQUE WHERE type = 'RBS'ORDER BY DESIGNATION ASC
+        ) r WHERE ROWNUM <= :endRow
+    ) WHERE rnum > :startRow
+""", nativeQuery = true)
+    List<Rubrique> findAllWithPagination(@Param("startRow") int startRow, @Param("endRow") int endRow);
+
 }

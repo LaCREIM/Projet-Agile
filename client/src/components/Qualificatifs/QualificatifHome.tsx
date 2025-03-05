@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQualificatif from "./AddQualificatif";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,13 +11,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  deleteQualificatifAsync,
-  fetchQualificatifsAsync,
+  fetchQualificatifsPagedAsync,
   updateQualificatifAsync,
 } from "../../features/QualificatifSlice";
 import { Qualificatif } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { RootState } from "../../api/store";
+import DeleteQualificatifConfirmation from "./DeleteQualificatifConfirmation";
 
 const QualificatifHome = () => {
   document.title = "UBO | Qualificatifs";
@@ -26,11 +25,14 @@ const QualificatifHome = () => {
   const qualificatifs = useAppSelector(
     (state: RootState) => state.qualificatif.qualificatifs
   );
+  const totalPages = useAppSelector((state) => state.qualificatif.totalPages);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
   const [updatingIndex, setUpdatingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    dispatch(fetchQualificatifsAsync());
-  }, [dispatch]);
+    dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+  }, [dispatch, currentPage]);
 
   const [editingValues, setEditingValues] = useState<{
     [key: number]: Qualificatif;
@@ -39,30 +41,6 @@ const QualificatifHome = () => {
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
-  };
-
-  const handleDelete = async (
-    qualificatif: Qualificatif,
-    e: React.MouseEvent
-  ) => {
-    e.stopPropagation();
-    try {
-      const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
-      console.log(response);
-      
-
-      if (response?.type === "qualificatifs/delete/rejected") {
-        toast.error(
-          "Ce qualificatif ne peut pas être supprimé, car il est deja utilisé."
-        );
-      } else if (response?.type === "qualificatifs/delete/fulfilled") {
-        dispatch(fetchQualificatifsAsync());
-        toast.success("Qualificatif supprimé avec succès.");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
   };
 
   const handleChange = (
@@ -74,7 +52,7 @@ const QualificatifHome = () => {
       ...prev,
       [index]: {
         ...prev[index],
-        [name]: value, // Met à jour uniquement la ligne en édition
+        [name]: value, 
       },
     }));
   };
@@ -83,16 +61,20 @@ const QualificatifHome = () => {
     setUpdatingIndex(index);
     setEditingValues((prev) => ({
       ...prev,
-      [index]: { ...qualificatifs[index] }, // Cloner les valeurs de la ligne actuelle
+      [index]: { ...qualificatifs[index] }, 
     }));
   };
 
   const handleUpdate = async (index: number) => {
     if (editingValues[index]) {
-      await dispatch(updateQualificatifAsync(editingValues[index]));
+      const res = await dispatch(updateQualificatifAsync(editingValues[index]));
       setUpdatingIndex(null);
-      toast.success("Qualificatif mis à jour avec succès.");
-      dispatch(fetchQualificatifsAsync());
+      if(res?.type === "qualificatifs/update/rejected") {
+        toast.error(res.payload as string);
+      } else if (res?.type === "qualificatifs/update/fulfilled") {
+      toast.success(res.payload as string);
+      dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+      }
     } else {
       toast.error("Veuillez remplir tous les champs avant de sauvegarder.");
     }
@@ -101,10 +83,17 @@ const QualificatifHome = () => {
   const handleCancelEdit = (index: number) => {
     setEditingValues((prev) => {
       const updatedValues = { ...prev };
-      delete updatedValues[index]; // Supprime les modifications en cours
+      delete updatedValues[index]; 
       return updatedValues;
     });
-    setUpdatingIndex(null); // Sort du mode édition
+    setUpdatingIndex(null); 
+  };
+
+  const handlePageChange = async (newPage: number) => {
+    setCurrentPage(newPage);
+    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+    console.log(res);
+    
   };
 
   const MotionVariant = {
@@ -123,11 +112,9 @@ const QualificatifHome = () => {
 
   return (
     <>
-      <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1>Liste des qualificatifs</h1>
+        <h1 className="text-xl">Liste des couples qualificatifs</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
-          
           <div className="tooltip" data-tip="Ajouter un couple qualifactif">
             <button
               className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
@@ -227,11 +214,22 @@ const QualificatifHome = () => {
                             <FontAwesomeIcon
                               icon={faTrash}
                               className="text-black text-base cursor-pointer"
-                              onClick={(e) => handleDelete(qualificatif, e)}
+                              onClick={() =>
+                                openModal(`delete-${qualificatif.id}`)
+                              }
                             />
                           </>
                         )}
                       </td>
+                      <dialog
+                        id={`delete-${qualificatif.id}`}
+                        className="modal"
+                      >
+                        <DeleteQualificatifConfirmation
+                          qualificatif={qualificatif}
+                          currentPage={currentPage}
+                        />
+                      </dialog>
                     </tr>
                   )
                 )
@@ -239,10 +237,29 @@ const QualificatifHome = () => {
             </tbody>
           </motion.table>
         </div>
+        <div className="flex justify-center items-center mt-2">
+          <button
+            className="btn"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Précédent
+          </button>
+          <span className="mx-2">
+            Page {currentPage} sur {totalPages}
+          </span>
+          <button
+            className="btn"
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Suivant
+          </button>
+        </div>
       </div>
 
       <dialog id="addQualificatif" className="modal">
-        <AddQualificatif />
+        <AddQualificatif currentPage={currentPage} />
       </dialog>
     </>
   );

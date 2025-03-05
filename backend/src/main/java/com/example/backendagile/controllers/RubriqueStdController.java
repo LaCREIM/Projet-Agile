@@ -108,4 +108,20 @@ public class RubriqueStdController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Map<String, Object>> getAllRubriquesPaged(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Rubrique> rubriques = rubriqueStdService.getAllRubriquesPaged(page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("rubriques", rubriques);
+        response.put("currentPage", page);
+        response.put("size", size);
+        response.put("totalPages", rubriqueStdService.getTotalPages(size));
+
+        return ResponseEntity.ok(response);
+    }
+
 }

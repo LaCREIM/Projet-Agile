@@ -5,22 +5,43 @@ import { Qualificatif } from "../types/types";
 
 interface QualificatifState {
   qualificatifs: Qualificatif[];
+  totalPages: number;
   loading: boolean;
   error: string | null;
+}
+
+interface QualificatifResponse {
+    qualificatifs: Qualificatif[];
+    totalPages: number;
 }
 
 const initialState: QualificatifState = {
   qualificatifs: [],
   loading: false,
+  totalPages: 1,
   error: null,
 };
 
 // **Thunk: Récupération de tous les qualificatifs**
 export const fetchQualificatifsAsync = createAsyncThunk<Qualificatif[], void, { rejectValue: string }>(
-  "qualificatifs/fetchAll",
+  "qualificatifs/fetchQualificatifsAsync",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/qualificatifs");
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la récupération des qualificatifs");
+    }
+  }
+);
+
+export const fetchQualificatifsPagedAsync = createAsyncThunk<QualificatifResponse, { page: number, size: number }, { rejectValue: string }>(
+  "qualificatifs/fetchQualificatifsPagedAsync",
+  async ({ page, size }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get<QualificatifResponse>(`/qualificatifs/paged?page=${page}&size=${size}`);
+      console.log(response);
+      
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la récupération des qualificatifs");
@@ -42,9 +63,9 @@ export const createQualificatifAsync = createAsyncThunk<Qualificatif, Qualificat
 );
 
 // **Thunk: Mise à jour d'un qualificatif**
-export const updateQualificatifAsync = createAsyncThunk<string,  Qualificatif, { rejectValue: string }>(
+export const updateQualificatifAsync = createAsyncThunk<string, Qualificatif, { rejectValue: string }>(
   "qualificatifs/update",
-  async (data , { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(`/qualificatifs/${data.id}`, data);
       return response.data;
@@ -84,6 +105,11 @@ const qualificatifSlice = createSlice({
     builder.addCase(fetchQualificatifsAsync.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    });
+    builder.addCase(fetchQualificatifsPagedAsync.fulfilled, (state, action: PayloadAction<QualificatifResponse>) => {
+      state.qualificatifs = action.payload.qualificatifs;
+      state.totalPages = action.payload.totalPages;
+      state.loading = false;
     });
 
     // **Créer un qualificatif**

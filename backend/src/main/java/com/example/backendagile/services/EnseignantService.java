@@ -80,8 +80,9 @@ public class EnseignantService {
     }
 
     public List<Enseignant> getEnseignant() {
-        return enseignantRepository.findAll();
+        return enseignantRepository.findAllByOrderByNomAsc();
     }
+
 
     public Object getTotalPages(int size) {
         return Math.ceil((double) enseignantRepository.count() / size);

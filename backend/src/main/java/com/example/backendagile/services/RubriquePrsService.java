@@ -81,4 +81,15 @@ public class RubriquePrsService {
         long totalCount = rubriqueRepository.countByDesignationContainingIgnoreCase(keyword);
         return (int) Math.ceil((double) totalCount / size);
     }
+
+    public List<Rubrique> getAllRubriquesPaged(long noEnseignant, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return rubriqueRepository.findAllWithPagination(noEnseignant,startRow, endRow);
+    }
+
+    public int getTotalPages(int size) {
+        long totalItems = rubriqueRepository.count();
+        return (int) Math.ceil((double) totalItems / size);
+    }
 }

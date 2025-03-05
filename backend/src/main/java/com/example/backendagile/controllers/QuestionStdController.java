@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/questionsStd")
@@ -18,13 +20,51 @@ public class QuestionStdController {
     @Autowired
     private QuestionStdService questionStdService;
 
-    @GetMapping("/paged")
-    public ResponseEntity<List<Question>> getStandardQuestionsPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<Question> questions = questionStdService.getStandardQuestionsPaged(page, size);
-        return ResponseEntity.ok(questions);
-    }
+  
+
+    /**
+     * Récupérer toutes les questions standards PAGINÉES et ordonnées alphabétiquement
+     */
+@GetMapping("/paged")
+public ResponseEntity<Map<String, Object>> getAllQuestionsPaged(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+    List<Question> questions = questionStdService.getQuestionsPaged(page, size);
+    int totalPages = questionStdService.getTotalPages(size);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("questions", questions);
+    response.put("currentPage", page);
+    response.put("size", size);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
+
+
+    /**
+     * Permet de faire une recherche dont les résultats sont PAGINÉES et ordonnés par intitulé alphabetiquement
+     */
+@GetMapping("/search-paged")
+public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
+        @RequestParam String keyword,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+    List<Question> questions = questionStdService.searchQuestionsPaged(keyword, page, size);
+    int totalPages = questionStdService.getSearchTotalPages(keyword, size);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("questions", questions);
+    response.put("currentPage", page);
+    response.put("size", size);
+    response.put("totalPages", totalPages);
+
+    return ResponseEntity.ok(response);
+}
+
+
     /**
      * Récupérer toutes les questions standards (renvoie les entités)
      */
@@ -48,7 +88,7 @@ public class QuestionStdController {
     @PostMapping
     public ResponseEntity<String> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
         try {
-            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim());
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim(), questionStdDTO.getIdQualificatif());
             if(existingQuestion.isPresent()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
@@ -66,8 +106,15 @@ public class QuestionStdController {
     public ResponseEntity<String> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
         try {
 
-            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim());
-            if(existingQuestion!=null){
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim(), questionDto.getIdQualificatif());
+            if(existingQuestion.isPresent()){
+                //Verifier si la nouvelle question est different de l'ancienne
+                if (existingQuestion.get().getIntitule().equals(questionDto.getIntitule()) && existingQuestion.get().getIdQualificatif().getId() == questionDto.getIdQualificatif()) {
+
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rien n'a changé.");
+
+                }
+
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
             Question updatedQuestion = questionStdService.updateStandardQuestion(id, questionDto);
@@ -94,10 +141,11 @@ public class QuestionStdController {
         }
         try {
             questionStdService.deleteById(id);
+            return ResponseEntity.ok("La question a été supprimée avec succès.");
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
         }
-        return ResponseEntity.ok("La question a été supprimée avec succès.");
     }
 
     

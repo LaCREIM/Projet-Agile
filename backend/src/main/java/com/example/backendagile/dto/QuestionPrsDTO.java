@@ -3,6 +3,7 @@ package com.example.backendagile.dto;
 import com.example.backendagile.repositories.QuestionRepository;
 
 public class QuestionPrsDTO {
+    Long noEnseignant;
     String intitule;
     Long idQuestion;
     Long idQualificatif;
@@ -16,6 +17,14 @@ public class QuestionPrsDTO {
         this.intitule = intitule;
         this.idQuestion = idQuestion;
         this.idQualificatif = idQualificatif;
+    }
+
+    public Long getNoEnseignant() {
+        return noEnseignant;
+    }
+
+    public void setNoEnseignant(Long noEnseignant) {
+        this.noEnseignant = noEnseignant;
     }
 
     public String getMinQualificatif() {

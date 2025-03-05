@@ -72,4 +72,19 @@ public class RubriquePrsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Map<String, Object>> getAllRubriquesPaged(@RequestParam() long noEnseignant,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Rubrique> rubriques = rubriqueService.getAllRubriquesPaged(noEnseignant,page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("rubriques", rubriques);
+        response.put("currentPage", page);
+        response.put("size", size);
+        response.put("totalPages", rubriqueService.getTotalPages(size));
+
+        return ResponseEntity.ok(response);
+    }
 }

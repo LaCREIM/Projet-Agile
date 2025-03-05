@@ -99,11 +99,31 @@ public class QuestionStdService {
     }
 
 
-    public List<Question> getStandardQuestionsPaged(int page, int size) {
-        return questionRepository.findAllWithPagination(page, size);
+
+    public List<Question> getQuestionsPaged(int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return questionRepository.findQuestionsPaged(startRow, endRow);
+    }
+   
+    public int getTotalPages(int size) {
+        long totalQuestions = questionRepository.countByType("QUS");
+        return (int) Math.ceil((double) totalQuestions / size);
+    }
+    
+    public Optional<Question> findByIntitule(String intitule, Long idQualificatif) {
+        return questionRepository.findQuestionByIntitule(intitule, idQualificatif).stream().findFirst();
     }
 
-    public Optional<Question> findByIntitule(String intitule) {
-        return questionRepository.findQuestionByIntitule(intitule).stream().findFirst();
+    public List<Question> searchQuestionsPaged(String keyword, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+        return questionRepository.searchQuestionsPaged(keyword, startRow, endRow);
     }
+    
+    public int getSearchTotalPages(String keyword, int size) {
+        long total = questionRepository.countSearchQuestions(keyword);
+        return (int) Math.ceil((double) total / size);
+    }
+        
 }
