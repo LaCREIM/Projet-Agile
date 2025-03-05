@@ -1,11 +1,10 @@
 import React, {useEffect, useState, useRef} from "react";
 import {motion} from "framer-motion";
 import {
-    deletePromotionAsync,
-    getPromotionAsync,
+        getPromotionAsync,
     getPromotions,
 } from "../../features/PromotionSlice";
-import {toast, ToastContainer} from "react-toastify";
+import {ToastContainer} from "react-toastify";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faEye,
@@ -21,7 +20,6 @@ import {
     Enseignant,
     PromotionCreate,
     PromotionDetails,
-    PromotionId,
 } from "../../types/types";
 import {Promotion} from "../../types/types";
 import {DetailsPromotions} from "./DetailsPromotions";
@@ -32,6 +30,7 @@ import {
 import {FaSearch} from "react-icons/fa";
 import {diplomeMapper} from "../../mappers/mappers";
 import {IoMdAdd} from "react-icons/io";
+import DeletePromotionConfirmation from "./DeletePromotionConfirmation.tsx";
 
 const PromotionHome = () => {
     document.title = "UBO | Promotions";
@@ -120,21 +119,6 @@ const PromotionHome = () => {
         setModalUpdate({promotion, index});
     };
 
-    const handleDelete = async (promotion: Promotion, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const response = await dispatch(
-            deletePromotionAsync({
-                anneeUniversitaire: promotion.anneeUniversitaire,
-                codeFormation: promotion.codeFormation,
-            } as PromotionId)
-        );
-        if (response?.payload === "not deleted") {
-            toast.error("Cette promotion ne peut pas être supprimée");
-        } else {
-            toast.success("Promotion supprimée avec succès");
-        }
-        dispatch(getPromotionAsync());
-    };
 
     const switchToStudent = (
         anneeUniversitaire: string,
@@ -185,10 +169,6 @@ const PromotionHome = () => {
         });
         setFilteredPromotions(sortedPromotions);
     };
-
-    const toastError = (message: string) => {
-        toast.error(message);
-    }
     return (
         <>
             <ToastContainer/>
@@ -348,7 +328,7 @@ const PromotionHome = () => {
                                                     <FontAwesomeIcon
                                                         icon={faTrash}
                                                         className="text-black text-base cursor-pointer"
-                                                        onClick={(e) => handleDelete(promotion, e)}
+                                                        onClick={() => openModal(`delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`)}
                                                     />
                                                 </div>
 
@@ -372,6 +352,13 @@ const PromotionHome = () => {
                                             >
                                                 <DetailsPromotions promotion={promotion}/>
                                             </dialog>
+                                            <dialog
+                                            id={`delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`}
+                                            className="modal"
+                                        >
+                                            <DeletePromotionConfirmation
+                                                promotion={promotion}                                         />
+                                        </dialog>
                                         </tr>
                                     )
                                 )
@@ -387,6 +374,7 @@ const PromotionHome = () => {
                     dispatchPromotion={dispatchPromotion}
                 />
             </dialog>
+
         </>
     );
 };
