@@ -61,8 +61,8 @@ public class PromotionService {
     public PromotionDTO getPromotionById(String anneeUniversitaire, String codeFormation) {
         PromotionId key = new PromotionId(anneeUniversitaire, codeFormation);
         //System.out.println(key);
-        Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion Not Found"));
-        return promotionMapper.fromPromotion(promotion);
+        Optional<Promotion> promotion = promotionRepository.findById(key);
+        return promotion.map(promotionMapper::fromPromotion).orElse(null);
     }
 
     /**
