@@ -18,9 +18,16 @@ interface AddStudentProps {
 
 const AddEtudiant = ({ promotions }: AddStudentProps) => {
   const dispatch = useAppDispatch();
-  //const formations = useAppSelector(getFormations);
-  // // console.log(promotions);
-  const [dateError, setDateError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+    dateError: null as string | null,
+    telephoneError: null as string | null,
+    mobileError: null as string | null,
+    groupeTpError: null as string | null,
+    groupeAnglaisError: null as string | null,
+    emailError: null as string | null,
+    emailUboError: null as string | null,
+  });
+
 
   const [student, setStudent] = useState<Etudiant>({
     noEtudiant: "",
@@ -46,10 +53,67 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
     codeFormation: "",
   });
 
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\s/g, "");
+    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
+    return formatted.trim();
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "emailUbo") {
+      const uboRegex = /^[a-zA-Z0-9._%+-]+@univ-brest\.fr$/;
+      if (!uboRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailUboError: "L'email UBO doit être au format xxxx@univ-brest.fr.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailUboError: null,
+        }));
+      }
+    }
+
+    if (name === "email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailError: "Veuillez entrer une adresse email valide.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          emailError: null,
+        }));
+      }
+    }
+
+    if (name === "telephone" || name === "mobile") {
+      const formattedValue = formatPhoneNumber(value);
+      setStudent((prevStudent) => ({
+        ...prevStudent,
+        [name]: formattedValue,
+      }));
+
+      if (!/^\d{2}( \d{2}){4}$/.test(formattedValue)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: "Le numéro doit contenir exactement 10 chiffres.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: null,
+        }));
+      }
+      return; 
+    }
 
     if (name === "dateNaissance") {
       const birthDate = new Date(value);
@@ -63,9 +127,29 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             (today.getMonth() === birthDate.getMonth() &&
               today.getDate() < birthDate.getDate())))
       ) {
-        setDateError("L'étudiant doit avoir au moins 17 ans.");
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          dateError: "L'étudiant doit avoir au moins 17 ans.",
+        }));
       } else {
-        setDateError(null);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          dateError: null,
+        }));
+      }
+    }
+
+    if (name === "groupeTp" || name === "groupeAnglais") {
+      if (value === "-1") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: "Veuillez sélectionner un groupe.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: null,
+        }));
       }
     }
 
@@ -77,16 +161,21 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
 
   const handleSubmit = async () => {
     if (canSave) {
-      const res = await dispatch(postEtudiantAsync(student));
+      const cleanedStudent = {
+        ...student,
+        telephone: student.telephone.replace(/\s/g, ""),
+        mobile: student.mobile.replace(/\s/g, ""),
+      };
+      const res = await dispatch(postEtudiantAsync(cleanedStudent));
       if (res?.type === "etudiants/postEtudiantAsync/rejected") {
         console.log("hola");
-        toast.error("Erreur lors de la suppression !");
+        toast.error(res.payload as string);
       } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
-        toast.success("Étudiant supprimé avec succès !");
+        toast.success(res.payload as string);
       }
       console.log(res);
       resetStudent();
-      dispatch(getEtudiantAsync({ page: 1, size: 10 }));
+      dispatch(getEtudiantAsync({ page: 1, size: 5 }));
     }
   };
 
@@ -98,6 +187,11 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
     dispatch(getDomaineUnivAsync());
     dispatch(getFormationAsync());
   }, [dispatch]);
+
+  const formatDate = (date: string | Date | null) => {
+    if (date === null) return "";
+    date instanceof Date ? date.toISOString().split("T")[0] : date;
+  };
 
   const resetStudent = () => {
     setStudent({
@@ -118,18 +212,23 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
       ville: "",
       paysOrigine: "",
       universiteOrigine: "",
-      groupeTp: -1,
-      groupeAnglais: -1,
+      groupeTp: 1,
+      groupeAnglais: 1,
       anneeUniversitaire: "",
       codeFormation: "",
     });
-    setDateError(null);
+    setErrors({
+      dateError: null as string | null,
+      telephoneError: null as string | null,
+      mobileError: null as string | null,
+      groupeTpError: null as string | null,
+      groupeAnglaisError: null as string | null,
+      emailError: null as string | null,
+      emailUboError: null as string | null,
+    });
   };
 
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    date instanceof Date ? date.toISOString().split("T")[0] : date;
-  };
+  
 
   const canSave =
     student.nom.trim() !== "" &&
@@ -139,7 +238,12 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
     student.emailUbo.trim() !== "" &&
     student.noEtudiant.trim() !== "" &&
     student.dateNaissance !== null &&
-    dateError === null &&
+    formatDate(student.dateNaissance) !== "" &&
+    errors.dateError === null &&
+    errors.emailError === null &&
+    errors.emailUboError === null &&
+    errors.mobileError === null &&
+    errors.telephoneError === null &&
     student.lieuNaissance.trim() !== "" &&
     student.nationalite.trim() !== "" &&
     student.adresse.trim() !== "" &&
@@ -158,7 +262,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Nom<span className="text-red-500">*</span>
+                Nom<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -172,7 +276,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Prénom<span className="text-red-500">*</span>
+                Prénom<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -186,7 +290,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                No Etudiant<span className="text-red-500">*</span>
+                No Etudiant<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -200,7 +304,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Mot de passe<span className="text-red-500">*</span>
+                Mot de passe<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -212,60 +316,81 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
                 placeholder="Ex: Entrez un mot de passe"
               />
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Email <span className="text-red-500">*</span>
-              </span>
-              <input
-                required
-                type="email"
-                name="email"
-                value={student.email}
-                onChange={handleChange}
-                className="grow"
-                placeholder="john.doe@gamil.com"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Email Ubo<span className="text-red-500">*</span>
-              </span>
-              <input
-                required
-                type="email"
-                name="emailUbo"
-                value={student.emailUbo}
-                onChange={handleChange}
-                className="grow"
-                placeholder="john.doe@univ.fr"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Téléphone</span>
-              <input
-                type="text"
-                name="telephone"
-                value={student.telephone}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 0700000000"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Mobile</span>
-              <input
-                type="text"
-                name="mobile"
-                value={student.mobile}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 0700000000"
-              />
-            </label>
             <div className="flex flex-col gap-1">
               <label className="input input-bordered flex items-center gap-2">
                 <span className="font-semibold">
-                  Date de naissance<span className="text-red-500">*</span>
+                  Email <span className="text-red-500"> *</span>
+                </span>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  value={student.email}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="john.doe@gamil.com"
+                />
+              </label>
+              {errors.emailError && (
+                <p className="text-red-500 text-sm">{errors.emailError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Email Ubo<span className="text-red-500"> *</span>
+                </span>
+                <input
+                  required
+                  type="email"
+                  name="emailUbo"
+                  value={student.emailUbo}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="john.doe@univ.fr"
+                />
+              </label>
+              {errors.emailUboError && (
+                <p className="text-red-500 text-sm">{errors.emailUboError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Téléphone</span>
+                <input
+                  type="text"
+                  name="telephone"
+                  value={student.telephone}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 0700000000"
+                />
+              </label>
+              {errors.telephoneError && (
+                <p className="text-red-500 text-sm">{errors.telephoneError}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Mobile</span>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={student.mobile}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="Ex: 0700000000"
+                />
+              </label>
+              {errors.mobileError && (
+                <p className="text-red-500 text-sm">{errors.mobileError}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Date de naissance<span className="text-red-500"> *</span>
                 </span>
                 <input
                   required
@@ -276,11 +401,13 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
                   className="grow"
                 />
               </label>
-              {dateError && <p className="text-red-500 text-sm">{dateError}</p>}
+              {errors.dateError && (
+                <p className="text-red-500 text-sm">{errors.dateError}</p>
+              )}
             </div>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Lieu de naissance<span className="text-red-500">*</span>
+                Lieu de naissance<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -294,7 +421,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Nationalité<span className="text-red-500">*</span>
+                Nationalité<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -308,7 +435,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Adresse<span className="text-red-500">*</span>
+                Adresse<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -322,7 +449,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Pays<span className="text-red-500">*</span>
+                Pays<span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -354,7 +481,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
                 className="select select-bordered "
               >
                 <option disabled value="">
-                  Sélectionnez un sexe <span className="text-red-500">*</span>
+                  Sélectionnez un sexe <span className="text-red-500"> *</span>
                 </option>
                 <option value="H">Homme</option>
                 <option value="F">Femme</option>
@@ -370,7 +497,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
               >
                 <option value="" disabled>
                   Sélectionnez le pays d'origine{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-red-500"> *</span>
                 </option>
                 {pays.map((pays, idx) => (
                   <option key={idx} value={pays.rvLowValue}>
@@ -406,7 +533,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
               >
                 <option value="" disabled>
                   Sélectionner une promotion{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-red-500"> *</span>
                 </option>
                 {promotions.map((promotion, idx) => (
                   <option
@@ -428,7 +555,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
               >
                 <option value="" disabled>
                   Sélectionnez l'université d'origine{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-red-500"> *</span>
                 </option>
                 {universite.map((univ, idx) => (
                   <option key={idx} value={univ.rvLowValue}>

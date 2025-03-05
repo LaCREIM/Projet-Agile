@@ -1,22 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   deleteQuestionAsync,
   fetchQuestionsAsync,
-  getQuestionAsync
+  getQuestionPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import { RootState } from "../../api/store";
-import DetailsQuestion from "./DetailsQuestion";
+
 import UpdateQuestion from "./UpdateQuestion";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
+import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
 
 const QuestionHome = () => {
   document.title = "UBO | Questions";
@@ -39,7 +38,7 @@ const QuestionHome = () => {
     index: -1,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 5;
+  const questionsPerPage = 10;
   const totalPages = Math.ceil(questions.length / questionsPerPage);
 
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
@@ -58,7 +57,7 @@ const QuestionHome = () => {
   const questionDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(fetchQuestionsAsync());
+    dispatch(getQuestionPersoAsync({idEnseignant: 1000, page:1, size:10}));
   }, [dispatch]);
 
   useEffect(() => {
@@ -75,6 +74,11 @@ const QuestionHome = () => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
+  const closeModal = (id: string) => {
+  const dialog = document.getElementById(id) as HTMLDialogElement;
+  if (dialog) dialog.close();
+};
+
 
   const handleClick = (question: Question, index: number) => {
     setModal({ question, index });
@@ -82,28 +86,14 @@ const QuestionHome = () => {
 
   const handleClickUpdate = (question: Question, index: number) => {
     setModalUpdate({ question, index });
+  
+    // Assure-toi que le modal prend en compte le nouvel état avant de s'afficher
+    setTimeout(() => {
+      const dialog = document.getElementById("updateQuestionModal") as HTMLDialogElement;
+      if (dialog) dialog.showModal();
+    }, 100);
   };
 
-  const handleDelete = async (question: Question, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      const response = await dispatch(deleteQuestionAsync(question.id));
-
-      console.log(response);
-
-      if (response?.payload === "La question est déjà utilisée.") {
-        toast.error(
-          "Cette question est déjà utilisée et ne peut pas être supprimée."
-        );
-      } else {
-        toast.success("Question supprimée avec succès.");
-        dispatch(fetchQuestionsAsync());
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
-  };
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -120,6 +110,7 @@ const QuestionHome = () => {
 
   return (
     <>
+      <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des questions</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
@@ -176,9 +167,24 @@ const QuestionHome = () => {
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(question, e)}
+                        onClick={() => openModal(`delete-${index}`)}
                       />
                     </td>
+
+                    <dialog id={`updateQuestion-${index}`} className="modal">
+                      <UpdateQuestion
+                        questionData={question}
+                        qualificatifs={qualificatifs}
+                      />
+                    </dialog>
+
+                    <dialog id={`delete-${index}`} className="modal">
+                      <DeleteQuestionConfirmation
+                        question={question}
+                        currentPage={currentPage}
+                      />
+                    </dialog>
+
                   </tr>
                 ))
               )}
@@ -206,6 +212,16 @@ const QuestionHome = () => {
           </button>
         </div>
       </div>
+      <dialog id="updateQuestionModal" className="modal" ref={updateQuestionModalRef}>
+          {modalUpdate.question ? (
+            <UpdateQuestion
+              key={modalUpdate.question.id} // Clé unique pour forcer le re-render
+              questionData={modalUpdate.question}
+              qualificatifs={qualificatifs}
+            />
+          ) : null}
+        </dialog>
+
 
       <dialog id="addQuestion" className="modal">
         <AddQuestion qualificatifs={qualificatifs} />
@@ -213,6 +229,5 @@ const QuestionHome = () => {
     </>
   );
 };
-
 
 export default QuestionHome;

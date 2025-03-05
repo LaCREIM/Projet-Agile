@@ -15,6 +15,8 @@ import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
 import { ToastContainer } from "react-toastify";
 
+export const role = localStorage.getItem("role");
+
 function App() {
   const [promotionDetails, setPromotionDetails] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
@@ -24,7 +26,7 @@ function App() {
   return (
     <Router basename="/">
       <AuthChecker>
-        <ToastContainer theme="colored" />
+        <ToastContainer theme="colored" autoClose={10000} />
 
         <Routes>
           <Route path="/" element={<RootLayout />}>

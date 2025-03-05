@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-
   getEtudiantAsync,
   getEtudiantByPromotionAsync,
 } from "../../features/EtudiantSlice";
@@ -26,6 +25,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
 import { FaSearch } from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
+import { role } from "../../App.tsx";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -44,6 +44,8 @@ const StudentHome = ({
   const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
   const [search, setSearch] = useState<string>("");
+  const [sortField, setSortField] = useState<string>("nom");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
   const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
 
   const [modal, setModal] = useState<{
@@ -94,6 +96,10 @@ const StudentHome = ({
     }
   }, [dispatch, currentPage, promotionDetails]);
 
+  useEffect(() => {
+    setfilteredEtudiants(etudiants);
+  }, [etudiants]);
+
   /**********************  Functions ********************/
 
   const openModal = (name: string) => {
@@ -111,7 +117,6 @@ const StudentHome = ({
     setModalUpdate({ etudiant, index });
   };
 
- 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
 
@@ -160,16 +165,28 @@ const StudentHome = ({
     }
   };
 
+  const handleSortChange = (field: string) => {
+    const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(order);
+    const sortedEtudiants = [...etudiants].sort((a, b) => {
+      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+    setfilteredEtudiants(sortedEtudiants);
+  };
+
   return (
     <>
       <motion.div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
         {promotionDetails.codeFormation ? (
-          <h1>
+          <h3 className="text-xl">
             Liste des étudiants de {promotionDetails.codeFormation} -{" "}
             {promotionDetails.anneeUniversitaire}{" "}
-          </h1>
+          </h3>
         ) : (
-          <h1>Liste des étudiants</h1>
+          <h1 className="text-xl">Liste des étudiants</h1>
         )}
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
@@ -186,7 +203,7 @@ const StudentHome = ({
                 <option value="default" disabled>
                   Sélectionnez une promotion
                 </option>
-                <option value="-1">Tous les promotions</option>
+                <option value="-1">Toutes les promotions</option>
                 {promotions.map((promotion, idx) => (
                   <option
                     key={idx}
@@ -263,12 +280,32 @@ const StudentHome = ({
           >
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Nationalité</th>
-                <th>Email</th>
-                <th>Promotion</th>
-                <th>Université d'origine</th>
+                <th onClick={() => handleSortChange("nom")}>
+                  Nom {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("prenom")}>
+                  Prénom{" "}
+                  {sortField === "prenom" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("nationalite")}>
+                  Nationalité{" "}
+                  {sortField === "nationalite" &&
+                    (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("email")}>
+                  Email{" "}
+                  {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("codeFormation")}>
+                  Promotion{" "}
+                  {sortField === "codeFormation" &&
+                    (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("universiteOrigine")}>
+                  Université d'origine{" "}
+                  {sortField === "universiteOrigine" &&
+                    (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
@@ -283,7 +320,7 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                etudiants.map((etudiant: Etudiant, index: number) => (
+                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
                     key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
@@ -308,21 +345,25 @@ const StudentHome = ({
                           openModal(`inspect-${etudiant.noEtudiant}`);
                         }}
                       />
-                      <FontAwesomeIcon
-                        icon={faPenToSquare}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClickUpdate(etudiant, index);
-                          openModal(`updateStudent-${etudiant.noEtudiant}`);
-                        }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() =>
-                          openModal(`delete-${etudiant.noEtudiant}`)
-                        }
-                      />
+                      {role === "ADM" && (
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() => {
+                            handleClickUpdate(etudiant, index);
+                            openModal(`updateStudent-${etudiant.noEtudiant}`);
+                          }}
+                        />
+                      )}
+                      {role === "ADM" && (
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-black text-base cursor-pointer"
+                          onClick={() =>
+                            openModal(`delete-${etudiant.noEtudiant}`)
+                          }
+                        />
+                      )}
                     </td>
 
                     <dialog

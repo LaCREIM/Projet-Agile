@@ -14,10 +14,11 @@ import {
 } from "../../features/PromotionSlice";
 
 import {Enseignant, Formation, PromotionCreate} from "../../types/types";
+import {toast} from "react-toastify";
 
 interface AddPromotionProps {
     dispatchPromotion: () => void,
-    enseignants: Enseignant[]
+    enseignants: Enseignant[],
 }
 
 const AddPromotion = ({
@@ -25,7 +26,6 @@ const AddPromotion = ({
                           enseignants,
                       }: AddPromotionProps) => {
     const dispatch = useAppDispatch();
-    const [errors, setErrors] = useState([] as string[])
 
     const formations = useAppSelector<Formation[]>(getFormations);
     const salles = useAppSelector<Domaine[]>(getSalles);
@@ -37,13 +37,12 @@ const AddPromotion = ({
         nbMaxEtudiant: 0,
         dateReponseLp: null,
         dateReponseLalp: null,
-        dateRentree: new Date(),
+        dateRentree: null,
         lieuRentree: "",
         processusStage: "",
         commentaire: "",
         anneeUniversitaire: "",
         diplome: "",
-        nomFormation: "",
         codeFormation: "",
     };
 
@@ -55,12 +54,58 @@ const AddPromotion = ({
         setPromotion({...promotion, [name]: value});
     };
 
-    const handleSubmit = async (e: React.MouseEvent) => {
-        e.preventDefault()
+    const requiredFields = [
+        'siglePromotion',
+        'nbMaxEtudiant',
+        'anneeUniversitaire',
+        'codeFormation'
+    ];
+
+    const emptyFields = requiredFields.filter(field => !promotion[field]);
+
+    const handleSubmit = async () => {
+        const requiredFields = [
+            'siglePromotion',
+            'nbMaxEtudiant',
+            'anneeUniversitaire',
+            'codeFormation'
+        ];
+
+        const emptyFields = requiredFields.filter(field => !promotion[field]);
+
+        if (emptyFields.length > 0) {
+            toast.error('Merci de remplir tous les champs obligatoires');
+            return;
+        }
+
+        const dateReponseLp = new Date(promotion.dateReponseLp);
+        const dateRentree = new Date(promotion.dateRentree);
+        const dateReponseLalp = new Date(promotion.dateReponseLalp);
+        const today = new Date();
+
+        if (promotion.dateReponseLp && dateReponseLp <= today) {
+           toast.error('La date limite de réponse pour la liste principale doit être dans le futur ou le présent.');
+            return;
+        }
+
+        if (promotion.dateRentree && dateRentree < today) {
+           toast.error('La date de rentrée doit être dans le futur ou le présent.');
+            return;
+        }
+
+        if (promotion.dateReponseLalp && dateReponseLalp < today) {
+           toast.error("La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent.");
+            return;
+        }
+        if (promotion.nbMaxEtudiant < 0 || promotion.nbMaxEtudiant > 1000) {
+           toast.error("Le nombre maximal d'étudiants doit être compris entre 0 et 1000.")
+            return
+        }
+
         const response = await dispatch(postPromotionsAsync(promotion));
         if (response.meta.requestStatus == "rejected") {
-            const errorMessage=JSON.stringify(response.payload);
-            setErrors([errorMessage]);
+            const errorMessage = Object.values(response.payload).join(', ');
+            toast.error(errorMessage)
             return;
         }
         dispatchPromotion();
@@ -71,7 +116,6 @@ const AddPromotion = ({
         dispatch(getFormationAsync());
         dispatch(getDomaineLieuEntreeAsync());
         dispatch(getDomaineProcessusStageAsync());
-        console.log("response");
 
         dispatch(getDomaineDiplomeAsync());
     }, [dispatch]);
@@ -85,12 +129,13 @@ const AddPromotion = ({
         <>
             <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
                 <div className="modal-box w-[50em] max-w-5xl">
-                    <h3 className="font-bold text-lg my-4">Ajouter une promotion</h3>
+                    <h3 className="font-bold text-lg my-4 text-center">Ajouter une promotion</h3>
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-5">
                             <div className="flex flex-row justify-between">
                                 <label className="input input-bordered flex items-center gap-2">
-                                    <span className="font-semibold">Sigle *</span>
+                                    <span className="font-semibold">Sigle </span>
+                                    <span className="text-red-500">*</span>
                                     <input
                                         required
                                         type="text"
@@ -104,8 +149,13 @@ const AddPromotion = ({
                             </div>
                             <div className="flex flex-row justify-between">
                                 <label className="input input-bordered flex items-center gap-2">
-                                    <span className="font-semibold">Nombre des étudiants maximal *</span>
+                                    <span
+                                        className="font-semibold">Nombre des étudiants                                     <span
+                                        className="text-red-500">*</span>
+</span>
                                     <input
+                                        min={0}
+                                        max={1000}
                                         required
                                         type="number"
                                         name="nbMaxEtudiant"
@@ -129,7 +179,9 @@ const AddPromotion = ({
                                 </label>
                             </div>
                             <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Année universitaire *</span>
+                                <span
+                                    className="font-semibold w-[15%]">Année<span
+                                    className="text-red-500"> *</span></span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="anneeUniversitaire"
@@ -167,7 +219,10 @@ const AddPromotion = ({
                                 </select>
                             </label>
                             <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Formation *</span>
+                                <span
+                                    className="font-semibold w-[15%]">Formation                                     <span
+                                    className="text-red-500">*</span>
+</span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="codeFormation"
@@ -183,7 +238,7 @@ const AddPromotion = ({
                                             key={formation.codeFormation}
                                             value={formation.codeFormation}
                                         >
-                                            {formation.codeFormation}
+                                            {formation.nomFormation}
                                         </option>
                                     ))}
                                 </select>
@@ -207,7 +262,7 @@ const AddPromotion = ({
                                 </select>
                             </label>
                             <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Processus stage</span>
+                                <span className="font-semibold w-[15%]">stage</span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="processusStage"
@@ -224,27 +279,29 @@ const AddPromotion = ({
                                     ))}
                                 </select>
                             </label>
-                            <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Date réponse Liste principale</span>
-                                <input
-                                    type="date"
-                                    name="dateReponseLp"
-                                    value={formatDate(promotion.dateReponseLp)}
-                                    onChange={handleChange}
-                                    className="input input-bordered w-[80%] max-w-full"
-                                />
-                            </label>
-                            <label className="flex flex-row items-center gap-2">
-                                <span
-                                    className="font-semibold w-[15%]">Date réponse Liste d'Attente Liste Principale</span>
-                                <input
-                                    type="date"
-                                    name="dateReponseLalp"
-                                    value={formatDate(promotion.dateReponseLalp)}
-                                    onChange={handleChange}
-                                    className="input input-bordered w-[80%] max-w-full"
-                                />
-                            </label>
+                            <div className="flex flex-col gap-2 border-2 border-gray-300 rounded-lg  p-2">
+                                <label className="font-semibold text-center">Date limite de réponse pour la liste</label>
+                                <div className="flex flex-row items-center gap-2">
+                                    <span className="font-semibold w-[15%]">Principale</span>
+                                    <input
+                                        type="date"
+                                        name="dateReponseLp"
+                                        value={formatDate(promotion.dateReponseLp)}
+                                        onChange={handleChange}
+                                        className="input input-bordered w-[80%] max-w-full"
+                                    />
+                                </div>
+                                <div className="flex flex-row items-center gap-2">
+                                    <span className="font-semibold w-[15%]">Attente</span>
+                                    <input
+                                        type="date"
+                                        name="dateReponseLalp"
+                                        value={formatDate(promotion.dateReponseLalp)}
+                                        onChange={handleChange}
+                                        className="input input-bordered w-[80%] max-w-full"
+                                    />
+                                </div>
+                            </div>
                             <label className="flex flex-row items-center gap-2">
                                 <span className="font-semibold w-[15%]">Commentaire</span>
                                 <textarea
@@ -253,13 +310,12 @@ const AddPromotion = ({
                                     onChange={handleChange}
                                     className="textarea textarea-bordered w-[80%] max-w-full"
                                     placeholder="Ajoutez un commentaire"
+                                    maxLength={255}
                                 />
                             </label>
                         </div>
                     </form>
-                    {errors.length > 0 && (
-                        <div className="text-red-500 text-center">{errors}</div>
-                    )}
+
 
 
                     <div className="modal-action">
@@ -268,7 +324,7 @@ const AddPromotion = ({
                             <button
                                 className="btn btn-neutral"
                                 onClick={handleSubmit}
-                                type="submit"
+                                disabled={emptyFields.length > 0}
                             >
                                 Ajouter
                             </button>

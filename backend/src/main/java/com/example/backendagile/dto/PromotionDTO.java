@@ -19,6 +19,7 @@ public class PromotionDTO {
 
     @NotNull(message = "Le nombre maximum d'étudiants est obligatoire")
     @Min(value = 1, message = "Le nombre maximum d'étudiants doit être supérieur à 0")
+    @Max(value = 1000,message = "Le nombre maximum d'étudiants doit être inférieur à 1000")
     private Short nbMaxEtudiant;
 
     @FutureOrPresent(message = "La date de réponse LP doit être dans le futur ou le présent")
@@ -33,7 +34,6 @@ public class PromotionDTO {
     @Size(max = 12, message = "Le lieu de rentrée ne doit pas dépasser 12 caractères")
     private String lieuRentree;
 
-    @NotBlank(message = "Le processus de stage est obligatoire")
     @Size(max = 5, message = "Le processus de stage ne doit pas dépasser 5 caractères")
     private String processusStage;
 
@@ -43,24 +43,18 @@ public class PromotionDTO {
     @NotBlank(message = "Le code de formation est obligatoire")
     private String codeFormation;
 
-    @NotBlank(message = "Le nom de la formation est obligatoire")
     private String nomFormation;
 
     @Email(message = "L'email de l'enseignant doit être valide")
     private String emailEnseignant;
 
-    @NotBlank(message = "Le diplôme est obligatoire")
     private String diplome;
 
-    @NotNull(message = "Le numéro de l'enseignant est obligatoire")
     private Long noEnseignant;
 
-    @NotBlank(message = "Le type est obligatoire")
     private String type;
 
-    @NotBlank(message = "Le nom est obligatoire")
     private String nom;
 
-    @NotBlank(message = "Le prénom est obligatoire")
     private String prenom;
 }

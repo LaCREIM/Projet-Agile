@@ -213,7 +213,7 @@ export interface PromotionCreate {
     nbMaxEtudiant: number;
     dateReponseLp: Date | null;
     dateReponseLalp: Date | null;
-    dateRentree: Date;
+    dateRentree: Date | null;
     lieuRentree: string;
     processusStage: string;
     commentaire: string | null;

@@ -11,13 +11,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  deleteQualificatifAsync,
-  fetchQualificatifsAsync,
   fetchQualificatifsPagedAsync,
   updateQualificatifAsync,
 } from "../../features/QualificatifSlice";
 import { Qualificatif } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { RootState } from "../../api/store";
 import DeleteQualificatifConfirmation from "./DeleteQualificatifConfirmation";
 
@@ -43,29 +41,6 @@ const QualificatifHome = () => {
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
-  };
-
-  const handleDelete = async (
-    qualificatif: Qualificatif,
-    e: React.MouseEvent
-  ) => {
-    e.stopPropagation();
-    try {
-      const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
-      console.log(response);
-
-      if (response?.type === "qualificatifs/delete/rejected") {
-        toast.error(
-          "Ce qualificatif ne peut pas être supprimé, car il est deja utilisé."
-        );
-      } else if (response?.type === "qualificatifs/delete/fulfilled") {
-        dispatch(fetchQualificatifsAsync());
-        toast.success("Qualificatif supprimé avec succès.");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
   };
 
   const handleChange = (
@@ -98,7 +73,7 @@ const QualificatifHome = () => {
         toast.error(res.payload as string);
       } else if (res?.type === "qualificatifs/update/fulfilled") {
       toast.success(res.payload as string);
-      dispatch(fetchQualificatifsAsync());
+      dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
       }
     } else {
       toast.error("Veuillez remplir tous les champs avant de sauvegarder.");
@@ -116,7 +91,7 @@ const QualificatifHome = () => {
 
   const handlePageChange = async (newPage: number) => {
     setCurrentPage(newPage);
-    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
+    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
     console.log(res);
     
   };
@@ -137,9 +112,8 @@ const QualificatifHome = () => {
 
   return (
     <>
-      <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1>Liste des qualificatifs</h1>
+        <h1 className="text-xl">Liste des couples qualificatifs</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
           <div className="tooltip" data-tip="Ajouter un couple qualifactif">
             <button
@@ -240,7 +214,9 @@ const QualificatifHome = () => {
                             <FontAwesomeIcon
                               icon={faTrash}
                               className="text-black text-base cursor-pointer"
-                              onClick={()=>openModal(`delete-${qualificatif.id}`)}
+                              onClick={() =>
+                                openModal(`delete-${qualificatif.id}`)
+                              }
                             />
                           </>
                         )}
@@ -283,7 +259,7 @@ const QualificatifHome = () => {
       </div>
 
       <dialog id="addQualificatif" className="modal">
-        <AddQualificatif />
+        <AddQualificatif currentPage={currentPage} />
       </dialog>
     </>
   );
