@@ -82,11 +82,10 @@ const AddPromotion = ({
         const dateReponseLp = new Date(promotion.dateReponseLp);
         const dateRentree = new Date(promotion.dateRentree);
         const dateReponseLalp = new Date(promotion.dateReponseLalp);
-        console.log(promotion)
         const today = new Date();
 
         if (promotion.dateReponseLp && dateReponseLp <= today) {
-            setErrors(['La date de réponse Liste principale doit être une date future.']);
+            setErrors(['La date limite de réponse pour la liste principale doit être dans le futur ou le présent.']);
             return;
         }
 
@@ -96,8 +95,12 @@ const AddPromotion = ({
         }
 
         if (promotion.dateReponseLalp && dateReponseLalp < today) {
-            setErrors(['La date de réponse LALP doit être dans le futur ou le présent.']);
+            setErrors(["La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent."]);
             return;
+        }
+        if (promotion.nbMaxEtudiant < 0 || promotion.nbMaxEtudiant > 1000) {
+            setErrors(["Le nombre maximal d'étudiants doit être compris entre 0 et 1000."])
+            return
         }
 
         const response = await dispatch(postPromotionsAsync(promotion));
