@@ -61,8 +61,8 @@ public class PromotionService {
     public PromotionDTO getPromotionById(String anneeUniversitaire, String codeFormation) {
         PromotionId key = new PromotionId(anneeUniversitaire, codeFormation);
         //System.out.println(key);
-        Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion Not Found"));
-        return promotionMapper.fromPromotion(promotion);
+        Optional<Promotion> promotion = promotionRepository.findById(key);
+        return promotion.map(promotionMapper::fromPromotion).orElse(null);
     }
 
     /**
@@ -74,8 +74,6 @@ public class PromotionService {
      */
     public Promotion createPromotion(PromotionDTO Promotion) {
         Promotion promotion = promotionMapper.fromPromotionDTO(Promotion);
-        System.out.println("PromotionDTO : " + Promotion);
-        System.out.println("Promotion : " + promotion);
         return promotionRepository.save(promotion);
     }
 
@@ -89,12 +87,10 @@ public class PromotionService {
      */
     public PromotionDTO updatePromotion(String anneeUniversitaire, String codeFormation, PromotionDTO updatedPromotion) {
         PromotionId key = new PromotionId(anneeUniversitaire, codeFormation);
-        Promotion promotion = promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
+        promotionRepository.findById(key).orElseThrow(() -> new RuntimeException("Promotion not found with id " + anneeUniversitaire));
         Enseignant enseignant = enseignantRepository.findById(updatedPromotion.getNoEnseignant()).orElseThrow(() -> new RuntimeException("Enseignant Not Found"));
         Promotion newpromotion = promotionMapper.fromPromotionDTO(updatedPromotion);
         newpromotion.setEnseignant(enseignant);
-        PromotionId key2 = new PromotionId(updatedPromotion.getAnneeUniversitaire(), updatedPromotion.getCodeFormation());
-        newpromotion.setId(key2);
         promotionRepository.save(newpromotion);
         return promotionMapper.fromPromotion(newpromotion);
     }

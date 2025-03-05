@@ -88,7 +88,7 @@ public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
     @PostMapping
     public ResponseEntity<String> createStandardQuestion(@RequestBody QuestionStdDTO questionStdDTO) {
         try {
-            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim());
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionStdDTO.getIntitule().trim(), questionStdDTO.getIdQualificatif());
             if(existingQuestion.isPresent()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
@@ -106,8 +106,15 @@ public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
     public ResponseEntity<String> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
         try {
 
-            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim());
-            if(existingQuestion!=null){
+            Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim(), questionDto.getIdQualificatif());
+            if(existingQuestion.isPresent()){
+                //Verifier si la nouvelle question est different de l'ancienne
+                if (existingQuestion.get().getIntitule().equals(questionDto.getIntitule()) && existingQuestion.get().getIdQualificatif().getId() == questionDto.getIdQualificatif()) {
+
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rien n'a changé.");
+
+                }
+
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question existe déjà.");
             }
             Question updatedQuestion = questionStdService.updateStandardQuestion(id, questionDto);
@@ -134,10 +141,11 @@ public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
         }
         try {
             questionStdService.deleteById(id);
+            return ResponseEntity.ok("La question a été supprimée avec succès.");
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
         }
-        return ResponseEntity.ok("La question a été supprimée avec succès.");
     }
 
     

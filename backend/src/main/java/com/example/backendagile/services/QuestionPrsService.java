@@ -51,6 +51,8 @@ public class QuestionPrsService {
         Question existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Question Not Found"));
 
+
+
         // Mettre à jour les propriétés existantes
         existingQuestion.setIntitule(questionPrsDTO.getIntitule());
         existingQuestion.setType("QUP");
@@ -101,6 +103,10 @@ public class QuestionPrsService {
     public int getTotalPages(Long noEnseignant, int size) {
         long totalQuestions = questionRepository.countByTypeForEnseignant(noEnseignant);
         return (int) Math.ceil((double) totalQuestions / size);
+    }
+
+    public Optional<Question> findByIntitule(String intitule , Long idQualificatif) {
+        return questionRepository.findQuestionByIntitule(intitule, idQualificatif).stream().findFirst();
     }
     
 }

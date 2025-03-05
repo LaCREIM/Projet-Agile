@@ -127,6 +127,8 @@ export const updateQuestionAsync = createAsyncThunk<
         intitule: data.intitule
       };
       const response = await axiosInstance.put(`/questionsStd/${id}`, questionSTd);
+      console.log("Payload envoyé:", questionSTd);
+      console.log("Réponse API:", response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la question");

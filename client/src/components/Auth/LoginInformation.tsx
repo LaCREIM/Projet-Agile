@@ -45,6 +45,7 @@ const LoginInformation = () => {
 
         localStorage.setItem('token', userData.data.token);
         localStorage.setItem('role', userData.data.role);
+        localStorage.setItem('id', userData.data.id);
 
         dispatch(setCredentials(userData));
         setInfo({
@@ -78,7 +79,7 @@ const LoginInformation = () => {
                 name="password"
                 value={info.password}
                 onChange={handleInputChange}
-                placeholder="mot de Passe"
+                placeholder="Mot de Passe"
                 className="input input-bordered w-full focus:outline-none"
                 required
             />
