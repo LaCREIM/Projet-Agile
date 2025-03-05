@@ -35,7 +35,7 @@ public class QuestionPrsMapper {
             questionDto.setMinQualificatif(question.getIdQualificatif().getMinimal());
             questionDto.setMaxQualificatif(question.getIdQualificatif().getMaximal());
         }
-
+        questionDto.setNoEnseignant(question.getNoEnseignant().getId());
         return questionDto;
     }
 
@@ -46,7 +46,7 @@ public class QuestionPrsMapper {
 
         Question question = new Question();
 
-        Optional<Enseignant> enseignant = enseignantService.findById(Long.valueOf(10));//i should get the current user *************!!!!!!!!!!!!!!!
+        Optional<Enseignant> enseignant = enseignantService.findById(Long.valueOf(questionDto.getNoEnseignant()));//i should get the current user *************!!!!!!!!!!!!!!!
         question.setIntitule(questionDto.getIntitule());
         question.setType("QUP");
         question.setNoEnseignant(enseignant.orElse(null));

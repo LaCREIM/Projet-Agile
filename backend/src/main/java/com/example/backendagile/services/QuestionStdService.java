@@ -111,8 +111,8 @@ public class QuestionStdService {
         return (int) Math.ceil((double) totalQuestions / size);
     }
     
-    public Optional<Question> findByIntitule(String intitule) {
-        return questionRepository.findQuestionByIntitule(intitule).stream().findFirst();
+    public Optional<Question> findByIntitule(String intitule, Long idQualificatif) {
+        return questionRepository.findQuestionByIntitule(intitule, idQualificatif).stream().findFirst();
     }
 
     public List<Question> searchQuestionsPaged(String keyword, int page, int size) {
