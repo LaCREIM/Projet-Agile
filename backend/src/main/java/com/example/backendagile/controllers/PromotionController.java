@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -65,21 +67,26 @@ public class PromotionController {
      * @return a {@link ResponseEntity} containing the created {@link Promotion}
      */
     @PostMapping
-    public ResponseEntity<String> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
+    public ResponseEntity<Map<String, String>> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
         if (promotion.getCodeFormation() == null || promotion.getCodeFormation().isEmpty()) {
             throw new IllegalArgumentException("Code Formation cannot be null or empty");
         }
         try {
-            PromotionDTO promotionDTO =  promotionService.getPromotionById(promotion.getAnneeUniversitaire(), promotion.getCodeFormation());
-            if(promotionDTO!=null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Promotion existe déjà");
+            PromotionDTO promotionDTO = promotionService.getPromotionById(promotion.getAnneeUniversitaire(), promotion.getCodeFormation());
+            if (promotionDTO != null) {
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "La promotion existe déjà");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             Promotion savedPromotion = promotionService.createPromotion(promotion);
-            return ResponseEntity.ok("Promotion créée avec succès");
-            } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Promotion créée avec succès");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-
     }
 
 
@@ -101,13 +108,16 @@ public class PromotionController {
      * @return a {@link ResponseEntity} with a 204 status upon successful deletion
      */
     @DeleteMapping("/{anneeUniversitaire}/{codeFormation}")
-    public ResponseEntity<String> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
+    public ResponseEntity<Map<String, String>> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
         try {
             promotionService.deletePromotion(anneeUniversitaire, codeFormation);
-            return ResponseEntity.ok("La Promtion a été supprimée avec succès.");
-
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "La promotion a été supprimée avec succès.");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Cette promotion ne peut pas être supprimée car elle contient des étudiants.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
     }
 
