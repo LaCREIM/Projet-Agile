@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { updateQuestionAsync, fetchQuestionsAsync } from "../../features/QuestionSlice";
+import {
+  updateQuestionAsync,
+  fetchQuestionsAsync,
+} from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
 
@@ -10,20 +13,36 @@ interface UpdateQuestionProps {
   qualificatifs: Qualificatif[];
 }
 
-const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) => {
+const UpdateQuestion = ({
+  questionData,
+  qualificatifs,
+}: UpdateQuestionProps) => {
   const dispatch = useAppDispatch();
   const [question, setQuestion] = useState<Question>({ ...questionData });
 
-  // Gestion du changement des inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+
+  const [question, setQuestion] = useState<Question>({
+    ...questionData,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+
     const { name, value } = e.target;
     setQuestion((prev) => ({ ...prev, [name]: value }));
     console.log(question);
   };
 
-  // Gestion du changement du select Qualificatif
-  const handleSelectQualificatif = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedQualificatif = qualificatifs.find((qual) => qual.id === Number(e.target.value));
+
+  const handleSelectQualificatif = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedQualificatif = qualificatifs.find(
+      (qual) => qual.id === Number(e.target.value)
+    );
+
+
     if (selectedQualificatif) {
       setQuestion((prev) => ({
         ...prev,
@@ -32,35 +51,34 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
     }
   };
 
-  // Gestion de la soumission du formulaire
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    if (!question.type || !question.intitule) {
+  const handleSubmit = async () => {
+    if (question.intitule) {
+      try {
+        await dispatch(
+          updateQuestionAsync({ id: question.id, data: question })
+        );
+        dispatch(fetchQuestionsAsync());
+        toast.success("Question mise à jour avec succès !");
+      } catch (error) {
+        toast.error("Erreur lors de la mise à jour.");
+      }
+    } else {
+
       toast.error("Tous les champs doivent être remplis.");
       return;
     }
 
-    try {
-      await dispatch(updateQuestionAsync({ id: question.id, data: question }));
-      dispatch(fetchQuestionsAsync());
-      toast.success("Question mise à jour avec succès !");
-      
-      // Fermer le modal après mise à jour
-      const dialog = document.getElementById("updateQuestionModal") as HTMLDialogElement;
-      if (dialog) dialog.close();
-    } catch (error) {
-      toast.error("Erreur lors de la mise à jour.");
-    }
-  };
+  const canSave = question.intitule;
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[40%] max-w-5xl">
-        <h3 className="font-bold text-lg my-4">Modifier une question</h3>
-        
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          {/* Intitulé */}
+
+        <h3 className="font-bold text-lg my-4">Modifier la question</h3>
+        <form className="flex flex-col gap-5">
+
           <label className="input input-bordered w-[85%] flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
             <input
@@ -80,13 +98,14 @@ const UpdateQuestion = ({ questionData, qualificatifs }: UpdateQuestionProps) =>
             <select
               required
               onChange={handleSelectQualificatif}
+
               value={question.idQualificatif?.id || ""}
               className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
             >
               <option value="">Sélectionnez un qualificatif</option>
               {qualificatifs.map((qual) => (
                 <option key={qual.id} value={qual.id}>
-                  {qual.maximal} - {qual.minimal}
+                  {qual.minimal} - {qual.maximal}
                 </option>
               ))}
             </select>

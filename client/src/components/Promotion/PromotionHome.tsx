@@ -28,6 +28,7 @@ import {
     getAllEnseignant,
     getAllEnseignantAsync,
 } from "../../features/EnseignantSlice";
+
 import {FaSearch} from "react-icons/fa";
 import {diplomeMapper} from "../../mappers/mappers";
 import {IoMdAdd} from "react-icons/io";
@@ -48,6 +49,7 @@ const PromotionHome = () => {
     const [sortOrder, setSortOrder] = useState<string>("asc");
 
     const isEditable = (promotion: Promotion) => anneesUniv.find(el => el == promotion.anneeUniversitaire);
+
 
 
     const MotionVariant = {
@@ -135,6 +137,7 @@ const PromotionHome = () => {
 
         setShowStudent(!showStudents);
     };
+
 
     const handleSearchChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
