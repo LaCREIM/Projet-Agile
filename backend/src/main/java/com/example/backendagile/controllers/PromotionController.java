@@ -101,10 +101,11 @@ public class PromotionController {
      * @return a {@link ResponseEntity} with a 204 status upon successful deletion
      */
     @DeleteMapping("/{anneeUniversitaire}/{codeFormation}")
-    public ResponseEntity<?> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
+    public ResponseEntity<String> deletePromotion(@PathVariable String anneeUniversitaire, @PathVariable String codeFormation) {
         try {
             promotionService.deletePromotion(anneeUniversitaire, codeFormation);
-            return new ResponseEntity<>("deleted", HttpStatus.NO_CONTENT);
+            return ResponseEntity.ok("La Promtion a été supprimée avec succès.");
+
         } catch (Exception e) {
             return new ResponseEntity<>("not deleted", HttpStatus.CONFLICT);
         }

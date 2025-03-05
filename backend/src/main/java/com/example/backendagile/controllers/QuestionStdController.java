@@ -141,10 +141,11 @@ public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
         }
         try {
             questionStdService.deleteById(id);
+            return ResponseEntity.ok("La question a été supprimée avec succès.");
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
         }
-        return ResponseEntity.ok("La question a été supprimée avec succès.");
     }
 
     
