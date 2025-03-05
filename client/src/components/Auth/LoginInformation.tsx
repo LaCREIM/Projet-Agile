@@ -45,6 +45,7 @@ const LoginInformation = () => {
 
         localStorage.setItem('token', userData.data.token);
         localStorage.setItem('role', userData.data.role);
+        localStorage.setItem('id', userData.data.id);
 
         dispatch(setCredentials(userData));
         setInfo({
