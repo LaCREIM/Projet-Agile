@@ -11,7 +11,7 @@ import {
   fetchQuestionsAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { RootState } from "../../api/store";
 import DetailsQuestion from "./DetailsQuestion";
 import UpdateQuestion from "./UpdateQuestion";

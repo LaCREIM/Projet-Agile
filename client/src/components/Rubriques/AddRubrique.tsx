@@ -5,7 +5,7 @@ import {
   getRubriquesAsync,
 } from "../../features/RubriqueSlice";
 import { Rubrique, Enseignant } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const AddRubrique = () => {
   const dispatch = useAppDispatch();
