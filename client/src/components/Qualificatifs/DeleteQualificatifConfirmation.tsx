@@ -40,7 +40,7 @@ const DeleteQualificatifConfirmation = ({
         <p className="py-4">Êtes-vous sûr de vouloir supprimer cet étudiant?</p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">
-            <button className="btn btn-error" onClick={handleDelete}>
+            <button className="btn btn-error text-white" onClick={handleDelete}>
               Supprimer
             </button>
             <button className="btn">Annuler</button>
