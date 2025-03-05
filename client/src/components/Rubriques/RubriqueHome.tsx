@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
 import { RootState } from "../../api/store";

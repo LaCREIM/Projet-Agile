@@ -3,8 +3,8 @@ import axios from "axios";
 
 
 
-const API_BASE_URL = "https://5513-2a04-cec0-108c-2f71-3a6-2dd6-7043-1ad9.ngrok-free.app/api";
-//  const API_BASE_URL = "http://localhost:8080/api/";
+export const API_BASE_URL = "https://5513-2a04-cec0-108c-2f71-3a6-2dd6-7043-1ad9.ngrok-free.app/api";
+//  export const API_BASE_URL = "http://localhost:8080/api/";
 
 
 

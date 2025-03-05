@@ -11,7 +11,7 @@ import QuestionsList from "./QuestionsList";
 import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAppDispatch } from "../../hook/hooks";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 interface RubriqueDetailsProps {
   rubrique: Rubrique;

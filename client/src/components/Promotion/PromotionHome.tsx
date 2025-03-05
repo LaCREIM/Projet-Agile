@@ -32,9 +32,11 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { diplomeMapper } from "../../mappers/mappers";
 import { IoMdAdd } from "react-icons/io";
+import { role } from "../../App.tsx";
 
 const PromotionHome = () => {
   document.title = "UBO | Promotions";
+
   const dispatch = useAppDispatch();
   const promotions = useAppSelector<Promotion[]>(getPromotions);
   const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
@@ -46,7 +48,6 @@ const PromotionHome = () => {
   const [filteredPromotions, setFilteredPromotions] = useState<Promotion[]>([]);
   const [sortField, setSortField] = useState<string>("codeFormation");
   const [sortOrder, setSortOrder] = useState<string>("asc");
-
 
   const MotionVariant = {
     initial: {
@@ -186,7 +187,6 @@ const PromotionHome = () => {
     setFilteredPromotions(sortedPromotions);
   };
 
-
   return (
     <>
       {showStudents ? (
@@ -232,22 +232,33 @@ const PromotionHome = () => {
               <thead>
                 <tr>
                   <th onClick={() => handleSortChange("codeFormation")}>
-                    Code {sortField === "codeFormation" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Code{" "}
+                    {sortField === "codeFormation" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th onClick={() => handleSortChange("anneeUniversitaire")}>
-                    Promotion {sortField === "anneeUniversitaire" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Promotion{" "}
+                    {sortField === "anneeUniversitaire" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th onClick={() => handleSortChange("diplome")}>
-                    Diplome {sortField === "diplome" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Diplome{" "}
+                    {sortField === "diplome" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th onClick={() => handleSortChange("nomFormation")}>
-                    Formation {sortField === "nomFormation" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Formation{" "}
+                    {sortField === "nomFormation" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th onClick={() => handleSortChange("nom")}>
-                    Responsable {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Responsable{" "}
+                    {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th onClick={() => handleSortChange("emailEnseignant")}>
-                    Email {sortField === "emailEnseignant" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Email{" "}
+                    {sortField === "emailEnseignant" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                   <th className="text-center">Actions</th>
                 </tr>
@@ -296,57 +307,66 @@ const PromotionHome = () => {
                           className="flex flex-row gap-3 justify-center items-center"
                           onClick={(e) => e.stopPropagation()}
                         >
-                         <div className="tooltip" data-tip="Voir les étudiants">
-                        <FontAwesomeIcon
-                          icon={faGraduationCap}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() =>
-                            switchToStudent(
-                              promotion.anneeUniversitaire,
-                              promotion.codeFormation
-                            )
-                          }
-                        />
-                      </div>
+                          <div
+                            className="tooltip"
+                            data-tip="Voir les étudiants"
+                          >
+                            <FontAwesomeIcon
+                              icon={faGraduationCap}
+                              className="text-black text-base cursor-pointer"
+                              onClick={() =>
+                                switchToStudent(
+                                  promotion.anneeUniversitaire,
+                                  promotion.codeFormation
+                                )
+                              }
+                            />
+                          </div>
 
-                      <div className="tooltip" data-tip="Voir les détails">
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick({} as Promotion, index);
-                            handleClickUpdate({} as Promotion, index);
-                            handleClick(promotion, index);
-                            openModal(
-                              `detailsPromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
-                            );
-                          }}
-                        />
-                      </div>
+                          <div className="tooltip" data-tip="Voir les détails">
+                            <FontAwesomeIcon
+                              icon={faEye}
+                              className="text-black text-base cursor-pointer"
+                              onClick={() => {
+                                handleClick({} as Promotion, index);
+                                handleClickUpdate({} as Promotion, index);
+                                handleClick(promotion, index);
+                                openModal(
+                                  `detailsPromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                                );
+                              }}
+                            />
+                          </div>
 
-                      <div className="tooltip" data-tip="Modifier ">
-                        <FontAwesomeIcon
-                          icon={faPenToSquare}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick({} as Promotion, index);
-                            handleClickUpdate({} as Promotion, index);
-                            handleClickUpdate(promotion, index);
-                            openModal(
-                              `updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
-                            );
-                          }}
-                        />
-                      </div>
+                          {role === "ADM" && (
+                            <div className="tooltip" data-tip="Modifier ">
+                              <FontAwesomeIcon
+                                icon={faPenToSquare}
+                                className="text-black text-base cursor-pointer"
+                                onClick={() => {
+                                  handleClick({} as Promotion, index);
+                                  handleClickUpdate({} as Promotion, index);
+                                  handleClickUpdate(promotion, index);
+                                  openModal(
+                                    `updatePromotion-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                                  );
+                                }}
+                              />
+                            </div>
+                          )}
 
-                      <div className="tooltip tooltip-left" data-tip="Supprimer">
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-black text-base cursor-pointer"
-                          onClick={(e) => handleDelete(promotion, e)}
-                        />
-                      </div>
-
+                          {role === "ADM" && (
+                            <div
+                              className="tooltip tooltip-left"
+                              data-tip="Supprimer"
+                            >
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="text-black text-base cursor-pointer"
+                                onClick={(e) => handleDelete(promotion, e)}
+                              />
+                            </div>
+                          )}
                         </td>
                         <dialog
                           id={`updatePromotion-${

@@ -14,64 +14,77 @@ import { cn } from "../../lib/utils";
 
 
 export function Dashboard() {
-  const links = [
+  const role = localStorage.getItem("role")
+  console.log(role);
+  
+  const allLinks = [
     {
       label: "Gestion des enseignants",
       href: "/admin/home/enseignants",
       icon: (
-        <AiOutlineTeam className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+        <AiOutlineTeam className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des promotions",
       href: "/admin/home/promotions",
-      icon: (
-        <LuSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
-      ),
+      icon: <LuSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Consultation des promotions",
+      href: "/admin/home/promotions",
+      icon: <LuSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Gestion des étudiants",
       href: "/admin/home/etudiants",
-      icon: (
-        <IoSchool className="text-neutral-700  h-5 w-5 flex-shrink-0" />
-      ),
+      icon: <IoSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Gestion des qualificatifs",
       href: "/admin/home/qualificatifs",
       icon: (
-        <FaArrowsLeftRightToLine className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+        <FaArrowsLeftRightToLine className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des questions",
       href: "/admin/home/questions",
       icon: (
-        <PiSealQuestionFill className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+        <PiSealQuestionFill className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des rubriques",
       href: "/admin/home/rubriques",
       icon: (
-        <BsCardHeading className="text-neutral-700  h-5 w-5 flex-shrink-0" />
+        <BsCardHeading className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Gestion des evaluations",
+      label: "Gestion des évaluations",
       href: "/admin/home/evaluations",
-      icon: (
-        <FaFileAlt className="text-neutral-700  h-5 w-5 flex-shrink-0" />
-      ),
+      icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Logout",
       href: "/",
-      icon: (
-        <FiLogOut className="text-neutral-700  h-5 w-5 flex-shrink-0" />
-      ),
+      icon: <FiLogOut className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
   ];
+
+  const links =
+    role === "ENS"
+      ? allLinks.filter((link) =>
+          [
+            "Gestion des questions",
+            "Gestion des rubriques",
+            "Consultation des promotions",
+            "Logout",
+          ].includes(link.label)
+        )
+      : allLinks;
+
   const [open, setOpen] = useState(false);
   return (
     <div
