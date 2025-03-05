@@ -65,12 +65,21 @@ public class PromotionController {
      * @return a {@link ResponseEntity} containing the created {@link Promotion}
      */
     @PostMapping
-    public ResponseEntity<Promotion> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
+    public ResponseEntity<String> createPromotion(@Valid @RequestBody PromotionDTO promotion) {
         if (promotion.getCodeFormation() == null || promotion.getCodeFormation().isEmpty()) {
             throw new IllegalArgumentException("Code Formation cannot be null or empty");
         }
-        Promotion savedPromotion = promotionService.createPromotion(promotion);
-        return ResponseEntity.ok(savedPromotion);
+        try {
+            PromotionDTO promotionDTO =  promotionService.getPromotionById(promotion.getAnneeUniversitaire(), promotion.getCodeFormation());
+            if(promotionDTO!=null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Promotion existe déjà");
+            }
+            Promotion savedPromotion = promotionService.createPromotion(promotion);
+            return ResponseEntity.ok("Promotion créée avec succès");
+            } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
 
