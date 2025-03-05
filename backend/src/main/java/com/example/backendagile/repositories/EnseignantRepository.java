@@ -26,5 +26,6 @@ public interface EnseignantRepository extends JpaRepository<Enseignant, Long> {
 
     List<Enseignant> findByEmailUbo(@NotBlank @Email String emailUbo);
     List<Enseignant> findByEmailPerso(@NotBlank @Email String emailPerso);
+    List<Enseignant> findAllByOrderByNomAsc();
 
 }
