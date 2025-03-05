@@ -26,7 +26,6 @@ const AddPromotion = ({
                           enseignants,
                       }: AddPromotionProps) => {
     const dispatch = useAppDispatch();
-    const [errors, setErrors] = useState([] as string[])
 
     const formations = useAppSelector<Formation[]>(getFormations);
     const salles = useAppSelector<Domaine[]>(getSalles);
@@ -75,7 +74,7 @@ const AddPromotion = ({
         const emptyFields = requiredFields.filter(field => !promotion[field]);
 
         if (emptyFields.length > 0) {
-            setErrors(['Merci de remplir tous les champs obligatoires']);
+            toast.error('Merci de remplir tous les champs obligatoires');
             return;
         }
 
@@ -85,34 +84,31 @@ const AddPromotion = ({
         const today = new Date();
 
         if (promotion.dateReponseLp && dateReponseLp <= today) {
-            setErrors(['La date limite de réponse pour la liste principale doit être dans le futur ou le présent.']);
+           toast.error('La date limite de réponse pour la liste principale doit être dans le futur ou le présent.');
             return;
         }
 
         if (promotion.dateRentree && dateRentree < today) {
-            setErrors(['La date de rentrée doit être dans le futur ou le présent.']);
+           toast.error('La date de rentrée doit être dans le futur ou le présent.');
             return;
         }
 
         if (promotion.dateReponseLalp && dateReponseLalp < today) {
-            setErrors(["La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent."]);
+           toast.error("La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent.");
             return;
         }
         if (promotion.nbMaxEtudiant < 0 || promotion.nbMaxEtudiant > 1000) {
-            setErrors(["Le nombre maximal d'étudiants doit être compris entre 0 et 1000."])
+           toast.error("Le nombre maximal d'étudiants doit être compris entre 0 et 1000.")
             return
         }
 
         const response = await dispatch(postPromotionsAsync(promotion));
         if (response.meta.requestStatus == "rejected") {
             const errorMessage = Object.values(response.payload).join(', ');
-            console.log(errorMessage);
-            setErrors([errorMessage]);
             toast.error(errorMessage)
             return;
         }
         dispatchPromotion();
-        setErrors([]);
         setPromotion(initialPromotionState); // Reset the form fields
     };
 
@@ -154,7 +150,7 @@ const AddPromotion = ({
                             <div className="flex flex-row justify-between">
                                 <label className="input input-bordered flex items-center gap-2">
                                     <span
-                                        className="font-semibold">Nombre des étudiants maximal                                     <span
+                                        className="font-semibold">Nombre des étudiants                                     <span
                                         className="text-red-500">*</span>
 </span>
                                     <input
@@ -184,8 +180,8 @@ const AddPromotion = ({
                             </div>
                             <label className="flex flex-row items-center gap-2">
                                 <span
-                                    className="font-semibold w-[15%]">Année universitaire<span
-                                    className="text-red-500">*</span></span>
+                                    className="font-semibold w-[15%]">Année<span
+                                    className="text-red-500"> *</span></span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="anneeUniversitaire"
@@ -266,7 +262,7 @@ const AddPromotion = ({
                                 </select>
                             </label>
                             <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Processus stage</span>
+                                <span className="font-semibold w-[15%]">stage</span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="processusStage"
@@ -284,9 +280,9 @@ const AddPromotion = ({
                                 </select>
                             </label>
                             <div className="flex flex-col gap-2 border-2 border-gray-300 rounded-lg  p-2">
-                                <label className="font-semibold text-center">Date limite de réponse</label>
+                                <label className="font-semibold text-center">Date limite de réponse pour la liste</label>
                                 <div className="flex flex-row items-center gap-2">
-                                    <span className="font-semibold w-[15%]">Liste principale</span>
+                                    <span className="font-semibold w-[15%]">Principale</span>
                                     <input
                                         type="date"
                                         name="dateReponseLp"
@@ -296,7 +292,7 @@ const AddPromotion = ({
                                     />
                                 </div>
                                 <div className="flex flex-row items-center gap-2">
-                                    <span className="font-semibold w-[15%]">Liste d'attente</span>
+                                    <span className="font-semibold w-[15%]">Attente</span>
                                     <input
                                         type="date"
                                         name="dateReponseLalp"
@@ -319,9 +315,7 @@ const AddPromotion = ({
                             </label>
                         </div>
                     </form>
-                    {errors.length > 0 && (
-                        <div className="mt-2 text-red-500 text-center">{errors}</div>
-                    )}
+
 
 
                     <div className="modal-action">

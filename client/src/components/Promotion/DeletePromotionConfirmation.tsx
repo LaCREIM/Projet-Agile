@@ -35,7 +35,7 @@ const DeletepromotionConfirmation = ({
         <>
             <div className="modal-box">
                 <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
-                <p className="py-4">Êtes-vous sûr de vouloir supprimer cette promotion?</p>
+                <p className="py-4">Êtes-vous sûr de vouloir supprimer cette promotion ?</p>
                 <div className="modal-action">
                     <form method="dialog" className=" space-x-4">
                         <button className="btn btn-error text-white" onClick={handleDelete}>

@@ -28,7 +28,6 @@ const EditPromotion = ({
                            enseignants,
                        }: EditPromotionProps) => {
     const dispatch = useAppDispatch();
-    const [errors, setErrors] = useState([] as string[]);
 
     const formations = useAppSelector<Formation[]>(getFormations);
     const salles = useAppSelector<Domaine[]>(getSalles);
@@ -58,7 +57,7 @@ const EditPromotion = ({
         const emptyFields = requiredFields.filter((field) => !promotion[field]);
 
         if (emptyFields.length > 0) {
-            setErrors(["Merci de remplir tous les champs obligatoires"]);
+            toast.error(["Merci de remplir tous les champs obligatoires"]);
             return;
         }
 
@@ -68,25 +67,25 @@ const EditPromotion = ({
         const today = new Date();
 
         if (promotion.dateReponseLp && dateReponseLp <= today) {
-            setErrors([
+            toast.error([
                 "La date limite de réponse pour la liste principale doit être dans le futur ou le présent.",
             ]);
             return;
         }
 
         if (promotion.dateRentree && dateRentree < today) {
-            setErrors(["La date de rentrée doit être dans le futur ou le présent."]);
+            toast.error(["La date de rentrée doit être dans le futur ou le présent."]);
             return;
         }
 
         if (promotion.dateReponseLalp && dateReponseLalp < today) {
-            setErrors([
+            toast.error([
                 "La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent.",
             ]);
             return;
         }
         if (promotion.nbMaxEtudiant < 0 || promotion.nbMaxEtudiant > 1000) {
-            setErrors([
+            toast.error([
                 "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.",
             ]);
             return;
@@ -95,13 +94,10 @@ const EditPromotion = ({
         const response = await dispatch(updatePromotionAsync(promotion));
         if (response.meta.requestStatus == "rejected") {
             const errorMessage = Object.values(response.payload).join(", ");
-            console.log(errorMessage);
-            setErrors([errorMessage]);
             toast.error(errorMessage);
             return;
         }
         dispatchPromotion();
-        setErrors([]);
         toast.success("Promotion mise à jour avec succès.");
     };
 
@@ -179,6 +175,7 @@ const EditPromotion = ({
                                     required
                                     value={promotion.anneeUniversitaire}
                                     onChange={handleChange}
+                                    disabled={true}
                                 >
                                     <option value="" disabled>
                                         Sélectionnez une année universitaire
@@ -219,6 +216,7 @@ const EditPromotion = ({
                                     value={promotion.codeFormation}
                                     onChange={handleChange}
                                     required
+                                    disabled={true}
                                 >
                                     <option value="" disabled>
                                         Sélectionnez une formation
@@ -302,9 +300,6 @@ const EditPromotion = ({
                             </label>
                         </div>
                     </form>
-                    {errors.length > 0 && (
-                        <div className="mt-2 text-red-500 text-center">{errors}</div>
-                    )}
 
                     <div className="modal-action">
                         <form method="dialog" className="flex flex-row gap-5">
