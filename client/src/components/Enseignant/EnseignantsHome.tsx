@@ -176,8 +176,7 @@ const EnseignantsHome = () => {
     
     return (
         <>
-            <ToastContainer theme="colored"/>
-            <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
+            <div className="flex flex-col gap-5 text-xl items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
                 <h1>Liste des enseignants</h1>
                 <div className="flex flex-row items-center justify-between gap-5 w-full px-[5%]">
                     <div className="w-1/3 block hover:cursor-text">

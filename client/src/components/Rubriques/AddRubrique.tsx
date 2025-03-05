@@ -5,7 +5,7 @@ import {
   getRubriquesAsync,
 } from "../../features/RubriqueSlice";
 import { Rubrique, Enseignant } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const AddRubrique = () => {
   const dispatch = useAppDispatch();
@@ -30,17 +30,23 @@ const AddRubrique = () => {
   };
 
   const handleSubmit = async () => {
-    await dispatch(createRubriqueAsync(rubrique));
-    setRubrique({
-      id: 0,
-      type: "",
-      noEnseignant: {} as Enseignant,
-      designation: "",
-      ordre: 0,
-      questions: [],
-    });
-    toast.success("Rubrique ajoutée avec succès.");
-    dispatch(getRubriquesAsync());
+    const res = await dispatch(createRubriqueAsync(rubrique));
+    console.log(res);
+
+    if (res?.type === "rubriques/create/rejected") {
+      toast.error(res?.payload as string);
+    } else if (res?.type === "rubriques/create/fulfilled") {
+      toast.success(res?.payload as string);
+      setRubrique({
+        id: 0,
+        type: "",
+        noEnseignant: {} as Enseignant,
+        designation: "",
+        ordre: 0,
+        questions: [],
+      });
+      dispatch(getRubriquesAsync());
+    }    
   };
 
   const canSave = rubrique.designation;
