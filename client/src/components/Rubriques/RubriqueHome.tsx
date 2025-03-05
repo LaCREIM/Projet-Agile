@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, setQuestions } from "../../features/RubriqueSlice";
+import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, searchRubriquesAsync, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
 import { ToastContainer, toast } from "react-toastify";
 import DetailsRubrique from "./DetailsRubriques";
@@ -25,14 +25,25 @@ const RubriqueHome = () => {
     rubrique: null,
     index: -1,
   });
-
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 5; // Nombre d'éléments par page
+  
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(getRubriquesAsync());
+    dispatch(searchRubriquesAsync({ keyword: "", page, size: pageSize }))
+    .unwrap()
+    .then((data: { totalPages: React.SetStateAction<number>; }) => {
+      setTotalPages(data.totalPages);
+    })
+    .catch(() => {
+      setTotalPages(1);
+    });
     dispatch(fetchQuestionsAsync());
-  }, [dispatch]);
+  }, [dispatch, page]);
 
+  
   useEffect(() => {
     if (modal.rubrique && rubriqueDetailsModalRef.current) {
       rubriqueDetailsModalRef.current.showModal();
@@ -155,6 +166,27 @@ const RubriqueHome = () => {
               )}
             </tbody>
           </table>
+          
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Précédent
+            </button>
+
+            <span>Page {page} sur {totalPages}</span>
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Suivant
+            </button>
+          </div>
+
         </div>
       </div>
 

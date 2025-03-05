@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -27,6 +28,7 @@ interface RubriqueState {
   rubriqueQuestions: RubriqueQuestion[];
   loading: boolean;
   error: string | null;
+  totalPages: number, // Pour stocker le nombre total de pages de la recherche paginée
 }
 
 const initialState: RubriqueState = {
@@ -35,6 +37,7 @@ const initialState: RubriqueState = {
   rubriqueQuestions: [],
   loading: false,
   error: null,
+  totalPages: 1
 };
 
 export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValue: string }>(
@@ -48,6 +51,25 @@ export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValu
     }
   }
 );
+
+export const searchRubriquesAsync = createAsyncThunk<
+  { rubriques: Rubrique[]; totalPages: number },
+  { keyword: string; page: number; size: number },
+  { rejectValue: string }
+>(
+  "rubriques/search",
+  async ({ keyword, page, size }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/search-paged", {
+        params: { keyword, page, size },
+      });
+      return response.data; // L'API renvoie un objet contenant rubriques et totalPages
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la recherche des rubriques");
+    }
+  }
+);
+
 
 export const getQuestionsStandardAsync = createAsyncThunk<RubriqueQuestion[], number, { rejectValue: any }>(
   "standard/getQuestionsStandardAsync",
@@ -169,8 +191,25 @@ const rubriqueSlice = createSlice({
     })
     .addCase(getQuestionsStandardAsync.rejected, (state) => {
       state.questions = []; // Vide les questions en cas d'échec
+    })
+        // **Recherche des rubriques avec pagination**
+    builder.addCase(searchRubriquesAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
     });
-
+    builder.addCase(
+          searchRubriquesAsync.fulfilled,
+          (state, action: PayloadAction<{ rubriques: Rubrique[]; totalPages: number }>) => {
+            state.rubriques = action.payload.rubriques;
+            state.totalPages = action.payload.totalPages;
+            state.loading = false;
+          }
+        );
+        builder.addCase(searchRubriquesAsync.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload as string;
+        });
+    
     // **Créer une rubrique**
     builder.addCase(createRubriqueAsync.fulfilled, (state, action: PayloadAction<Rubrique>) => {
       state.rubriques.push(action.payload);
