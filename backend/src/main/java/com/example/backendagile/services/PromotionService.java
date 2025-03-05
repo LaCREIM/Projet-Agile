@@ -74,8 +74,8 @@ public class PromotionService {
      */
     public Promotion createPromotion(PromotionDTO Promotion) {
         Promotion promotion = promotionMapper.fromPromotionDTO(Promotion);
-        System.out.println("PromotionDTO : " + Promotion);
-        System.out.println("Promotion : " + promotion);
+//        System.out.println("PromotionDTO : " + Promotion);
+//        System.out.println("Promotion : " + promotion);
         return promotionRepository.save(promotion);
     }
 
