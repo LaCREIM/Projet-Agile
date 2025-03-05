@@ -18,19 +18,31 @@ import java.time.LocalDate;
 })
 public class Evaluation {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eve_seq_generator")
+    @SequenceGenerator(name = "eve_seq_generator", sequenceName = "EVE_SEQ", allocationSize = 1)
     @Column(name = "ID_EVALUATION", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "NO_ENSEIGNANT", nullable = false)
-    private Enseignant noEnseignant;
+    private Enseignant Enseignant;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
+    @ManyToOne
+@JoinColumns({
+    @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
+    @JoinColumn(name = "CODE_UE", referencedColumnName = "CODE_UE")
+})
     private ElementConstitutif elementConstitutif;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
+@JoinColumns({
+@JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
+@JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE")
+})
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private com.example.backendagile.entities.Promotion promotion;
 
@@ -61,12 +73,12 @@ public class Evaluation {
         this.id = id;
     }
 
-    public Enseignant getNoEnseignant() {
-        return noEnseignant;
+    public Enseignant getEnseignant() {
+        return Enseignant;
     }
 
-    public void setNoEnseignant(Enseignant noEnseignant) {
-        this.noEnseignant = noEnseignant;
+    public void setEnseignant(Enseignant noEnseignant) {
+        this.Enseignant = noEnseignant;
     }
 
     public ElementConstitutif getElementConstitutif() {

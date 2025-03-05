@@ -19,67 +19,42 @@ public class EvaluationController {
     public EvaluationController(EvaluationService evaluationService) {
         this.evaluationService = evaluationService;
     }
-
-    /**
-     * 🔹 Récupérer toutes les évaluations
+ /**
+     * Récupérer toutes les évaluations d'un enseignant donné.
      */
-    @GetMapping
-    public ResponseEntity<List<Evaluation>> getAllEvaluations() {
-        List<Evaluation> evaluations = evaluationService.getAllEvaluations();
+    @GetMapping("/enseignant/{noEnseignant}")
+    public ResponseEntity<List<Evaluation>> getEvaluationsByEnseignant(@PathVariable Long noEnseignant) {
+        List<Evaluation> evaluations = evaluationService.getEvaluationsByEnseignant(noEnseignant);
         return ResponseEntity.ok(evaluations);
     }
 
     /**
-     * 🔹 Récupérer une évaluation par ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getEvaluationById(@PathVariable Long id) {
-        Evaluation evaluation = evaluationService.getEvaluationById(id).orElse(null);
-    
-        if (evaluation == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("message", "Évaluation non trouvée avec l'ID : " + id));
-        }
-    
-        return ResponseEntity.ok(evaluation);
-    }
-    
-    
-    
-
-    /**
-     * 🔹 Créer une nouvelle évaluation
+     * Créer une nouvelle évaluation.
      */
     @PostMapping
-    public ResponseEntity<?> createEvaluation(@RequestBody Evaluation evaluation) {
-        try {
-            Evaluation newEvaluation = evaluationService.createEvaluation(evaluation);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newEvaluation);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erreur lors de la création de l'évaluation.");
-        }
+    public ResponseEntity<Evaluation> createEvaluation(@RequestBody Evaluation evaluation) {
+        Evaluation createdEvaluation = evaluationService.createEvaluation(evaluation);
+        return ResponseEntity.ok(createdEvaluation);
     }
 
     /**
-     * 🔹 Mettre à jour une évaluation existante
+     * Modifier une évaluation existante.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvaluation(@PathVariable Long id, @RequestBody Evaluation evaluationDetails) {
-        try {
-            Evaluation updatedEvaluation = evaluationService.updateEvaluation(id, evaluationDetails);
-            return ResponseEntity.ok(updatedEvaluation);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erreur lors de la mise à jour de l'évaluation.");
-        }
+    public ResponseEntity<Evaluation> updateEvaluation(
+            @PathVariable Long id,
+            @RequestBody Evaluation evaluation) {
+
+        Evaluation updatedEvaluation = evaluationService.updateEvaluation(id, evaluation);
+        return ResponseEntity.ok(updatedEvaluation);
     }
+}
+
+   
 
     /**
      * 🔹 Supprimer une évaluation par ID
-     */
+     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvaluation(@PathVariable Long id) {
         try {
@@ -91,5 +66,6 @@ public class EvaluationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur inattendue est survenue lors de la suppression.");
         }
-    }
-}
+    }*/
+
+
