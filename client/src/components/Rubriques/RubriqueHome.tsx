@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
@@ -27,12 +28,12 @@ const RubriqueHome = () => {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 5; // Nombre d'éléments par page
+  const pageSize = 10; // Nombre d'éléments par page
   
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(searchRubriquesAsync({ keyword: "", page, size: pageSize }))
+    dispatch(searchRubriquesAsync({ page, size: pageSize }))
     .unwrap()
     .then((data: { totalPages: React.SetStateAction<number>; }) => {
       setTotalPages(data.totalPages);
