@@ -233,7 +233,6 @@ const DetailsRubrique = ({
     );
 
     if (response?.type === "rubriques-questions/delete/fulfilled") {
-      // Met à jour l'ordre des questions restantes
       setQuestionsOrder((prev) => {
         const updatedOrder = prev
           .filter((q) => q.idQuestion !== idQuestion)
@@ -250,9 +249,9 @@ const DetailsRubrique = ({
         return updatedNewOrder;
       });
 
-      toast.success("Question supprimée avec succès.");
-    } else {
-      toast.error("Erreur lors de la suppression.");
+      toast.success(response?.payload as string);
+    } else if (response?.type === "rubriques-questions/delete/rejected") {
+      toast.error(response?.payload as string);
     }
   };
 
@@ -264,10 +263,9 @@ const DetailsRubrique = ({
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
-      <ToastContainer theme="colored" />
       <div className="modal-box w-[50em] max-w-5xl space-y-5 hover:cursor-default h-fit">
         <h3 className="font-bold text-center text-lg">
-          Détails de la Rubrique {rubrique.designation}
+          Détails de la Rubrique
         </h3>
 
         <div className="text-base font-medium text-gray-900 space-x-1">

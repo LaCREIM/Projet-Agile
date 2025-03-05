@@ -1,3 +1,4 @@
+import { sexeMapper, universiteMapper } from "../../mappers/mappers";
 import { Etudiant } from "../../types/types";
 
 
@@ -8,10 +9,10 @@ interface EtudiantProp {
 const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
   return (
     <div className="flex justify-center items-center w-full h-screen">
-      <div className="modal-box w-[55em] max-w-5xl space-y-5">
+      <div className="modal-box w-[55em] max-w-5xl space-y-5 hover:cursor-auto">
         <div className="flex flex-col items-center w-full">
           <h3 className="font-bold text-center text-lg">
-            Détails de l'étudiant <b>{etudiant.nom.toUpperCase()}</b>
+            Détails de l'étudiant <b>{etudiant?.nom?.toUpperCase()}</b>
           </h3>
         </div>
 
@@ -54,7 +55,7 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Sexe :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.sexe}</dd>
+              <dd className="mt-1 text-gray-500">{sexeMapper(etudiant.sexe)}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Date de naissance :</dt>
@@ -95,7 +96,7 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
             <div className="text-base font-medium text-gray-900">
               <dt>Universite d'origine :</dt>
               <dd className="mt-1 text-gray-500">
-                {etudiant.universiteOrigine}
+                {universiteMapper(etudiant.universiteOrigine)}
               </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
