@@ -30,6 +30,9 @@ public class Rubrique {
     @Column(name = "ORDRE")
     private Long ordre;
 
+    public Rubrique() {
+    }
+
     public Long getId() {
         return id;
     }
