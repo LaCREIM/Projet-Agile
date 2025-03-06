@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class DroitService {
 
     public Droit createDroit(DroitDTO droitDTO) {
         Droit droit = droitMapper.toDroit(droitDTO);
-
+        System.out.println("Droit : "+droit);
         return droitRepository.save(droit);
     }
 
@@ -61,6 +62,10 @@ public class DroitService {
             throw new EntityNotFoundException("Droit non trouvé avec l'ID: " + id);
         }
         droitRepository.deleteById(id);
+    }
+
+    public Optional<Droit> findById(DroitId id) {
+        return droitRepository.findByIdEvaluationAndIdEnseignant(id.getIdEvaluation(),id.getNoEnseignant().longValue()).stream().findFirst();
     }
 
 
