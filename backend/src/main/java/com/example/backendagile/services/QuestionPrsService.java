@@ -108,5 +108,12 @@ public class QuestionPrsService {
     public Optional<Question> findByIntitule(String intitule , Long idQualificatif) {
         return questionRepository.findQuestionByIntitule(intitule, idQualificatif).stream().findFirst();
     }
+
+    public List<QuestionPrsDTO> getQuestionsStdAndPerso(Long noEnseignant) {
+        List<Question> questions = questionRepository.findQuestionStdAndPerso(noEnseignant);
+        return questions.stream()
+                .map(questionMapper::fromQuestion)
+                .collect(Collectors.toList());
+    }
     
 }
