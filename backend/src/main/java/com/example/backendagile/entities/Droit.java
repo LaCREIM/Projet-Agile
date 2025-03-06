@@ -29,11 +29,11 @@ public class Droit {
 
     @Convert(disableConversion = true)
     @Column(name = "CONSULTATION", nullable = false)
-    private Boolean consultation = false;
+    private char consultation;
 
     @Convert(disableConversion = true)
     @Column(name = "DUPLICATION", nullable = false)
-    private Boolean duplication = false;
+    private char duplication;
 
     public DroitId getId() {
         return id;
@@ -59,19 +59,19 @@ public class Droit {
         this.noEnseignant = noEnseignant;
     }
 
-    public Boolean getConsultation() {
+    public char getConsultation() {
         return consultation;
     }
 
-    public void setConsultation(Boolean consultation) {
+    public void setConsultation(char consultation) {
         this.consultation = consultation;
     }
 
-    public Boolean getDuplication() {
+    public char getDuplication() {
         return duplication;
     }
 
-    public void setDuplication(Boolean duplication) {
+    public void setDuplication(char duplication) {
         this.duplication = duplication;
     }
 
