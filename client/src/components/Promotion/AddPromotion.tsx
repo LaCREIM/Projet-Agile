@@ -29,7 +29,7 @@ const initialErrors = {
     groupeAnglaisError: null as string | null,
     emailError: null as string | null,
     emailUboError: null as string | null,
-}
+};
 
 const AddPromotion = ({
                           dispatchPromotion,
@@ -71,85 +71,48 @@ const AddPromotion = ({
     ) => {
         const {name, value} = e.target;
         setPromotion({...promotion, [name]: value});
-    };
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
-        const requiredFields = [
-            "siglePromotion",
-            "nbMaxEtudiant",
-            "anneeUniversitaire",
-            "codeFormation",
-        ];
+        const newErrors = {...errors};
 
-        const newErrors = {
-            dateError: null,
-            telephoneError: null,
-            mobileError: null,
-            groupeTpError: null,
-            groupeAnglaisError: null,
-            emailError: null,
-            emailUboError: null,
-        };
-
-        const emptyFields = requiredFields.filter((field) => !promotion[field]);
-
-        if (emptyFields.length > 0) {
-            newErrors.dateError = "Merci de remplir tous les champs obligatoires";
+        if (name === "nbMaxEtudiant") {
+            const nbMaxEtudiant = parseInt(value, 10);
+            if (nbMaxEtudiant < 0 || nbMaxEtudiant > 1000) {
+                newErrors.telephoneError =
+                    "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.";
+            } else {
+                newErrors.telephoneError = null;
+            }
         }
 
-        const dateReponseLp = promotion.dateReponseLp
-            ? new Date(promotion.dateReponseLp)
-            : null;
-        const dateRentree = promotion.dateRentree
-            ? new Date(promotion.dateRentree)
-            : null;
-        const dateReponseLalp = promotion.dateReponseLalp
-            ? new Date(promotion.dateReponseLalp)
-            : null;
-        const today = new Date();
-
-        if (dateReponseLp && dateReponseLp <= today) {
-            newErrors.dateError =
-                "La date limite de réponse pour la liste principale doit être dans le futur ou le présent.";
-        }
-
-        if (dateRentree && dateRentree < today) {
-            newErrors.dateError =
-                "La date de rentrée doit être dans le futur ou le présent.";
-        }
-
-        if (dateReponseLalp && dateReponseLalp < today) {
-            newErrors.dateError =
-                "La date limite de réponse pour la liste d'attente doit être dans le futur ou le présent.";
-        }
-        if (promotion.nbMaxEtudiant < 0 || promotion.nbMaxEtudiant > 1000) {
-            newErrors.telephoneError =
-                "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.";
+        if (name === "dateReponseLp" || name === "dateRentree" || name === "dateReponseLalp") {
+            const dateValue = new Date(value);
+            const today = new Date();
+            if (dateValue <= today) {
+                newErrors.dateError = "La date doit être dans le futur ou le présent.";
+            } else {
+                newErrors.dateError = null;
+            }
         }
 
         setErrors(newErrors);
+    };
 
-        if (Object.values(newErrors).some((error) => error !== null)) {
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        if (Object.values(errors).some((error) => error !== null)) {
             return;
         }
 
         const response = await dispatch(postPromotionsAsync(promotion));
         if (response.meta.requestStatus === "rejected") {
-            const errorMessage = Object.values(response.payload).join(", ");
+            const errorMessage = Object.values(response.payload).join(" et ");
             setError(errorMessage);
+            return
         }
         dispatchPromotion();
         setPromotion(initialPromotionState);
-        setErrors({
-            dateError: null,
-            telephoneError: null,
-            mobileError: null,
-            groupeTpError: null,
-            groupeAnglaisError: null,
-            emailError: null,
-            emailUboError: null,
-        });
+        setErrors(initialErrors);
         onClose();
     };
 
@@ -160,17 +123,15 @@ const AddPromotion = ({
         dispatch(getDomaineDiplomeAsync());
     }, [dispatch]);
 
-    console.log(errors)
-
     const formatDate = (date: string | Date | null) => {
         if (date === null) return "";
         return date instanceof Date ? date.toISOString().split("T")[0] : date;
     };
 
     function handleClose() {
-        onClose()
-        setErrors(initialErrors)
-        setError(null)
+        onClose();
+        setErrors(initialErrors);
+        setError(null);
         setPromotion(initialPromotionState);
     }
 
@@ -182,10 +143,9 @@ const AddPromotion = ({
                         Ajouter une promotion
                     </h3>
                     <form onSubmit={handleSubmit}>
-
                         <div className="flex flex-col gap-5">
-                            <div className="flex flex-row justify-between">
-                                <label className="input input-bordered flex items-center gap-2">
+                            <div className="flex flex-col gap-1">
+                                <label className="input input-bordered flex items-center gap-2 w-[95%]">
                                     <span className="font-semibold">Sigle </span>
                                     <span className="text-red-500">*</span>
                                     <input
@@ -199,8 +159,8 @@ const AddPromotion = ({
                                     />
                                 </label>
                             </div>
-                            <div className="flex flex-row justify-between">
-                                <label className="input input-bordered flex items-center gap-2">
+                            <div className="flex flex-col gap-1 ">
+                                <label className="input input-bordered flex items-center gap-2 w-[95%]">
                   <span className="font-semibold">
                     Nombre des étudiants <span className="text-red-500">*</span>
                   </span>
@@ -216,8 +176,12 @@ const AddPromotion = ({
                                         placeholder="Ex: 25"
                                     />
                                 </label>
-
-                                <label className="input input-bordered flex items-center gap-2">
+                                {errors.telephoneError && (
+                                    <p className="text-red-500 text-sm">{errors.telephoneError}</p>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="input input-bordered flex items-center gap-2 w-[95%]">
                                     <span className="font-semibold">Date rentrée</span>
                                     <input
                                         type="date"
@@ -228,6 +192,9 @@ const AddPromotion = ({
                                         placeholder="Ex: 2022-09-01"
                                     />
                                 </label>
+                                {errors.dateError && (
+                                    <p className="text-red-500 text-sm">{errors.dateError}</p>
+                                )}
                             </div>
                             <label className="flex flex-row items-center gap-2">
                 <span className="font-semibold w-[15%]">
@@ -250,7 +217,6 @@ const AddPromotion = ({
                                     ))}
                                 </select>
                             </label>
-
                             <label className="flex flex-row items-center gap-2">
                                 <span className="font-semibold w-[15%]">Lieu rentrée</span>
                                 <select
@@ -329,29 +295,41 @@ const AddPromotion = ({
                                     ))}
                                 </select>
                             </label>
-                            <div className="flex flex-col gap-2 border-2 border-gray-300 rounded-lg  p-2">
+                            <div className="flex flex-col gap-2 border-2 border-gray-300 rounded-lg p-3 w-[95%]">
                                 <label className="font-semibold text-center">
                                     Date limite de réponse pour la liste
                                 </label>
-                                <div className="flex flex-row items-center gap-2">
-                                    <span className="font-semibold w-[15%]">Principale</span>
-                                    <input
-                                        type="date"
-                                        name="dateReponseLp"
-                                        value={formatDate(promotion.dateReponseLp)}
-                                        onChange={handleChange}
-                                        className="input input-bordered w-[80%] max-w-full"
-                                    />
-                                </div>
-                                <div className="flex flex-row items-center gap-2">
-                                    <span className="font-semibold w-[15%]">Attente</span>
-                                    <input
-                                        type="date"
-                                        name="dateReponseLalp"
-                                        value={formatDate(promotion.dateReponseLalp)}
-                                        onChange={handleChange}
-                                        className="input input-bordered w-[80%] max-w-full"
-                                    />
+                                <div className="flex flex-row gap-2 ">
+                                    <div className="flex flex-col gap-1 w-[50%] ">
+                                        <label className="input input-bordered flex items-center gap-2">
+                                            <span className="font-semibold w-[20%]">Principale</span>
+                                            <input
+                                                type="date"
+                                                name="dateReponseLp"
+                                                value={formatDate(promotion.dateReponseLp)}
+                                                onChange={handleChange}
+                                                className="input input-bordered w-[80%] max-w-full"
+                                            />
+                                        </label>
+                                        {errors.dateError && (
+                                            <p className="text-red-500 text-sm">{errors.dateError}</p>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1 w-[50%]">
+                                        <label className="input input-bordered flex items-center gap-2">
+                                            <span className="font-semibold w-[15%]">Attente</span>
+                                            <input
+                                                type="date"
+                                                name="dateReponseLalp"
+                                                value={formatDate(promotion.dateReponseLalp)}
+                                                onChange={handleChange}
+                                                className="input input-bordered w-[80%] max-w-full"
+                                            />
+                                        </label>
+                                        {errors.dateError && (
+                                            <p className="text-red-500 text-sm">{errors.dateError}</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <label className="flex flex-row items-center gap-2">
@@ -367,7 +345,6 @@ const AddPromotion = ({
                             </label>
                         </div>
                     </form>
-                    {/* Affichage des erreurs */}
                     {error && <div className="text-red-500 text-sm mb-4 mt-2">{error}</div>}
                     <div className="modal-action">
                         <button className="btn" onClick={handleClose}>Annuler</button>
