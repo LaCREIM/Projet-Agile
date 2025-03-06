@@ -5,11 +5,11 @@ import com.example.backendagile.entities.Droit;
 import com.example.backendagile.entities.DroitId;
 import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Evaluation;
-import com.example.backendagile.repositories.DroitRepository;
-import com.example.backendagile.services.DroitService;
 import com.example.backendagile.services.EnseignantService;
 import com.example.backendagile.services.EvaluationService;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class DroitMapper {
@@ -27,8 +27,8 @@ public class DroitMapper {
         if (droit == null) {
             return null;
         }
-        char consultation = droit.getConsultation() ? 'O' : 'N';
-        char duplication = droit.getDuplication() ? 'O' : 'N';
+        char consultation = droit.getConsultation() ;
+        char duplication = droit.getDuplication();
         System.out.println("Consultation : "+consultation);
         String nom = droit.getNoEnseignant().getNom();
         String prenom = droit.getNoEnseignant().getPrenom();
@@ -50,15 +50,15 @@ public class DroitMapper {
             return null;
         }
         Droit droit = new Droit();
-        Enseignant ens = enseignantService.findById(droitDTO.getIdEnseignant()).get();
-        Evaluation eval = evaluationService.getEvaluationById(droitDTO.getIdEvaluation()).get();
+        Optional<Enseignant> ens = enseignantService.findById(droitDTO.getIdEnseignant());
+        Optional<Evaluation> eval = evaluationService.getEvaluationById(droitDTO.getIdEvaluation());
 
 
         droit.setId(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant().intValue()));
-        droit.setIdEvaluation(eval);
-        droit.setNoEnseignant(ens);
-        droit.setConsultation(droitDTO.getConsultation() == 'O');
-        droit.setDuplication(droitDTO.getDuplication() == 'O');
+        droit.setIdEvaluation(eval.orElse(null));
+        droit.setNoEnseignant(ens.orElse(null));
+        droit.setConsultation(Character.toUpperCase(droitDTO.getConsultation()));
+        droit.setDuplication(Character.toUpperCase(droitDTO.getDuplication()));
         return droit;
     }
 
