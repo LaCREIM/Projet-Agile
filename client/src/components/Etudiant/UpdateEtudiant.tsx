@@ -40,7 +40,7 @@ const UpdateEtudiant = ({
     emailError: null as string | null,
     emailUboError: null as string | null,
   });
-  
+
   const [error, setError] = useState<string | null>(null);
   const formatPhoneNumber = (value: string): string => {
     const cleaned = value.replace(/\s/g, "");
@@ -146,7 +146,7 @@ const UpdateEtudiant = ({
       const res = await dispatch(updateEtudiantAsync(cleanedStudent));
 
       if (res?.type === "etudiants/updateEtudiantAsync/rejected") {
-        toast.error(res?.payload as string);
+        // toast.error(res?.payload as string);
         setError(res.payload as string);
       } else if (res?.type === "etudiants/updateEtudiantAsync/fulfilled") {
         toast.success(res?.payload as string);
@@ -204,7 +204,6 @@ const UpdateEtudiant = ({
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier un étudiant</h3>
         <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
@@ -543,17 +542,17 @@ const UpdateEtudiant = ({
             </label>
           </div>
         </form>
+        {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
+
         <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn">Annuler</button>
-            <button
-              className="btn btn-neutral hover:cursor-pointer"
-              onClick={handleSubmit}
-              disabled={!canSave}
-            >
-              Mettre à jour
-            </button>
-          </form>
+          <button className="btn">Annuler</button>
+          <button
+            className="btn btn-neutral hover:cursor-pointer"
+            onClick={handleSubmit}
+            disabled={!canSave}
+          >
+            Mettre à jour
+          </button>
         </div>
       </div>
     </div>
