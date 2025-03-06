@@ -1,5 +1,6 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.QuestionPrsDTO;
 import com.example.backendagile.dto.RubriquePrsDTO;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.RubriquePrsService;
@@ -86,5 +87,10 @@ public class RubriquePrsController {
         response.put("totalPages", rubriqueService.getTotalPages(size));
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/std-prs/{noEnseignant}")
+    public List<RubriquePrsDTO> getRubriquesStdAndPerso(Long noEnseignant) {
+        return rubriqueService.getRubriqueStdAndPerso(noEnseignant);
     }
 }

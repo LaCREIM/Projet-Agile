@@ -92,4 +92,12 @@ public class RubriquePrsService {
         long totalItems = rubriqueRepository.count();
         return (int) Math.ceil((double) totalItems / size);
     }
+
+
+    public List<RubriquePrsDTO> getRubriqueStdAndPerso(Long noEnseignant) {
+        List<Rubrique> rubriques = rubriqueRepository.findRubriqueStdAndPerso(noEnseignant);
+        return rubriques.stream()
+                .map(rubriqueMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

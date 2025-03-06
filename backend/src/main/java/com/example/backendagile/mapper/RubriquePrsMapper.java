@@ -21,16 +21,22 @@ public class RubriquePrsMapper {
         if (rubrique == null) {
             return null;
         }
-        return new RubriquePrsDTO(
+        RubriquePrsDTO rbp = new RubriquePrsDTO(
                 rubrique.getId(),
                 rubrique.getDesignation(),
-                rubrique.getOrdre()
+                rubrique.getOrdre(),
+                null
         );
+        if(rubrique.getNoEnseignant() != null) {
+            rbp.setNoEnseignant(rubrique.getNoEnseignant().getId());
+        }
+
+        return rbp;
     }
 
     // Convertir un DTO en entité Rubrique
     public  Rubrique toEntity(RubriquePrsDTO dto) {
-        Optional<Enseignant> enseignant = enseignantService.findById(Long.valueOf(10));//i should get the current user *************!!!!!!!!!!!!!!!
+        Optional<Enseignant> enseignant = enseignantService.findById(Long.valueOf(dto.getNoEnseignant()));//i should get the current user *************!!!!!!!!!!!!!!!
 
         if (dto == null) {
             return null;
