@@ -33,4 +33,7 @@ public interface RubriquePrsRepository extends JpaRepository<Rubrique, Long> {
 
     List<Rubrique> findRubriqueByDesignation(String designation);
 
+
+    @Query("SELECT r FROM Rubrique r WHERE r.id <> :id AND LOWER(r.designation) = LOWER(:designation)")
+    List<Rubrique>findRubriqueByDesignationAndDiffrentID(Long id, String designation);
 }
