@@ -7,24 +7,22 @@ import {
 import { Question, Enseignant, Qualificatif } from "../../types/types";
 import { toast } from "react-toastify";
 
-
-
 interface AddQuestionProps {
   qualificatifs: Qualificatif[];
+  onClose: () => void;
 }
 
-const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
+const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
   const dispatch = useAppDispatch();
 
-  // State for Question and related entities
   const [question, setQuestion] = useState<Question>({
     id: 0,
     type: "",
     noEnseignant: {} as Enseignant,
-    idQualificatif: {} as Qualificatif,
+    idQualificatif: { id: -1, minimal: "", maximal: "" }, 
     intitule: "",
   });
-
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -35,9 +33,8 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
       ...prev,
       [name]: value,
     }));
+    setError(null);
   };
-
-
 
   const handleSelectQualificatif = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -47,7 +44,11 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     );
     setQuestion((prev) => ({
       ...prev,
-      idQualificatif: selectedQualificatif || ({} as Qualificatif),
+      idQualificatif: selectedQualificatif || {
+        id: -1,
+        minimal: "",
+        maximal: "",
+      },
     }));
   };
 
@@ -55,53 +56,55 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
     question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(e);
-    
+    e.preventDefault();
+
     if (canSave) {
       const res = await dispatch(createQuestionAsync(question));
-      
+
       if (res?.type === "questions/create/rejected") {
+        setError(res.payload as string);
         toast.error(res.payload as string);
       } else if (res?.type === "questions/create/fulfilled") {
         toast.success(res.payload as string);
+        handleReset(); 
       }
-      
-      setQuestion({
-        id: 0,
-        type: "",
-        noEnseignant: {} as Enseignant,
-        idQualificatif: {} as Qualificatif,
-        intitule: "",
-      });
     }
-    
+
     dispatch(fetchQuestionsAsync());
   };
 
-
-  
-
+  const handleReset = () => {
+    setQuestion({
+      id: 0,
+      type: "",
+      noEnseignant: {} as Enseignant,
+      idQualificatif: { id: -1, minimal: "", maximal: "" }, 
+      intitule: "",
+    });
+    setError(null);
+    onClose();
+  };
 
   return (
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une Question</h3>
         <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
           <div className="flex flex-col gap-5">
-
-              <label className="input input-bordered w-[85%] flex items-center gap-2">
-                <span className="font-semibold">Intitulé</span>
-                <input
-                  required
-                  type="text"
-                  name="intitule"
-                  value={question.intitule}
-                  onChange={handleChange}
-                  className="grow "
-                  placeholder="Ex: Contenu ?"
-                />
-              </label>
-
+            <label className="input input-bordered w-[85%] flex items-center gap-2">
+              <span className="font-semibold">Intitulé</span>
+              <input
+                required
+                type="text"
+                name="intitule"
+                value={question.intitule}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: Contenu ?"
+              />
+            </label>
 
             <label className="flex flex-row items-center ">
               <span className="font-semibold w-[15%]">Qualificatif</span>
@@ -109,6 +112,7 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
               <select
                 required
                 onChange={handleSelectQualificatif}
+                value={question.idQualificatif.id} // Lier la valeur à question.idQualificatif.id
                 className="select select-bordered w-[70%] max-w-full  hover:cursor-pointer"
               >
                 <option value={-1}>Sélectionnez un qualificatif</option>
@@ -123,10 +127,16 @@ const AddQuestion = ({qualificatifs} : AddQuestionProps) => {
 
           <div className="modal-action">
             <form method="dialog" className="flex flex-row gap-5">
-              <button className="btn">Annuler</button>
+              <button
+                className="btn"
+                type="button"
+                onClick={handleReset} 
+              >
+                Annuler
+              </button>
               <button
                 className="btn btn-neutral disabled:cursor-not-allowed"
-                onClick={handleSubmit}
+                type="submit" 
                 disabled={!canSave}
               >
                 Ajouter

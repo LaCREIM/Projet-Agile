@@ -1,18 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
-  deleteQuestionAsync,
   fetchQuestionsAsync,
-  getQuestionPersoAsync,
+  // getQuestionPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { RootState } from "../../api/store";
-
 import UpdateQuestion from "./UpdateQuestion";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
@@ -23,20 +20,9 @@ const QuestionHome = () => {
   const questions = useAppSelector(
     (state: RootState) => state.question.questions
   );
-  const [modal, setModal] = useState<{
-    question: Question | null;
-    index: number;
-  }>({
-    question: null,
-    index: -1,
-  });
-  const [modalUpdate, setModalUpdate] = useState<{
-    question: Question | null;
-    index: number;
-  }>({
-    question: null,
-    index: -1,
-  });
+  
+
+  
   const [currentPage, setCurrentPage] = useState(1);
   const questionsPerPage = 10;
   const totalPages = Math.ceil(questions.length / questionsPerPage);
@@ -53,47 +39,32 @@ const QuestionHome = () => {
     fetchData();
   }, [dispatch]);
 
-  const updateQuestionModalRef = useRef<HTMLDialogElement | null>(null);
-  const questionDetailsModalRef = useRef<HTMLDialogElement | null>(null);
-
   useEffect(() => {
-    dispatch(getQuestionPersoAsync({idEnseignant: 1000, page:1, size:10}));
+    dispatch(fetchQuestionsAsync());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (modal.question && questionDetailsModalRef.current) {
-      questionDetailsModalRef.current.showModal();
-    }
-
-    if (modalUpdate.question && updateQuestionModalRef.current) {
-      updateQuestionModalRef.current.showModal();
-    }
-  }, [modal, modalUpdate]);
-
+  
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
+
   const closeModal = (id: string) => {
-  const dialog = document.getElementById(id) as HTMLDialogElement;
-  if (dialog) dialog.close();
-};
-
-
-  const handleClick = (question: Question, index: number) => {
-    setModal({ question, index });
+    const dialog = document.getElementById(id) as HTMLDialogElement;
+    if (dialog) dialog.close();
   };
 
-  const handleClickUpdate = (question: Question, index: number) => {
-    setModalUpdate({ question, index });
   
-    // Assure-toi que le modal prend en compte le nouvel état avant de s'afficher
+
+  const handleClickUpdate = (index: number) => {
+
     setTimeout(() => {
-      const dialog = document.getElementById("updateQuestionModal") as HTMLDialogElement;
+      const dialog = document.getElementById(
+        `updateQuestion-${index}`
+      ) as HTMLDialogElement;
       if (dialog) dialog.showModal();
     }, 100);
   };
-
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -160,7 +131,7 @@ const QuestionHome = () => {
                         icon={faPenToSquare}
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
-                          handleClickUpdate(question, index);
+                          handleClickUpdate(index);
                           openModal(`updateQuestion-${index}`);
                         }}
                       />
@@ -171,20 +142,22 @@ const QuestionHome = () => {
                       />
                     </td>
 
+                    {/* Modal pour la mise à jour de la question */}
                     <dialog id={`updateQuestion-${index}`} className="modal">
                       <UpdateQuestion
                         questionData={question}
                         qualificatifs={qualificatifs}
+                        onClose={() => closeModal(`updateQuestion-${index}`)} // Fermer le modal
                       />
                     </dialog>
 
+                    {/* Modal pour la suppression de la question */}
                     <dialog id={`delete-${index}`} className="modal">
                       <DeleteQuestionConfirmation
                         question={question}
                         currentPage={currentPage}
                       />
                     </dialog>
-
                   </tr>
                 ))
               )}
@@ -212,19 +185,12 @@ const QuestionHome = () => {
           </button>
         </div>
       </div>
-      <dialog id="updateQuestionModal" className="modal" ref={updateQuestionModalRef}>
-          {modalUpdate.question ? (
-            <UpdateQuestion
-              key={modalUpdate.question.id} // Clé unique pour forcer le re-render
-              questionData={modalUpdate.question}
-              qualificatifs={qualificatifs}
-            />
-          ) : null}
-        </dialog>
-
 
       <dialog id="addQuestion" className="modal">
-        <AddQuestion qualificatifs={qualificatifs} />
+        <AddQuestion
+          qualificatifs={qualificatifs}
+          onClose={() => closeModal(`addQuestion`)}
+        />
       </dialog>
     </>
   );
