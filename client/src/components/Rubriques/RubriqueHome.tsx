@@ -27,7 +27,7 @@ const RubriqueHome = () => {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10; // Nombre d'éléments par page
+  const pageSize = 10; 
   
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -55,6 +55,11 @@ const RubriqueHome = () => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
+
+   const closeModal = (id: string) => {
+     const dialog = document.getElementById(id) as HTMLDialogElement;
+     if (dialog) dialog.close();
+   };
 
   const handleClick = async (rubrique: Rubrique, index: number) => {
     setModal({ rubrique, index });
@@ -166,7 +171,7 @@ const RubriqueHome = () => {
               )}
             </tbody>
           </table>
-          
+
           <div className="flex justify-center items-center gap-4 mt-4">
             <button
               disabled={page === 1}
@@ -176,7 +181,9 @@ const RubriqueHome = () => {
               Précédent
             </button>
 
-            <span>Page {page} sur {totalPages}</span>
+            <span>
+              Page {page} sur {totalPages}
+            </span>
 
             <button
               disabled={page === totalPages}
@@ -186,12 +193,11 @@ const RubriqueHome = () => {
               Suivant
             </button>
           </div>
-
         </div>
       </div>
 
       <dialog id="addRubrique" className="modal">
-        <AddRubrique />
+        <AddRubrique onClose={() => closeModal("addRubrique")} />
       </dialog>
     </>
   );

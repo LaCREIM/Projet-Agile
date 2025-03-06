@@ -31,7 +31,7 @@ const QualificatifHome = () => {
   const [updatingIndex, setUpdatingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+    dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
   }, [dispatch, currentPage]);
 
   const [editingValues, setEditingValues] = useState<{
@@ -41,6 +41,11 @@ const QualificatifHome = () => {
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
+  };
+
+  const closeModal = (id: string) => {
+    const dialog = document.getElementById(id) as HTMLDialogElement;
+    if (dialog) dialog.close();
   };
 
   const handleChange = (
@@ -73,7 +78,7 @@ const QualificatifHome = () => {
         toast.error(res.payload as string);
       } else if (res?.type === "qualificatifs/update/fulfilled") {
       toast.success(res.payload as string);
-      dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+      dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
       }
     } else {
       toast.error("Veuillez remplir tous les champs avant de sauvegarder.");
@@ -91,9 +96,8 @@ const QualificatifHome = () => {
 
   const handlePageChange = async (newPage: number) => {
     setCurrentPage(newPage);
-    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
     console.log(res);
-    
   };
 
   const MotionVariant = {
@@ -259,7 +263,10 @@ const QualificatifHome = () => {
       </div>
 
       <dialog id="addQualificatif" className="modal">
-        <AddQualificatif currentPage={currentPage} />
+        <AddQualificatif
+          currentPage={currentPage}
+          onClose={() => closeModal("addQualificatif")}
+        />
       </dialog>
     </>
   );

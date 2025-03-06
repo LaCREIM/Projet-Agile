@@ -172,13 +172,12 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
       };
       const res = await dispatch(postEtudiantAsync(cleanedStudent));
       if (res?.type === "etudiants/postEtudiantAsync/rejected") {
-        toast.error(res.payload as string);
         setError(res.payload as string)
       } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
+        dispatch(getEtudiantAsync({ page: 1, size: 5 }));
         toast.success(res.payload as string);
         resetStudent();
       }
-      dispatch(getEtudiantAsync({ page: 1, size: 5 }));
     }
   };
 
@@ -264,7 +263,6 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un étudiant</h3>
         <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
@@ -601,19 +599,19 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
             </label>
           </div>
         </form>
+        {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
+
         <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn" onClick={resetStudent}>
-              Annuler
-            </button>
-            <button
-              className="btn btn-neutral hover:cursor-pointer"
-              onClick={handleSubmit}
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
-          </form>
+          <button className="btn" onClick={resetStudent}>
+            Annuler
+          </button>
+          <button
+            className="btn btn-neutral hover:cursor-pointer"
+            onClick={handleSubmit}
+            disabled={!canSave}
+          >
+            Ajouter
+          </button>
         </div>
       </div>
     </div>

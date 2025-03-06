@@ -8,14 +8,16 @@ import { toast } from "react-toastify";
 
 interface AddQualificatifProps {
   currentPage: number;
+  onClose: () => void;
 }
-const AddQualificatif = ({ currentPage }: AddQualificatifProps) => {
+const AddQualificatif = ({ currentPage, onClose }: AddQualificatifProps) => {
   const [qualificatif, setQualificatif] = useState({
     id: 0,
     maximal: "",
     minimal: "",
   });
   const dispatch = useAppDispatch();
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,34 +31,36 @@ const AddQualificatif = ({ currentPage }: AddQualificatifProps) => {
   const canSave = qualificatif.maximal != "" && qualificatif.minimal != "";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(e);
-
+    e.preventDefault();
     if (canSave) {
       const response = await dispatch(createQualificatifAsync(qualificatif));
-      
-      console.log(response);
-      
       if ((response?.type as string) === "qualificatifs/create/rejected") {
-        toast.error(response.payload as string);
-        
+        setError(response.payload as string);
       } else if (
         (response?.type as string) === "qualificatifs/create/fulfilled"
       ) {
-        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
         toast.success(response.payload as string);
+        handleClose();
       }
-      setQualificatif({
-        id: 0,
-        maximal: "",
-        minimal: "",
-      });
     }
   };
 
+  const handleClose = () => {
+    setQualificatif({
+      id: 0,
+      maximal: "",
+      minimal: "",
+    });
+    setError(null);
+    onClose();
+  };
+
   return (
-    <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
+    <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un qualificatif</h3>
+
         <div className="flex flex-row justify-center items-center gap-5">
           <label className="input input-bordered flex items-center gap-2">
             <span className="font-semibold">Minimal</span>
@@ -83,18 +87,19 @@ const AddQualificatif = ({ currentPage }: AddQualificatifProps) => {
             />
           </label>
         </div>
+        {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
 
         <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn">Annuler</button>
-            <button
-              onClick={handleSubmit}
-              className="btn btn-neutral disabled:cursor-not-allowed"
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
-          </form>
+          <button className="btn" type="button" onClick={() => handleClose()}>
+            Annuler
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="btn btn-neutral disabled:cursor-not-allowed"
+            disabled={!canSave}
+          >
+            Ajouter
+          </button>
         </div>
       </div>
     </div>
