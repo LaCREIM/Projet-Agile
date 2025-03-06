@@ -207,6 +207,21 @@ const UpdateEtudiant = ({
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
+                No Etudiant<span className="text-red-500"> *</span>
+              </span>
+              <input
+                disabled
+                required
+                type="text"
+                name="noEtudiant"
+                value={student.noEtudiant}
+                onChange={handleChange}
+                className="grow"
+                placeholder="Ex: YI98765"
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">
                 Nom <span className="text-red-500"> *</span>
               </span>
               <input
@@ -233,21 +248,7 @@ const UpdateEtudiant = ({
                 placeholder="Ex: Doe"
               />
             </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                No Etudiant<span className="text-red-500"> *</span>
-              </span>
-              <input
-                disabled
-                required
-                type="text"
-                name="noEtudiant"
-                value={student.noEtudiant}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: YI98765"
-              />
-            </label>
+
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
                 Mot de passe<span className="text-red-500"> *</span>
@@ -545,7 +546,9 @@ const UpdateEtudiant = ({
         {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
 
         <div className="modal-action">
-          <button className="btn">Annuler</button>
+          <button className="btn" onClick={() => onClose()}>
+            Annuler
+          </button>
           <button
             className="btn btn-neutral hover:cursor-pointer"
             onClick={handleSubmit}

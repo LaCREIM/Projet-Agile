@@ -5,6 +5,7 @@ import etudiantReducer from "../features/EtudiantSlice";
 import qualificatifReducer from "../features/QualificatifSlice";
 import questionReducer from "../features/QuestionSlice";
 import rubriqueReducer from "../features/RubriqueSlice";
+import evaluationReducer from "../features/EvaluationSlice";
 import { apiSlice } from "./ApiSlice";
 
 const store = configureStore({
@@ -15,7 +16,8 @@ const store = configureStore({
     promotions:promotionReducer,
     qualificatif:qualificatifReducer,
     question:questionReducer,
-    rubriques:rubriqueReducer
+    rubriques:rubriqueReducer,
+    evaluations: evaluationReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(apiSlice.middleware),

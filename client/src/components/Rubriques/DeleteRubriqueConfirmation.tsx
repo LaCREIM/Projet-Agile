@@ -5,7 +5,7 @@ import { deleteRubriqueAsync, getRubriquesAsync } from "../../features/RubriqueS
 
 interface DeleteProps {
   rubrique: Rubrique;
-  currentPage: number;
+  // currentPage: number;
 }
 
 const DeleteRubriqueConfirmation = ({
