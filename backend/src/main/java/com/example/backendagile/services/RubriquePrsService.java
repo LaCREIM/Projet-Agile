@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +44,9 @@ public class RubriquePrsService {
         return rubriqueMapper.toDTO(rubrique);
     }
 
+    public Optional<Rubrique> findByDesignation(String designation) {
+        return rubriqueRepository.findRubriqueByDesignation(designation).stream().findFirst();
+    }
     // Mettre à jour une rubrique existante
     public RubriquePrsDTO updateRubrique(Long id, RubriquePrsDTO dto) {
         Rubrique rubrique = rubriqueRepository.findById(id)
