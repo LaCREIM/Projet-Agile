@@ -47,6 +47,11 @@ public class RubriquePrsService {
     public Optional<Rubrique> findByDesignation(String designation) {
         return rubriqueRepository.findRubriqueByDesignation(designation).stream().findFirst();
     }
+
+    public Optional<Rubrique> findById(Long id) {
+        return rubriqueRepository.findById(id);
+    }
+
     // Mettre à jour une rubrique existante
     public RubriquePrsDTO updateRubrique(Long id, RubriquePrsDTO dto) {
         Rubrique rubrique = rubriqueRepository.findById(id)
@@ -95,6 +100,10 @@ public class RubriquePrsService {
     public int getTotalPages(int size) {
         long totalItems = rubriqueRepository.count();
         return (int) Math.ceil((double) totalItems / size);
+    }
+
+    public Optional<Rubrique> findByDesignationAndDiffrentID(Long id , String des){
+        return rubriqueRepository.findRubriqueByDesignationAndDiffrentID(id,des).stream().findFirst();
     }
 
 

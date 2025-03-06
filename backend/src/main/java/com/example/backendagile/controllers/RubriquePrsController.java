@@ -2,6 +2,7 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.QuestionPrsDTO;
 import com.example.backendagile.dto.RubriquePrsDTO;
+import com.example.backendagile.dto.RubriqueStdDTO;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.RubriquePrsService;
 import org.springframework.http.HttpStatus;
@@ -52,15 +53,43 @@ public class RubriquePrsController {
 
     // ✅ Mettre à jour une rubrique existante
     @PutMapping("/{id}")
-    public ResponseEntity<RubriquePrsDTO> updateRubrique(@PathVariable Long id, @RequestBody RubriquePrsDTO dto) {
-        return ResponseEntity.ok(rubriqueService.updateRubrique(id, dto));
+    public ResponseEntity<String> updateRubrique(@PathVariable Long id, @RequestBody RubriquePrsDTO dto) {
+        Optional<Rubrique> existingRubrique = rubriqueService.findById(id);
+
+        if (existingRubrique.isEmpty()) {
+            return ResponseEntity.badRequest().body("Aucune rubrique trouvée avec cet ID.");
+        }
+
+        try{
+            Optional<Rubrique> existingRubriqueWithSameDesignation = rubriqueService.findByDesignationAndDiffrentID(id,dto.getDesignation().trim());
+            if(existingRubriqueWithSameDesignation.isPresent()) {
+
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
+            }
+            // Mise à jour de la désignation
+            rubriqueService.updateRubrique(id, dto);
+
+            return ResponseEntity.ok("La rubrique a été mise à jour avec succès.");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+
     }
 
     // ✅ Supprimer une rubrique par ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRubrique(@PathVariable Long id) {
+    public ResponseEntity<String> deleteRubrique(@PathVariable Long id) {
+        if (!rubriqueService.findById(id).isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucune rubrique trouvée avec cet ID.");
+        }
+        try {
         rubriqueService.deleteRubrique(id);
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("La rubrique a été supprimée avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Il faut vider la rubrique de ses questions avant de la supprimer.");
+        }
     }
 
     @GetMapping("/enseignant/{noEnseignant}")
