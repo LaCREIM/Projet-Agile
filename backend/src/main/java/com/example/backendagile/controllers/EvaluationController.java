@@ -1,13 +1,13 @@
 package com.example.backendagile.controllers;
 
-import com.example.backendagile.entities.Evaluation;
+import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.services.EvaluationService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/evaluations")
@@ -19,53 +19,43 @@ public class EvaluationController {
     public EvaluationController(EvaluationService evaluationService) {
         this.evaluationService = evaluationService;
     }
- /**
-     * Récupérer toutes les évaluations d'un enseignant donné.
-     */
-    @GetMapping("/enseignant/{noEnseignant}")
-    public ResponseEntity<List<Evaluation>> getEvaluationsByEnseignant(@PathVariable Long noEnseignant) {
-        List<Evaluation> evaluations = evaluationService.getEvaluationsByEnseignant(noEnseignant);
-        return ResponseEntity.ok(evaluations);
+
+    @GetMapping("/enseignant/{id}")
+    public ResponseEntity<List<EvaluationDTO>> getEvaluationsByEnseignant(@PathVariable Long id) {
+        return ResponseEntity.ok(evaluationService.getEvaluationsByEnseignant(id));
     }
 
-    /**
-     * Créer une nouvelle évaluation.
-     */
+
     @PostMapping
-    public ResponseEntity<Evaluation> createEvaluation(@RequestBody Evaluation evaluation) {
-        Evaluation createdEvaluation = evaluationService.createEvaluation(evaluation);
-        return ResponseEntity.ok(createdEvaluation);
+    public ResponseEntity<EvaluationDTO> createEvaluation(@RequestBody EvaluationDTO dto) {
+        EvaluationDTO created = evaluationService.createEvaluation(dto);
+        return ResponseEntity.ok(created);
     }
 
-    /**
-     * Modifier une évaluation existante.
-     */
     @PutMapping("/{id}")
-    public ResponseEntity<Evaluation> updateEvaluation(
+    public ResponseEntity<EvaluationDTO> updateEvaluation(
             @PathVariable Long id,
-            @RequestBody Evaluation evaluation) {
-
-        Evaluation updatedEvaluation = evaluationService.updateEvaluation(id, evaluation);
-        return ResponseEntity.ok(updatedEvaluation);
+            @RequestBody EvaluationDTO dto) {
+        return evaluationService.updateEvaluation(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
-}
 
-   
-
-    /**
-     * 🔹 Supprimer une évaluation par ID
-     
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvaluation(@PathVariable Long id) {
+   @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEvaluation(@PathVariable Long id) {
         try {
             evaluationService.deleteEvaluation(id);
-            return ResponseEntity.ok("Évaluation supprimée avec succès.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Évaluation supprimée avec succès.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur inattendue est survenue lors de la suppression.");
-        }
-    }*/
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'évaluation ne peut pas être supprimée car elle est déjà remplie.");        }
+    }
 
+    @GetMapping("/enseignants/{idEnseignant}/{idEvaluation}")
+public ResponseEntity<EvaluationDTO> getEvaluation(
+        @PathVariable Long idEnseignant,
+        @PathVariable Long idEvaluation) {
+    EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEnseignant, idEvaluation);
+    return ResponseEntity.ok(evaluation);
+}
 
+}

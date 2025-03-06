@@ -1,50 +1,75 @@
 package com.example.backendagile.services;
 
+import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.entities.Evaluation;
+import com.example.backendagile.mapper.EvaluationMapper;
 import com.example.backendagile.repositories.EvaluationRepository;
+import com.example.backendagile.repositories.FormationRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-//import java.util.Optional;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluationService {
 
     private final EvaluationRepository evaluationRepository;
 
-    public EvaluationService(EvaluationRepository evaluationRepository) {
+   private final FormationRepository formationRepository;  
+
+
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository) {
         this.evaluationRepository = evaluationRepository;
+        this.formationRepository = formationRepository;
     }
 
-    // 1. Récupérer les évaluations d'un enseignant donné
-    public List<Evaluation> getEvaluationsByEnseignant(Long noEnseignant) {
-        return evaluationRepository.findByNoEnseignant(noEnseignant);
+    public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
+        List<Evaluation> evaluations = evaluationRepository.findByEnseignant_Id(id);
+
+        return evaluations.stream().map(evaluation -> {
+            EvaluationDTO dto = EvaluationMapper.toDTO(evaluation);
+
+            formationRepository.findById(evaluation.getCodeFormation()).ifPresent(formation -> {
+                dto.setNomFormation(formation.getNomFormation());
+            });
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
-    // 2. Créer une nouvelle évaluation
-    public Evaluation createEvaluation(Evaluation evaluation) {
-        return evaluationRepository.save(evaluation);
+    public EvaluationDTO createEvaluation(EvaluationDTO dto) {
+        Evaluation evaluation = EvaluationMapper.toEntity(dto);
+        Evaluation saved = evaluationRepository.save(evaluation);
+        return EvaluationMapper.toDTO(saved);
     }
 
-    // 3. Modifier une évaluation existante
-    public Evaluation updateEvaluation(Long id, Evaluation newEvaluation) {
-        Evaluation evaluation = evaluationRepository.findById(id)
+    public EvaluationDTO getEvaluationByEnseignantAndId(Long idEnseignant, Long idEvaluation) {
+        return evaluationRepository.findByEnseignant_IdAndId(idEnseignant, idEvaluation)
+                .map(EvaluationMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+    }
+    
 
-        // Mise à jour des champs modifiables
-        evaluation.setDesignation(newEvaluation.getDesignation());
-        evaluation.setPeriode(newEvaluation.getPeriode());
-        evaluation.setDebutReponse(newEvaluation.getDebutReponse());
-        evaluation.setFinReponse(newEvaluation.getFinReponse());
-        evaluation.setEtat(newEvaluation.getEtat());
-
-        return evaluationRepository.save(evaluation);
+    public Optional<EvaluationDTO> updateEvaluation(Long id, EvaluationDTO dto) {
+        return evaluationRepository.findById(id).map(existingEvaluation -> {
+            existingEvaluation.setDesignation(dto.getDesignation());
+            existingEvaluation.setCodeEC(dto.getCodeEC());
+            existingEvaluation.setCodeUE(dto.getCodeUE());
+            existingEvaluation.setCodeFormation(dto.getCodeFormation());
+            existingEvaluation.setAnneeUniversitaire(dto.getAnneeUniversitaire());
+            existingEvaluation.setNoEvaluation(dto.getNoEvaluation());
+            existingEvaluation.setEtat(dto.getEtat());
+            existingEvaluation.setPeriode(dto.getPeriode());
+            existingEvaluation.setDebutReponse(dto.getDebutReponse());
+            existingEvaluation.setFinReponse(dto.getFinReponse());
+            Evaluation updated = evaluationRepository.save(existingEvaluation);
+            return EvaluationMapper.toDTO(updated);
+        });
     }
 
-    /*public void deleteEvaluation(Long id) {
-        if (!evaluationRepository.existsById(id)) {
-            throw new IllegalArgumentException("Évaluation non trouvée avec l'ID : " + id);
-        }
+    public void deleteEvaluation(Long id) {
         evaluationRepository.deleteById(id);
-    }*/
+    }
 }

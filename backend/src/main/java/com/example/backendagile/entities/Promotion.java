@@ -95,6 +95,10 @@ public class Promotion {
         return dateReponseLalp;
     }
 
+
+    public void setAnneeUniversitaire(String anneeUniversitaire) {
+        this.id.setAnneeUniversitaire(anneeUniversitaire);
+    }
     public void setDateReponseLalp(LocalDate dateReponseLalp) {
         this.dateReponseLalp = dateReponseLalp;
     }
@@ -129,6 +133,17 @@ public class Promotion {
 
     public void setCommentaire(String commentaire) {
         this.commentaire = commentaire;
+    }
+
+    public String getCodeFormation() {
+        return id != null ? id.getCodeFormation() : null;
+    }
+
+    public void setCodeFormation(String codeFormation) {
+        if (id == null) {
+            id = new PromotionId(); 
+        }
+        id.setCodeFormation(codeFormation);
     }
 
 }
