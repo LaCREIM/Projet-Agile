@@ -1,623 +1,347 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
-  getDomainePaysAsync,
-  getDomaineUnivAsync,
-  getEtudiantAsync,
-  getPays,
-  getUniversite,
-  postEtudiantAsync,
-} from "../../features/EtudiantSlice";
-import { Etudiant, Promotion } from "../../types/types";
-import { getFormationAsync } from "../../features/PromotionSlice";
-import { toast } from "react-toastify";
+  getFormationAsync,
+  postPromotionsAsync,
+  getFormations,
+  getDomaineLieuEntreeAsync,
+  Domaine,
+  getSalles,
+  getProcessusStages,
+  getDomaineProcessusStageAsync,
+  getDomaineDiplomeAsync,
+  anneesUniv,
+} from "../../features/PromotionSlice";
 
-interface AddStudentProps {
-  promotions: Promotion[];
+import { Enseignant, Formation, PromotionCreate } from "../../types/types";
+
+interface AddPromotionProps {
+  dispatchPromotion: () => void;
+  enseignants: Enseignant[];
   onClose: () => void;
 }
 
-const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
+const initialErrors = {
+  dateError: null as string | null,
+  telephoneError: null as string | null,
+  mobileError: null as string | null,
+  groupeTpError: null as string | null,
+  groupeAnglaisError: null as string | null,
+  emailError: null as string | null,
+  emailUboError: null as string | null,
+};
+
+const AddPromotion = ({
+                        dispatchPromotion,
+                        enseignants,
+                        onClose,
+                      }: AddPromotionProps) => {
   const dispatch = useAppDispatch();
-  const [errors, setErrors] = useState({
-    dateError: null as string | null,
-    telephoneError: null as string | null,
-    mobileError: null as string | null,
-    groupeTpError: null as string | null,
-    groupeAnglaisError: null as string | null,
-    emailError: null as string | null,
-    emailUboError: null as string | null,
-  });
+
+  const formations = useAppSelector<Formation[]>(getFormations);
+  const salles = useAppSelector<Domaine[]>(getSalles);
+  const processusStage = useAppSelector<Domaine[]>(getProcessusStages);
   const [error, setError] = useState<string | null>(null);
-  
+  const [errors, setErrors] = useState(initialErrors);
 
-
-  const [student, setStudent] = useState<Etudiant>({
-    noEtudiant: "",
-    nom: "",
-    prenom: "",
-    motPasse: "",
-    sexe: "",
-    dateNaissance: null,
-    lieuNaissance: "",
-    nationalite: "",
-    telephone: "",
-    mobile: "",
-    email: "",
-    emailUbo: "",
-    adresse: "",
-    codePostal: "",
-    ville: "",
-    paysOrigine: "",
-    universiteOrigine: "",
-    groupeTp: -1,
-    groupeAnglais: -1,
+  const initialPromotionState: PromotionCreate = {
+    noEnseignant: "",
+    siglePromotion: "",
+    nbMaxEtudiant: 0,
+    dateReponseLp: null,
+    dateReponseLalp: null,
+    dateRentree: null,
+    lieuRentree: "",
+    processusStage: "",
+    commentaire: "",
     anneeUniversitaire: "",
+    diplome: "",
     codeFormation: "",
-  });
-
-  const formatPhoneNumber = (value: string): string => {
-    const cleaned = value.replace(/\s/g, "");
-    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
-    return formatted.trim();
+    nomFormation: "",
   };
+
+  const [promotion, setPromotion] = useState<PromotionCreate>(
+      initialPromotionState
+  );
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+      e: React.ChangeEvent<
+          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
   ) => {
     const { name, value } = e.target;
+    setPromotion({ ...promotion, [name]: value });
 
-    if (name === "emailUbo") {
-      const uboRegex = /^[a-zA-Z0-9._%+-]+@univ-brest\.fr$/;
-      if (!uboRegex.test(value)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          emailUboError: "L'email UBO doit être au format xxxx@univ-brest.fr.",
-        }));
+    const newErrors = { ...errors };
+
+    if (name === "nbMaxEtudiant") {
+      const nbMaxEtudiant = parseInt(value, 10);
+      if (nbMaxEtudiant < 0 || nbMaxEtudiant > 1000) {
+        newErrors.telephoneError =
+            "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.";
       } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          emailUboError: null,
-        }));
+        newErrors.telephoneError = null;
       }
     }
 
-    if (name === "email") {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(value)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          emailError: "Veuillez entrer une adresse email valide.",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          emailError: null,
-        }));
-      }
-    }
-
-    if (name === "telephone" || name === "mobile") {
-      const formattedValue = formatPhoneNumber(value);
-      setStudent((prevStudent) => ({
-        ...prevStudent,
-        [name]: formattedValue,
-      }));
-
-      if (!/^\d{2}( \d{2}){4}$/.test(formattedValue)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [`${name}Error`]: "Le numéro doit contenir exactement 10 chiffres.",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [`${name}Error`]: null,
-        }));
-      }
-      return; 
-    }
-
-    if (name === "dateNaissance") {
-      const birthDate = new Date(value);
+    if (name === "dateReponseLp" || name === "dateRentree" || name === "dateReponseLalp") {
+      const dateValue = new Date(value);
       const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-
-      if (
-        age < 17 ||
-        (age === 17 &&
-          (today.getMonth() < birthDate.getMonth() ||
-            (today.getMonth() === birthDate.getMonth() &&
-              today.getDate() < birthDate.getDate())))
-      ) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          dateError: "L'étudiant doit avoir au moins 17 ans.",
-        }));
+      if (dateValue <= today) {
+        newErrors.dateError = "La date doit être dans le futur ou le présent.";
       } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          dateError: null,
-        }));
+        newErrors.dateError = null;
       }
     }
 
-    if (name === "groupeTp" || name === "groupeAnglais") {
-      if (value === "-1") {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [`${name}Error`]: "Veuillez sélectionner un groupe.",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [`${name}Error`]: null,
-        }));
-      }
-    }
-
-    setStudent((prevStudent) => ({
-      ...prevStudent,
-      [name]: value,
-    }));
+    setErrors(newErrors);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-    if (canSave) {
-      const cleanedStudent = {
-        ...student,
-        telephone: student.telephone.replace(/\s/g, ""),
-        mobile: student.mobile.replace(/\s/g, ""),
-      };
-      const res = await dispatch(postEtudiantAsync(cleanedStudent));
-      if (res?.type === "etudiants/postEtudiantAsync/rejected") {
-        toast.error(res.payload as string);
-        setError(res.payload as string)
-      } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
-        toast.success(res.payload as string);
-        resetStudent();
-      }
-      dispatch(getEtudiantAsync({ page: 1, size: 5 }));
+    if (Object.values(errors).some((error) => error !== null)) {
+      return;
     }
-  };
 
-  const pays = useAppSelector(getPays);
-  const universite = useAppSelector(getUniversite);
+    const response = await dispatch(postPromotionsAsync(promotion));
+    if (response.meta.requestStatus === "rejected") {
+      const errorMessage = Object.values(response.payload).join(", ");
+      setError(errorMessage);
+    }
+    dispatchPromotion();
+    setPromotion(initialPromotionState);
+    setErrors(initialErrors);
+    onClose();
+  };
 
   useEffect(() => {
-    dispatch(getDomainePaysAsync());
-    dispatch(getDomaineUnivAsync());
     dispatch(getFormationAsync());
+    dispatch(getDomaineLieuEntreeAsync());
+    dispatch(getDomaineProcessusStageAsync());
+    dispatch(getDomaineDiplomeAsync());
   }, [dispatch]);
 
   const formatDate = (date: string | Date | null) => {
     if (date === null) return "";
-    date instanceof Date ? date.toISOString().split("T")[0] : date;
+    return date instanceof Date ? date.toISOString().split("T")[0] : date;
   };
 
-  const resetStudent = () => {
-    setStudent({
-      noEtudiant: "",
-      nom: "",
-      prenom: "",
-      motPasse: "",
-      sexe: "",
-      dateNaissance: null,
-      lieuNaissance: "",
-      nationalite: "",
-      telephone: "",
-      mobile: "",
-      email: "",
-      emailUbo: "",
-      adresse: "",
-      codePostal: "",
-      ville: "",
-      paysOrigine: "",
-      universiteOrigine: "",
-      groupeTp: 1,
-      groupeAnglais: 1,
-      anneeUniversitaire: "",
-      codeFormation: "",
-    });
-    setErrors({
-      dateError: null as string | null,
-      telephoneError: null as string | null,
-      mobileError: null as string | null,
-      groupeTpError: null as string | null,
-      groupeAnglaisError: null as string | null,
-      emailError: null as string | null,
-      emailUboError: null as string | null,
-    });
-    setError(null);
+  function handleClose() {
     onClose();
-  };
-
-  
-
-  const canSave =
-    student.nom.trim() !== "" &&
-    student.prenom.trim() !== "" &&
-    student.sexe.trim() !== "" &&
-    student.email.trim() !== "" &&
-    student.emailUbo.trim() !== "" &&
-    student.noEtudiant.trim() !== "" &&
-    student.dateNaissance !== null &&
-    formatDate(student.dateNaissance) !== "" &&
-    errors.dateError === null &&
-    errors.emailError === null &&
-    errors.emailUboError === null &&
-    errors.mobileError === null &&
-    errors.telephoneError === null &&
-    student.lieuNaissance.trim() !== "" &&
-    student.nationalite.trim() !== "" &&
-    student.adresse.trim() !== "" &&
-    student.ville.trim() !== "" &&
-    student.paysOrigine.trim() !== "" &&
-    student.universiteOrigine.trim() !== "" &&
-    student.anneeUniversitaire.trim() !== "" &&
-    student.codeFormation.trim() !== "";
-  student.motPasse.trim() !== "";
+    setErrors(initialErrors);
+    setError(null);
+    setPromotion(initialPromotionState);
+  }
 
   return (
-    <div className="flex justify-center items-center w-full h-screen">
-      <div className="modal-box w-[50em] max-w-5xl">
-        <h3 className="font-bold text-lg my-4">Ajouter un étudiant</h3>
-        <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-          <div className="grid grid-cols-2 gap-5">
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Nom<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="nom"
-                value={student.nom}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: John"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Prénom<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="prenom"
-                value={student.prenom}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Doe"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                No Etudiant<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="noEtudiant"
-                value={student.noEtudiant}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: YI98765"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Mot de passe<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="password"
-                name="motPasse"
-                value={student.motPasse}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Entrez un mot de passe"
-              />
-            </label>
-            <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">
-                  Email <span className="text-red-500"> *</span>
-                </span>
-                <input
-                  required
-                  type="email"
-                  name="email"
-                  value={student.email}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="john.doe@gamil.com"
-                />
-              </label>
-              {errors.emailError && (
-                <p className="text-red-500 text-sm">{errors.emailError}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">
-                  Email Ubo<span className="text-red-500"> *</span>
-                </span>
-                <input
-                  required
-                  type="email"
-                  name="emailUbo"
-                  value={student.emailUbo}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="john.doe@univ.fr"
-                />
-              </label>
-              {errors.emailUboError && (
-                <p className="text-red-500 text-sm">{errors.emailUboError}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Téléphone</span>
-                <input
-                  type="text"
-                  name="telephone"
-                  value={student.telephone}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: 0700000000"
-                />
-              </label>
-              {errors.telephoneError && (
-                <p className="text-red-500 text-sm">{errors.telephoneError}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Mobile</span>
-                <input
-                  type="text"
-                  name="mobile"
-                  value={student.mobile}
-                  onChange={handleChange}
-                  className="grow"
-                  placeholder="Ex: 0700000000"
-                />
-              </label>
-              {errors.mobileError && (
-                <p className="text-red-500 text-sm">{errors.mobileError}</p>
-              )}
-            </div>
+      <>
+        <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
+          <div className="modal-box w-[50em] max-w-5xl">
+            <h3 className="font-bold text-lg my-4 text-center">
+              Ajouter une promotion
+            </h3>
+            <form onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-row justify-between">
+                  <label className="input input-bordered flex items-center gap-2">
+                    <span className="font-semibold">Sigle </span>
+                    <span className="text-red-500">*</span>
+                    <input
+                        required
+                        type="text"
+                        name="siglePromotion"
+                        value={promotion.siglePromotion}
+                        onChange={handleChange}
+                        className="grow"
+                        placeholder="Ex: DOSI"
+                    />
+                  </label>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <label className="input input-bordered flex items-center gap-2">
+                  <span className="font-semibold">
+                    Nombre des étudiants <span className="text-red-500">*</span>
+                  </span>
+                    <input
+                        min={0}
+                        max={1000}
+                        required
+                        type="number"
+                        name="nbMaxEtudiant"
+                        value={promotion.nbMaxEtudiant}
+                        onChange={handleChange}
+                        className="grow"
+                        placeholder="Ex: 25"
+                    />
+                  </label>
 
-            <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">
-                  Date de naissance<span className="text-red-500"> *</span>
+                  <label className="input input-bordered flex items-center gap-2">
+                    <span className="font-semibold">Date rentrée</span>
+                    <input
+                        type="date"
+                        name="dateRentree"
+                        value={formatDate(promotion.dateRentree)}
+                        onChange={handleChange}
+                        className="grow"
+                        placeholder="Ex: 2022-09-01"
+                    />
+                  </label>
+                </div>
+                <label className="flex flex-row items-center gap-2">
+                <span className="font-semibold w-[15%]">
+                  Année<span className="text-red-500"> *</span>
                 </span>
-                <input
-                  required
-                  type="date"
-                  name="dateNaissance"
-                  value={formatDate(student.dateNaissance)}
-                  onChange={handleChange}
-                  className="grow"
-                />
-              </label>
-              {errors.dateError && (
-                <p className="text-red-500 text-sm">{errors.dateError}</p>
-              )}
-            </div>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Lieu de naissance<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="lieuNaissance"
-                value={student.lieuNaissance}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Paris"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Nationalité<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="nationalite"
-                value={student.nationalite}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Marocaine"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Adresse<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="adresse"
-                value={student.adresse}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 12 rue..."
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Pays<span className="text-red-500"> *</span>
-              </span>
-              <input
-                required
-                type="text"
-                name="ville"
-                value={student.ville}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: Brest"
-              />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Code postal</span>
-              <input
-                type="text"
-                name="codePostal"
-                value={student.codePostal}
-                onChange={handleChange}
-                className="grow"
-                placeholder="Ex: 29200"
-              />
-            </label>
-            <label className="flex items-center gap-2">
-              <select
-                required
-                name="sexe"
-                value={student.sexe}
-                onChange={handleChange}
-                className="select select-bordered "
-              >
-                <option disabled value="">
-                  Sélectionnez un sexe <span className="text-red-500"> *</span>
-                </option>
-                <option value="H">Homme</option>
-                <option value="F">Femme</option>
-              </select>
-            </label>
-            <label className="flex flex-row items-center gap-2">
-              <select
-                required
-                className="select max-w-full"
-                name="paysOrigine"
-                value={student.paysOrigine}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Sélectionnez le pays d'origine{" "}
-                  <span className="text-red-500"> *</span>
-                </option>
-                {pays.map((pays, idx) => (
-                  <option key={idx} value={pays.rvLowValue}>
-                    {pays.rvMeaning}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-row items-center gap-2">
-              <select
-                required
-                className="select"
-                name="promotion"
-                value={
-                  student.anneeUniversitaire && student.codeFormation
-                    ? `${student.anneeUniversitaire}-${student.codeFormation}`
-                    : ""
-                }
-                onChange={(e) => {
-                  const selectedPromotion = promotions.find(
-                    (p) =>
-                      `${p.anneeUniversitaire}-${p.codeFormation}` ===
-                      e.target.value
-                  );
-                  if (selectedPromotion) {
-                    setStudent((prevStudent) => ({
-                      ...prevStudent,
-                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
-                      codeFormation: selectedPromotion.codeFormation,
-                    }));
-                  }
-                }}
-              >
-                <option value="" disabled>
-                  Sélectionner une promotion{" "}
-                  <span className="text-red-500"> *</span>
-                </option>
-                {promotions.map((promotion, idx) => (
-                  <option
-                    key={idx}
-                    value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
+                  <select
+                      className="select w-[80%] max-w-full"
+                      name="anneeUniversitaire"
+                      required
+                      value={promotion.anneeUniversitaire}
+                      onChange={handleChange}
                   >
-                    {promotion.nomFormation} - {promotion.anneeUniversitaire}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-row items-center gap-2">
-              <select
-                required
-                className="select"
-                name="universiteOrigine"
-                value={student.universiteOrigine}
-                onChange={handleChange}
+                    <option value="" disabled>
+                      Sélectionnez une année universitaire
+                    </option>
+                    {anneesUniv.map((a, idx) => (
+                        <option key={idx} value={a}>
+                          {a}
+                        </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="flex flex-row items-center gap-2">
+                  <span className="font-semibold w-[15%]">Lieu rentrée</span>
+                  <select
+                      className="select w-[80%] max-w-full"
+                      name="lieuRentree"
+                      value={promotion.lieuRentree}
+                      onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Sélectionnez une salle
+                    </option>
+                    {salles.map((salle) => (
+                        <option key={salle.rvLowValue} value={salle.rvLowValue}>
+                          {salle.rvMeaning}
+                        </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex flex-row items-center gap-2">
+                <span className="font-semibold w-[15%]">
+                  Formation <span className="text-red-500">*</span>
+                </span>
+                  <select
+                      className="select w-[80%] max-w-full"
+                      name="codeFormation"
+                      value={promotion.codeFormation}
+                      onChange={handleChange}
+                      required
+                  >
+                    <option value="" disabled>
+                      Sélectionnez une formation
+                    </option>
+                    {formations.map((formation) => (
+                        <option
+                            key={formation.codeFormation}
+                            value={formation.codeFormation}
+                        >
+                          {formation.nomFormation}
+                        </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex flex-row items-center gap-2">
+                  <span className="font-semibold w-[15%]">Responsable</span>
+                  <select
+                      className="select w-[80%] max-w-full"
+                      name="noEnseignant"
+                      value={promotion.noEnseignant}
+                      onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Sélectionnez un responsable
+                    </option>
+                    {enseignants.map((ens) => (
+                        <option key={ens.id} value={ens.id}>
+                          {ens.nom.toUpperCase()} {ens.prenom}
+                        </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="flex flex-row items-center gap-2">
+                  <span className="font-semibold w-[15%]">Stage</span>
+                  <select
+                      className="select w-[80%] max-w-full"
+                      name="processusStage"
+                      value={promotion.processusStage}
+                      onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Sélectionnez un état
+                    </option>
+                    {processusStage.map((ps) => (
+                        <option key={ps.rvLowValue} value={ps.rvLowValue}>
+                          {ps.rvMeaning}
+                        </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="flex flex-col gap-2 border-2 border-gray-300 rounded-lg  p-2">
+                  <label className="font-semibold text-center">
+                    Date limite de réponse pour la liste
+                  </label>
+                  <div className="flex flex-row items-center gap-2">
+                    <span className="font-semibold w-[15%]">Principale</span>
+                    <input
+                        type="date"
+                        name="dateReponseLp"
+                        value={formatDate(promotion.dateReponseLp)}
+                        onChange={handleChange}
+                        className="input input-bordered w-[80%] max-w-full"
+                    />
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
+                    <span className="font-semibold w-[15%]">Attente</span>
+                    <input
+                        type="date"
+                        name="dateReponseLalp"
+                        value={formatDate(promotion.dateReponseLalp)}
+                        onChange={handleChange}
+                        className="input input-bordered w-[80%] max-w-full"
+                    />
+                  </div>
+                </div>
+                <label className="flex flex-row items-center gap-2">
+                  <span className="font-semibold w-[15%]">Commentaire</span>
+                  <textarea
+                      name="commentaire"
+                      value={promotion.commentaire}
+                      onChange={handleChange}
+                      className="textarea textarea-bordered w-[80%] max-w-full"
+                      placeholder="Ajoutez un commentaire"
+                      maxLength={255}
+                  />
+                </label>
+              </div>
+            </form>
+            {/* Affichage des erreurs */}
+            {error && <div className="text-red-500 text-sm mb-4 mt-2">{error}</div>}
+            <div className="modal-action">
+              <button className="btn" onClick={handleClose}>Annuler</button>
+              <button
+                  className="btn btn-neutral"
+                  onClick={handleSubmit}
+                  disabled={Object.values(errors).some((error) => error !== null)}
               >
-                <option value="" disabled>
-                  Sélectionnez l'université d'origine{" "}
-                  <span className="text-red-500"> *</span>
-                </option>
-                {universite.map((univ, idx) => (
-                  <option key={idx} value={univ.rvLowValue}>
-                    {univ.rvMeaning}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-row items-center gap-2">
-              <select
-                required
-                name="groupeAnglais"
-                value={student.groupeAnglais}
-                onChange={handleChange}
-                className="select select-bordered"
-              >
-                <option value={-1} disabled>
-                  Sélectionnez un groupe d'anglais
-                </option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-            </label>
-            <label className="flex flex-row items-center gap-2">
-              <select
-                name="groupeTp"
-                value={student.groupeTp}
-                onChange={handleChange}
-                className="select select-bordered"
-              >
-                <option value={-1} disabled>
-                  Sélectionnez un groupe de TP
-                </option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-            </label>
+                Ajouter
+              </button>
+            </div>
           </div>
-        </form>
-        <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button className="btn" onClick={resetStudent}>
-              Annuler
-            </button>
-            <button
-              className="btn btn-neutral hover:cursor-pointer"
-              onClick={handleSubmit}
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
-          </form>
         </div>
-      </div>
-    </div>
+      </>
   );
 };
 
-export default AddEtudiant;
+export default AddPromotion;
