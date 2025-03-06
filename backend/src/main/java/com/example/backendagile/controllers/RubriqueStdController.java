@@ -58,22 +58,32 @@ public class RubriqueStdController {
      * Mettre à jour une rubrique standard 
      */
     @PutMapping("/{id}")
-    public ResponseEntity<RubriqueStdDTO> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
+    public ResponseEntity<String> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
         Optional<Rubrique> existingRubrique = rubriqueStdService.findById(id);
 
         if (existingRubrique.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Aucune rubrique trouvée avec cet ID.");
         }
 
-        // Mise à jour de la désignation
-        Rubrique updatedRubrique = rubriqueStdService.updateStandardRubrique(id, rubriqueDto.getDesignation());
+        try{
+            Optional<Rubrique> existingRubriqueWithSameDesignation = rubriqueStdService.findByDesignationAndDiffrentID(id,rubriqueDto.getDesignation().trim());
+            if(existingRubriqueWithSameDesignation.isPresent()) {
 
-        // Conversion de l'entité mise à jour en DTO
-        RubriqueStdDTO responseDto = new RubriqueStdDTO();
-        responseDto.setDesignation(updatedRubrique.getDesignation());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
+            }
+            // Mise à jour de la désignation
+            Rubrique updatedRubrique = rubriqueStdService.updateStandardRubrique(id, rubriqueDto.getDesignation());
 
-        return ResponseEntity.ok(responseDto);
-    }
+            // Conversion de l'entité mise à jour en DTO
+            RubriqueStdDTO responseDto = new RubriqueStdDTO();
+            responseDto.setDesignation(updatedRubrique.getDesignation());
+
+            return ResponseEntity.ok("La rubrique a été mise à jour avec succès.");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+         }
     
 
     /**

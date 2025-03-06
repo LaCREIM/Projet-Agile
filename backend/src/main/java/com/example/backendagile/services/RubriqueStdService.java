@@ -58,6 +58,7 @@ public class RubriqueStdService {
             throw new IllegalArgumentException("Aucune rubrique trouvée avec cet ID.");
         }
 
+
         Rubrique rubrique = existingRubriqueOpt.get();
         rubrique.setDesignation(newDesignation);
 
@@ -68,6 +69,9 @@ public class RubriqueStdService {
         return rubriqueRepository.findRubriqueByDesignation(designation).stream().findFirst();
     }
 
+    public Optional<Rubrique> findByDesignationAndDiffrentID(Long id , String des){
+        return rubriqueRepository.findRubriqueByDesignationAndDiffrentID(id,des).stream().findFirst();
+    }
     /**
      * Supprimer une rubrique standard par ID
      */

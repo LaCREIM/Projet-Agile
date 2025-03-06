@@ -4,12 +4,14 @@ import com.example.backendagile.dto.QuestionPrsDTO;
 import com.example.backendagile.dto.RubriquePrsDTO;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.RubriquePrsService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rubriquesPrs")
@@ -35,9 +37,18 @@ public class RubriquePrsController {
 
     // ✅ Ajouter une nouvelle rubrique
     @PostMapping
-    public ResponseEntity<RubriquePrsDTO> createRubrique(@RequestBody RubriquePrsDTO dto) {
-        return ResponseEntity.ok(rubriqueService.createRubrique(dto));
-    }
+    public ResponseEntity<String> createRubrique(@RequestBody RubriquePrsDTO dto) {
+        try {
+            Optional<Rubrique> existingRubrique = rubriqueService.findByDesignation(dto.getDesignation().trim());
+            if(existingRubrique.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
+            }
+            rubriqueService.createRubrique(dto);
+            return ResponseEntity.ok("La rubrique a été créée avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+        }
 
     // ✅ Mettre à jour une rubrique existante
     @PutMapping("/{id}")
