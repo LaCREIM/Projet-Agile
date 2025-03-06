@@ -14,9 +14,10 @@ import { toast } from "react-toastify";
 
 interface AddStudentProps {
   promotions: Promotion[];
+  onClose: () => void;
 }
 
-const AddEtudiant = ({ promotions }: AddStudentProps) => {
+const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
   const dispatch = useAppDispatch();
   const [errors, setErrors] = useState({
     dateError: null as string | null,
@@ -27,6 +28,8 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
     emailError: null as string | null,
     emailUboError: null as string | null,
   });
+  const [error, setError] = useState<string | null>(null);
+  
 
 
   const [student, setStudent] = useState<Etudiant>({
@@ -160,6 +163,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
   };
 
   const handleSubmit = async () => {
+
     if (canSave) {
       const cleanedStudent = {
         ...student,
@@ -168,13 +172,12 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
       };
       const res = await dispatch(postEtudiantAsync(cleanedStudent));
       if (res?.type === "etudiants/postEtudiantAsync/rejected") {
-        console.log("hola");
         toast.error(res.payload as string);
+        setError(res.payload as string)
       } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
         toast.success(res.payload as string);
+        resetStudent();
       }
-      console.log(res);
-      resetStudent();
       dispatch(getEtudiantAsync({ page: 1, size: 5 }));
     }
   };
@@ -226,6 +229,8 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
       emailError: null as string | null,
       emailUboError: null as string | null,
     });
+    setError(null);
+    onClose();
   };
 
   
@@ -259,6 +264,7 @@ const AddEtudiant = ({ promotions }: AddStudentProps) => {
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un étudiant</h3>
         <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">

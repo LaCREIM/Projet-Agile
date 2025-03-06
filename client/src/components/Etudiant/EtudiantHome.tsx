@@ -107,6 +107,11 @@ const StudentHome = ({
     if (dialog) dialog.showModal();
   };
 
+  const closeModal = (id: string) => {
+    const dialog = document.getElementById(id) as HTMLDialogElement;
+    if (dialog) dialog.close();
+  };
+
   const handleClick = (etudiant: Etudiant, index: number) => {
     setModal({ etudiant: null, index: -1 });
     setModal({ etudiant, index });
@@ -371,6 +376,9 @@ const StudentHome = ({
                       className="modal"
                     >
                       <UpdateEtudiant
+                        onClose={() =>
+                          closeModal(`updateStudent-${etudiant.noEtudiant}`)
+                        }
                         promotions={promotions}
                         studentData={etudiant}
                         currentpage={currentPage}
@@ -422,7 +430,10 @@ const StudentHome = ({
       </motion.div>
 
       <dialog id="addStudent" className="modal">
-        <AddEtudiant promotions={promotions} />
+        <AddEtudiant
+          promotions={promotions}
+          onClose={() => closeModal("addStudent")}
+        />
       </dialog>
     </>
   );

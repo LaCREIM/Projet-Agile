@@ -11,21 +11,24 @@ import { toast } from "react-toastify";
 interface UpdateQuestionProps {
   questionData: Question;
   qualificatifs: Qualificatif[];
+  onClose: () => void; 
 }
 
 const UpdateQuestion = ({
   questionData,
   qualificatifs,
+  onClose,
 }: UpdateQuestionProps) => {
   const dispatch = useAppDispatch();
   const [question, setQuestion] = useState<Question>({ ...questionData });
+  const [error, setError] = useState<string | null>(null); 
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setQuestion((prev) => ({ ...prev, [name]: value }));
-    console.log(question);
+    setError(null); 
   };
 
   const handleSelectQualificatif = (
@@ -38,35 +41,44 @@ const UpdateQuestion = ({
     if (selectedQualificatif) {
       setQuestion((prev) => ({
         ...prev,
-        idQualificatif: selectedQualificatif, // On stocke l'objet complet
+        idQualificatif: selectedQualificatif, 
       }));
     }
   };
 
   const canSave =
-    question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
+    question.intitule.trim() !== "" && question.idQualificatif?.id !== -1;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    if (canSave) {
+    e.preventDefault();
+
+    try {
       const res = await dispatch(
         updateQuestionAsync({ id: question.id, data: question })
       );
-      console.log(res);
-      
+
       if (res?.type === "questions/update/rejected") {
+        setError(res.payload as string);
         toast.error(res.payload as string);
       } else if (res?.type === "questions/update/fulfilled") {
-        toast.success(res.payload as string);
+        toast.success(res.payload as string); // Afficher une notification de succès
+        onClose(); // Fermer le modal uniquement si la mise à jour réussit
       }
-      dispatch(fetchQuestionsAsync());
+      dispatch(fetchQuestionsAsync()); // Rafraîchir la liste des questions
+    } catch (error) {
+      setError("Une erreur inattendue s'est produite.");
+      toast.error("Une erreur inattendue s'est produite.");
     }
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
+    <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier la question</h3>
-        <form className="flex flex-col gap-5">
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+          {/* Affichage des erreurs */}
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
           <label className="input input-bordered w-[85%] flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
             <input
@@ -100,17 +112,22 @@ const UpdateQuestion = ({
 
           {/* Boutons d'action */}
           <div className="modal-action">
-            <form method="dialog" className="flex flex-row gap-5">
-              <button className="btn">Annuler</button>
-
-              <button
-                onClick={handleSubmit}
-                disabled={!canSave}
-                className="btn btn-neutral"
-              >
-                Mettre à jour
-              </button>
-            </form>
+            <button
+              type="button"
+              onClick={() => {
+                onClose(), setError(null);
+              }}
+              className="btn"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={!canSave}
+              className="btn btn-neutral"
+            >
+              Mettre à jour
+            </button>
           </div>
         </form>
       </div>

@@ -17,33 +17,35 @@ interface UpdateStudentProps {
   studentData: Etudiant;
   promotions: Promotion[];
   currentpage: number;
+  onClose: () => void;
 }
 
 const UpdateEtudiant = ({
   studentData,
   promotions,
   currentpage,
+  onClose,
 }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
-  
   const [student, setStudent] = useState<Etudiant>(studentData);
   const pays = useAppSelector(getPays);
   const universite = useAppSelector(getUniversite);
   const [canSave, setCanSave] = useState(true);
   const [errors, setErrors] = useState({
-      dateError: null as string | null,
-      telephoneError: null as string | null,
-      mobileError: null as string | null,
-      groupeTpError: null as string | null,
-      groupeAnglaisError: null as string | null,
-      emailError: null as string | null,
-      emailUboError: null as string | null,
-    });
-
+    dateError: null as string | null,
+    telephoneError: null as string | null,
+    mobileError: null as string | null,
+    groupeTpError: null as string | null,
+    groupeAnglaisError: null as string | null,
+    emailError: null as string | null,
+    emailUboError: null as string | null,
+  });
+  
+  const [error, setError] = useState<string | null>(null);
   const formatPhoneNumber = (value: string): string => {
     const cleaned = value.replace(/\s/g, "");
     const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
-    return formatted.trim(); 
+    return formatted.trim();
   };
 
   const handleChange = (
@@ -99,7 +101,7 @@ const UpdateEtudiant = ({
           [`${name}Error`]: null,
         }));
       }
-      return; 
+      return;
     }
 
     if (name === "dateNaissance") {
@@ -133,8 +135,8 @@ const UpdateEtudiant = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(e);
-    
+    e.preventDefault();
+
     if (canSave) {
       const cleanedStudent = {
         ...student,
@@ -142,13 +144,14 @@ const UpdateEtudiant = ({
         mobile: student.mobile.replace(/\s/g, ""),
       };
       const res = await dispatch(updateEtudiantAsync(cleanedStudent));
-      console.log(res);
-      
+
       if (res?.type === "etudiants/updateEtudiantAsync/rejected") {
         toast.error(res?.payload as string);
+        setError(res.payload as string);
       } else if (res?.type === "etudiants/updateEtudiantAsync/fulfilled") {
         toast.success(res?.payload as string);
         dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
+        onClose();
       }
     }
   };
@@ -201,6 +204,7 @@ const UpdateEtudiant = ({
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier un étudiant</h3>
         <form onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
