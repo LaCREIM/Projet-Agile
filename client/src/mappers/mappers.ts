@@ -53,3 +53,12 @@ export const etatEvaluationMapper = (etat: string) => {
 
     return mapping[etat] || "Inconnu";
 }
+
+export const typeQuestionMapper = (type: string) => {
+    const mapping: Record<string, string> = {
+        QUS: "Standard",
+        QUP: "Personnelle",
+    };
+
+    return mapping[type] || "Inconnu";
+}

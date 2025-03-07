@@ -134,7 +134,7 @@ const RubriqueHome = () => {
                 rubriques.map((rubrique: Rubrique, index: number) => (
                   <tr
                     key={rubrique.id}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                    className=" hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{rubrique.designation}</td>
                     <td className="flex gap-3 items-center">
