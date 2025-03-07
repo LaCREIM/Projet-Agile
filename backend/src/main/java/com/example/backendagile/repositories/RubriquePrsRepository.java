@@ -31,6 +31,7 @@ public interface RubriquePrsRepository extends JpaRepository<Rubrique, Long> {
     @Query("select r from Rubrique r where r.type = 'RBS' or r.noEnseignant.id = :noEnseignant")
     List<Rubrique> findRubriqueStdAndPerso(Long noEnseignant);
 
+    @Query("SELECT r FROM Rubrique r WHERE UPPER(r.designation) = UPPER(:designation)")
     List<Rubrique> findRubriqueByDesignation(String designation);
 
 

@@ -12,6 +12,7 @@ import java.util.List;
 public interface RubriqueStdRepository extends JpaRepository<Rubrique, Long> {
     List<Rubrique> findByType(String type);
 
+    @Query("SELECT r FROM Rubrique r WHERE UPPER(r.designation) = UPPER(:designation)")
     List<Rubrique> findRubriqueByDesignation(String designation);
 
     @Query("SELECT r FROM Rubrique r WHERE LOWER(r.designation) LIKE LOWER(CONCAT('%', :keyword, '%'))")
