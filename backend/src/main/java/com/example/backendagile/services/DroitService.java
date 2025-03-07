@@ -43,7 +43,7 @@ public class DroitService {
 
 
     public Droit updateDroit(Long idEvaluation , Long idEnseignant, DroitDTO droitDTO) {
-        DroitId id = new DroitId(idEvaluation, idEnseignant.intValue());
+        DroitId id = new DroitId(idEvaluation, idEnseignant);
         return droitRepository.findById(id)
                 .map(existingDroit -> {
                     Droit updatedDroit = droitMapper.toDroit(droitDTO);
@@ -56,7 +56,7 @@ public class DroitService {
 
     public void deleteDroit(Long idEvaluation, Long idEnseignant) {
 
-        DroitId id = new DroitId(idEvaluation, idEnseignant.intValue());
+        DroitId id = new DroitId(idEvaluation, idEnseignant);
 
         if (!droitRepository.existsById(id)) {
             throw new EntityNotFoundException("Droit non trouvé avec l'ID: " + id);
