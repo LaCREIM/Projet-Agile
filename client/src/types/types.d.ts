@@ -1,3 +1,4 @@
+import { anneesUniv } from './../features/PromotionSlice';
 /* tslint:disable */
 /* eslint-disable */
 
@@ -163,6 +164,20 @@ export interface Evaluation {
     elementConstitutif: ElementConstitutif;
     promotion: Promotion;
     noEvaluation: number;
+    designation: string;
+    etat: string;
+    periode: string;
+    debutReponse: Date | null;
+    finReponse: Date | null;
+}
+
+export interface EvaluationDTO {
+    idEvaluation: number;
+    noEnseignant: number;
+    elementConstitutif: ElementConstitutif;
+    anneeUniversitaire: string;
+    codeFormation: string;
+    nomFormation: string;
     designation: string;
     etat: string;
     periode: string;

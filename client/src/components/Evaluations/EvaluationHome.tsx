@@ -7,10 +7,10 @@ import {
   fetchEvaluationAsync,
   // getQuestionPersoAsync,
 } from "../../features/EvaluationSlice";
-import { Enseignant, Evaluation, Promotion } from "../../types/types";
+import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
 import { ToastContainer } from "react-toastify";
 import { RootState } from "../../api/store";
-import UpdateEvaluation from "./UpdateEvaluation";
+// import UpdateEvaluation from "./UpdateEvaluation";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import {
   getAllEnseignant,
@@ -20,6 +20,7 @@ import {
   getPromotionAsync,
   getPromotions,
 } from "../../features/PromotionSlice";
+import { etatEvaluationMapper } from "../../mappers/mappers";
 
 const EvaluationHome = () => {
   document.title = "UBO | evaluations";
@@ -77,7 +78,7 @@ const EvaluationHome = () => {
       <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1>Liste des evaluations</h1>
-        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
+        <div className="flex flex-row items-center justify-end gap-5 w-[90%] px-14">
           <div className="tooltip" data-tip="Ajouter une évaluation">
             <button
               className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
@@ -88,7 +89,7 @@ const EvaluationHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[60%]">
+        <div className="overflow-y-auto w-[90%]">
           <table className="table table-zebra">
             <thead>
               <tr>
@@ -112,16 +113,16 @@ const EvaluationHome = () => {
                 </tr>
               ) : (
                 paginatedEvaluations.map(
-                  (evaluation: Evaluation, index: number) => (
+                  (evaluation: EvaluationDTO, index: number) => (
                     <tr
-                      key={evaluation.id}
+                      key={index}
                       className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                     >
                       <td className="px-4 py-2">
-                        {evaluation.promotion.anneeUniversitaire || "N/A"}
+                        {evaluation.anneeUniversitaire || "N/A"}
                       </td>
                       <td className="px-4 py-2">
-                        {evaluation.promotion.nomFormation || "N/A"}
+                        {evaluation.nomFormation || "N/A"}
                       </td>
                       <td className="px-4 py-2">
                         {evaluation.designation || "N/A"}
@@ -129,7 +130,7 @@ const EvaluationHome = () => {
                       <td className="px-4 py-2">
                         {evaluation?.periode || "N/A"}
                       </td>
-                      <td className="px-4 py-2">{evaluation?.etat || "N/A"}</td>
+                      <td className="px-4 py-2">{etatEvaluationMapper( evaluation?.etat)}</td>
                       <td className="flex gap-3 justify-center items-center">
                         <FontAwesomeIcon
                           icon={faPenToSquare}
@@ -147,7 +148,7 @@ const EvaluationHome = () => {
                       </td>
 
                       {/* Modal pour la mise à jour de la question */}
-                      <dialog
+                      {/* <dialog
                         id={`updateEvaluation-${index}`}
                         className="modal"
                       >
@@ -159,7 +160,7 @@ const EvaluationHome = () => {
                           promotions={promotions}
                           enseignants={enseignants}
                         />
-                      </dialog>
+                      </dialog> */}
 
                       {/* Modal pour la suppression de la question */}
                       <dialog id={`delete-${index}`} className="modal">
