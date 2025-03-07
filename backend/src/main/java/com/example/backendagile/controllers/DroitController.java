@@ -32,15 +32,17 @@ public class DroitController {
     @PostMapping
     public ResponseEntity<String> createDroit(@RequestBody DroitDTO droitDTO) {
         try{
-            Optional<Droit> existDroit = droitService.findById(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant().intValue()));
+            Optional<Droit> existDroit = droitService.findById(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant()));
 
             if(existDroit.isPresent()){
                 return ResponseEntity.badRequest().body("Droit déjà existant");
             }
             Droit createdDroit = droitService.createDroit(droitDTO);
+            System.out.println("Droit créé : "+createdDroit);
             return ResponseEntity.ok("Droit créé avec succès");
 
         }catch (Exception e) {
+            e.printStackTrace();  // Logs the error
             return ResponseEntity.badRequest().build();
         }
 
