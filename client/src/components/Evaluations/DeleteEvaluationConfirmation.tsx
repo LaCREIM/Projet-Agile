@@ -6,7 +6,6 @@ import { deleteEvaluationAsync, fetchEvaluationAsync } from "../../features/Eval
 
 interface DeleteProps {
   evaluation: EvaluationDTO;
-  currentPage: number;
 }
 
 const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
@@ -19,7 +18,7 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
       if (response?.type === "evaluations/delete/rejected") {
         toast.error(response.payload as string);
       } else if (response?.type === "evaluations/delete/fulfilled") {
-        toast.success("L'évaluation a été supprimée avec succès.");
+        toast.success(response.payload as string);
         dispatch(fetchEvaluationAsync());
       }
     } catch (error) {
@@ -32,7 +31,8 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
       <div className="modal-box">
         <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
         <p className="py-4">
-          Êtes-vous sûr de vouloir supprimer cette évaluation?
+          Êtes-vous sûr de vouloir supprimer l'évaluation{" "}
+          <b>{evaluation.designation}</b>?
         </p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">

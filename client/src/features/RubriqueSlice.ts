@@ -76,7 +76,6 @@ export const getQuestionsStandardAsync = createAsyncThunk<RubriqueQuestion[], nu
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/rubrique-questions/standard/${id}`);
-      console.log(response);
       if(response.data.length > 0) return response.data;
       return []
     } catch (error: any) {
@@ -121,12 +120,8 @@ export const updateRubriqueQuestionsAsync = createAsyncThunk<
 >(
   "rubriques-questions/update",
   async (dataTable, { rejectWithValue }) => {
-    try {
-      console.log("from slice",dataTable);
-      
-      const response = await axiosInstance.post(`/rubrique-questions/standard/save-update`, dataTable);
-      console.log(response);
-      
+    try {      
+      const response = await axiosInstance.post(`/rubrique-questions/standard/save-update`, dataTable);      
       return response.data;
     } catch (error: any) {  
       return rejectWithValue(error.response?.data || "Erreur lors de la mise à jour de la rubrique");
@@ -155,8 +150,7 @@ export const deleteRubriqueAsync = createAsyncThunk<number, number, { rejectValu
   async (id, { rejectWithValue }) => {
     try {
       const response =await axiosInstance.delete(`/rubriquesStd/${id}`);
-       console.log(response.data);
-       return id;
+       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la suppression de la rubrique");
     }

@@ -4,9 +4,8 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, searchRubriquesAsync, setQuestions } from "../../features/RubriqueSlice";
+import { getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, RubriqueQuestion, searchRubriquesAsync, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
-import { toast, ToastContainer } from "react-toastify";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
 import { RootState } from "../../api/store";
@@ -75,26 +74,6 @@ const RubriqueHome = () => {
       setQuestionPass(questions.length > 0 ? questions : []);
     }
   }, [questions, modal.rubrique]);
-
-
-  const handleDelete = async (rubrique: Rubrique, e : React.MouseEvent) => {
-    console.log(e);
-    try {
-      const response = await dispatch(deleteRubriqueAsync(rubrique.id));
-
-      if (response?.type == "rubriques/delete/rejected") {
-        toast.error(
-          "Cette rubrique est déjà utilisée et ne peut pas être supprimée."
-        );
-      } else if (response?.type == "rubriques/delete/fulfilled") {
-        toast.success("Rubrique supprimée avec succès.");
-        await dispatch(getRubriquesAsync());
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
-  };
 
   return (
     <>
@@ -168,6 +147,7 @@ const RubriqueHome = () => {
                           rubrique={modal.rubrique}
                           questions={questionPass}
                           allQuestions={allQuestions}
+                          onClose={() => closeModal(`inspect-${index}`)}
                         />
                       )}
                     </dialog>
