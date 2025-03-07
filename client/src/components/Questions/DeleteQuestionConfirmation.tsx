@@ -34,7 +34,8 @@ const DeleteQuestionConfirmation = ({ question }: DeleteProps) => {
       <div className="modal-box">
         <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
         <p className="py-4">
-          Êtes-vous sûr de vouloir supprimer cette rubrique?
+          Êtes-vous sûr de vouloir supprimer la question :{" "}
+          <b> {question.intitule}</b>?
         </p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">

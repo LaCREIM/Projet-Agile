@@ -37,7 +37,10 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("hhh");
+    
     const res = await dispatch(createRubriqueAsync(rubrique));
+    console.log(res);
 
     if (res?.type === "rubriques/create/rejected") {
       setError(res.payload as string);
@@ -47,7 +50,7 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
       dispatch(getRubriquesAsync());
     }
   };
-  
+
   const handleClose = () => {
     setRubrique({
       id: 0,
@@ -64,13 +67,13 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const canSave = rubrique.designation;
 
   return (
-    <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
-      <div className="modal-box w-[50em] max-w-5xl">
+    <div className="flex justify-center items-center w-full h-screen">
+      <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une Rubrique</h3>
 
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center w-full gap-2">
               <span className="font-semibold">Désignation</span>
               <input
                 required
@@ -82,18 +85,22 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
                 placeholder="Nom de la rubrique"
               />
             </label>
+          {error && <AlertError error={error} />}
+          </div>
+
+          <div className="modal-action">
+            <button className="btn" type="button" onClick={() => handleClose()}>
+              Annuler
+            </button>
+            <button
+              className="btn btn-neutral"
+              type="submit"
+              disabled={!canSave}
+            >
+              Ajouter
+            </button>
           </div>
         </form>
-        {error && <AlertError error={error} />}
-
-        <div className="modal-action">
-          <button className="btn" type="button" onClick={() => handleClose()}>
-            Annuler
-          </button>
-          <button className="btn btn-neutral" type="submit" disabled={!canSave}>
-            Ajouter
-          </button>
-        </div>
       </div>
     </div>
   );

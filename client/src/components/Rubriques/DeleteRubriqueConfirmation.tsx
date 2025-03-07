@@ -17,7 +17,6 @@ const DeleteRubriqueConfirmation = ({
       console.log(e);
       try {
         const response = await dispatch(deleteRubriqueAsync(rubrique.id));
-  
         if (response?.type == "rubriques/delete/rejected") {
           toast.error(
             response.payload as string
@@ -35,7 +34,10 @@ const DeleteRubriqueConfirmation = ({
     <>
       <div className="modal-box">
         <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
-        <p className="py-4">Êtes-vous sûr de vouloir supprimer cette rubrique?</p>
+        <p className="py-4 text-base">
+          Êtes-vous sûr de vouloir supprimer la rubrique :{" "}
+          <b> {rubrique.designation}</b>?
+        </p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">
             <button className="btn btn-error" onClick={handleDelete}>
