@@ -25,7 +25,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
 import { FaSearch } from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
-
+import { universiteMapper } from "../../mappers/mappers.ts";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -158,7 +158,6 @@ const StudentHome = ({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // dispatch(searchEtudiantsAsync(e.target.value));
     setSearch(e.target.value.toLowerCase().trim());
   };
 
@@ -329,7 +328,6 @@ const StudentHome = ({
                 filteredEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr
                     key={index}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
@@ -337,38 +335,59 @@ const StudentHome = ({
                       {etudiant.nationalite || "Française"}
                     </td>
                     <td className="px-4 py-2">{etudiant.email}</td>
-                    <td className="px-4 py-2">{etudiant.codeFormation}</td>
-                    <td className="px-4 py-2">{etudiant.universiteOrigine}</td>
+                    <td className="px-4 py-2">
+                      <div
+                        className="tooltip"
+                        data-tip={`${etudiant.codeFormation} - ${etudiant.anneeUniversitaire}`}
+                      >
+                        {etudiant.codeFormation}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div
+                        className="tooltip"
+                        data-tip={universiteMapper(etudiant.universiteOrigine)}
+                      >
+                        {etudiant.universiteOrigine}
+                      </div>
+                    </td>
                     <td
                       className="flex gap-3 justify-center items-center"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleClick(etudiant, index);
-                          openModal(`inspect-${etudiant.noEtudiant}`);
-                        }}
-                      />
-                      {role === "ADM" && (
+                      <div className="tooltip" data-tip="Consulter">
                         <FontAwesomeIcon
-                          icon={faPenToSquare}
+                          icon={faEye}
                           className="text-black text-base cursor-pointer"
                           onClick={() => {
-                            handleClickUpdate(etudiant, index);
-                            openModal(`updateStudent-${etudiant.noEtudiant}`);
+                            handleClick(etudiant, index);
+                            openModal(`inspect-${etudiant.noEtudiant}`);
                           }}
                         />
+                      </div>
+
+                      {role === "ADM" && (
+                        <div className="tooltip" data-tip="Modifer">
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() => {
+                              handleClickUpdate(etudiant, index);
+                              openModal(`updateStudent-${etudiant.noEtudiant}`);
+                            }}
+                          />
+                        </div>
                       )}
                       {role === "ADM" && (
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() =>
-                            openModal(`delete-${etudiant.noEtudiant}`)
-                          }
-                        />
+                        <div className="tooltip" data-tip="Supprimer">
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() =>
+                              openModal(`delete-${etudiant.noEtudiant}`)
+                            }
+                          />
+                        </div>
                       )}
                     </td>
 
