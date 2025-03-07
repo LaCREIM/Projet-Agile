@@ -117,7 +117,7 @@ const RubriqueHome = () => {
             <thead>
               <tr>
                 <th>Designantion</th>
-                <th>Actions</th>
+                <th className="flex justify-end">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -137,7 +137,7 @@ const RubriqueHome = () => {
                     className=" hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">{rubrique.designation}</td>
-                    <td className="flex gap-3 items-center">
+                    <td className="flex gap-3 items-center flex justify-end">
                       <FontAwesomeIcon
                         icon={faEye}
                         className="text-black text-base cursor-pointer"

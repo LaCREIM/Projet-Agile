@@ -2,9 +2,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 import { Question } from "../types/types";
+import { RootState } from "../api/store"; 
 
 interface QuestionState {
   questions: Question[];
+  questionsPerso: Question[]; // Ajout des questions perso
   totalPages: number;
   loading: boolean;
   error: string | null;
@@ -12,6 +14,7 @@ interface QuestionState {
 
 const initialState: QuestionState = {
   questions: [],
+  questionsPerso: [], // Initialisation
   totalPages: 0,  // Ajout du total de pages
   loading: false,
   error: null,
@@ -52,26 +55,24 @@ export const getQuestionAsync = createAsyncThunk<
 );
 
 export const getQuestionPersoAsync = createAsyncThunk<
-    { content: Question[]; totalPages: number },  
-    { idEnseignant: number, page: number; size: number },
-    { rejectValue: string }
+  { content: Question[]; totalPages: number }, 
+  { idEnseignant: number; page: number; size: number },
+  { rejectValue: string }
 >(
-    "questions/getQuestionPersoAsync",
-    async ({ idEnseignant, page, size }, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.get<{ content: Question[]; totalPages: number }>(
-                `/questionsPrs/paged?noEnseignant=${1000}&page=${page}&size=${size}`,
-                { params: { page, size } }
-            );
-          console.log(response.data);
-
-            return response.data;
-        } catch (error: any) {
-            console.error("Erreur lors de la récupération des questions:", error);
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions perso.");
-        }
+  "questions/getQuestionPersoAsync",
+  async ({ idEnseignant, page, size }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get<{ content: Question[]; totalPages: number }>(
+        `/questionsPrs/paged`,
+        { params: { noEnseignant: idEnseignant, page, size } }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions perso.");
     }
+  }
 );
+
 
 
 
@@ -250,9 +251,23 @@ const questionSlice = createSlice({
     // **Supprimer une question**
     builder.addCase(deleteQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
+    })
+    builder.addCase(getQuestionPersoAsync.fulfilled, (state, action: PayloadAction<{ content: Question[]; totalPages: number }>) => {
+      state.questionsPerso = action.payload.content;
+    })    
+    builder.addCase(getQuestionPersoAsync.rejected, (state, action) => {
+      state.error = action.payload as string;
     });
   },
 });
 
 export default questionSlice.reducer;
 
+export const selectAllQuestions = (state: RootState, role: string) => {
+  const allQuestions = role === "ENS" 
+    ? [...state.question.questions, ...state.question.questionsPerso] 
+    : state.question.questions;
+
+  return Array.from(new Set(allQuestions.map(q => q.id)))
+              .map(id => allQuestions.find(q => q.id === id));
+};
