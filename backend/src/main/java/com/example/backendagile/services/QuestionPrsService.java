@@ -115,5 +115,7 @@ public class QuestionPrsService {
                 .map(questionMapper::fromQuestion)
                 .collect(Collectors.toList());
     }
-    
+    public Boolean existsQuestionInEvaluation(Long idQuestion) {
+        return questionRepository.existsQuestionInEvaluation(idQuestion);
+    }
 }

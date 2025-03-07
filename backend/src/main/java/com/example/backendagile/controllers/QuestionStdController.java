@@ -106,6 +106,10 @@ public ResponseEntity<Map<String, Object>> searchQuestionsPaged(
     public ResponseEntity<String> updateStandardQuestion(@PathVariable Long id, @RequestBody QuestionStdDTO questionDto) {
         try {
 
+            if(questionStdService.existsQuestionInEvaluation(id)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
+            }
+
             Optional<Question> existingQuestion = questionStdService.findByIntitule(questionDto.getIntitule().trim(), questionDto.getIdQualificatif());
             if(existingQuestion.isPresent()){
                 //Verifier si la nouvelle question est different de l'ancienne

@@ -125,5 +125,9 @@ public class QuestionStdService {
         long total = questionRepository.countSearchQuestions(keyword);
         return (int) Math.ceil((double) total / size);
     }
+
+    public Boolean existsQuestionInEvaluation(Long idQuestion) {
+        return questionRepository.existsQuestionInEvaluation(idQuestion);
+    }
         
 }

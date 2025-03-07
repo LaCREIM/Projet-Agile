@@ -16,6 +16,7 @@ import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
 import { typeQuestionMapper } from "../../mappers/mappers";
 
 const QuestionHome = () => {
+
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector(

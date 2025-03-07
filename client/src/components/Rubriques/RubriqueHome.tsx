@@ -119,6 +119,7 @@ const RubriqueHome = () => {
               <tr>
                 <th>Désignantion</th>
                 <th>Actions</th>
+
               </tr>
             </thead>
             <tbody>
@@ -133,9 +134,11 @@ const RubriqueHome = () => {
                 </tr>
               ) : (
                 rubriques.map((rubrique: Rubrique, index: number) => (
+
                   <tr key={rubrique.id}>
                     <td className="px-4 py-2 ">{rubrique.designation}</td>
                     <td className="flex gap-3 items-center">
+
                       <FontAwesomeIcon
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
