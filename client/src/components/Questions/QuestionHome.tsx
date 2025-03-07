@@ -13,6 +13,7 @@ import { RootState } from "../../api/store";
 import UpdateQuestion from "./UpdateQuestion";
 import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
+import { typeQuestionMapper } from "../../mappers/mappers";
 
 const QuestionHome = () => {
   document.title = "UBO | Questions";
@@ -20,11 +21,9 @@ const QuestionHome = () => {
   const questions = useAppSelector(
     (state: RootState) => state.question.questions
   );
-  
 
-  
   const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 10;
+  const questionsPerPage = 14;
   const totalPages = Math.ceil(questions.length / questionsPerPage);
 
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
@@ -43,7 +42,6 @@ const QuestionHome = () => {
     dispatch(fetchQuestionsAsync());
   }, [dispatch]);
 
-  
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
@@ -54,10 +52,7 @@ const QuestionHome = () => {
     if (dialog) dialog.close();
   };
 
-  
-
   const handleClickUpdate = (index: number) => {
-
     setTimeout(() => {
       const dialog = document.getElementById(
         `updateQuestion-${index}`
@@ -83,7 +78,7 @@ const QuestionHome = () => {
     <>
       <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1>Liste des questions</h1>
+        <h1 className="text-xl">Liste des questions</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
           <div className="tooltip" data-tip="Ajouter une question">
             <button
@@ -95,12 +90,13 @@ const QuestionHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[60%]">
-          <table className="table table-zebra">
+        <div className="overflow-y-auto ">
+          <table className="table table-zebra w-fit">
             <thead>
               <tr>
                 <th>Intitulé</th>
                 <th>Qualificatif</th>
+                <th>Type</th>
                 <th className="text-center">Actions</th>
               </tr>
             </thead>
@@ -118,14 +114,28 @@ const QuestionHome = () => {
                 paginatedQuestions.map((question: Question, index: number) => (
                   <tr
                     key={question.id}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                    className=" transition-all duration-75 "
                   >
-                    <td className="px-4 py-2">{question.intitule || "N/A"}</td>
+                    <td className="px-4 py-2 w-[20%]">
+                      {question.intitule || "N/A"}
+                    </td>
                     <td className="px-4 py-2">
                       {question?.idQualificatif?.maximal +
                         " - " +
                         question?.idQualificatif?.minimal || "N/A"}
                     </td>
+                    <td className="px-4 py-2 ">
+                      {question.type === "QUP" ? (
+                        <div className="badge badge-accent text-white">
+                          {typeQuestionMapper(question.type)}
+                        </div>
+                      ) : (
+                        <div className="badge badge-success text-white">
+                          {typeQuestionMapper(question.type)}
+                        </div>
+                      )}
+                    </td>
+
                     <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
                         icon={faPenToSquare}
