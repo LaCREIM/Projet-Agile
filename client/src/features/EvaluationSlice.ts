@@ -161,7 +161,7 @@ export const deleteEvaluationAsync = createAsyncThunk<
     number,
     { rejectValue: string }
 >(
-    "Evaluations/delete",
+    "evaluations/delete",
     async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete(`/evaluations/${id}`);

@@ -332,7 +332,7 @@ const StudentHome = ({
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
                     <td className="px-4 py-2">
-                      {etudiant.nationalite || "Française"}
+                      {etudiant.nationalite}
                     </td>
                     <td className="px-4 py-2">{etudiant.email}</td>
                     <td className="px-4 py-2">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Question, Rubrique } from "../../types/types";
 import {
   deleteRubriqueQuestionsAsync,
@@ -12,11 +12,13 @@ import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface RubriqueDetailsProps {
   rubrique: Rubrique;
   questions: RubriqueQuestion[];
   allQuestions: Question[];
+  onClose: () => void;
 }
 
 export interface QuestionOrderDetails {
@@ -46,6 +48,7 @@ const DetailsRubrique = ({
   rubrique,
   questions,
   allQuestions,
+  onClose,
 }: RubriqueDetailsProps) => {
   const dispatch = useAppDispatch();
 
@@ -69,6 +72,7 @@ const DetailsRubrique = ({
   const [isEditing, setIsEditing] = useState(false);
   const [rubriqueData, setRubriqueData] = useState({ ...rubrique });
   const [canSave, setCanSave] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [selectedQuestion, setSelectedQuestion] = useState(-1);
 
@@ -101,15 +105,13 @@ const DetailsRubrique = ({
     setNewQuestionsOrder(newFormattedQuestions);
   }, [questions, rubrique.designation]);
 
-   useEffect(() => {
-     setCanSave(rubriqueData?.designation?.trim() !== "");
-     console.log(canSave);
-   }, [rubriqueData]);
+  useEffect(() => {
+    setCanSave(rubriqueData?.designation?.trim() !== "");
+  }, [rubriqueData]);
 
   useEffect(() => {
     setRubriqueData({ ...rubrique });
   }, [rubrique]);
-
 
   useEffect(() => {
     const newQuestionsOrder: RequestQuestionOrderDetails[] = questionsOrder.map(
@@ -135,8 +137,7 @@ const DetailsRubrique = ({
     );
     setUnusedQuestions(unused);
   }, [questions, allQuestions]);
-  
-  
+
   const handleDragEnd = async (event: DragEndEvent) => {
     if (!isEditing) return;
 
@@ -156,12 +157,9 @@ const DetailsRubrique = ({
     });
   };
 
-  
-
-  const handleEdit = async () => {
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (isEditing) {
-      console.log("newQuestionsOrder", newQuestionsOrder);
-
       const response = await dispatch(
         updateRubriqueQuestionsAsync(newQuestionsOrder)
       );
@@ -172,20 +170,27 @@ const DetailsRubrique = ({
           designation: rubriqueData.designation,
         })
       );
+      if (response?.type === "rubriques-questions/update/rejected") {
+        setError(response.payload);
+      }
 
-      dispatch(getRubriquesAsync());
+      if (responseDesignation?.type === "rubriques/update/rejected") {
+        setError(responseDesignation.payload as string);
+      }
 
       if (
-        response?.type === "rubriques-questions/update/fulfilled" ||
-        responseDesignation?.type === "rubriques/update/fulfilled"
+        responseDesignation?.type === "rubriques/update/fulfilled" &&
+        response?.type === "rubriques-questions/update/fulfilled"
       ) {
-        toast.success("Rubrique mise à jour avec succès.");
         setIsEditing(false);
-      } else {
-        console.error("Échec de la mise à jour de la rubrique");
+        onClose();
+        setError(null);
+        toast.success("Rubrique mise à jour avec succès.");
+        dispatch(getRubriquesAsync());
       }
     } else {
       setIsEditing(true);
+      setError(null);
     }
   };
 
@@ -281,11 +286,6 @@ const DetailsRubrique = ({
     }
   };
 
-  
-
-
- 
-
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl space-y-5 hover:cursor-default h-fit">
@@ -316,11 +316,11 @@ const DetailsRubrique = ({
           <div className="flex flex-col gap-3">
             <span className="font-semibold">Questions :</span>
             {isEditing && (
-              <div className="flex flex-row items-center justify-between gap-3">
+              <div className="flex flex-row items-center justify-between gap-5">
                 <select
                   value={selectedQuestion}
                   onChange={(e) => setSelectedQuestion(Number(e.target.value))}
-                  className="select select-bordered"
+                  className="select select-bordered w-full"
                 >
                   <option value={-1}>Sélectionner une question</option>
                   {unusedQuestions.map((q) => (
@@ -335,10 +335,26 @@ const DetailsRubrique = ({
                 >
                   <button
                     disabled={selectedQuestion === -1}
-                    className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+                    className={`disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200 ${
+                      selectedQuestion !== -1 ? "bg-green-500" : ""
+                    }`}
                     onClick={handleAddQuestion}
                   >
-                    +
+                    {/* Icône de vérification (coche) */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -360,31 +376,27 @@ const DetailsRubrique = ({
             <span>Aucune question disponible.</span>
           )}
         </div>
+        {error && <AlertError error={error} />}
 
         <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button
-              type="button"
-              className="btn btn-neutral"
-              onClick={handleEdit}
-              disabled={isEditing === true && !canSave}
-            >
-              {isEditing ? "Enregistrer" : "Modifier"}
-            </button>
-
-            {isEditing && (
-              <button
-                className="btn bg-white"
-                type="button"
-                onClick={() => setIsEditing(false)}
-              >
-                Annuler
-              </button>
-            )}
-            <button className="btn " onClick={() => setIsEditing(false)}>
-              Fermer
-            </button>
-          </form>
+          <button
+            type="button"
+            className="btn btn-neutral"
+            onClick={handleEdit}
+            disabled={isEditing === true && !canSave}
+          >
+            {isEditing ? "Enregistrer" : "Modifier"}
+          </button>
+          <button
+            className="btn "
+            onClick={() => {
+              setIsEditing(false);
+              setError(null);
+              onClose();
+            }}
+          >
+            Fermer
+          </button>
         </div>
       </div>
     </div>
