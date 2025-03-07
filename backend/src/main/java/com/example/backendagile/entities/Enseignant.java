@@ -63,6 +63,13 @@ public class Enseignant {
         this.id = id;
     }
 
+    public void setNoEnseignant(Long id) {
+        this.id = id;
+    }
+    public Long getNoEnseignant() {
+        return id;
+    }
+
     public Enseignant() {
 
     }

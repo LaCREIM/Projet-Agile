@@ -13,7 +13,7 @@ public class DroitId implements java.io.Serializable {
     private Long idEvaluation;
 
     @Column(name = "NO_ENSEIGNANT", nullable = false)
-    private Integer noEnseignant;
+    private Long noEnseignant;
 
     public Long getIdEvaluation() {
         return idEvaluation;
@@ -23,15 +23,15 @@ public class DroitId implements java.io.Serializable {
         this.idEvaluation = idEvaluation;
     }
 
-    public Integer getNoEnseignant() {
+    public Long getNoEnseignant() {
         return noEnseignant;
     }
 
-    public void setNoEnseignant(Integer noEnseignant) {
+    public void setNoEnseignant(Long noEnseignant) {
         this.noEnseignant = noEnseignant;
     }
 
-    public DroitId(Long idEvaluation, Integer noEnseignant) {
+    public DroitId(Long idEvaluation, Long noEnseignant) {
         this.idEvaluation = idEvaluation;
         this.noEnseignant = noEnseignant;
     }

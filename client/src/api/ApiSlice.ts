@@ -1,4 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
+import {API_BASE_URL} from "./baseUrl.ts";
+
 const baseQuery = fetchBaseQuery({
 
      //baseUrl: "https://f620-2a04-cec0-109e-8a43-dc30-8a93-e0a-5544.ngrok-free.app",
@@ -8,5 +10,5 @@ const baseQuery = fetchBaseQuery({
 export const apiSlice = createApi({
     baseQuery: baseQuery,
     endpoints: () => ({}),
-    
+
 });

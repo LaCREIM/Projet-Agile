@@ -51,10 +51,10 @@ public class DroitMapper {
         }
         Droit droit = new Droit();
         Optional<Enseignant> ens = enseignantService.findById(droitDTO.getIdEnseignant());
-        Optional<Evaluation> eval = evaluationService.getEvaluationById(droitDTO.getIdEvaluation());
+        Optional<Evaluation> eval = Optional.ofNullable(evaluationService.getEvaluationByID(droitDTO.getIdEvaluation()));
 
 
-        droit.setId(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant().intValue()));
+        droit.setId(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant()));
         droit.setIdEvaluation(eval.orElse(null));
         droit.setNoEnseignant(ens.orElse(null));
         droit.setConsultation(Character.toUpperCase(droitDTO.getConsultation()));

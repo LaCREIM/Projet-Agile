@@ -3,11 +3,14 @@ package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.DroitDTO;
 import com.example.backendagile.entities.Droit;
+import com.example.backendagile.entities.DroitId;
 import com.example.backendagile.services.DroitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/droits")
@@ -27,25 +30,52 @@ public class DroitController {
 
     // ➕ Créer un droit
     @PostMapping
-    public ResponseEntity<Droit> createDroit(@RequestBody DroitDTO droitDTO) {
-        Droit createdDroit = droitService.createDroit(droitDTO);
-        return ResponseEntity.ok(createdDroit);
+    public ResponseEntity<String> createDroit(@RequestBody DroitDTO droitDTO) {
+        try{
+            Optional<Droit> existDroit = droitService.findById(new DroitId(droitDTO.getIdEvaluation(), droitDTO.getIdEnseignant()));
+
+            if(existDroit.isPresent()){
+                return ResponseEntity.badRequest().body("Droit déjà existant");
+            }
+            Droit createdDroit = droitService.createDroit(droitDTO);
+            System.out.println("Droit créé : "+createdDroit);
+            return ResponseEntity.ok("Droit créé avec succès");
+
+        }catch (Exception e) {
+            e.printStackTrace();  // Logs the error
+            return ResponseEntity.badRequest().build();
+        }
+
+
+
     }
 
     // ✏️ Mettre à jour un droit
     @PutMapping("/{idEvaluation}/{idEnseignant}")
-    public ResponseEntity<Droit> updateDroit(
+    public ResponseEntity<String> updateDroit(
             @PathVariable Long idEvaluation,
             @PathVariable Long idEnseignant,
             @RequestBody DroitDTO droitDTO) {
-        Droit updatedDroit = droitService.updateDroit(idEvaluation, idEnseignant, droitDTO);
-        return ResponseEntity.ok(updatedDroit);
+        try{
+            Droit updatedDroit = droitService.updateDroit(idEvaluation, idEnseignant, droitDTO);
+            return ResponseEntity.ok("Droit mis à jour avec succès");
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     // 🗑️ Supprimer un droit
     @DeleteMapping("/{idEvaluation}/{idEnseignant}")
-    public ResponseEntity<Void> deleteDroit(@PathVariable Long idEvaluation, @PathVariable Long idEnseignant) {
-        droitService.deleteDroit(idEvaluation, idEnseignant);
-        return ResponseEntity.noContent().build();
-    }
+    public ResponseEntity<String> deleteDroit(@PathVariable Long idEvaluation, @PathVariable Long idEnseignant) {
+
+        try {
+            droitService.deleteDroit(idEvaluation, idEnseignant);
+            return ResponseEntity.ok().body("Droit supprimé avec succès");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+        }
 }

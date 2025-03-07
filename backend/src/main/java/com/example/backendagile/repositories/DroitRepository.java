@@ -11,4 +11,7 @@ public interface DroitRepository extends JpaRepository<Droit, DroitId> {
 
     @Query("SELECT d FROM Droit d WHERE d.id.idEvaluation = :idEvaluation")
     List<Droit> findByIdEvaluation(Long idEvaluation);
+
+    @Query("SELECT d FROM Droit d WHERE d.id.idEvaluation = :idEvaluation AND d.id.noEnseignant = :idEnseignant")
+    List<Droit> findByIdEvaluationAndIdEnseignant(Long idEvaluation, Long idEnseignant);
 }

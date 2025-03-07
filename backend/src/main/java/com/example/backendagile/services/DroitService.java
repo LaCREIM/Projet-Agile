@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +37,13 @@ public class DroitService {
 
     public Droit createDroit(DroitDTO droitDTO) {
         Droit droit = droitMapper.toDroit(droitDTO);
-
+        System.out.println("Droit : "+droit);
         return droitRepository.save(droit);
     }
 
 
     public Droit updateDroit(Long idEvaluation , Long idEnseignant, DroitDTO droitDTO) {
-        DroitId id = new DroitId(idEvaluation, idEnseignant.intValue());
+        DroitId id = new DroitId(idEvaluation, idEnseignant);
         return droitRepository.findById(id)
                 .map(existingDroit -> {
                     Droit updatedDroit = droitMapper.toDroit(droitDTO);
@@ -55,12 +56,16 @@ public class DroitService {
 
     public void deleteDroit(Long idEvaluation, Long idEnseignant) {
 
-        DroitId id = new DroitId(idEvaluation, idEnseignant.intValue());
+        DroitId id = new DroitId(idEvaluation, idEnseignant);
 
         if (!droitRepository.existsById(id)) {
             throw new EntityNotFoundException("Droit non trouvé avec l'ID: " + id);
         }
         droitRepository.deleteById(id);
+    }
+
+    public Optional<Droit> findById(DroitId id) {
+        return droitRepository.findByIdEvaluationAndIdEnseignant(id.getIdEvaluation(),id.getNoEnseignant().longValue()).stream().findFirst();
     }
 
 

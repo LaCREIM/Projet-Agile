@@ -25,7 +25,7 @@ const DeleteQualificatifConfirmation = ({
       if ((response?.type as string) === "qualificatifs/delete/rejected") {
         toast.error(response.payload);
       } else if ((response?.type as string) === "qualificatifs/delete/fulfilled") {
-        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 5 }));
+        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
         toast.success(response.payload);
       }
     } catch (error) {

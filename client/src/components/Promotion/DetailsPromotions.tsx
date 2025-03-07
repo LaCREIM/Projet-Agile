@@ -27,7 +27,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
         </div>
 
         <div className="text-base font-medium text-gray-900">
-          <dt>Nom de la formation :</dt>
+          {/* <dt>Nom de la formation :</dt> */}
           <dd className="mt-1 text-gray-500">{promotion.codeFormation} : {promotion.nomFormation}</dd>
         </div>
 
@@ -78,7 +78,7 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
 
 
             <div className="text-base font-medium text-gray-900">
-              <dt>Nom et Prénom :</dt>
+              <dt>Nom :</dt>
               <dd className="mt-1 text-gray-500">
                 {promotion.nom} {promotion.prenom}
               </dd> 

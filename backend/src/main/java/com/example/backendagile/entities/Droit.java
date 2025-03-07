@@ -75,4 +75,14 @@ public class Droit {
         this.duplication = duplication;
     }
 
+    @Override
+    public String toString() {
+        return "Droit{" +
+                "id= {" + id.getIdEvaluation() + " , " + id.getNoEnseignant() + " }" +
+                ", idEvaluation=" + idEvaluation.getId() +
+                ", noEnseignant=" + noEnseignant.getId() +
+                ", consultation=" + consultation +
+                ", duplication=" + duplication +
+                '}';
+    }
 }
