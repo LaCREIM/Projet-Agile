@@ -7,6 +7,7 @@ import {
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface UpdateQuestionProps {
   questionData: Question;
@@ -105,7 +106,7 @@ const UpdateQuestion = ({
               ))}
             </select>
           </label>
-          {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
+          {error && <AlertError error={error} />}
           <div className="modal-action">
             <button
               type="button"

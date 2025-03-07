@@ -166,8 +166,8 @@ export interface Evaluation {
     designation: string;
     etat: string;
     periode: string;
-    debutReponse: Date;
-    finReponse: Date;
+    debutReponse: Date | null;
+    finReponse: Date | null;
 }
 
 export interface Formation {

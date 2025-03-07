@@ -6,6 +6,7 @@ import {
 } from "../../features/RubriqueSlice";
 import { Rubrique, Enseignant } from "../../types/types";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface AddRubriqueProps {
   onClose: () => void;
@@ -83,7 +84,7 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
             </label>
           </div>
         </form>
-        {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
+        {error && <AlertError error={error} />}
 
         <div className="modal-action">
           <button className="btn" type="button" onClick={() => handleClose()}>

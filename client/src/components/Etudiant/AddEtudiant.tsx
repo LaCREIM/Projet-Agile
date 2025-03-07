@@ -29,8 +29,6 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
     emailUboError: null as string | null,
   });
   const [error, setError] = useState<string | null>(null);
-  
-
 
   const [student, setStudent] = useState<Etudiant>({
     noEtudiant: "",
@@ -115,7 +113,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
           [`${name}Error`]: null,
         }));
       }
-      return; 
+      return;
     }
 
     if (name === "dateNaissance") {
@@ -163,7 +161,6 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
   };
 
   const handleSubmit = async () => {
-
     if (canSave) {
       const cleanedStudent = {
         ...student,
@@ -172,7 +169,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
       };
       const res = await dispatch(postEtudiantAsync(cleanedStudent));
       if (res?.type === "etudiants/postEtudiantAsync/rejected") {
-        setError(res.payload as string)
+        setError(res.payload as string);
       } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
         dispatch(getEtudiantAsync({ page: 1, size: 5 }));
         toast.success(res.payload as string);
@@ -231,8 +228,6 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
     setError(null);
     onClose();
   };
-
-  
 
   const canSave =
     student.nom.trim() !== "" &&
