@@ -72,4 +72,8 @@ public class EvaluationService {
     public void deleteEvaluation(Long id) {
         evaluationRepository.deleteById(id);
     }
+
+    public Evaluation getEvaluationByID(Long id){
+        return evaluationRepository.findByIdEvaluation(id);
+    }
 }
