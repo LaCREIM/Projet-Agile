@@ -101,4 +101,8 @@ public class RubriqueStdService {
         long totalItems = rubriqueRepository.count();
         return (int) Math.ceil((double) totalItems / size);
     }
+
+    public Boolean existsRubriqueInEvaluation(Long id) {
+        return rubriqueRepository.existsRubriqueInEvaluation(id);
+    }
 }
