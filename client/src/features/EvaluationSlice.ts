@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Evaluation } from "../types/types";
+import { Evaluation, EvaluationDTO } from "../types/types";
 
 interface EvaluationState {
-    evaluations: Evaluation[];
+    evaluations: EvaluationDTO[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -18,11 +18,11 @@ const initialState: EvaluationState = {
 };
 
 
-export const fetchEvaluationAsync = createAsyncThunk<Evaluation[], void, { rejectValue: string }>(
+export const fetchEvaluationAsync = createAsyncThunk<EvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationAsync",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get("/evaluation");
+            const response = await axiosInstance.get<EvaluationDTO[]>("/evaluations/enseignant/1");
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -75,7 +75,7 @@ export const getEvaluationAsync = createAsyncThunk<
 
 
 
-export const createEvaluationAsync = createAsyncThunk<Evaluation, Evaluation, { rejectValue: string }>(
+export const createEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationDTO, { rejectValue: string }>(
     "Evaluations/createEvaluationAsync",
     async (evaluation, { rejectWithValue }) => {
         try {
@@ -197,8 +197,8 @@ const EvaluationSlice = createSlice({
     extraReducers: (builder) => {
         // **Récupérer toutes les Evaluations (ancienne méthode sans pagination)**
         
-        builder.addCase(fetchEvaluationAsync.fulfilled, (state, action: PayloadAction<Evaluation[]>) => {
-            state.Evaluations = action.payload;
+        builder.addCase(fetchEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO[]>) => {
+            state.evaluations = action.payload;
             state.loading = false;
         });
        
@@ -208,19 +208,19 @@ const EvaluationSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(getEvaluationAsync.fulfilled, (state, action: PayloadAction<{ content: Evaluation[]; totalPages: number }>) => {
-            state.Evaluations = action.payload.content; 
-            state.totalPages = action.payload.totalPages;
-            state.loading = false;
-        });
+        // builder.addCase(getEvaluationAsync.fulfilled, (state, action: PayloadAction<{ content: Evaluation[]; totalPages: number }>) => {
+        //     state.evaluations = action.payload.content; 
+        //     state.totalPages = action.payload.totalPages;
+        //     state.loading = false;
+        // });
         builder.addCase(getEvaluationAsync.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         });
 
         // **Créer une Evaluation**
-        builder.addCase(createEvaluationAsync.fulfilled, (state, action: PayloadAction<Evaluation>) => {
-            state.Evaluations.push(action.payload);
+        builder.addCase(createEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
+            state.evaluations.push(action.payload);
         });
         builder.addCase(createEvaluationAsync.rejected, (state, action) => {
             state.error = action.payload as string;
