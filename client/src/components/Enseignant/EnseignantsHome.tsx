@@ -67,7 +67,7 @@ const EnseignantsHome = () => {
             toast.success("Enseignant supprimé avec succès.");
             dispatch(getEnseignantAsync({ page: currentPage, size: 10 }));
         } else {
-            toast.error("Cet enseignant ne peut pas être supprimé, il est lié à une promotion.");
+            toast.error("Cet enseignant ne peut pas être supprimé, il est responsable à une promotion.");
         }
     
         // Fermer la modal après suppression

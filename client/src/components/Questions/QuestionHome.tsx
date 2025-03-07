@@ -15,6 +15,7 @@ import { fetchQualificatifsAsync } from "../../features/QualificatifSlice";
 import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
 
 const QuestionHome = () => {
+
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector(
