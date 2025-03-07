@@ -25,7 +25,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import { PromotionDetails } from "../../types/types";
 import { FaSearch } from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
-import { role } from "../../App.tsx";
+
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -39,6 +39,7 @@ const StudentHome = ({
   switchStudent,
 }: StudentHomeProps) => {
   document.title = "UBO | Étudiants";
+  const role = localStorage.getItem("role");
   const dispatch = useAppDispatch();
   const etudiants = useAppSelector((state) => state.etudiants.etudiants);
   const totalPages = useAppSelector((state) => state.etudiants.totalPages);
