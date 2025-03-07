@@ -43,3 +43,13 @@ export const universiteMapper = (code: string): string => {
 
     return mapping[code] || "Inconnu";
 };
+
+export const etatEvaluationMapper = (etat: string) => {
+    const mapping: Record<string, string> = {
+        ELA: "En cours d'élaboration",
+        CLO: "Clôturée",
+        DIS: "Mise en disposition",
+    };
+
+    return mapping[etat] || "Inconnu";
+}

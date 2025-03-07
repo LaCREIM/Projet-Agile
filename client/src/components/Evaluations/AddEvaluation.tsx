@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAppDispatch } from "../../hooks/hooks";
 import { createEvaluationAsync } from "../../features/EvaluationSlice";
 import {
-  Evaluation,
+  EvaluationDTO,
   Enseignant,
   ElementConstitutif,
   Promotion,
@@ -29,23 +29,24 @@ const AddEvaluation = ({
   });
   const [error, setError] = useState<string | null>(null);
 
-  const [evaluation, setEvaluation] = useState<Evaluation>({
-    id: 0,
-    noEnseignant: {} as Enseignant,
+  const [evaluation, setEvaluation] = useState<EvaluationDTO>({
+    idEvaluation: 0,
+    noEnseignant: -1,
     elementConstitutif: {} as ElementConstitutif,
-    promotion: {} as Promotion,
-    noEvaluation: 0,
+    anneeUniversitaire: "",
+    codeFormation: "",
+    nomFormation: "",
     designation: "",
     etat: "",
     periode: "",
-    debutReponse: new Date(),
-    finReponse: new Date(),
+    debutReponse: null,
+    finReponse: null,
   });
 
   const validateDates = (debut: Date | null, fin: Date | null) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Ignorer l'heure pour la comparaison
-    if (!debut || !fin) return;
+    if (!debut || !fin) return false;
 
     if (debut < today) {
       setErrors((prevErrors) => ({
@@ -135,16 +136,17 @@ const AddEvaluation = ({
 
   const resetEvaluation = () => {
     setEvaluation({
-      id: 0,
-      noEnseignant: {} as Enseignant,
+      idEvaluation: 0,
+      noEnseignant: -1,
       elementConstitutif: {} as ElementConstitutif,
-      promotion: {} as Promotion,
-      noEvaluation: 0,
+      anneeUniversitaire: "",
+      codeFormation: "",
+      nomFormation: "",
       designation: "",
       etat: "",
       periode: "",
-      debutReponse: new Date(),
-      finReponse: new Date(),
+      debutReponse: null,
+      finReponse: null,
     });
     setErrors({
       designationError: null,
@@ -162,21 +164,20 @@ const AddEvaluation = ({
 
   const canSave =
     evaluation.designation.trim() !== "" &&
-    evaluation.noEnseignant.id !== -1 &&
     evaluation.debutReponse !== null &&
     evaluation.finReponse !== null &&
     errors.debutReponseError === null &&
     errors.finReponseError === null &&
-    evaluation.promotion.codeFormation !== "" &&
-    evaluation.promotion.anneeUniversitaire !== "";
+    evaluation.anneeUniversitaire !== "" &&
+    evaluation.codeFormation !== "";
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une évaluation</h3>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-5">
-            <label className="input input-bordered flex items-center gap-2">
+          <div className="grid grid-cols-1 space-y-4">
+            <label className="input input-bordered col-span-2  w-[93%] flex items-center gap-2">
               <span className="font-semibold">
                 Désignation<span className="text-red-500"> *</span>
               </span>
@@ -194,42 +195,11 @@ const AddEvaluation = ({
             <label className="flex flex-row items-center gap-2">
               <select
                 required
-                className="select"
-                name="noEnseignant"
-                value={evaluation.noEnseignant?.id || ""}
-                onChange={(e) => {
-                  const selectedEnseignant = enseignants.find(
-                    (enseignant) => enseignant.id === parseInt(e.target.value)
-                  );
-                  if (selectedEnseignant) {
-                    setEvaluation((prevEvaluation) => ({
-                      ...prevEvaluation,
-                      noEnseignant: selectedEnseignant,
-                    }));
-                  }
-                }}
-              >
-                <option value="" disabled>
-                  Sélectionnez un enseignant{" "}
-                  <span className="text-red-500"> *</span>
-                </option>
-                {enseignants.map((enseignant, idx) => (
-                  <option key={idx} value={enseignant.id}>
-                    {enseignant.nom} {enseignant.prenom}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex flex-row items-center gap-2">
-              <select
-                required
-                className="select"
+                className="select  w-[93%] "
                 name="promotion"
                 value={
-                  evaluation.promotion.anneeUniversitaire &&
-                  evaluation.promotion.codeFormation
-                    ? `${evaluation.promotion.anneeUniversitaire}-${evaluation.promotion.codeFormation}`
+                  evaluation.anneeUniversitaire && evaluation.codeFormation
+                    ? `${evaluation.anneeUniversitaire}-${evaluation.codeFormation}`
                     : ""
                 }
                 onChange={(e) => {
@@ -241,7 +211,8 @@ const AddEvaluation = ({
                   if (selectedPromotion) {
                     setEvaluation((prevEvaluation) => ({
                       ...prevEvaluation,
-                      promotion: selectedPromotion,
+                      anneeUniversitaire: selectedPromotion.anneeUniversitaire,
+                      codeFormation: selectedPromotion.codeFormation,
                     }));
                   }
                 }}
@@ -261,10 +232,10 @@ const AddEvaluation = ({
               </select>
             </label>
 
-            <div className="flex flex-col col-span-2 gap-3 w-full">
+            <div className="flex flex-col col-span-2 gap-3 w-[93%]">
               <span className="font-semibold">Période de Reponse</span>
-              <div className="grid grid-cols-2 gap-5 w-full">
-                <div className="flex flex-col gap-1">
+              <div className="flex flex-row justify-between ">
+                <div className="flex flex-col gap-1 w-[45%]">
                   <label className="input input-bordered flex items-center gap-2">
                     <span className="font-semibold">
                       Date début<span className="text-red-500"> *</span>
@@ -283,7 +254,7 @@ const AddEvaluation = ({
                     </p>
                   )}
                 </div>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 w-[45%]">
                   <label className="input input-bordered flex items-center gap-2">
                     <span className="font-semibold">
                       Date fin<span className="text-red-500"> *</span>

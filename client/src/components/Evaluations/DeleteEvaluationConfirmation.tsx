@@ -1,11 +1,11 @@
-import { Evaluation } from "../../types/types";
+import { EvaluationDTO } from "../../types/types";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
 
 import { deleteEvaluationAsync, fetchEvaluationAsync } from "../../features/EvaluationSlice";
 
 interface DeleteProps {
-  evaluation: Evaluation;
+  evaluation: EvaluationDTO;
   currentPage: number;
 }
 
@@ -14,7 +14,7 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await dispatch(deleteEvaluationAsync(evaluation.id));
+      const response = await dispatch(deleteEvaluationAsync(evaluation.idEvaluation));
 
       if (response?.type === "evaluations/delete/rejected") {
         toast.error(response.payload as string);
@@ -32,7 +32,7 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
       <div className="modal-box">
         <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
         <p className="py-4">
-          Êtes-vous sûr de vouloir supprimer cette rubrique?
+          Êtes-vous sûr de vouloir supprimer cette évaluation?
         </p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">
