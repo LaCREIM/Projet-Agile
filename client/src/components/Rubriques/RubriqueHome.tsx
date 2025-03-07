@@ -11,6 +11,7 @@ import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
 import { RootState } from "../../api/store";
 import { fetchQuestionsAsync } from "../../features/QuestionSlice";
+import DeleteRubriqueConfirmation from "./DeleteRubriqueConfirmation";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
@@ -27,7 +28,7 @@ const RubriqueHome = () => {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10; // Nombre d'éléments par page
+  const pageSize = 10; 
   
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -55,6 +56,11 @@ const RubriqueHome = () => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
   };
+
+   const closeModal = (id: string) => {
+     const dialog = document.getElementById(id) as HTMLDialogElement;
+     if (dialog) dialog.close();
+   };
 
   const handleClick = async (rubrique: Rubrique, index: number) => {
     setModal({ rubrique, index });
@@ -92,8 +98,8 @@ const RubriqueHome = () => {
 
   return (
     <>
-      <div className="flex flex-col text-xl gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1>Liste des rubriques</h1>
+      <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+        <h1 className="text-xl">Liste des rubriques</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[60%] ">
           <div></div>
           <div className="tooltip" data-tip="Ajouter une rubrique">
@@ -144,12 +150,15 @@ const RubriqueHome = () => {
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={(e) => handleDelete(rubrique, e)}
+                        onClick={() => openModal(`delete-${index}`)}
                       />
                     </td>
 
                     <dialog id={`updateRubrique-${index}`} className="modal">
                       <UpdateRubrique rubriqueData={rubrique} />
+                    </dialog>
+                    <dialog id={`delete-${index}`} className="modal">
+                      <DeleteRubriqueConfirmation rubrique={rubrique} />
                     </dialog>
 
                     <dialog id={`inspect-${index}`} className="modal">
@@ -166,7 +175,7 @@ const RubriqueHome = () => {
               )}
             </tbody>
           </table>
-          
+
           <div className="flex justify-center items-center gap-4 mt-4">
             <button
               disabled={page === 1}
@@ -176,7 +185,9 @@ const RubriqueHome = () => {
               Précédent
             </button>
 
-            <span>Page {page} sur {totalPages}</span>
+            <span>
+              Page {page} sur {totalPages}
+            </span>
 
             <button
               disabled={page === totalPages}
@@ -186,12 +197,11 @@ const RubriqueHome = () => {
               Suivant
             </button>
           </div>
-
         </div>
       </div>
 
       <dialog id="addRubrique" className="modal">
-        <AddRubrique />
+        <AddRubrique onClose={() => closeModal("addRubrique")} />
       </dialog>
     </>
   );

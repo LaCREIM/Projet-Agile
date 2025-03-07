@@ -4,11 +4,23 @@ public class RubriquePrsDTO {
     private Long idRubriquePrs;
     private String designation;
     private Long ordre;
+    private Long noEnseignant;
 
-    public RubriquePrsDTO(Long idRubriquePrs, String designation, Long ordre) {
+    public RubriquePrsDTO(Long idRubriquePrs, String designation, Long ordre, Long noEnseignant) {
         this.idRubriquePrs = idRubriquePrs;
         this.designation = designation;
         this.ordre = ordre;
+        this.noEnseignant = (noEnseignant != null) ? noEnseignant : null;
+    }
+
+
+
+    public Long getNoEnseignant() {
+        return noEnseignant;
+    }
+
+    public void setNoEnseignant(Long noEnseignant) {
+        this.noEnseignant = noEnseignant;
     }
 
     public Long getOrdre() {

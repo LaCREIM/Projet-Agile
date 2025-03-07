@@ -6,8 +6,13 @@ import {
 } from "../../features/RubriqueSlice";
 import { Rubrique, Enseignant } from "../../types/types";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
-const AddRubrique = () => {
+interface AddRubriqueProps {
+  onClose: () => void;
+}
+
+const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const dispatch = useAppDispatch();
 
   const [rubrique, setRubrique] = useState<Rubrique>({
@@ -28,25 +33,32 @@ const AddRubrique = () => {
       [name]: name === "ordre" ? Number(value) : value,
     }));
   };
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const res = await dispatch(createRubriqueAsync(rubrique));
-    console.log(res);
 
     if (res?.type === "rubriques/create/rejected") {
-      toast.error(res?.payload as string);
+      setError(res.payload as string);
     } else if (res?.type === "rubriques/create/fulfilled") {
       toast.success(res?.payload as string);
-      setRubrique({
-        id: 0,
-        type: "",
-        noEnseignant: {} as Enseignant,
-        designation: "",
-        ordre: 0,
-        questions: [],
-      });
+      handleClose();
       dispatch(getRubriquesAsync());
-    }    
+    }
+  };
+  
+  const handleClose = () => {
+    setRubrique({
+      id: 0,
+      type: "",
+      noEnseignant: {} as Enseignant,
+      designation: "",
+      ordre: 0,
+      questions: [],
+    });
+    setError(null);
+    onClose();
   };
 
   const canSave = rubrique.designation;
@@ -72,20 +84,15 @@ const AddRubrique = () => {
             </label>
           </div>
         </form>
+        {error && <AlertError error={error} />}
 
         <div className="modal-action">
-          <form method="dialog" className="flex flex-row gap-5">
-            <button  className="btn">
-              Annuler
-            </button>
-            <button
-              className="btn btn-neutral"
-              onClick={handleSubmit}
-              disabled={!canSave}
-            >
-              Ajouter
-            </button>
-          </form>
+          <button className="btn" type="button" onClick={() => handleClose()}>
+            Annuler
+          </button>
+          <button className="btn btn-neutral" type="submit" disabled={!canSave}>
+            Ajouter
+          </button>
         </div>
       </div>
     </div>

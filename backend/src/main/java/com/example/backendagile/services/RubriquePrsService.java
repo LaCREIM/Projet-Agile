@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,14 @@ public class RubriquePrsService {
         Rubrique rubrique = rubriqueMapper.toEntity(dto);
         rubrique = rubriqueRepository.save(rubrique);
         return rubriqueMapper.toDTO(rubrique);
+    }
+
+    public Optional<Rubrique> findByDesignation(String designation) {
+        return rubriqueRepository.findRubriqueByDesignation(designation).stream().findFirst();
+    }
+
+    public Optional<Rubrique> findById(Long id) {
+        return rubriqueRepository.findById(id);
     }
 
     // Mettre à jour une rubrique existante
@@ -91,5 +100,17 @@ public class RubriquePrsService {
     public int getTotalPages(int size) {
         long totalItems = rubriqueRepository.count();
         return (int) Math.ceil((double) totalItems / size);
+    }
+
+    public Optional<Rubrique> findByDesignationAndDiffrentID(Long id , String des){
+        return rubriqueRepository.findRubriqueByDesignationAndDiffrentID(id,des).stream().findFirst();
+    }
+
+
+    public List<RubriquePrsDTO> getRubriqueStdAndPerso(Long noEnseignant) {
+        List<Rubrique> rubriques = rubriqueRepository.findRubriqueStdAndPerso(noEnseignant);
+        return rubriques.stream()
+                .map(rubriqueMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

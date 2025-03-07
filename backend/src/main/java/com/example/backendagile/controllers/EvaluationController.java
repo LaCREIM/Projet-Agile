@@ -1,13 +1,13 @@
 package com.example.backendagile.controllers;
 
-import com.example.backendagile.entities.Evaluation;
+import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.services.EvaluationService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/evaluations")
@@ -20,76 +20,42 @@ public class EvaluationController {
         this.evaluationService = evaluationService;
     }
 
-    /**
-     * 🔹 Récupérer toutes les évaluations
-     */
-    @GetMapping
-    public ResponseEntity<List<Evaluation>> getAllEvaluations() {
-        List<Evaluation> evaluations = evaluationService.getAllEvaluations();
-        return ResponseEntity.ok(evaluations);
+    @GetMapping("/enseignant/{id}")
+    public ResponseEntity<List<EvaluationDTO>> getEvaluationsByEnseignant(@PathVariable Long id) {
+        return ResponseEntity.ok(evaluationService.getEvaluationsByEnseignant(id));
     }
 
-    /**
-     * 🔹 Récupérer une évaluation par ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getEvaluationById(@PathVariable Long id) {
-        Evaluation evaluation = evaluationService.getEvaluationById(id).orElse(null);
-    
-        if (evaluation == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("message", "Évaluation non trouvée avec l'ID : " + id));
-        }
-    
-        return ResponseEntity.ok(evaluation);
-    }
-    
-    
-    
 
-    /**
-     * 🔹 Créer une nouvelle évaluation
-     */
     @PostMapping
-    public ResponseEntity<?> createEvaluation(@RequestBody Evaluation evaluation) {
-        try {
-            Evaluation newEvaluation = evaluationService.createEvaluation(evaluation);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newEvaluation);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erreur lors de la création de l'évaluation.");
-        }
+    public ResponseEntity<EvaluationDTO> createEvaluation(@RequestBody EvaluationDTO dto) {
+        EvaluationDTO created = evaluationService.createEvaluation(dto);
+        return ResponseEntity.ok(created);
     }
 
-    /**
-     * 🔹 Mettre à jour une évaluation existante
-     */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvaluation(@PathVariable Long id, @RequestBody Evaluation evaluationDetails) {
-        try {
-            Evaluation updatedEvaluation = evaluationService.updateEvaluation(id, evaluationDetails);
-            return ResponseEntity.ok(updatedEvaluation);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erreur lors de la mise à jour de l'évaluation.");
-        }
+    public ResponseEntity<EvaluationDTO> updateEvaluation(
+            @PathVariable Long id,
+            @RequestBody EvaluationDTO dto) {
+        return evaluationService.updateEvaluation(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * 🔹 Supprimer une évaluation par ID
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvaluation(@PathVariable Long id) {
+   @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEvaluation(@PathVariable Long id) {
         try {
             evaluationService.deleteEvaluation(id);
-            return ResponseEntity.ok("Évaluation supprimée avec succès.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Évaluation supprimée avec succès.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur inattendue est survenue lors de la suppression.");
-        }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'évaluation ne peut pas être supprimée car elle est déjà remplie.");        }
     }
+
+    @GetMapping("/enseignants/{idEnseignant}/{idEvaluation}")
+public ResponseEntity<EvaluationDTO> getEvaluation(
+        @PathVariable Long idEnseignant,
+        @PathVariable Long idEvaluation) {
+    EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEnseignant, idEvaluation);
+    return ResponseEntity.ok(evaluation);
+}
+
 }

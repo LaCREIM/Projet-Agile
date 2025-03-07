@@ -28,4 +28,12 @@ public interface RubriquePrsRepository extends JpaRepository<Rubrique, Long> {
 """, nativeQuery = true)
     List<Rubrique> findAllWithPagination(@Param("noEnseignant") long noEnseignant , @Param("startRow") int startRow, @Param("endRow") int endRow);
 
+    @Query("select r from Rubrique r where r.type = 'RBS' or r.noEnseignant.id = :noEnseignant")
+    List<Rubrique> findRubriqueStdAndPerso(Long noEnseignant);
+
+    List<Rubrique> findRubriqueByDesignation(String designation);
+
+
+    @Query("SELECT r FROM Rubrique r WHERE r.id <> :id AND LOWER(r.designation) = LOWER(:designation)")
+    List<Rubrique>findRubriqueByDesignationAndDiffrentID(Long id, String designation);
 }

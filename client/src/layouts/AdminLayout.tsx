@@ -69,6 +69,7 @@ export function AdminLayout() {
           [
             "Gestion des questions",
             "Gestion des rubriques",
+            "Gestion des évaluations",
             "Consultation des promotions",
           ].includes(project.title)
         )
@@ -80,7 +81,6 @@ export function AdminLayout() {
             "Gestion des qualificatifs",
             "Gestion des enseignants",
             "Gestion des étudiants",
-            "Gestion des évaluations",
           ].includes(project.title)
         );
   return (

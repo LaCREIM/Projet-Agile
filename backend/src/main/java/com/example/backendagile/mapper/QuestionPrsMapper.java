@@ -35,7 +35,8 @@ public class QuestionPrsMapper {
             questionDto.setMinQualificatif(question.getIdQualificatif().getMinimal());
             questionDto.setMaxQualificatif(question.getIdQualificatif().getMaximal());
         }
-        questionDto.setNoEnseignant(question.getNoEnseignant().getId());
+        if(question.getNoEnseignant() != null){
+        questionDto.setNoEnseignant(question.getNoEnseignant().getId());}
         return questionDto;
     }
 

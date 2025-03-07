@@ -6,6 +6,7 @@ import {
 } from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface AddQuestionProps {
   qualificatifs: Qualificatif[];
@@ -19,7 +20,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     id: 0,
     type: "",
     noEnseignant: {} as Enseignant,
-    idQualificatif: { id: -1, minimal: "", maximal: "" }, 
+    idQualificatif: { id: -1, minimal: "", maximal: "" },
     intitule: "",
   });
   const [error, setError] = useState<string | null>(null);
@@ -60,17 +61,16 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
 
     if (canSave) {
       const res = await dispatch(createQuestionAsync(question));
+      console.log(res);
 
       if (res?.type === "questions/create/rejected") {
         setError(res.payload as string);
-        toast.error(res.payload as string);
       } else if (res?.type === "questions/create/fulfilled") {
         toast.success(res.payload as string);
-        handleReset(); 
+        dispatch(fetchQuestionsAsync());
+        handleReset();
       }
     }
-
-    dispatch(fetchQuestionsAsync());
   };
 
   const handleReset = () => {
@@ -78,7 +78,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
       id: 0,
       type: "",
       noEnseignant: {} as Enseignant,
-      idQualificatif: { id: -1, minimal: "", maximal: "" }, 
+      idQualificatif: { id: -1, minimal: "", maximal: "" },
       intitule: "",
     });
     setError(null);
@@ -86,12 +86,10 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
+    <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une Question</h3>
         <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-
           <div className="flex flex-col gap-5">
             <label className="input input-bordered w-[85%] flex items-center gap-2">
               <span className="font-semibold">Intitulé</span>
@@ -124,24 +122,19 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
               </select>
             </label>
           </div>
+          {error && <AlertError error={error} />}
 
           <div className="modal-action">
-            <form method="dialog" className="flex flex-row gap-5">
-              <button
-                className="btn"
-                type="button"
-                onClick={handleReset} 
-              >
-                Annuler
-              </button>
-              <button
-                className="btn btn-neutral disabled:cursor-not-allowed"
-                type="submit" 
-                disabled={!canSave}
-              >
-                Ajouter
-              </button>
-            </form>
+            <button className="btn" type="button" onClick={handleReset}>
+              Annuler
+            </button>
+            <button
+              className="btn btn-neutral disabled:cursor-not-allowed"
+              type="submit"
+              disabled={!canSave}
+            >
+              Ajouter
+            </button>
           </div>
         </form>
       </div>

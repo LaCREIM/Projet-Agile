@@ -7,6 +7,7 @@ import {
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface UpdateQuestionProps {
   questionData: Question;
@@ -59,12 +60,11 @@ const UpdateQuestion = ({
 
       if (res?.type === "questions/update/rejected") {
         setError(res.payload as string);
-        toast.error(res.payload as string);
       } else if (res?.type === "questions/update/fulfilled") {
-        toast.success(res.payload as string); // Afficher une notification de succès
-        onClose(); // Fermer le modal uniquement si la mise à jour réussit
+        toast.success(res.payload as string); 
+        dispatch(fetchQuestionsAsync()); 
+        onClose(); 
       }
-      dispatch(fetchQuestionsAsync()); // Rafraîchir la liste des questions
     } catch (error) {
       setError("Une erreur inattendue s'est produite.");
       toast.error("Une erreur inattendue s'est produite.");
@@ -76,9 +76,6 @@ const UpdateQuestion = ({
       <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier la question</h3>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          {/* Affichage des erreurs */}
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-
           <label className="input input-bordered w-[85%] flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
             <input
@@ -109,8 +106,7 @@ const UpdateQuestion = ({
               ))}
             </select>
           </label>
-
-          {/* Boutons d'action */}
+          {error && <AlertError error={error} />}
           <div className="modal-action">
             <button
               type="button"

@@ -5,6 +5,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
 @Entity
@@ -18,21 +20,54 @@ import java.time.LocalDate;
 })
 public class Evaluation {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eve_seq_generator")
+    @SequenceGenerator(name = "eve_seq_generator", sequenceName = "EVE_SEQ", allocationSize = 1)
     @Column(name = "ID_EVALUATION", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "NO_ENSEIGNANT", nullable = false)
-    private Enseignant noEnseignant;
+    private Enseignant enseignant;
+
+  /* @OnDelete(action = OnDeleteAction.RESTRICT)
+@ManyToOne
+@JoinColumns({
+    @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION", columnDefinition = "CODE_FORM"),
+    @JoinColumn(name = "CODE_UE", referencedColumnName = "CODE_UE", columnDefinition = "CODE_UE"),
+    @JoinColumn(name = "CODE_EC", referencedColumnName = "CODE_EC", columnDefinition = "CODE_EC")
+
+})
+    private ElementConstitutif elementConstitutif; */ 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
+    @JoinColumns({
+        @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION", insertable = false, updatable = false),
+        @JoinColumn(name = "CODE_UE", referencedColumnName = "CODE_UE", insertable = false, updatable = false)
+    })
+    private UniteEnseignement uniteEnseignement;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    private ElementConstitutif elementConstitutif;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JoinColumns({
+@JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION",columnDefinition = "CODE_FORM"),
+@JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE",columnDefinition = "ANNEE_UNI")
+})
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private com.example.backendagile.entities.Promotion promotion;
+
+    @Column(name = "CODE_FORMATION", nullable = false, insertable = false, updatable = false)
+    private String codeFormation;    
+
+    @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, insertable = false, updatable = false)
+    private String anneeUniversitaire;
+    
+    @Column(name = "CODE_UE", nullable = false)
+    private String codeUE;
+    @Column(name = "CODE_EC")
+    private String codeEC;
 
     @Column(name = "NO_EVALUATION", nullable = false)
     private Short noEvaluation;
@@ -56,26 +91,45 @@ public class Evaluation {
     public Long getId() {
         return id;
     }
+ 
+public String getCodeFormation() {
+        return codeFormation;
+    }
+    public void setCodeFormation(String codeFormation) {
+        this.codeFormation = codeFormation;
+    }
+    public String getAnneeUniversitaire() {
+        return anneeUniversitaire;
+    }
+    public void setAnneeUniversitaire(String anneeUniversitaire) {
+        this.anneeUniversitaire = anneeUniversitaire;
+    }
+    public String getCodeUE() {
+        return codeUE;
+    }
+    public void setCodeUE(String codeUE) {
+        this.codeUE = codeUE;
+    }
+    public String getCodeEC() {
+        return codeEC;
+    }
+    public void setCodeEC(String codeEC) {
+        this.codeEC = codeEC;
+    }
+ 
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Enseignant getNoEnseignant() {
-        return noEnseignant;
+    public Enseignant getEnseignant() {
+        return enseignant;
     }
 
-    public void setNoEnseignant(Enseignant noEnseignant) {
-        this.noEnseignant = noEnseignant;
+    public void setEnseignant(Enseignant noEnseignant) {
+        this.enseignant = noEnseignant;
     }
 
-    public ElementConstitutif getElementConstitutif() {
-        return elementConstitutif;
-    }
-
-    public void setElementConstitutif(ElementConstitutif elementConstitutif) {
-        this.elementConstitutif = elementConstitutif;
-    }
 
     public com.example.backendagile.entities.Promotion getPromotion() {
         return promotion;
@@ -120,9 +174,16 @@ public class Evaluation {
     public LocalDate getDebutReponse() {
         return debutReponse;
     }
-
+  public void setNoEnseignant(Enseignant enseignant) {
+        this.enseignant = enseignant;
+    }
+   
     public void setDebutReponse(LocalDate debutReponse) {
         this.debutReponse = debutReponse;
+    }
+
+    public UniteEnseignement getUniteEnseignement() {
+        return uniteEnseignement;
     }
 
     public LocalDate getFinReponse() {

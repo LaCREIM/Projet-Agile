@@ -79,6 +79,7 @@ export function Dashboard() {
             "Gestion des questions",
             "Gestion des rubriques",
             "Consultation des promotions",
+            "Gestion des évaluations",
             "Logout",
           ].includes(link.label)
         )
@@ -90,7 +91,6 @@ export function Dashboard() {
             "Gestion des qualificatifs",
             "Gestion des enseignants",
             "Gestion des étudiants",
-            "Gestion des évaluations",
             "Logout",
           ].includes(link.label)
         );
