@@ -79,6 +79,10 @@ long countSearchQuestions(@Param("noEnseignant") Long noEnseignant, @Param("keyw
 
     @Query("SELECT q FROM Question q WHERE q.noEnseignant.id = :noEnseignant or q.type='QUS'")
     List<Question> findQuestionStdAndPerso(Long noEnseignant);
+
+    @Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe WHERE qe.idQuestion.id = :idQuestion")
+    boolean existsQuestionInEvaluation(@Param("idQuestion") Long idQuestion);
+
 }
 
 
