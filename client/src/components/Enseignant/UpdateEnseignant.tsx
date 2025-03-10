@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
-import { editEnseignantAsync, getEnseignantAsync } from "../../features/EnseignantSlice";
+import { editEnseignantAsync, getEnseignantAsync, getPays } from "../../features/EnseignantSlice";
 import { Enseignant } from "../../types/types";
 import { toast } from "react-toastify";
+import { useAppSelector } from "../../hooks/hooks";
 
 interface UpdateEnseignantProps {
   enseignantData: Enseignant;
@@ -11,7 +12,7 @@ interface UpdateEnseignantProps {
 const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
   const dispatch = useAppDispatch();
   const [enseignant, setEnseignant] = useState<Enseignant>({ ...enseignantData });
-
+  const pays = useAppSelector(getPays);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEnseignant((prev) => ({ ...prev, [name]: value }));
@@ -62,79 +63,91 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier un enseignant</h3>
-        <form className="flex flex-col gap-5">
-          <div className="flex flex-row justify-between">
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Nom</span>
-              <input type="text" name="nom" value={enseignant.nom} onChange={handleChange} className="grow" placeholder="Ex: John" />
+              <span className="font-semibold">Nom<span className="text-red-500">*</span></span>
+              <input type="text" name="nom" value={enseignant.nom} onChange={handleChange} required className="grow" />
             </label>
+
             <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Prénom</span>
-              <input type="text" name="prenom" value={enseignant.prenom} onChange={handleChange} className="grow" placeholder="Ex: Doe" />
+              <span className="font-semibold">Prénom<span className="text-red-500">*</span></span>
+              <input type="text" name="prenom" value={enseignant.prenom} onChange={handleChange} required className="grow" />
+            </label>
+
+            <label className="flex items-center gap-2">
+              <select name="sexe" value={enseignant.sexe} onChange={handleChange} required className="select select-bordered">
+                <option disabled value="">Sélectionnez un sexe<span className="text-red-500">*</span></option>
+                <option value="H">Homme</option>
+                <option value="F">Femme</option>
+              </select>
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Mobile<span className="text-red-500">*</span></span>
+              <input type="number" name="mobile" value={enseignant.mobile} onChange={handleChange} required className="grow" />
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Téléphone</span>
+              <input type="text" name="telephone" value={enseignant.telephone} onChange={handleChange} className="grow" placeholder="Ex: 02 98 XX XX XX" />
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Adresse<span className="text-red-500">*</span></span>
+              <input type="text" name="adresse" value={enseignant.adresse} onChange={handleChange} required className="grow" />
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Code Postal<span className="text-red-500">*</span></span>
+              <input type="number" name="codePostal" value={enseignant.codePostal} onChange={handleChange} required className="grow" />
+            </label>
+
+            <label className="flex flex-row items-center gap-2">
+              <select name="pays" value={enseignant.pays} onChange={handleChange} required className="select select-bordered">
+                <option value="">Sélectionnez un pays<span className="text-red-500">*</span></option>
+                {pays?.length > 0 ? (
+                  pays.map((p, idx) => (
+                    <option key={idx} value={p.rvLowValue}>{p.rvMeaning}</option>
+                  ))
+                ) : (
+                  <option>Chargement des pays...</option>
+                )}
+              </select>
+            </label>
+
+            <label className="flex items-center gap-2">
+              <select name="type" value={enseignant.type} onChange={handleChange} required className="select select-bordered">
+                <option value="">Type d'enseignant<span className="text-red-500">*</span></option>
+                <option value="MCF">Maître de Conférences</option>
+                <option value="INT">Intervenant-Exterieur</option>
+                <option value="PR">Professeur des Universités</option>
+                <option value="PRAST">Professionnel Associé</option>
+                <option value="PRAG">Professeur Agrégé</option>
+              </select>
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Email Personnel</span>
+              <input type="email" name="emailPerso" value={enseignant.emailPerso} onChange={handleChange} className="grow" placeholder="Ex: john.doe@gmail.com" />
+            </label>
+
+            <label className="input input-bordered flex items-center gap-2">
+              <span className="font-semibold">Email UBO<span className="text-red-500">*</span></span>
+              <input type="email" name="emailUbo" value={enseignant.emailUbo} onChange={handleChange} required className="grow" placeholder="Ex: john.doe@ubo.fr" />
             </label>
           </div>
-
-          <label className="flex items-center gap-2">
-            <select name="sexe" value={enseignant.sexe} onChange={handleChange} className="select select-bordered w-full max-w-full">
-              <option disabled value="">Sélectionnez un sexe</option>
-              <option value="H">Homme</option>
-              <option value="F">Femme</option>
-            </select>
-          </label>
-
-          <label className="input input-bordered flex items-center gap-2">
-            <span className="font-semibold">Mobile</span>
-            <input required type="number" name="mobile" value={enseignant.mobile} onChange={handleChange} className="grow" placeholder="Ex: 0701010101" />
-          </label>
-
-          <label className="input input-bordered flex items-center gap-2">
-            <span className="font-semibold">Pays</span>
-            <input type="text" name="pays" value={enseignant.pays} onChange={handleChange} className="grow" placeholder="Ex: France" />
-          </label>
-
-          <label className="input input-bordered flex items-center gap-2">
-            <span className="font-semibold">Code Postal</span>
-            <input type="number" name="codePostal" value={enseignant.codePostal} onChange={handleChange} className="grow" placeholder="Ex: 29200" />
-          </label>
-
-          <label className="flex items-center gap-2">
-            <select name="type" value={enseignant.type} onChange={handleChange} className="select select-bordered w-full max-w-full">
-              <option disabled value="">Sélectionnez un type</option>
-              <option value="MCF">Maître de Conférences</option>
-              <option value="INT">Intervenant-Exterieur</option>
-              <option value="PR">Professeur des Universités</option>
-              <option value="PRAST">Professionnel Associé</option>
-              <option value="PRAG">Professeur Agrégé</option>
-            </select>
-          </label>
-
-          
-            <div className="flex flex-col gap-5">
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Email Personnel</span>
-                <input type="email" name="emailPerso" value={enseignant.emailPerso} onChange={handleChange} className="grow" placeholder="Ex: john.doe@gmail.com" />
-              </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Email UBO</span>
-                <input type="email" name="emailUbo" value={enseignant.emailUbo} onChange={handleChange} className="grow" placeholder="Ex: john.doe@ubo.fr" />
-              </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <span className="font-semibold">Téléphone</span>
-                <input type="text" name="telephone" value={enseignant.telephone} onChange={handleChange} className="grow" placeholder="Ex: 02 98 XX XX XX" />
-              </label>
-            </div>
-          
 
           <div className="modal-action">
             <form method="dialog" className="flex flex-row gap-5">
               <button className="btn">Annuler</button>
-              <button onClick={handleSubmit} className="btn btn-neutral" disabled={!canSave}>Mettre à jour</button>
-
+              <button className="btn btn-neutral" onClick={handleSubmit} disabled={!canSave}>Mettre à jour</button>
             </form>
           </div>
         </form>
       </div>
     </div>
+
   );
 };
 

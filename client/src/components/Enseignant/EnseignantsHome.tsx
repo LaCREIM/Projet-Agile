@@ -13,9 +13,10 @@ import {
     getTotalePages
 } from "../../features/EnseignantSlice";
 import {Enseignant } from "../../types/types";
-import {ToastContainer, toast} from "react-toastify";
+import { toast} from "react-toastify";
 import {motion} from "framer-motion";
 import {FaSearch} from "react-icons/fa";
+import { enseignantMapper } from "../../mappers/mappers";
 
 const EnseignantsHome = () => {
     document.title = "UBO | Enseignants";
@@ -138,7 +139,6 @@ const EnseignantsHome = () => {
 
     return (
         <>
-            <ToastContainer theme="colored"/>
             <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
                 <h1>Liste des enseignants</h1>
                 <div className="flex flex-row items-center justify-between gap-5 w-full px-[5%]">
@@ -180,7 +180,7 @@ const EnseignantsHome = () => {
                         <tr>
                             <th>Nom</th>
                             <th>Prénom</th>
-                            <th>Email</th>
+                            <th>Email professionnel</th>
                             <th>Téléphone</th>
                             <th>Type</th>
                             <th className="text-center">Actions</th>
@@ -209,7 +209,7 @@ const EnseignantsHome = () => {
                                     <td className="px-4 py-2">{enseignant.prenom}</td>
                                     <td className="px-4 py-2">{enseignant.emailUbo}</td>
                                     <td className="px-4 py-2">{enseignant.mobile}</td>
-                                    <td className="px-4 py-2">{enseignant.type}</td>
+                                    <td className="px-4 py-2">{enseignantMapper(enseignant.type)}</td>
                                     <td className="flex gap-3 justify-center items-center">
                                         
                                     <FontAwesomeIcon

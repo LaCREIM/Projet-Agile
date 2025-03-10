@@ -9,7 +9,8 @@ const NavBar = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("id");
         localStorage.removeItem("role");
-        navigate("/");
+        // navigate("/");
+        window.location.reload();
     };
 
     return (

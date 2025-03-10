@@ -62,3 +62,16 @@ export const typeQuestionMapper = (type: string) => {
 
     return mapping[type] || "Inconnu";
 }
+
+export const enseignantMapper = (type: string): string => {
+    const mapping: Record<string, string> = {
+      MCF: "Maître de Conférences",
+      INT: "Intervenant-Extérieur",
+      PR: "Professeur des Universités",
+      PRAST: "Professionnel Associé",
+      PRAG: "Professeur Agrégé",
+    };
+  
+    return mapping[type] || "Type d'enseignant inconnu";
+  };
+  
