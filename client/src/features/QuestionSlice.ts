@@ -94,22 +94,34 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
   }
 );
 
-export const createQuestionPersoAsync = createAsyncThunk<Question, Question, { rejectValue: string }>(
+export const createQuestionPersoAsync = createAsyncThunk<
+  Question, 
+  Question, 
+  { rejectValue: string }
+>(
   "questions/createQuestionPersoAsync",
   async (question, { rejectWithValue }) => {
     try {
+      // Construction de l'objet questionPrs pour envoyer au backend
       const questionPrs = {
+        type: question.type,
+        noEnseignant: question.noEnseignant,
         idQualificatif: question.idQualificatif.id, 
         intitule: question.intitule,
-        idEnseignant: 1000
-        // idEnseignant: question.noEnseignant.id
       };
-      const response = await axiosInstance.post("/questionsPrs", questionPrs);
-      console.log(response.data);
 
-      return response.data;
+      // Envoi de la requête POST au backend
+      const response = await axiosInstance.post("/questionsPrs", questionPrs);
+
+      // Vérification de la réponse et retour des données
+      console.log(response.data);  // Si vous souhaitez logger la réponse
+      return response.data;  // Renvoie la donnée reçue du backend
+
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Erreur lors de la création de la question");
+      // Gestion d'erreur, retour de message spécifique ou erreur générique
+      return rejectWithValue(
+        error.response?.data || "Erreur lors de la création de la question"
+      );
     }
   }
 );
@@ -263,7 +275,7 @@ const questionSlice = createSlice({
 
 export default questionSlice.reducer;
 
-export const selectAllQuestions = (state: RootState, role: string) => {
+export const selectAllQuestions = (state: RootState, role: string, id: number ) => {
   const allQuestions = role === "ENS" 
     ? [...state.question.questions, ...state.question.questionsPerso] 
     : state.question.questions;
