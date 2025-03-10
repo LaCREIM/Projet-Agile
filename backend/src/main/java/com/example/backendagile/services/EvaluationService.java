@@ -27,17 +27,23 @@ public class EvaluationService {
 
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
         List<Evaluation> evaluations = evaluationRepository.findByEnseignant_Id(id);
-
+    
         return evaluations.stream().map(evaluation -> {
             EvaluationDTO dto = EvaluationMapper.toDTO(evaluation);
-
+    
             formationRepository.findById(evaluation.getCodeFormation()).ifPresent(formation -> {
                 dto.setNomFormation(formation.getNomFormation());
             });
-
+            
+            if (evaluation.getEnseignant() != null) {
+                dto.setNomEnseignant(evaluation.getEnseignant().getNom());
+                dto.setPrenomEnseignant(evaluation.getEnseignant().getPrenom());
+            }
+    
             return dto;
         }).collect(Collectors.toList());
     }
+    
 
     public EvaluationDTO createEvaluation(EvaluationDTO dto) {
         Evaluation evaluation = EvaluationMapper.toEntity(dto);
@@ -47,9 +53,24 @@ public class EvaluationService {
 
     public EvaluationDTO getEvaluationByEnseignantAndId(Long idEnseignant, Long idEvaluation) {
         return evaluationRepository.findByEnseignant_IdAndId(idEnseignant, idEvaluation)
-                .map(EvaluationMapper::toDTO)
+                .map(evaluation -> {
+                    EvaluationDTO dto = EvaluationMapper.toDTO(evaluation);
+    
+                    formationRepository.findById(evaluation.getCodeFormation()).ifPresent(formation -> {
+                        dto.setNomFormation(formation.getNomFormation());
+                    });
+    
+                    if (evaluation.getEnseignant() != null) {
+                        dto.setNomEnseignant(evaluation.getEnseignant().getNom());
+                        dto.setPrenomEnseignant(evaluation.getEnseignant().getPrenom());
+                    }
+    
+                    return dto;
+                })
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
     }
+    
+    
     
 
     public Optional<EvaluationDTO> updateEvaluation(Long id, EvaluationDTO dto) {
