@@ -21,4 +21,8 @@ public class EvaluationPartagerMapper {
 
         return new EvaluationPartagerDTO(evaluationDTO, droitDTO);
     }
+
+    public EvaluationPartagerDTO fromEvaluationDTO(EvaluationDTO evaluationDTO){
+        return new EvaluationPartagerDTO(evaluationDTO, null);
+    }
 }
