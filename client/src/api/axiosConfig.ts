@@ -1,8 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from "./baseUrl";
-
-
-
+import {API_BASE_URL} from "./baseUrl";
 
 
 //  export const API_BASE_URL = "https://f620-2a04-cec0-109e-8a43-dc30-8a93-e0a-5544.ngrok-free.app/api";
@@ -15,7 +12,7 @@ import { API_BASE_URL } from "./baseUrl";
 
 
 const axiosInstance = axios.create({
-    baseURL: API_BASE_URL ,
+    baseURL: API_BASE_URL + "/api",
     headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}`,

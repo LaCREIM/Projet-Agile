@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {useLoginMutation} from "../../features/ApiAthSlice";
 import {setCredentials} from "../../features/UserSlice";
-import {ToastContainer, toast} from "react-toastify";
+import {toast} from "react-toastify";
 
 const LoginInformation = () => {
     const dispatch = useDispatch();
@@ -61,7 +61,6 @@ const LoginInformation = () => {
 
     return (
         <form className="w-full space-y-3">
-            <ToastContainer theme={"colored"}/>
             <input
                 autoComplete="false"
                 ref={userRef}
