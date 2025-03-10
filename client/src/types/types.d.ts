@@ -158,6 +158,17 @@ export interface Etudiant {
     [key: string]: any;
 }
 
+export interface ElementConstitutif {
+    id: ElementConstitutifId;
+    uniteEnseignement: UniteEnseignement;
+    noEnseignant: Enseignant;
+    designation: string;
+    description: string;
+    nbhCm: number;
+    nbhTd: number;
+    nbhTp: number;
+}
+
 export interface Evaluation {
     id: number;
     noEnseignant: Enseignant;
@@ -174,7 +185,8 @@ export interface Evaluation {
 export interface EvaluationDTO {
     idEvaluation: number;
     noEnseignant: number;
-    elementConstitutif: ElementConstitutif;
+    designationEC: string;
+    designationUE: string;
     anneeUniversitaire: string;
     codeFormation: string;
     nomFormation: string;
