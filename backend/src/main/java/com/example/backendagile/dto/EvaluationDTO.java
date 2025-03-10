@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-
+import java.util.List;
 public class EvaluationDTO {
     private Long idEvaluation;
     private Long noEnseignant;
@@ -27,6 +27,14 @@ public class EvaluationDTO {
     private String periode;
     private LocalDate debutReponse;
     private LocalDate finReponse;    
+    private List<RubriqueEvaluationDTO> rubriques;
+    
+ public List<RubriqueEvaluationDTO> getRubriques() {
+        return rubriques;
+    }
+    public void setRubriques(List<RubriqueEvaluationDTO> rubriques) {
+        this.rubriques = rubriques;
+    }
 
     public Long getNoEnseignant() {
         return noEnseignant;
