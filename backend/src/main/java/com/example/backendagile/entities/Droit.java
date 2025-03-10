@@ -16,7 +16,7 @@ public class Droit {
     private DroitId id;
 
     @MapsId("idEvaluation")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "ID_EVALUATION", nullable = false)
     private com.example.backendagile.entities.Evaluation idEvaluation;
