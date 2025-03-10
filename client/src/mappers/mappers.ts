@@ -63,6 +63,15 @@ export const typeQuestionMapper = (type: string) => {
     return mapping[type] || "Inconnu";
 }
 
+export const typeRubriqueMapper = (type: string) => {
+    const mapping: Record<string, string> = {
+        RBS: "Standard",
+        RBP: "Personnelle",
+    };
+
+    return mapping[type] || "Inconnu";
+}
+
 export const enseignantMapper = (type: string): string => {
     const mapping: Record<string, string> = {
       MCF: "Maître de Conférences",
