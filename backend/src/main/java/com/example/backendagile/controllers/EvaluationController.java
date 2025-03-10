@@ -68,4 +68,18 @@ public class EvaluationController {
 
     }
 
+    @PostMapping("/dupliquer/{idEvaluation}/{noEnseignant}")
+    public ResponseEntity<String> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+        try {
+            EvaluationDTO evaluation = evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
+            return ResponseEntity.ok("L'évaluation a été dupliquée avec succès.");
+//            return ResponseEntity.ok(evaluation);
+
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'évaluation ne peut pas être dupliquée.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+}
 }
