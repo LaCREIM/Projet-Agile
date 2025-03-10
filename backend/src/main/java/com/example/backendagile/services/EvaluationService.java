@@ -4,6 +4,7 @@ import com.example.backendagile.dto.DroitDTO;
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
 import com.example.backendagile.entities.Droit;
+import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Evaluation;
 import com.example.backendagile.mapper.DroitMapper;
 import com.example.backendagile.mapper.EvaluationMapper;
@@ -26,11 +27,15 @@ public class EvaluationService {
 
    private final DroitRepository droitRepository;
 
+   private final EnseignantService enseignantService;
+
    private final EvaluationPartagerMapper evaluationPartagerMapper;
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EvaluationPartagerMapper evaluationPartagerMapper) {
+
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
         this.droitRepository = droitRepository;
+        this.enseignantService = enseignantService;
         this.evaluationPartagerMapper = evaluationPartagerMapper;
     }
 
@@ -120,6 +125,16 @@ public class EvaluationService {
             evaluations.add(evaluationPartagerDTO);
         });
         return evaluations;
+    }
+
+    public EvaluationDTO dupliquerEvaluation(Long idEvaluation, Long noEnseignant){
+        Evaluation evaluation = getEvaluationByID(idEvaluation);
+        Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
+        Evaluation evaluationCopy = evaluation.copy();
+        evaluationCopy.setEnseignant(enseignant.orElse(null));
+        System.out.println("No enseignant : "+evaluationCopy.getEnseignant().getNoEnseignant());
+
+        return  createEvaluation(EvaluationMapper.toDTO(evaluationCopy));
     }
 
 
