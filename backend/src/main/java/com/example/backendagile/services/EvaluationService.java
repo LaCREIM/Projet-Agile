@@ -1,15 +1,20 @@
 package com.example.backendagile.services;
 
+import com.example.backendagile.dto.DroitDTO;
 import com.example.backendagile.dto.EvaluationDTO;
+import com.example.backendagile.dto.EvaluationPartagerDTO;
+import com.example.backendagile.entities.Droit;
 import com.example.backendagile.entities.Evaluation;
+import com.example.backendagile.mapper.DroitMapper;
 import com.example.backendagile.mapper.EvaluationMapper;
+import com.example.backendagile.mapper.EvaluationPartagerMapper;
+import com.example.backendagile.repositories.DroitRepository;
 import com.example.backendagile.repositories.EvaluationRepository;
 import com.example.backendagile.repositories.FormationRepository;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,10 +24,14 @@ public class EvaluationService {
 
    private final FormationRepository formationRepository;  
 
+   private final DroitRepository droitRepository;
 
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository) {
+   private final EvaluationPartagerMapper evaluationPartagerMapper;
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EvaluationPartagerMapper evaluationPartagerMapper) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
+        this.droitRepository = droitRepository;
+        this.evaluationPartagerMapper = evaluationPartagerMapper;
     }
 
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
@@ -76,4 +85,12 @@ public class EvaluationService {
     public Evaluation getEvaluationByID(Long id){
         return evaluationRepository.findByIdEvaluation(id);
     }
+
+    public List<EvaluationPartagerDTO> getEvaluationsPartagees(Long noEnseignant) {
+        List<Droit> droits = droitRepository.findByEnseignant_Id(noEnseignant);
+
+        return droits.stream().map(evaluationPartagerMapper::fromDroit).collect(Collectors.toList());
+    }
+
+
 }

@@ -1,6 +1,9 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.DroitDTO;
 import com.example.backendagile.dto.EvaluationDTO;
+import com.example.backendagile.dto.EvaluationPartagerDTO;
+import com.example.backendagile.entities.Droit;
 import com.example.backendagile.services.EvaluationService;
 
 import org.springframework.http.HttpStatus;
@@ -51,11 +54,18 @@ public class EvaluationController {
     }
 
     @GetMapping("/enseignants/{idEnseignant}/{idEvaluation}")
-public ResponseEntity<EvaluationDTO> getEvaluation(
+    public ResponseEntity<EvaluationDTO> getEvaluation(
         @PathVariable Long idEnseignant,
         @PathVariable Long idEvaluation) {
     EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEnseignant, idEvaluation);
     return ResponseEntity.ok(evaluation);
-}
+ }
+
+    @GetMapping("/evaluations-partage/{noEnseignant}")
+    public ResponseEntity<List<EvaluationPartagerDTO>> getEvaluationsPartagees(@PathVariable Long noEnseignant) {
+
+        return ResponseEntity.ok(evaluationService.getEvaluationsPartagees(noEnseignant));
+
+    }
 
 }
