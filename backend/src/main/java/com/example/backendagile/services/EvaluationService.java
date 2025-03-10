@@ -110,7 +110,16 @@ public class EvaluationService {
     public List<EvaluationPartagerDTO> getEvaluationsPartagees(Long noEnseignant) {
         List<Droit> droits = droitRepository.findByEnseignant_Id(noEnseignant);
 
-        return droits.stream().map(evaluationPartagerMapper::fromDroit).collect(Collectors.toList());
+        List<EvaluationPartagerDTO> evaluations = droits.stream().map(evaluationPartagerMapper::fromDroit).collect(Collectors.toList());
+
+        //Get evaluation pour un ENseignant
+        List<EvaluationDTO> evaluationsEnseignant = getEvaluationsByEnseignant(noEnseignant);
+
+        evaluationsEnseignant.forEach(evaluationDTO -> {
+            EvaluationPartagerDTO evaluationPartagerDTO = evaluationPartagerMapper.fromEvaluationDTO(evaluationDTO);
+            evaluations.add(evaluationPartagerDTO);
+        });
+        return evaluations;
     }
 
 
