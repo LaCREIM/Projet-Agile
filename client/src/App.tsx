@@ -13,8 +13,8 @@ import EvaluationHome from "./components/Evaluations/EvaluationHome";
 import LoginForm from "./components/Auth/LoginForm";
 import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
-import { ToastContainer } from "react-toastify";
 import DetailsEvaluation from "./components/Evaluations/DetailsEvaluation.tsx";
+import {ToastContainer} from "react-toastify";
 
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
   return (
     <Router basename="/">
       <AuthChecker>
-        <ToastContainer theme="colored" autoClose={10000} />
+        <ToastContainer theme="colored" autoClose={false} />
 
         <Routes>
           <Route path="/" element={<RootLayout />}>

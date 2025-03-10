@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {motion} from "framer-motion";
 import {anneesUniv, getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
-import {ToastContainer} from "react-toastify";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye, faGraduationCap, faPenToSquare, faTrash,} from "@fortawesome/free-solid-svg-icons";
 import AddPromotion from "./AddPromotion";
@@ -175,7 +174,6 @@ const PromotionHome = () => {
     console.log(filteredPromotionsByRole)
     return (
         <>
-            <ToastContainer/>
             {showStudents ? (
                 <StudentHome
                     promotionDetails={promotionDetails}

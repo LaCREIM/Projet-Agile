@@ -7,7 +7,6 @@ import { MdClear } from "react-icons/md";
 
 import { fetchEvaluationAsync } from "../../features/EvaluationSlice";
 import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
-import { ToastContainer } from "react-toastify";
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import {
@@ -113,7 +112,6 @@ const EvaluationHome = () => {
 
   return (
     <>
-      <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl">Liste des évaluations</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[90%] px-14">
