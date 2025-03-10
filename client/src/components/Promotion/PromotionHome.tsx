@@ -17,18 +17,13 @@ import {diplomeMapper} from "../../mappers/mappers";
 import {IoMdAdd} from "react-icons/io";
 import DeletePromotionConfirmation from "./DeletePromotionConfirmation.tsx";
 
-const role = localStorage.getItem("role");
-const userId = localStorage.getItem("id");
 const PromotionHome = () => {
+    const userId = localStorage.getItem("id");
+    const role = localStorage.getItem("role");
     document.title = "UBO | Promotions";
     const dispatch = useAppDispatch();
     const promotions = useAppSelector<Promotion[]>(getPromotions);
 
-    // promotions = promotions.filter((promotion) => {
-    //     if (role == "ENS") {
-    //         return promotion.noEnseignant == userId;
-    //     } else return promotion
-    // });
 
     const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
     const [search, setSearch] = useState<string>("");
@@ -172,10 +167,12 @@ const PromotionHome = () => {
     };
 
     const filteredPromotionsByRole = filteredPromotions.filter((promotion) => {
+        console.log(role)
         if (role == "ENS") {
             return promotion.noEnseignant == userId;
         } else return promotion
     });
+    console.log(filteredPromotionsByRole)
     return (
         <>
             <ToastContainer/>
@@ -284,9 +281,9 @@ const PromotionHome = () => {
                                             <td className="px-4 py-2">{promotion.nomFormation}</td>
 
                                             <td className="px-4 py-2">
-                                                {promotion.nom &&
-                                                    promotion.nom + " " + promotion.prenom &&
-                                                    promotion.prenom}
+                                                {promotion.nom ? promotion.nom : ""}
+                                                {" "}
+                                                {promotion.prenom ? promotion.prenom : ""}
                                             </td>
                                             <td className="px-4 py-2">
                                                 {promotion.emailEnseignant}

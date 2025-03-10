@@ -126,6 +126,7 @@ const AddPromotion = ({
         dispatchPromotion();
         setPromotion(initialPromotionState);
         setErrors(initialErrors);
+        setError(null)
         onClose();
     };
 
@@ -362,7 +363,9 @@ const AddPromotion = ({
                             </label>
                         </div>
                     </form>
-                    {error && <AlertError error={error}/>}
+                    <div className={"mt-2"}>
+                        {error && <AlertError error={error}/>}
+                    </div>
                     <div className="modal-action">
                         <button className="btn" onClick={handleClose}>Annuler</button>
                         <button
