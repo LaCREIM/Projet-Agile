@@ -1,4 +1,3 @@
-import { anneesUniv } from './../features/PromotionSlice';
 /* tslint:disable */
 /* eslint-disable */
 
@@ -181,8 +180,8 @@ export interface EvaluationDTO {
     designation: string;
     etat: string;
     periode: string;
-    debutReponse: Date | null;
-    finReponse: Date | null;
+    debutReponse: string;
+    finReponse: string;
 }
 
 export interface Formation {

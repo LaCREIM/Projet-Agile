@@ -1,33 +1,16 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {motion} from "framer-motion";
-import {
-    anneesUniv,
-    getPromotionAsync,
-    getPromotions,
-} from "../../features/PromotionSlice";
+import {anneesUniv, getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
 import {ToastContainer} from "react-toastify";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {
-    faEye,
-    faGraduationCap,
-    faPenToSquare,
-    faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import {faEye, faGraduationCap, faPenToSquare, faTrash,} from "@fortawesome/free-solid-svg-icons";
 import AddPromotion from "./AddPromotion";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import UpdatePromotion from "./UpdatePromotion";
 import StudentHome from "../Etudiant/EtudiantHome.tsx";
-import {
-    Enseignant,
-    PromotionCreate,
-    PromotionDetails,
-} from "../../types/types";
-import {Promotion} from "../../types/types";
+import {Enseignant, Promotion, PromotionCreate, PromotionDetails,} from "../../types/types";
 import {DetailsPromotions} from "./DetailsPromotions";
-import {
-    getAllEnseignant,
-    getAllEnseignantAsync,
-} from "../../features/EnseignantSlice";
+import {getAllEnseignant, getAllEnseignantAsync,} from "../../features/EnseignantSlice";
 
 import {FaSearch} from "react-icons/fa";
 import {diplomeMapper} from "../../mappers/mappers";
@@ -39,12 +22,13 @@ const userId = localStorage.getItem("id");
 const PromotionHome = () => {
     document.title = "UBO | Promotions";
     const dispatch = useAppDispatch();
-    let promotions = useAppSelector<Promotion[]>(getPromotions);
-    promotions = promotions.filter((promotion) => {
-        if (role == "ENS") {
-            return promotion.noEnseignant == userId;
-        } else return promotion
-    });
+    const promotions = useAppSelector<Promotion[]>(getPromotions);
+
+    // promotions = promotions.filter((promotion) => {
+    //     if (role == "ENS") {
+    //         return promotion.noEnseignant == userId;
+    //     } else return promotion
+    // });
 
     const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
     const [search, setSearch] = useState<string>("");
@@ -186,6 +170,12 @@ const PromotionHome = () => {
         });
         setFilteredPromotions(sortedPromotions);
     };
+
+    const filteredPromotionsByRole = filteredPromotions.filter((promotion) => {
+        if (role == "ENS") {
+            return promotion.noEnseignant == userId;
+        } else return promotion
+    });
     return (
         <>
             <ToastContainer/>
@@ -246,7 +236,7 @@ const PromotionHome = () => {
                                         (sortOrder === "asc" ? "↑" : "↓")}
                                 </th>
                                 <th onClick={() => handleSortChange("diplome")}>
-                                    Diplome{" "}
+                                    Diplôme{" "}
                                     {sortField === "diplome" &&
                                         (sortOrder === "asc" ? "↑" : "↓")}
                                 </th>
@@ -268,7 +258,7 @@ const PromotionHome = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {filteredPromotions.length === 0 ? (
+                            {filteredPromotionsByRole.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={11}
@@ -278,7 +268,7 @@ const PromotionHome = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredPromotions.map(
+                                filteredPromotionsByRole.map(
                                     (promotion: Promotion, index: number) => (
                                         <tr
                                             key={index}
