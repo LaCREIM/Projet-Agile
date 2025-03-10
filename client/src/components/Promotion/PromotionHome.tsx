@@ -34,9 +34,13 @@ const PromotionHome = () => {
     const [sortField, setSortField] = useState<string>("codeFormation");
     const [sortOrder, setSortOrder] = useState<string>("asc");
 
-
-    const isEditable = (promotion: Promotion) =>
-        anneesUniv.find((el) => el == promotion.anneeUniversitaire);
+    const isEditable = (promotion: Promotion) => {
+        if (role == "ENS") {
+            return false;
+        }
+        return !!anneesUniv.find((el) => el == promotion.anneeUniversitaire);
+    }
+    console.log(isEditable)
 
     const MotionVariant = {
         initial: {
@@ -166,7 +170,6 @@ const PromotionHome = () => {
     };
 
     const filteredPromotionsByRole = filteredPromotions.filter((promotion) => {
-        console.log(role)
         if (role == "ENS") {
             return promotion.noEnseignant == userId;
         } else return promotion
@@ -364,10 +367,13 @@ const PromotionHome = () => {
                                                                 ? "text-gray-400 cursor-not-allowed"
                                                                 : ""
                                                         }`}
-                                                        onClick={() =>
-                                                            openModal(
-                                                                `delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
-                                                            )
+                                                        onClick={() => {
+                                                            if (isEditable(promotion)) {
+                                                                openModal(
+                                                                    `delete-${promotion.anneeUniversitaire}-${promotion.siglePromotion}`
+                                                                )
+                                                            }
+                                                        }
                                                         }
                                                     />
                                                 </div>
