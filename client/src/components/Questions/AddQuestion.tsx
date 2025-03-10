@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../hook/hooks";
 import {
   fetchQuestionsAsync,
   createQuestionAsync,
+  createQuestionPersoAsync,
 } from "../../features/QuestionSlice";
 import { Question, Enseignant, Qualificatif } from "../../types/types";
 import { toast } from "react-toastify";
@@ -56,22 +57,46 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
   const canSave =
     question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (canSave) {
-      const res = await dispatch(createQuestionAsync(question));
-      console.log(res);
-
-      if (res?.type === "questions/create/rejected") {
-        setError(res.payload as string);
-      } else if (res?.type === "questions/create/fulfilled") {
-        toast.success(res.payload as string);
-        dispatch(fetchQuestionsAsync());
-        handleReset();
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+    
+      if (!canSave) return;
+    
+      const role = localStorage.getItem("role");
+      const userId = localStorage.getItem("id");
+    console.log("role", role);
+    console.log("userId", userId);
+      if (!userId) {
+        toast.error("Utilisateur non identifié !");
+        setError("Impossible de récupérer l'identifiant de l'utilisateur.");
+        return;
       }
-    }
-  };
+    
+      const isEnseignant = role === "ENS";
+      const questionToSend = question;
+      questionToSend.noEnseignant = Number(userId) as unknown as Enseignant;
+      const action = isEnseignant
+        ? createQuestionPersoAsync(questionToSend)
+        : createQuestionAsync(questionToSend);
+    
+      try {
+        const res = await dispatch(action);
+    
+        if (res.meta.requestStatus === "fulfilled") {
+          toast.success("Question ajoutée avec succès !");
+          dispatch(fetchQuestionsAsync()); // Rafraîchissement de la liste
+          handleReset();
+        } else {
+          console.error("Erreur lors de l'ajout :", res.payload);
+          toast.error(res.payload as string);
+          setError(res.payload as string);
+        }
+      } catch (err) {
+        console.error("Exception lors de l'ajout de la question :", err);
+        toast.error("Une erreur est survenue.");
+      }
+    };    
+    
 
   const handleReset = () => {
     setQuestion({

@@ -122,6 +122,7 @@ public class QuestionPrsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
         if (!questionPrsService.getQuestionById(id).isPresent()) {
