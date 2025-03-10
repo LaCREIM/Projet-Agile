@@ -80,7 +80,7 @@ public class PromotionController {
                 response.put("error", "La promotion existe déjà");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-            Promotion savedPromotion = promotionService.createPromotion(promotion);
+            promotionService.createPromotion(promotion);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Promotion créée avec succès");
             return ResponseEntity.ok(response);
