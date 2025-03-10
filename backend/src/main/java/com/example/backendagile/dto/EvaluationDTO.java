@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 public class EvaluationDTO {
     private Long idEvaluation;
     private Long noEnseignant;
+    private String nomEnseignant;  
+    private String prenomEnseignant; 
     private String codeFormation;
     private String anneeUniversitaire;
     private String codeUE;
@@ -52,6 +54,20 @@ public class EvaluationDTO {
     }
     public void setCodeFormation(String codeFormation) {
         this.codeFormation = codeFormation;
+    }
+
+    public String getNomEnseignant() {
+        return nomEnseignant;
+    }
+    public void setNomEnseignant(String nomEnseignant) {
+        this.nomEnseignant = nomEnseignant;
+    }
+
+    public String getPrenomEnseignant() {
+        return prenomEnseignant;
+    }
+    public void setPrenomEnseignant(String prenomEnseignant) {
+        this.prenomEnseignant = prenomEnseignant;
     }
 
     public String getAnneeUniversitaire() {
