@@ -41,8 +41,12 @@ public class LoginController {
             response.put("message", "Login successful");
             response.put("token", token);
             response.put("role", auth.getRole());
-            response.put("id", String.valueOf(auth.getId()));
-
+            if(auth.getNoEtudiant() != null) {
+                response.put("id", String.valueOf(auth.getNoEtudiant().getNoEtudiant()));
+            }
+            else if(auth.getNoEnseignant() != null) {
+                response.put("id", String.valueOf(auth.getNoEnseignant().getNoEnseignant()));
+            }
             return ResponseEntity.ok()
                     .header("Set-Cookie", String.format("token=%s; HttpOnly; Secure; Path=/; Max-Age=%d", token, cookie.getMaxAge()))
                     .body(response);
