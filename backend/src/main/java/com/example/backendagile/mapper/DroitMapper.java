@@ -7,6 +7,7 @@ import com.example.backendagile.entities.Enseignant;
 import com.example.backendagile.entities.Evaluation;
 import com.example.backendagile.services.EnseignantService;
 import com.example.backendagile.services.EvaluationService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class DroitMapper {
 
     private final EvaluationService evaluationService;
 
-    public DroitMapper(EnseignantService enseignantService, EvaluationService evaluationService) {
+    public DroitMapper(EnseignantService enseignantService, @Lazy EvaluationService evaluationService) {
         this.enseignantService = enseignantService;
         this.evaluationService = evaluationService;
     }

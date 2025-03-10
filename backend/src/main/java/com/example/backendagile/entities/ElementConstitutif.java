@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "ELEMENT_CONSTITUTIF", schema = "DOSI_DEV", indexes = {
         @Index(name = "EC_UE_FK_I", columnList = "CODE_FORMATION, CODE_UE"),
@@ -15,12 +17,17 @@ public class ElementConstitutif {
 
     @MapsId
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumns({
             @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION"),
             @JoinColumn(name = "CODE_UE", referencedColumnName = "CODE_UE")
     })
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private com.example.backendagile.entities.UniteEnseignement uniteEnseignement;
+
+
+    @Column(name = "CODE_EC", nullable = false)
+    private String codeEc;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
@@ -104,6 +111,13 @@ public class ElementConstitutif {
 
     public void setNbhTp(Short nbhTp) {
         this.nbhTp = nbhTp;
+    }
+
+    public String getCodeEc() {
+        return codeEc;
+    }
+    public void setCodeEc(String codeEc) {
+        this.codeEc = codeEc;
     }
 
 }

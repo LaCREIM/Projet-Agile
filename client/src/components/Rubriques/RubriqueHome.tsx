@@ -77,7 +77,6 @@ const RubriqueHome = () => {
 
   return (
     <>
-      {/* <ToastContainer theme="colored"/> */}
       <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl font-bold">Liste des rubriques</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[60%] ">
