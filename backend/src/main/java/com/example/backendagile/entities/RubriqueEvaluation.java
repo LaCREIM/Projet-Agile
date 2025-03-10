@@ -3,7 +3,7 @@ package com.example.backendagile.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
+import java.util.List;
 @Entity
 @Table(name = "RUBRIQUE_EVALUATION", schema = "DOSI_DEV", indexes = {
         @Index(name = "REV_EVE_FK_I", columnList = "ID_EVALUATION"),
@@ -29,6 +29,16 @@ public class RubriqueEvaluation {
 
     @Column(name = "DESIGNATION", length = 64)
     private String designation;
+    @OneToMany(mappedBy = "idRubriqueEvaluation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QuestionEvaluation> questions;
+
+    public List<QuestionEvaluation> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<QuestionEvaluation> questions) {
+        this.questions = questions;
+    }
 
     public Long getId() {
         return id;

@@ -6,7 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import java.util.List;
 import java.time.LocalDate;
 
 @Entity
@@ -87,6 +87,17 @@ public class Evaluation {
 
     @Column(name = "FIN_REPONSE", nullable = false)
     private LocalDate finReponse;
+
+    @OneToMany(mappedBy = "idEvaluation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RubriqueEvaluation> rubriqueEvaluations;
+
+    public List<RubriqueEvaluation> getRubriqueEvaluations() {
+        return rubriqueEvaluations;
+    }
+
+    public void setRubriqueEvaluations(List<RubriqueEvaluation> rubriqueEvaluations) {
+        this.rubriqueEvaluations = rubriqueEvaluations;
+    }
 
     public Long getId() {
         return id;

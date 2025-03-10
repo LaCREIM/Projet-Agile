@@ -36,6 +36,7 @@ public class QuestionEvaluation {
     @Column(name = "INTITULE", length = 64)
     private String intitule;
 
+
     public Long getId() {
         return id;
     }
