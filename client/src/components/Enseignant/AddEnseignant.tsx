@@ -87,11 +87,11 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
     }
     if (!/^\d{5}$/.test(enseignant.codePostal)) {
       newErrors.codePostal = "Le code postal doit contenir 5 chiffres.";
-  }
+    }
 
   if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/.test(enseignant.nom)) {
     newErrors.nom = "Le nom ne doit contenir que des lettres.";
-  }
+    }
   
   if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/.test(enseignant.prenom)) {
     newErrors.prenom = "Le prénom ne doit contenir que des lettres.";
@@ -136,6 +136,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
   useEffect(() => {
     dispatch(getDomainePaysAsync());
   }, [dispatch]);
+  
   const handleCancel = () => {
     setEnseignant(enseignantNull);
     setErrors({});

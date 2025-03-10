@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { anneesUniv } from './../features/PromotionSlice';
 /* tslint:disable */
 /* eslint-disable */
