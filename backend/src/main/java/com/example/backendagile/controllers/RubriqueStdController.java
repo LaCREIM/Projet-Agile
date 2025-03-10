@@ -59,6 +59,11 @@ public class RubriqueStdController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<String> updateStandardRubrique(@PathVariable Long id, @RequestBody RubriqueStdDTO rubriqueDto) {
+
+        if(rubriqueStdService.existsRubriqueInEvaluation(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique est utilisée dans une évaluation Vous pouvez pas modifier la Designation.");
+        }
+
         Optional<Rubrique> existingRubrique = rubriqueStdService.findById(id);
 
         if (existingRubrique.isEmpty()) {
