@@ -4,6 +4,7 @@ import axiosInstance from "../api/axiosConfig";
 import { Evaluation, EvaluationDTO } from "../types/types";
 
 interface EvaluationState {
+    evaluation: EvaluationDTO;
     evaluations: EvaluationDTO[];
     totalPages: number;
     loading: boolean;
@@ -11,6 +12,7 @@ interface EvaluationState {
 }
 
 const initialState: EvaluationState = {
+    evaluation: {} as EvaluationDTO,
     evaluations: [],
     totalPages: 0,  // Ajout du total de pages
     loading: false,
@@ -18,11 +20,26 @@ const initialState: EvaluationState = {
 };
 
 
-export const fetchEvaluationAsync = createAsyncThunk<EvaluationDTO[], void, { rejectValue: string }>(
+export const fetchEvaluationAsync = createAsyncThunk<EvaluationDTO[], string, { rejectValue: string }>(
     "evaluations/fetchEvaluationAsync",
-    async (_, { rejectWithValue }) => {
+    async (enseignantId, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<EvaluationDTO[]>("/evaluations/enseignant/1");
+            // const response = await axiosInstance.get<EvaluationDTO[]>(`/evaluations/enseignant/${Number(enseignantId)}`);
+            const response = await axiosInstance.get<EvaluationDTO[]>(`/evaluations/enseignant/${1}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
+        }
+    }
+);
+
+export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { rejectValue: string }>(
+    "evaluations/getEvaluationByIdAsync",
+    async (evaluationId, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<EvaluationDTO>(`/evaluations/enseignants/1/${evaluationId}`);
+            console.log(response.data);
+            
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -161,7 +178,7 @@ export const deleteEvaluationAsync = createAsyncThunk<
     number,
     { rejectValue: string }
 >(
-    "Evaluations/delete",
+    "evaluations/delete",
     async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete(`/evaluations/${id}`);
@@ -200,49 +217,31 @@ const EvaluationSlice = createSlice({
         builder.addCase(fetchEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO[]>) => {
             state.evaluations = action.payload;
             state.loading = false;
-        });
-       
-
-        // **Récupérer les Evaluations paginées**
-        builder.addCase(getEvaluationAsync.pending, (state) => {
+        })
+        .addCase(getEvaluationByIdAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
+            state.evaluation = action.payload;
+            state.loading = false;
+        })
+        .addCase(getEvaluationAsync.pending, (state) => {
             state.loading = true;
             state.error = null;
-        });
-        // builder.addCase(getEvaluationAsync.fulfilled, (state, action: PayloadAction<{ content: Evaluation[]; totalPages: number }>) => {
-        //     state.evaluations = action.payload.content; 
-        //     state.totalPages = action.payload.totalPages;
-        //     state.loading = false;
-        // });
-        builder.addCase(getEvaluationAsync.rejected, (state, action) => {
+        })
+        .addCase(getEvaluationAsync.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
-        });
-
-        // **Créer une Evaluation**
-        builder.addCase(createEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
+        })
+        .addCase(createEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
             state.evaluations.push(action.payload);
-        });
-        builder.addCase(createEvaluationAsync.rejected, (state, action) => {
+        })
+        .addCase(createEvaluationAsync.rejected, (state, action) => {
             state.error = action.payload as string;
         });
 
-        // **Mettre à jour une Evaluation**
-        // builder.addCase(updateEvaluationAsync.fulfilled, (state, action: PayloadAction<Evaluation>) => {
-        //     const index = state.Evaluations.findIndex((q) => q.id === action.payload.id);
-        //     if (index !== -1) {
-        //         state.Evaluations[index] = action.payload;
-        //     }
-        // });
-        // builder.addCase(updateEvaluationAsync.rejected, (state, action) => {
-        //     state.error = action.payload as string;
-        // });
-
-        // // **Supprimer une Evaluation**
-        // builder.addCase(deleteEvaluationAsync.rejected, (state, action) => {
-        //     state.error = action.payload as string;
-        // });
+        
     },
 });
+
+export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 
 export default EvaluationSlice.reducer;
 

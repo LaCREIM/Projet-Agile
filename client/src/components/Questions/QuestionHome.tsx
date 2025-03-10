@@ -13,6 +13,7 @@ import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation.tsx";
 
 const QuestionHome = () => {
   const role = localStorage.getItem('role');
+
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector(
@@ -74,8 +75,8 @@ const QuestionHome = () => {
   return (
     <>
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1 className="text-xl">Liste des questions</h1>
-        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
+        <h1 className="text-xl font-bold">Liste des questions</h1>
+        <div className="flex flex-row items-center justify-end gap-5 w-[70%] px-14">
           <div className="tooltip" data-tip="Ajouter une question">
             <button
               className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
@@ -86,12 +87,14 @@ const QuestionHome = () => {
           </div>
         </div>
 
+
         <div className="overflow-y-auto w-full">
           <table className="table table-zebra w-[75%] mx-auto">
+
             <thead>
               <tr>
                 <th>Intitulé</th>
-                <th>Qualificatif</th>
+                <th>Qualificatifs</th>
                 <th>Type</th>
                 <th className="text-center">Actions</th>
               </tr>

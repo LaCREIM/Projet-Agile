@@ -113,4 +113,8 @@ public class RubriquePrsService {
                 .map(rubriqueMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public Boolean existsRubriqueInEvaluation(Long id) {
+        return rubriqueRepository.existsRubriqueInEvaluation(id);
+    }
 }

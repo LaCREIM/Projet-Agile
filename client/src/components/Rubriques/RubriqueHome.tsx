@@ -4,9 +4,8 @@ import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { deleteRubriqueAsync, getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, getRubriquesAsync, RubriqueQuestion, searchRubriquesAsync, setQuestions } from "../../features/RubriqueSlice";
+import { getQuestionsRubrique, getQuestionsStandardAsync, getRubriques, RubriqueQuestion, searchRubriquesAsync, setQuestions } from "../../features/RubriqueSlice";
 import { Rubrique } from "../../types/types";
-import { toast } from "react-toastify";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
 import { RootState } from "../../api/store";
@@ -76,30 +75,11 @@ const RubriqueHome = () => {
     }
   }, [questions, modal.rubrique]);
 
-
-  const handleDelete = async (rubrique: Rubrique, e : React.MouseEvent) => {
-    console.log(e);
-    try {
-      const response = await dispatch(deleteRubriqueAsync(rubrique.id));
-
-      if (response?.type == "rubriques/delete/rejected") {
-        toast.error(
-          "Cette rubrique est déjà utilisée et ne peut pas être supprimée."
-        );
-      } else if (response?.type == "rubriques/delete/fulfilled") {
-        toast.success("Rubrique supprimée avec succès.");
-        await dispatch(getRubriquesAsync());
-      }
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Une erreur est survenue lors de la suppression.");
-    }
-  };
-
   return (
     <>
+      {/* <ToastContainer theme="colored"/> */}
       <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1 className="text-xl">Liste des rubriques</h1>
+        <h1 className="text-xl font-bold">Liste des rubriques</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[60%] ">
           <div></div>
           <div className="tooltip" data-tip="Ajouter une rubrique">
@@ -112,12 +92,13 @@ const RubriqueHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[60%]">
-          <table className="table table-zebra">
-            <thead>
+        <div className="overflow-y-auto w-[50%]">
+          <table className="table table-zebra text-base">
+            <thead className="text-base">
               <tr>
-                <th>Designantion</th>
+                <th>Désignantion</th>
                 <th>Actions</th>
+
               </tr>
             </thead>
             <tbody>
@@ -132,12 +113,11 @@ const RubriqueHome = () => {
                 </tr>
               ) : (
                 rubriques.map((rubrique: Rubrique, index: number) => (
-                  <tr
-                    key={rubrique.id}
-                    className=" hover:bg-gray-50 transition-all duration-75"
-                  >
-                    <td className="px-4 py-2">{rubrique.designation}</td>
+
+                  <tr key={rubrique.id}>
+                    <td className="px-4 py-2 ">{rubrique.designation}</td>
                     <td className="flex gap-3 items-center">
+
                       <FontAwesomeIcon
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
@@ -167,6 +147,7 @@ const RubriqueHome = () => {
                           rubrique={modal.rubrique}
                           questions={questionPass}
                           allQuestions={allQuestions}
+                          onClose={() => closeModal(`inspect-${index}`)}
                         />
                       )}
                     </dialog>
