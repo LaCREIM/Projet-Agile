@@ -1,19 +1,20 @@
 import React, {FormEvent, useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {
-    getFormationAsync,
-    postPromotionsAsync,
-    getFormations,
-    getDomaineLieuEntreeAsync,
-    Domaine,
-    getSalles,
-    getProcessusStages,
-    getDomaineProcessusStageAsync,
-    getDomaineDiplomeAsync,
     anneesUniv,
+    Domaine,
+    getDomaineDiplomeAsync,
+    getDomaineLieuEntreeAsync,
+    getDomaineProcessusStageAsync,
+    getFormationAsync,
+    getFormations,
+    getProcessusStages,
+    getSalles,
+    postPromotionsAsync,
 } from "../../features/PromotionSlice";
 
 import {Enseignant, Formation, PromotionCreate} from "../../types/types";
+import AlertError from "../ui/alert-error.tsx";
 
 interface AddPromotionProps {
     dispatchPromotion: () => void;
@@ -23,12 +24,13 @@ interface AddPromotionProps {
 
 const initialErrors = {
     dateError: null as string | null,
-    telephoneError: null as string | null,
+    nombreEtudiantMax: null as string | null,
     mobileError: null as string | null,
     groupeTpError: null as string | null,
     groupeAnglaisError: null as string | null,
     emailError: null as string | null,
     emailUboError: null as string | null,
+    siglePromotionError: null as string | null,
 };
 
 const AddPromotion = ({
@@ -52,7 +54,7 @@ const AddPromotion = ({
         dateReponseLalp: null,
         dateRentree: null,
         lieuRentree: "",
-        processusStage: "",
+        processusStage: "RECH",
         commentaire: "",
         anneeUniversitaire: "",
         diplome: "",
@@ -74,13 +76,24 @@ const AddPromotion = ({
 
         const newErrors = {...errors};
 
-        if (name === "nbMaxEtudiant") {
-            const nbMaxEtudiant = parseInt(value, 10);
-            if (nbMaxEtudiant < 0 || nbMaxEtudiant > 1000) {
-                newErrors.telephoneError =
-                    "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.";
+        if (name === "siglePromotion") {
+            const alphanumericRegex = /^[a-zA-Z0-9]*$/;
+            if (!alphanumericRegex.test(value)) {
+                newErrors.siglePromotionError = "Seuls les caractères alphanumériques sont autorisés.";
             } else {
-                newErrors.telephoneError = null;
+                newErrors.siglePromotionError = null;
+            }
+        }
+
+        if (name === "nbMaxEtudiant") {
+            const nbMaxEtudiant = Number(value); // Convert value to number
+
+            if (!Number.isInteger(nbMaxEtudiant)) {
+                newErrors.nombreEtudiantMax = "Le nombre maximal d'étudiants doit être un entier.";
+            } else if (nbMaxEtudiant < 0 || nbMaxEtudiant > 1000) {
+                newErrors.nombreEtudiantMax = "Le nombre maximal d'étudiants doit être compris entre 0 et 1000.";
+            } else {
+                newErrors.nombreEtudiantMax = null;
             }
         }
 
@@ -113,6 +126,7 @@ const AddPromotion = ({
         dispatchPromotion();
         setPromotion(initialPromotionState);
         setErrors(initialErrors);
+        setError(null)
         onClose();
     };
 
@@ -158,11 +172,14 @@ const AddPromotion = ({
                                         placeholder="Ex: DOSI"
                                     />
                                 </label>
+                                {errors.siglePromotionError && (
+                                    <p className="text-red-500 text-sm">{errors.siglePromotionError}</p>
+                                )}
                             </div>
                             <div className="flex flex-col gap-1 ">
                                 <label className="input input-bordered flex items-center gap-2 w-[95%]">
                   <span className="font-semibold">
-                    Nombre des étudiants <span className="text-red-500">*</span>
+                    Nombre d'étudiants <span className="text-red-500">*</span>
                   </span>
                                     <input
                                         min={0}
@@ -176,8 +193,8 @@ const AddPromotion = ({
                                         placeholder="Ex: 25"
                                     />
                                 </label>
-                                {errors.telephoneError && (
-                                    <p className="text-red-500 text-sm">{errors.telephoneError}</p>
+                                {errors.nombreEtudiantMax && (
+                                    <p className="text-red-500 text-sm">{errors.nombreEtudiantMax}</p>
                                 )}
                             </div>
                             <div className="flex flex-col gap-1">
@@ -218,7 +235,7 @@ const AddPromotion = ({
                                 </select>
                             </label>
                             <label className="flex flex-row items-center gap-2">
-                                <span className="font-semibold w-[15%]">Lieu rentrée</span>
+                                <span className="font-semibold w-[15%]">Lieu de rentrée</span>
                                 <select
                                     className="select w-[80%] max-w-full"
                                     name="lieuRentree"
@@ -285,9 +302,10 @@ const AddPromotion = ({
                                     value={promotion.processusStage}
                                     onChange={handleChange}
                                 >
-                                    <option value="" disabled>
-                                        Sélectionnez un état
-                                    </option>
+                                    {/*<option value="" disabled>*/}
+                                    {/*    Sélectionnez un état*/}
+                                    {/*</option>*/}
+                                    {/*<option value="RECH">Recherche en cours</option>*/}
                                     {processusStage.map((ps) => (
                                         <option key={ps.rvLowValue} value={ps.rvLowValue}>
                                             {ps.rvMeaning}
@@ -345,7 +363,9 @@ const AddPromotion = ({
                             </label>
                         </div>
                     </form>
-                    {error && <div className="text-red-500 text-sm mb-4 mt-2">{error}</div>}
+                    <div className={"mt-2"}>
+                        {error && <AlertError error={error}/>}
+                    </div>
                     <div className="modal-action">
                         <button className="btn" onClick={handleClose}>Annuler</button>
                         <button
