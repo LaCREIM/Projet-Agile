@@ -32,8 +32,8 @@ long countByType(String type);
     @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
     Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
 
-    @Query("SELECT q FROM Question q WHERE q.intitule = :intitule and q.idQualificatif.id = :idQualificatif")
-    List<Question> findQuestionByIntitule(String intitule , Long idQualificatif);
+    @Query("SELECT q FROM Question q WHERE UPPER(q.intitule) = UPPER(:intitule) AND q.idQualificatif.id = :idQualificatif")
+    List<Question> findQuestionByIntitule(String intitule, Long idQualificatif);
 
 
 
@@ -73,5 +73,7 @@ long countByType(String type);
     """, nativeQuery = true)
 long countSearchQuestions(@Param("keyword") String keyword);
 
+@Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe WHERE qe.idQuestion.id = :idQuestion")
+boolean existsQuestionInEvaluation(@Param("idQuestion") Long idQuestion);
     
 }

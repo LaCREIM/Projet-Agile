@@ -40,6 +40,7 @@ public class RubriquePrsController {
     @PostMapping
     public ResponseEntity<String> createRubrique(@RequestBody RubriquePrsDTO dto) {
         try {
+
             Optional<Rubrique> existingRubrique = rubriqueService.findByDesignation(dto.getDesignation().trim());
             if(existingRubrique.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique existe déjà.");
@@ -54,6 +55,10 @@ public class RubriquePrsController {
     // ✅ Mettre à jour une rubrique existante
     @PutMapping("/{id}")
     public ResponseEntity<String> updateRubrique(@PathVariable Long id, @RequestBody RubriquePrsDTO dto) {
+
+        if(rubriqueService.existsRubriqueInEvaluation(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("La rubrique est utilisée dans une évaluation Vous pouvez pas modifier la Designation.");
+        }
         Optional<Rubrique> existingRubrique = rubriqueService.findById(id);
 
         if (existingRubrique.isEmpty()) {

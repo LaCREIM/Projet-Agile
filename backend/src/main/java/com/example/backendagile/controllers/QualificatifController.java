@@ -103,7 +103,7 @@ public class QualificatifController {
         try {
             qualificatifService.deleteById(id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Qualificatif deja utilisé.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Qualificatif déjà utilisé.");
         }
         return ResponseEntity.ok("Qualificatif supprimé avec succès.");
     }

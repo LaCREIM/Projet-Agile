@@ -99,6 +99,10 @@ public class QuestionPrsController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateQuestion(@PathVariable Long id, @RequestBody QuestionPrsDTO questionPrsDTO) {
         try {
+
+            if(questionPrsService.existsQuestionInEvaluation(id)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question est déjà utilisée.");
+            }
             Optional<Question> existingQuestion = questionPrsService.findByIntitule(questionPrsDTO.getIntitule().trim(),questionPrsDTO.getIdQualificatif());
             if(existingQuestion.isPresent()){
                 //Verifier si la nouvelle question est different de l'ancienne

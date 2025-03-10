@@ -183,19 +183,13 @@ const EvaluationHome = () => {
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">
-                      {evaluation.anneeUniversitaire || "N/A"}
+                      {evaluation.anneeUniversitaire}
                     </td>
+                    <td className="px-4 py-2">{evaluation.nomFormation}</td>
+                    <td className="px-4 py-2">{evaluation.designation}</td>
+                    <td className="px-4 py-2">{evaluation.periode}</td>
                     <td className="px-4 py-2">
-                      {evaluation.nomFormation || "N/A"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation.designation || "N/A"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation?.periode || "N/A"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {etatEvaluationMapper(evaluation?.etat)}
+                      {etatEvaluationMapper(evaluation.etat)}
                     </td>
                     <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
@@ -203,15 +197,25 @@ const EvaluationHome = () => {
                         className="text-black text-base cursor-pointer"
                         onClick={() => {
                           handleClickUpdate(index);
-                          openModal(`updateEvaluation-${index}`);
+                          openModal(
+                            `updateEvaluation-${evaluation.idEvaluation}`
+                          );
                         }}
                       />
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
-                        onClick={() => openModal(`delete-${index}`)}
+                        onClick={() => openModal(`delete-${evaluation.idEvaluation}`)}
                       />
                     </td>
+                    <dialog
+                      id={`delete-${evaluation.idEvaluation}`}
+                      className="modal"
+                    >
+                      <DeleteEvaluationConfirmation
+                        evaluation={evaluation}
+                      />
+                    </dialog>
                   </tr>
                 )
               )

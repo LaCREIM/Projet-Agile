@@ -5,6 +5,9 @@ import {
   getEnseignantAsync,
   postEnseignantAsync,
 } from "../../features/EnseignantSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Enseignant } from "../../types/types";
 import { Eye, EyeOff } from "lucide-react";
 import { getPays } from "../../features/EnseignantSlice";
@@ -42,6 +45,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
       [name]: value,
     }));
   };
+  const [submitting, setSubmitting] = useState(false);
 
   const pays = useAppSelector(getPays);
 
@@ -81,52 +85,58 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
       newErrors.emailPerso =
         "L'email personnel doit être valide (ex: test@domaine.com).";
     }
+    if (!/^\d{5}$/.test(enseignant.codePostal)) {
+      newErrors.codePostal = "Le code postal doit contenir 5 chiffres.";
+    }
 
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/.test(enseignant.nom)) {
+    newErrors.nom = "Le nom ne doit contenir que des lettres.";
+    }
+  
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/.test(enseignant.prenom)) {
+    newErrors.prenom = "Le prénom ne doit contenir que des lettres.";
+  }
+  
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
   const handleSubmit = async (e: React.FormEvent) => {
-
-    if (!canSave) {
-      console.error(
-        "Tous les champs requis doivent être remplis correctement."
-      );
+    e.preventDefault(); // Empêche le rechargement de la page
+    if (!validateFields()) {
+      //toast.error("Veuillez corriger les erreurs du formulaire.");
       return;
     }
   
-    if (!validateFields()) {
-      console.error("Validation échouée.");
-      return;
-    }
+    setSubmitting(true);
   
     try {
       const response = await dispatch(postEnseignantAsync(enseignant)).unwrap();
+      console.log("Enseignant ajouté avec succès :", response);
   
-      console.log("Réponse reçue :", response);
-  
-      if (response !== undefined) {
-        // Rafraîchir la liste des enseignants après un ajout réussi
+      if (response) {
+        toast.success("Enseignant ajouté avec succès !");
         await dispatch(getEnseignantAsync({ page: 1, size: 10 }));
-  
-        // Réinitialisation des champs
         setEnseignant(enseignantNull);
         setErrors({});
-        onClose();
-
-        // 🔹 Fermer le formulaire après soumission réussie
-
-        console.log("Enseignant ajouté avec succès et formulaire fermé !");
+        onClose(); // Ferme le formulaire
       }
     } catch (error) {
       console.error("Erreur lors de l'ajout :", error);
+      toast.error("Erreur lors de l'ajout. Veuillez réessayer.");
+      setErrors((prev) => ({ ...prev, api: "Erreur lors de l'ajout." }));
+    } finally {
+      setSubmitting(false);
     }
   };
   
   
+
+  
   useEffect(() => {
     dispatch(getDomainePaysAsync());
   }, [dispatch]);
+  
   const handleCancel = () => {
     setEnseignant(enseignantNull);
     setErrors({});
@@ -367,10 +377,10 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
                 <button
                   className="btn btn-neutral disabled:cursor-not-allowed"
                   onClick={handleSubmit}
-                  disabled={!canSave}
+                  disabled={!canSave || submitting}
                 >
-                  Ajouter
-                </button>
+                {submitting ? "Ajout en cours..." : "Ajouter"}           
+                     </button>
               </div>
             </form>
           </div>

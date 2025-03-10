@@ -19,9 +19,6 @@ const DeleteQualificatifConfirmation = ({
   const handleDelete = async () => {
     try {
       const response = await dispatch(deleteQualificatifAsync(qualificatif.id));
-
-      console.log(response);
-
       if ((response?.type as string) === "qualificatifs/delete/rejected") {
         toast.error(response.payload);
       } else if ((response?.type as string) === "qualificatifs/delete/fulfilled") {
@@ -37,7 +34,14 @@ const DeleteQualificatifConfirmation = ({
     <>
       <div className="modal-box">
         <h3 className="font-bold text-lg">Cette action est irréversible.</h3>
-        <p className="py-4">Êtes-vous sûr de vouloir supprimer cet étudiant ?</p>
+        <p className="py-4">
+          Êtes-vous sûr de vouloir supprimer le qualificatif:{" "}
+          <b>
+            {" "}
+            {qualificatif.minimal} {" - "} {qualificatif.maximal}
+          </b>{" "}
+          ?
+        </p>
         <div className="modal-action">
           <form method="dialog" className=" space-x-4">
             <button className="btn btn-error text-white" onClick={handleDelete}>

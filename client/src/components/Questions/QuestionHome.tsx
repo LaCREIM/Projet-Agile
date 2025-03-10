@@ -16,6 +16,7 @@ import DeleteQuestionConfirmation from "./DeleteQuestionConfirmation";
 import { typeQuestionMapper } from "../../mappers/mappers";
 
 const QuestionHome = () => {
+
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector(
@@ -78,8 +79,8 @@ const QuestionHome = () => {
     <>
       <ToastContainer theme="colored" />
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1 className="text-xl">Liste des questions</h1>
-        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
+        <h1 className="text-xl font-bold">Liste des questions</h1>
+        <div className="flex flex-row items-center justify-end gap-5 w-[70%] px-14">
           <div className="tooltip" data-tip="Ajouter une question">
             <button
               className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
@@ -90,12 +91,12 @@ const QuestionHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto ">
-          <table className="table table-zebra w-fit">
+        <div className="overflow-y-auto w-[70%]">
+          <table className="table table-zebra ">
             <thead>
               <tr>
                 <th>Intitulé</th>
-                <th>Qualificatif</th>
+                <th>Qualificatifs</th>
                 <th>Type</th>
                 <th className="text-center">Actions</th>
               </tr>
@@ -116,9 +117,7 @@ const QuestionHome = () => {
                     key={question.id}
                     className=" transition-all duration-75 "
                   >
-                    <td className="px-4 py-2 w-[20%]">
-                      {question.intitule || "N/A"}
-                    </td>
+                    <td className="px-4 py-2">{question.intitule || "N/A"}</td>
                     <td className="px-4 py-2">
                       {question?.idQualificatif?.maximal +
                         " - " +
