@@ -174,9 +174,7 @@ public String getCodeFormation() {
     public LocalDate getDebutReponse() {
         return debutReponse;
     }
-  public void setNoEnseignant(Enseignant enseignant) {
-        this.enseignant = enseignant;
-    }
+
    
     public void setDebutReponse(LocalDate debutReponse) {
         this.debutReponse = debutReponse;
@@ -192,6 +190,25 @@ public String getCodeFormation() {
 
     public void setFinReponse(LocalDate finReponse) {
         this.finReponse = finReponse;
+    }
+
+
+    public Evaluation copy() {
+        Evaluation copie = new Evaluation();
+        copie.setEnseignant(this.getEnseignant());
+        copie.setPromotion(this.getPromotion());
+        copie.setNoEvaluation(this.getNoEvaluation());
+        copie.setDesignation(this.getDesignation());
+        copie.setEtat(this.getEtat());
+        copie.setPeriode(this.getPeriode());
+        copie.setDebutReponse(this.getDebutReponse());
+        copie.setFinReponse(this.getFinReponse());
+        copie.setCodeFormation(this.getCodeFormation());
+        copie.setAnneeUniversitaire(this.getAnneeUniversitaire());
+        copie.setCodeUE(this.getCodeUE());
+        copie.setCodeEC(this.getCodeEC());
+        // Ne pas copier l'ID, car il sera généré lors de l'insertion
+        return copie;
     }
 
 }
