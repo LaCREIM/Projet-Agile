@@ -1,14 +1,12 @@
 package com.example.backendagile.services;
 
 import com.example.backendagile.dto.PromotionDTO;
-import com.example.backendagile.entities.Enseignant;
-import com.example.backendagile.entities.Formation;
-import com.example.backendagile.entities.Promotion;
-import com.example.backendagile.entities.PromotionId;
+import com.example.backendagile.entities.*;
 import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.repositories.EnseignantRepository;
 import com.example.backendagile.repositories.FormationRepository;
 import com.example.backendagile.repositories.PromotionRepository;
+import com.example.backendagile.repositories.UniteEnseignementRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +23,14 @@ public class PromotionService {
     private final PromotionRepository promotionRepository;
     private final FormationRepository formationRepository;
     private final EnseignantRepository enseignantRepository;
+    private final UniteEnseignementRepository uniteEnseignementRepository;
 
-
-    public PromotionService(PromotionMapper promotionMapper, PromotionRepository promotionRepository, FormationRepository formationRepository, EnseignantRepository enseignantRepository) {
+    public PromotionService(PromotionMapper promotionMapper, PromotionRepository promotionRepository, FormationRepository formationRepository, EnseignantRepository enseignantRepository, UniteEnseignementRepository uniteEnseignementRepository) {
         this.promotionMapper = promotionMapper;
         this.promotionRepository = promotionRepository;
         this.formationRepository = formationRepository;
         this.enseignantRepository = enseignantRepository;
+        this.uniteEnseignementRepository = uniteEnseignementRepository;
     }
 
     public List<PromotionDTO> getPromotionsByName(String siglePromotion) {
@@ -118,5 +116,31 @@ public class PromotionService {
         return promotionRepository.searchPromotions(keyword.toLowerCase());
     }
 
+    public List<PromotionDTO> getPromotionsByEnseignantForEvaluation(Long noEnseignant) {
+        //if the enseignant is a Responsable;
+        List<Promotion> promotions = promotionRepository.findByNoEnseignant(noEnseignant);
+        if(!promotions.isEmpty()){
+            return promotions.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
+        }
+        //is not a responsable
+        List<UniteEnseignement> ues = uniteEnseignementRepository.findUniteEnseignementByNoEnseignant(noEnseignant);
+
+        Set<String> uniqueCodes = new HashSet<>();
+        // Extraction et insertion dans le Set pour rendre unique
+        ues.forEach(ue -> uniqueCodes.add(ue.getCodeFormation().getCodeFormation()));
+
+        if(uniqueCodes.isEmpty()){
+            return null;
+        }
+        List<Promotion> promotionsByEnseignant = new ArrayList<>() ;
+        for(String codeFormation : uniqueCodes){
+            List<Promotion> prm = promotionRepository.findByCodeFormationActuel(codeFormation);
+            if(!prm.isEmpty()){
+                promotionsByEnseignant.addAll(prm);
+            }
+        }
+
+        return promotionsByEnseignant.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
+    }
 
 }

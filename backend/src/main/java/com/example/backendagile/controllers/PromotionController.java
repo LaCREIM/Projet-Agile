@@ -138,5 +138,9 @@ public class PromotionController {
         return ResponseEntity.ok(result);
     }
 
-
+    @GetMapping("/enseignant/{noEnseignant}")
+    public ResponseEntity<List<PromotionDTO>> getPromotionsByEnseignantForEvaluation(@PathVariable Long noEnseignant) {
+        List<PromotionDTO> promotions = promotionService.getPromotionsByEnseignantForEvaluation(noEnseignant);
+        return ResponseEntity.ok(promotions);
+    }
 }

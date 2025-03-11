@@ -42,6 +42,16 @@ public interface PromotionRepository extends JpaRepository<Promotion, PromotionI
             "OR LOWER(f.nomFormation) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Promotion> searchPromotions(@Param("keyword") String keyword);
 
+
+    @Query("SELECT p FROM Promotion p WHERE p.enseignant.id = :noEnseignant " +
+            "AND (FUNCTION('TO_NUMBER', SUBSTRING(p.id.anneeUniversitaire, 1, 4)) = YEAR(CURRENT_DATE) " +
+            "OR FUNCTION('TO_NUMBER', SUBSTRING(p.id.anneeUniversitaire, 6, 4)) = YEAR(CURRENT_DATE))")
+    List<Promotion> findByNoEnseignant(@Param("noEnseignant") Long noEnseignant);
+
+
+    @Query("SELECT p FROM Promotion p WHERE p.id.codeFormation = :codeFormationActuel AND (FUNCTION('TO_NUMBER', SUBSTRING(p.id.anneeUniversitaire, 1, 4)) = YEAR(CURRENT_DATE) " +
+            "OR FUNCTION('TO_NUMBER', SUBSTRING(p.id.anneeUniversitaire, 6, 4)) = YEAR(CURRENT_DATE))")
+    List<Promotion> findByCodeFormationActuel(String codeFormationActuel);
 }
 
 
