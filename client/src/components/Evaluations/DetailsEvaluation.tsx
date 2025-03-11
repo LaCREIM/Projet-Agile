@@ -341,9 +341,11 @@ const DetailsEvaluation = () => {
 
             {isEditing ? (
               <label className="flex flex-row items-center col-span-2 gap-2 ">
+                <span className="font-semibold w-[15%]">Promotion</span>
+                <span className="text-red-500">*</span>
                 <select
                   required
-                  className="select w-full"
+                  className="select w-[80%]"
                   name="promotion"
                   value={
                     evaluationEdit.anneeUniversitaire &&
@@ -355,7 +357,6 @@ const DetailsEvaluation = () => {
                 >
                   <option value="" disabled>
                     Sélectionner une promotion{" "}
-                    <span className="text-red-500"> *</span>
                   </option>
                   {promotions.map((promotion, idx) => (
                     <option
@@ -376,9 +377,13 @@ const DetailsEvaluation = () => {
 
             {isEditing ? (
               <label className="flex flex-row items-center gap-2">
+                <span className="font-semibold w-[15%]">
+                  Unité d'enseignement
+                </span>
+                <span className="text-red-500">*</span>
                 <select
                   required
-                  className="select w-full"
+                  className="select w-[80%]"
                   name="codeUE"
                   value={evaluationEdit.codeUE || ""}
                   onChange={handleUniteEnseignementChange}
