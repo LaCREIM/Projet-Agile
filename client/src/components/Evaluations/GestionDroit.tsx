@@ -105,24 +105,19 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
     }
   };
 
-  // Fonction pour marquer un droit à supprimer
   const handleSupprimerDroit = (droit: Droit) => {
     if (droitsASupprimer.some((d) => d.idEnseignant === droit.idEnseignant)) {
-      // Si le droit est déjà marqué pour suppression, le retirer de la liste
       setDroitsASupprimer((prev) =>
         prev.filter((d) => d.idEnseignant !== droit.idEnseignant)
       );
     } else {
-      // Sinon, l'ajouter à la liste des droits à supprimer
       setDroitsASupprimer((prev) => [...prev, droit]);
     }
   };
 
-  // Fonction pour valider les modifications
   const validerModifications = async () => {
     let resultat = false;
     try {
-      // Envoyer les droits ajoutés
       for (const droit of droitsAjoutes) {
         const resAjout = await dispatch(createDroitAsync(droit));
         if (resAjout?.type === "droits/createDroitAsync/fulfilled") {
@@ -130,7 +125,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         }
       }
 
-      // Envoyer les droits modifiés
       for (const droit of droitsModifies) {
         const resModif = await dispatch(updateDroitAsync(droit));
         if (resModif?.type === "droits/updateDroitAsync/fulfilled") {
@@ -138,7 +132,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         }
       }
 
-      // Supprimer les droits marqués pour suppression
       for (const droit of droitsASupprimer) {
         const resSuppr = await dispatch(deleteDroitAsync(droit));
         if (resSuppr?.type === "droits/deleteDroitAsync/fulfilled") {
@@ -155,7 +148,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         setError("Erreur lors de la sauvegarde des droits");
       }
 
-
       setDroitsAjoutes([]);
       setDroitsModifies([]);
       setDroitsASupprimer([]);
@@ -171,7 +163,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
     setDroitsAjoutes([]);
     setDroitsModifies([]);
     setDroitsASupprimer([]);
-    console.log("Modifications annulées");
   };
 
   const handleAjoutEnseignant = () => {
@@ -306,14 +297,13 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
           )}
         </div>
 
-        {/* Tableau des enseignants */}
         <table className="table w-full">
           <thead>
             <tr>
               <th>Enseignant</th>
               <th>Duplication</th>
               <th>Consultation</th>
-              {editionMode && (<th>Actions</th>)}
+              {editionMode && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -364,7 +354,8 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                   {editionMode && (
                     <td>
                       <button
-                        className="btn btn-ghost btn-sm"
+                        className="cursor-pointer tooltip"
+                        data-tip="Supprimer le droit"
                         onClick={() => handleSupprimerDroit(droit)}
                       >
                         <FaTrash
