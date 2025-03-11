@@ -60,8 +60,8 @@ export interface Droit {
     id: DroitId;
     idEvaluation: Evaluation;
     noEnseignant: Enseignant;
-    consultation: boolean;
-    duplication: boolean;
+    consultation: string;
+    duplication: string;
 }
 
 

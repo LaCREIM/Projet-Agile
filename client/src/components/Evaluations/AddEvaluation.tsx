@@ -331,7 +331,9 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
             </div>
           </div>
         </form>
+        <div className={"mt-2"}>
         {error && <AlertError error={error} />}
+        </div>
 
         <div className="modal-action">
           <button className="btn" onClick={resetEvaluation}>
