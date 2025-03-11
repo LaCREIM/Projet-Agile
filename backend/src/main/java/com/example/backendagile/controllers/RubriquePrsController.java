@@ -135,7 +135,7 @@ public class RubriquePrsController {
     }
 
     @GetMapping("/std-prs/{noEnseignant}")
-    public List<RubriquePrsDTO> getRubriquesStdAndPerso(Long noEnseignant) {
+    public List<RubriquePrsDTO> getRubriquesStdAndPerso(@PathVariable Long noEnseignant) {
         return rubriqueService.getRubriqueStdAndPerso(noEnseignant);
     }
 }

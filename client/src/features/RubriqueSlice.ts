@@ -52,6 +52,40 @@ export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValu
   }
 );
 
+export const getAllRubriquesPersoAsync = createAsyncThunk<
+  Rubrique[],
+  { idEnseignant: number },
+  { rejectValue: string }
+>(
+  "rubriques/getAllRubriquesPersoAsync",
+  async ({ idEnseignant }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/rubriquesPrs/std-prs/${idEnseignant}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la récupération de toutes les rubriques personnelles.");
+    }
+  }
+);
+
+export const createRubriquePersoAsync = createAsyncThunk<
+  Rubrique,
+  { designation: string; noEnseignant: number },
+  { rejectValue: string }
+>(
+  "rubriques/createRubriquePersoAsync",
+  async (rubriqueData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/rubriquesPrs", rubriqueData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la création de la rubrique personnelle.");
+    }
+  }
+);
+
 export const searchRubriquesAsync = createAsyncThunk<
   { rubriques: Rubrique[]; totalPages: number },
   { page: number; size: number },
