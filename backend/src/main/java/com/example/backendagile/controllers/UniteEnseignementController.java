@@ -20,4 +20,10 @@ public class UniteEnseignementController {
     public List<UniteEnseignementDTO> getAllUnitesEnseignement() {
         return uniteEnseignementService.getAllUnitesEnseignement();
     }
+
+    @GetMapping("/enseignant/{noEnseignant}")
+    public List<UniteEnseignementDTO> getUnitesEnseignementByEnseignant(Long noEnseignant) {
+        return uniteEnseignementService.getUnitesEnseignementByPromotion(noEnseignant);
+    }
 }
+
