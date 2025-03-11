@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MdCheck } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
+import { FaTrash } from "react-icons/fa6";
 import { Enseignant, Droit } from "../../types/types"; // Importez vos types
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
@@ -8,13 +9,18 @@ import {
   getDroits,
   createDroitAsync,
   updateDroitAsync,
+  deleteDroitAsync, // Importez l'action de suppression
 } from "../../features/DroitSlice"; // Importez updateDroitAsync
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
+import { motion } from "framer-motion";
 
 // Définir les types
 type EnseignantDisponible = {
   id: number;
   nom: string;
+  prenom: string;
 };
 
 interface GestionDroitProps {
@@ -42,6 +48,8 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
 
   const [droitsAjoutes, setDroitsAjoutes] = useState<Droit[]>([]); // Droits ajoutés
   const [droitsModifies, setDroitsModifies] = useState<Droit[]>([]); // Droits modifiés
+  const [droitsASupprimer, setDroitsASupprimer] = useState<Droit[]>([]); // Droits à supprimer
+  const [error, setError] = useState<string | null>(null);
 
   // Charger les droits depuis l'API au montage du composant
   useEffect(() => {
@@ -97,39 +105,75 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
     }
   };
 
+  // Fonction pour marquer un droit à supprimer
+  const handleSupprimerDroit = (droit: Droit) => {
+    if (droitsASupprimer.some((d) => d.idEnseignant === droit.idEnseignant)) {
+      // Si le droit est déjà marqué pour suppression, le retirer de la liste
+      setDroitsASupprimer((prev) =>
+        prev.filter((d) => d.idEnseignant !== droit.idEnseignant)
+      );
+    } else {
+      // Sinon, l'ajouter à la liste des droits à supprimer
+      setDroitsASupprimer((prev) => [...prev, droit]);
+    }
+  };
+
   // Fonction pour valider les modifications
   const validerModifications = async () => {
+    let resultat = false;
     try {
       // Envoyer les droits ajoutés
       for (const droit of droitsAjoutes) {
-        await dispatch(createDroitAsync(droit)).unwrap();
+        const resAjout = await dispatch(createDroitAsync(droit));
+        if (resAjout?.type === "droits/createDroitAsync/fulfilled") {
+          resultat = true;
+        }
       }
 
       // Envoyer les droits modifiés
       for (const droit of droitsModifies) {
-        await dispatch(updateDroitAsync(droit)).unwrap();
+        const resModif = await dispatch(updateDroitAsync(droit));
+        if (resModif?.type === "droits/updateDroitAsync/fulfilled") {
+          resultat = true;
+        }
       }
 
-      // Réinitialiser les états
+      // Supprimer les droits marqués pour suppression
+      for (const droit of droitsASupprimer) {
+        const resSuppr = await dispatch(deleteDroitAsync(droit));
+        if (resSuppr?.type === "droits/deleteDroitAsync/fulfilled") {
+          resultat = true;
+        }
+      }
+
+      if (resultat) {
+        toast.success("Modifications enregistrées avec succès");
+        setError(null);
+        await dispatch(fetchDroitsAsync(Number(evaluationId)));
+        handleClose();
+      } else {
+        setError("Erreur lors de la sauvegarde des droits");
+      }
+
+
       setDroitsAjoutes([]);
       setDroitsModifies([]);
+      setDroitsASupprimer([]);
       setEditionMode(false);
-      console.log("Modifications validées et sauvegardées");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde des droits:", error);
     }
   };
 
-  // Fonction pour annuler les modifications
   const annulerModifications = () => {
     setEditionMode(false);
-    setDroitsLocaux(droitsApi); // Revenir aux droits d'origine
-    setDroitsAjoutes([]); // Réinitialiser les droits ajoutés
-    setDroitsModifies([]); // Réinitialiser les droits modifiés
+    setDroitsLocaux(droitsApi);
+    setDroitsAjoutes([]);
+    setDroitsModifies([]);
+    setDroitsASupprimer([]);
     console.log("Modifications annulées");
   };
 
-  // Fonction pour ajouter un enseignant
   const handleAjoutEnseignant = () => {
     if (enseignantSelectionne) {
       const nouvelDroit: Droit = {
@@ -138,20 +182,32 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         consultation: droitsAjout.consultation ? "O" : "N",
         duplication: droitsAjout.duplication ? "O" : "N",
         nom: enseignantSelectionne.nom,
-        prenom: "", // Ajoutez le prénom si disponible
+        prenom: enseignantSelectionne.prenom,
       };
 
-      // Ajouter le nouveau droit à la liste des droits locaux
       const updatedDroits = [...droitsLocaux, nouvelDroit];
       setDroitsLocaux(updatedDroits);
 
-      // Ajouter le nouveau droit à la liste des droits ajoutés
       setDroitsAjoutes((prev) => [...prev, nouvelDroit]);
 
-      // Réinitialiser les états
       setEnseignantSelectionne(null);
       setDroitsAjout({ duplication: false, consultation: false });
     }
+  };
+
+  const MotionVariant = {
+    initial: {
+      opacity: 0,
+      y: 10,
+    },
+    final: (d: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.15,
+        delay: 0.1 * d,
+      },
+    }),
   };
 
   return (
@@ -163,7 +219,10 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         <div className="flex flex-row gap-3 w-full justify-between items-center mb-4">
           {editionMode && (
             <>
-              <select
+              <motion.select
+                variants={MotionVariant}
+                initial="initial"
+                animate={MotionVariant.final(1)}
                 className="select select-bordered w-full max-w-xs"
                 value={enseignantSelectionne ? enseignantSelectionne.id : ""}
                 onChange={(e) => {
@@ -175,6 +234,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     setEnseignantSelectionne({
                       id: selectedEnseignant.id,
                       nom: selectedEnseignant.nom,
+                      prenom: selectedEnseignant.prenom,
                     });
                   }
                 }}
@@ -187,10 +247,15 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     {ens.nom} {ens.prenom}
                   </option>
                 ))}
-              </select>
+              </motion.select>
 
               <div className="flex flex-row gap-10 w-full">
-                <label className="label cursor-pointer">
+                <motion.label
+                  className="label cursor-pointer"
+                  variants={MotionVariant}
+                  initial="initial"
+                  animate={MotionVariant.final(1.5)}
+                >
                   <span className="label-text mr-2">Duplication</span>
                   <input
                     type="checkbox"
@@ -204,8 +269,13 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     }
                     className="checkbox checkbox-sm"
                   />
-                </label>
-                <label className="label cursor-pointer">
+                </motion.label>
+                <motion.label
+                  className="label cursor-pointer"
+                  variants={MotionVariant}
+                  initial="initial"
+                  animate={MotionVariant.final(2)}
+                >
                   <span className="label-text mr-2">Consultation</span>
                   <input
                     type="checkbox"
@@ -219,16 +289,19 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     }
                     className="checkbox checkbox-sm"
                   />
-                </label>
+                </motion.label>
               </div>
 
-              <button
+              <motion.button
+                variants={MotionVariant}
+                initial="initial"
+                animate={MotionVariant.final(2.5)}
                 className="btn btn-circle btn-sm"
                 onClick={handleAjoutEnseignant}
                 disabled={!enseignantSelectionne}
               >
                 +
-              </button>
+              </motion.button>
             </>
           )}
         </div>
@@ -240,50 +313,75 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
               <th>Enseignant</th>
               <th>Duplication</th>
               <th>Consultation</th>
+              {editionMode && (<th>Actions</th>)}
             </tr>
           </thead>
           <tbody>
-            {droitsLocaux.map((droit) => (
-              <tr key={droit.idEnseignant}>
-                <td>
-                  {droit.nom} {droit.prenom}
-                </td>
-                <td>
-                  {editionMode ? (
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={droit.duplication === "O"}
-                      onChange={() =>
-                        handleDroitChange(droit.idEnseignant, "duplication")
-                      }
-                    />
-                  ) : droit.duplication === "O" ? (
-                    <MdCheck size={20} className="font-bold" />
-                  ) : (
-                    <RxCross2 size={20} className="font-bold" />
+            {droitsLocaux.map((droit) => {
+              const estASupprimer = droitsASupprimer.some(
+                (d) => d.idEnseignant === droit.idEnseignant
+              );
+              return (
+                <tr
+                  key={droit.idEnseignant}
+                  className={estASupprimer ? "bg-red-100" : ""}
+                >
+                  <td>
+                    {droit.nom} {droit.prenom}
+                  </td>
+                  <td>
+                    {editionMode ? (
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={droit.duplication === "O"}
+                        onChange={() =>
+                          handleDroitChange(droit.idEnseignant, "duplication")
+                        }
+                      />
+                    ) : droit.duplication === "O" ? (
+                      <MdCheck size={20} className="font-bold" />
+                    ) : (
+                      <RxCross2 size={20} className="font-bold" />
+                    )}
+                  </td>
+                  <td>
+                    {editionMode ? (
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={droit.consultation === "O"}
+                        onChange={() =>
+                          handleDroitChange(droit.idEnseignant, "consultation")
+                        }
+                      />
+                    ) : droit.consultation === "O" ? (
+                      <MdCheck size={20} className="font-bold" />
+                    ) : (
+                      <RxCross2 size={20} className="font-bold" />
+                    )}
+                  </td>
+                  {editionMode && (
+                    <td>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => handleSupprimerDroit(droit)}
+                      >
+                        <FaTrash
+                          className={
+                            estASupprimer ? "text-red-500" : "text-black"
+                          }
+                          size={18}
+                        />
+                      </button>
+                    </td>
                   )}
-                </td>
-                <td>
-                  {editionMode ? (
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={droit.consultation === "O"}
-                      onChange={() =>
-                        handleDroitChange(droit.idEnseignant, "consultation")
-                      }
-                    />
-                  ) : droit.consultation === "O" ? (
-                    <MdCheck size={20} className="font-bold" />
-                  ) : (
-                    <RxCross2 size={20} className="font-bold" />
-                  )}
-                </td>
-              </tr>
-            ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {error && <AlertError error={error} />}
 
         {/* Boutons de gestion */}
         <div className="modal-action flex flex-row gap-3 justify-end mt-4">
@@ -293,7 +391,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                 className="btn btn-neutral"
                 onClick={validerModifications}
               >
-                Valider
+                Enregistrer
               </button>
               <button className="btn" onClick={annulerModifications}>
                 Annuler
@@ -302,7 +400,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
           ) : (
             <>
               <button className="btn btn-neutral" onClick={toggleEditionMode}>
-                Modifier les droits
+                Modifier
               </button>
               <button className="btn" onClick={handleClose}>
                 Fermer

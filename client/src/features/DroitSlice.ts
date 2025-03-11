@@ -62,7 +62,7 @@ export const updateDroitAsync = createAsyncThunk<Droit, Droit, { rejectValue: st
     "droits/updateDroitAsync",
     async (droit, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put(`/droits/${droit.idEvaluation}/${droit.idEnseignant}`, evaluation);
+            const response = await axiosInstance.put(`/droits/${droit.idEvaluation}/${droit.idEnseignant}`, droit);
            console.log(response.data);
            
             return response.data;
@@ -72,13 +72,13 @@ export const updateDroitAsync = createAsyncThunk<Droit, Droit, { rejectValue: st
     }
 );
 
-export const deleteEvaluationAsync = createAsyncThunk<void, number, { rejectValue: string }>(
-    "evaluations/delete",
-    async (id, { rejectWithValue }) => {
+export const deleteDroitAsync = createAsyncThunk<void, Droit, { rejectValue: string }>(
+    "droits/deleteDroitAsync",
+    async (droit, { rejectWithValue }) => {
         try {
-            await axiosInstance.delete(`/evaluations/${id}`);
+            await axiosInstance.delete(`/droits/${droit.idEvaluation}/${droit.idEnseignant}`);
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la suppression de l'évaluation");
+            return rejectWithValue(error.response?.data || "Erreur lors de la suppression du droit");
         }
     }
 );
