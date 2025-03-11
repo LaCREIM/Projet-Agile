@@ -12,7 +12,13 @@ public interface UniteEnseignementRepository extends JpaRepository<UniteEnseigne
     @Query("SELECT new com.example.backendagile.dto.UniteEnseignementDTO(ue.id.codeUe, ue.designation) FROM UniteEnseignement ue")
     List<UniteEnseignementDTO> findAllUesWithCodeAndDesignation();
 
+
     @Query("SELECT ue FROM UniteEnseignement ue WHERE ue.noEnseignant.id = :noEnseignant")
     List<UniteEnseignement> findUniteEnseignementByNoEnseignant(Long noEnseignant);
+
+    @Query("SELECT ue FROM UniteEnseignement ue WHERE ue.id.codeFormation = ?1 AND ue.id.codeUe = ?2")
+    UniteEnseignement findById(String codeFormation, String codeUE);
+
+
 
 }

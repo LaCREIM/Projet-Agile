@@ -18,6 +18,7 @@ import java.time.LocalDate;
 }, uniqueConstraints = {
         @UniqueConstraint(name = "EVE_EVE_UK", columnNames = {"ANNEE_UNIVERSITAIRE", "NO_ENSEIGNANT", "NO_EVALUATION", "CODE_FORMATION", "CODE_UE"})
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Evaluation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eve_seq_generator")
@@ -42,7 +43,6 @@ public class Evaluation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
     @JoinColumns({
         @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION", insertable = false, updatable = false),
         @JoinColumn(name = "CODE_UE", referencedColumnName = "CODE_UE", insertable = false, updatable = false)
@@ -51,17 +51,18 @@ public class Evaluation {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JoinColumns({
-@JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION",columnDefinition = "CODE_FORM"),
-@JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE",columnDefinition = "ANNEE_UNI")
-})
+    @JoinColumns({
+        @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION", insertable = false, updatable = false),
+        @JoinColumn(name = "ANNEE_UNIVERSITAIRE", referencedColumnName = "ANNEE_UNIVERSITAIRE", insertable = false, updatable = false)
+    })
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private com.example.backendagile.entities.Promotion promotion;
+    
 
-    @Column(name = "CODE_FORMATION", nullable = false, insertable = false, updatable = false)
+    @Column(name = "CODE_FORMATION", nullable = false)
     private String codeFormation;    
 
-    @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false, insertable = false, updatable = false)
+    @Column(name = "ANNEE_UNIVERSITAIRE", nullable = false)
     private String anneeUniversitaire;
     
     @Column(name = "CODE_UE", nullable = false)
@@ -193,6 +194,10 @@ public String getCodeFormation() {
 
     public UniteEnseignement getUniteEnseignement() {
         return uniteEnseignement;
+    }
+
+    public void setUniteEnseignement(UniteEnseignement uniteEnseignement) {
+        this.uniteEnseignement = uniteEnseignement;
     }
 
     public LocalDate getFinReponse() {

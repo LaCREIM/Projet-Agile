@@ -2,11 +2,13 @@ package com.example.backendagile.mapper;
 
 import com.example.backendagile.dto.*;
 import com.example.backendagile.entities.*;
+import com.example.backendagile.repositories.UniteEnseignementRepository;
 
 import java.util.stream.Collectors;
 
 public class EvaluationMapper {
 
+  
     public static EvaluationDTO toDTO(Evaluation evaluation) {
         EvaluationDTO dto = new EvaluationDTO();
         dto.setIdEvaluation(evaluation.getId());
@@ -33,7 +35,6 @@ public class EvaluationMapper {
                 RubriqueEvaluationDTO rubriqueDTO = new RubriqueEvaluationDTO();
                 rubriqueDTO.setIdRubriqueEvaluation(rubrique.getId());
                 rubriqueDTO.setDesignation(rubrique.getIdRubrique().getDesignation());
-                //rubriqueDTO.setDesignation(rubrique.getDesignation());
                 rubriqueDTO.setOrdre(rubrique.getOrdre());
 
             
@@ -46,18 +47,11 @@ public class EvaluationMapper {
 
                       
                         if (question.getIdQualificatif() != null) {
-                            System.out.println("Qualificatif trouvé pour la question ID: " + question.getId());
-                            System.out.println("Minimal : " + question.getIdQualificatif().getMinimal());
-                            System.out.println("Maximal : " + question.getIdQualificatif().getMaximal());
-                        
                             QualificatifDTO qualificatifDTO = new QualificatifDTO();
                             qualificatifDTO.setMinimal(question.getIdQualificatif().getMinimal());
                             qualificatifDTO.setMaximal(question.getIdQualificatif().getMaximal());
                             questionDTO.setQualificatif(qualificatifDTO);
-                        } else {
-                            System.out.println("❌ Aucun qualificatif trouvé pour la question ID: " + question.getId()+ question.getIdQualificatif());
-                        }
-                        
+                        } 
                         return questionDTO;
                     }).collect(Collectors.toList()));
                 }
@@ -69,7 +63,7 @@ public class EvaluationMapper {
         return dto;
     }
 
-    public static Evaluation toEntity(EvaluationDTO dto) {
+    public static Evaluation toEntity(EvaluationDTO dto, UniteEnseignementRepository uniteEnseignementRepository) {
         Evaluation evaluation = new Evaluation();
         evaluation.setNoEvaluation(dto.getNoEvaluation());
         evaluation.setDesignation(dto.getDesignation());
@@ -78,10 +72,13 @@ public class EvaluationMapper {
         evaluation.setDebutReponse(dto.getDebutReponse());
         evaluation.setFinReponse(dto.getFinReponse());
         evaluation.setCodeUE(dto.getCodeUE());
+    
         evaluation.setCodeEC(dto.getCodeEC());
         evaluation.setCodeFormation(dto.getCodeFormation());
         evaluation.setAnneeUniversitaire(dto.getAnneeUniversitaire());
-
+        
+        UniteEnseignement uniteEnseignement = uniteEnseignementRepository.findById(dto.getCodeFormation(), dto.getCodeUE());
+        evaluation.setUniteEnseignement(uniteEnseignement);
         Enseignant enseignant = new Enseignant();
         enseignant.setId(dto.getNoEnseignant());
         evaluation.setEnseignant(enseignant);

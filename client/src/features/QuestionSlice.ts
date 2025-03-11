@@ -73,6 +73,26 @@ export const getQuestionPersoAsync = createAsyncThunk<
   }
 );
 
+export const getAllQuestionsPersoAsync = createAsyncThunk<
+  Question[],  // Le type de retour sera un tableau de questions
+  { idEnseignant: number },  // Paramètre d'entrée contenant l'id de l'enseignant
+  { rejectValue: string }
+>(
+  "questions/getAllQuestionsPersoAsync",  // Nom de l'action
+  async ({ idEnseignant }, { rejectWithValue }) => {
+    try {
+      // Appel à l'API sans pagination
+      const response = await axiosInstance.get<Question[]>(
+        `/questionsPrs/std-prs/${idEnseignant}`
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error: any) {
+      // Gestion des erreurs
+      return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions perso.");
+    }
+  }
+);
 
 
 
@@ -81,7 +101,7 @@ export const createQuestionAsync = createAsyncThunk<Question, Question, { reject
   async (question, { rejectWithValue }) => {
     try {
       const questionSTd = {
-        idQualificatif: question.idQualificatif.id, 
+        idQualificatif: question.idQualificatif, 
         intitule: question.intitule
       };
       const response = await axiosInstance.post("/questionsStd", questionSTd);
@@ -106,14 +126,12 @@ export const createQuestionPersoAsync = createAsyncThunk<
       const questionPrs = {
         type: question.type,
         noEnseignant: question.noEnseignant,
-        idQualificatif: question.idQualificatif.id, 
+        idQualificatif: question.idQualificatif, 
         intitule: question.intitule,
       };
 
       // Envoi de la requête POST au backend
       const response = await axiosInstance.post("/questionsPrs", questionPrs);
-
-      // Vérification de la réponse et retour des données
       console.log(response.data);  // Si vous souhaitez logger la réponse
       return response.data;  // Renvoie la donnée reçue du backend
 
@@ -136,7 +154,7 @@ export const updateQuestionAsync = createAsyncThunk<
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const questionSTd = {
-        idQualificatif: data.idQualificatif.id, // Assurez-vous qu'il est bien un Long
+        idQualificatif: data.idQualificatif, // Assurez-vous qu'il est bien un Long
         intitule: data.intitule
       };
       const response = await axiosInstance.put(`/questionsStd/${id}`, questionSTd);
@@ -158,7 +176,7 @@ export const updateQuestionPersoAsync = createAsyncThunk<
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const questionPrs = {
-        idQualificatif: data.idQualificatif.id, 
+        idQualificatif: data.idQualificatif, 
         intitule: data.intitule,
         idEnseignant: 1000
         // idEnseignant: data.noEnseignant.id
@@ -226,14 +244,13 @@ const questionSlice = createSlice({
       state.error = action.payload as string;
     });
 
-    // **Récupérer les questions paginées**
     builder.addCase(getQuestionAsync.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(getQuestionAsync.fulfilled, (state, action: PayloadAction<{ content: Question[]; totalPages: number }>) => {
-      state.questions = action.payload.content; // Mise à jour de la liste des questions
-      state.totalPages = action.payload.totalPages; // Mise à jour du total de pages
+      state.questions = action.payload.content; 
+      state.totalPages = action.payload.totalPages; 
       state.loading = false;
     });
     builder.addCase(getQuestionAsync.rejected, (state, action) => {
@@ -248,7 +265,20 @@ const questionSlice = createSlice({
     builder.addCase(createQuestionAsync.rejected, (state, action) => {
       state.error = action.payload as string;
     });
-
+    builder.addCase(getAllQuestionsPersoAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getAllQuestionsPersoAsync.fulfilled, (state, action: PayloadAction<Question[]>) => {
+      state.questions = action.payload;
+      state.loading = false;
+    });
+    
+    builder.addCase(getAllQuestionsPersoAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+    
     // **Mettre à jour une question**
     builder.addCase(updateQuestionAsync.fulfilled, (state, action: PayloadAction<Question>) => {
       const index = state.questions.findIndex((q) => q.id === action.payload.id);
@@ -275,11 +305,21 @@ const questionSlice = createSlice({
 
 export default questionSlice.reducer;
 
-export const selectAllQuestions = (state: RootState, role: string, id: number ) => {
+export const selectAllQuestions = (state: RootState, role: string) => {
   const allQuestions = role === "ENS" 
-    ? [...state.question.questions, ...state.question.questionsPerso] 
+    ? state.question.questionsPerso
     : state.question.questions;
 
   return Array.from(new Set(allQuestions.map(q => q.id)))
               .map(id => allQuestions.find(q => q.id === id));
 };
+
+
+
+
+
+
+
+
+
+

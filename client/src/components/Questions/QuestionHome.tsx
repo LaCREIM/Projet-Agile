@@ -1,11 +1,12 @@
+/* eslint-disable prefer-const */
 import {useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
-import {fetchQuestionsAsync} from "../../features/QuestionSlice";
+import {fetchQuestionsAsync, getAllQuestionsPersoAsync} from "../../features/QuestionSlice";
 import {Qualificatif, Question} from "../../types/types";
 import {RootState} from "../../api/store";
 import {fetchQualificatifsAsync} from "../../features/QualificatifSlice";
-import {typeQuestionMapper} from "../../mappers/mappers.ts";
+//import {typeQuestionMapper} from "../../mappers/mappers.ts";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPenToSquare, faTrash} from "@fortawesome/free-solid-svg-icons";
 import UpdateQuestion from "./UpdateQuestion.tsx";
@@ -15,7 +16,7 @@ import {MdClear} from "react-icons/md";
 
 const QuestionHome = () => {
   const role = localStorage.getItem('role');
-
+  const userId = localStorage.getItem('id');
   document.title = "UBO | Questions";
   const dispatch = useAppDispatch();
   const questions = useAppSelector(
@@ -42,10 +43,17 @@ const QuestionHome = () => {
 
     fetchData();
   }, [dispatch]);
-
+  
   useEffect(() => {
-    dispatch(fetchQuestionsAsync());
-  }, [dispatch]);
+    if(role === "ADM") {
+        dispatch(fetchQuestionsAsync());
+    } else {
+        dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
+    }
+    //console.log("🔎 questions state:", questions); // Vérifie si l'état initial est bien peuplé
+}, [dispatch, role, userId]);
+
+
 
   useEffect(() => {
     let filtered = questions.filter((question) => {
@@ -197,19 +205,19 @@ const QuestionHome = () => {
                             {question.intitule || "N/A"}
                           </td>
                           <td className="px-4 py-2">
-                            {question?.idQualificatif?.maximal +
+                            {question?.maxQualificatif +
                                 " - " +
-                                question?.idQualificatif?.minimal || "N/A"}
+                                question?.minQualificatif || "N/A"}
                           </td>
                           {
                               role == "ENS" && <td className="px-4 py-2 ">
-                                {question.type === "QUP" ? (
+                                {question.noEnseignant ? (
                                     <div className="badge badge-accent text-white">
-                                      {typeQuestionMapper(question.type)}
+                                      {"Question personnel"} 
                                     </div>
                                 ) : (
                                     <div className="badge badge-success text-white">
-                                      {typeQuestionMapper(question.type)}
+                                       {"Question standard"} 
                                     </div>
                                 )}
                               </td>

@@ -3,9 +3,10 @@ package com.example.backendagile.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class QuestionStdDTO {
-    private Long idQualificatif; 
     private String intitule;
     //@JsonIgnore
+    private Long idQualificatif;
+
     String maxQualificatif;
    // @JsonIgnore
     String minQualificatif;
