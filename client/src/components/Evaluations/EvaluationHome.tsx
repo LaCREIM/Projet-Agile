@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { MdClear } from "react-icons/md";
 import { fetchEvaluationAsync } from "../../features/EvaluationSlice";
-import { Enseignant, EvaluationDTO, GetEvaluationDTO, Promotion } from "../../types/types";
+import { GetEvaluationDTO } from "../../types/types";
 
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
@@ -39,12 +39,12 @@ const EvaluationHome = () => {
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
 
   useEffect(() => {
-    let filtered = evaluations.filter((evaluation) => {
+    const filtered = evaluations.filter((evaluation) => {
       const matchesSearch = Object.values(evaluation).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
       const matchesEtat = filterEtat
-        ? evaluation.evlauation.etat === filterEtat
+        ? evaluation.evaluation.etat === filterEtat
         : true;
       return matchesSearch && matchesEtat;
     });

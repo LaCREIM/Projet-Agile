@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import { EvaluationDTO, GetEvaluationDTO } from "../types/types";
+import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
 
 
 interface EvaluationState {
@@ -15,16 +16,18 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
-    totalPages: 0,
+    totalPages: 0,  // Ajout du total de pages
     loading: false,
     error: null,
 };
 
+
 export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], string, { rejectValue: string }>(
     "evaluations/fetchEvaluationAsync",
-    async (enseignantId, { rejectWithValue }) => {
+    async (enseignantId = localStorage.getItem("id"), {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${1}`);
+            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${enseignantId}`);
+            console.log(response.data);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -36,7 +39,7 @@ export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { 
     "evaluations/getEvaluationByIdAsync",
     async (evaluationId, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<EvaluationDTO>(`/evaluations/enseignants/1/${evaluationId}`);
+            const response = await axiosInstance.get<EvaluationDTO>(`/evaluations/enseignants/${localStorage.getItem("id")}/${evaluationId}`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -81,9 +84,6 @@ const EvaluationSlice = createSlice({
                 state.evaluation = action.payload;
                 state.loading = false;
             })
-            .addCase(createEvaluationAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
-                state.evaluations.push(action.payload);
-            })
             .addCase(createEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
@@ -93,3 +93,4 @@ const EvaluationSlice = createSlice({
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 
 export default EvaluationSlice.reducer;
+

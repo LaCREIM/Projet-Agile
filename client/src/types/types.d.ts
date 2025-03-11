@@ -173,24 +173,8 @@ export interface EvaluationDTO {
 }
 
 export interface GetEvaluationDTO {
-    evaluation:
-    {
-        idEvaluation: number;
-        noEnseignant: number;
-        designationEC: string;
-        designationUE: string;
-        anneeUniversitaire: string;
-        codeFormation: string;
-        nomFormation: string;
-        designation: string;
-        etat: string;
-        periode: string;
-        debutReponse: string;
-        finReponse: string;
-        rubriques: RubriqueEvaluation[]
-    };
+    evaluation: EvaluationDTO
     droit: Droit
-
 }
 
 
