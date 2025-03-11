@@ -77,7 +77,7 @@ long countSearchQuestions(@Param("noEnseignant") Long noEnseignant, @Param("keyw
     @Query("SELECT q FROM Question q WHERE UPPER(q.intitule) = UPPER(:intitule) AND q.idQualificatif.id = :idQualificatif")
     List<Question> findQuestionByIntitule(String intitule , Long idQualificatif);
 
-    @Query("SELECT q FROM Question q WHERE q.noEnseignant.id = :noEnseignant AND q.type = 'QUS'")
+    @Query("SELECT q FROM Question q WHERE q.noEnseignant.id = :noEnseignant or q.type = 'QUS'")
     List<Question> findQuestionStdAndPerso(Long noEnseignant);
 
     @Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe WHERE qe.idQuestion.id = :idQuestion")
