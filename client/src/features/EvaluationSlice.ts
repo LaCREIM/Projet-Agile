@@ -83,6 +83,20 @@ export const deleteEvaluationAsync = createAsyncThunk<void, number, { rejectValu
     }
 );
 
+
+export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], number, { rejectValue: string }>(
+    "evaluations/duplicateEvaluationAsync",
+    async (idEvaluation, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.post(`/evaluations/dupliquer/${idEvaluation}/${localStorage.getItem("id")}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la duplication de l'évaluation");
+        }
+    }
+);
+
+
 const EvaluationSlice = createSlice({
     name: "evaluations",
     initialState,
@@ -98,6 +112,13 @@ const EvaluationSlice = createSlice({
                 state.loading = false;
             })
             .addCase(createEvaluationAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            .addCase(duplicateEvaluationAsync.fulfilled, (state, action) => {
+                state.evaluations=action.payload;
+                state.loading = false;
+            })
+            .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
     },

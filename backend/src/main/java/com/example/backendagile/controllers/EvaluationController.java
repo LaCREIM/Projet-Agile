@@ -1,4 +1,5 @@
 package com.example.backendagile.controllers;
+
 import org.springframework.http.ResponseEntity;
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
@@ -6,7 +7,10 @@ import com.example.backendagile.services.EvaluationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/evaluations")
@@ -34,7 +38,7 @@ public class EvaluationController {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite lors de la création de l'évaluation : ");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'evaluation existe déjà.");
         }
     }
 
@@ -67,21 +71,21 @@ public class EvaluationController {
 
     @GetMapping("/evaluations-partage/{noEnseignant}")
     public ResponseEntity<List<EvaluationPartagerDTO>> getEvaluationsPartagees(@PathVariable Long noEnseignant) {
-
         return ResponseEntity.ok(evaluationService.getEvaluationsPartagees(noEnseignant));
 
     }
 
     @PostMapping("/dupliquer/{idEvaluation}/{noEnseignant}")
-    public ResponseEntity<String> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+    public ResponseEntity<Map<String, Object>> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            EvaluationDTO evaluation = evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
-            return ResponseEntity.ok("L'évaluation a été dupliquée avec succès.");
-//            return ResponseEntity.ok(evaluation);
-
+            evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
+            response.put("evaluations", evaluationService.getEvaluationsPartagees(noEnseignant));
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'évaluation ne peut pas être dupliquée.");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            System.out.println(e.getMessage());
+            response.put("message", "Erreur lors de la duplication de l'évaluation.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
     }
