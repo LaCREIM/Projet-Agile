@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {configureStore} from "@reduxjs/toolkit";
 import enseignantReducer from "../features/EnseignantSlice";
 import promotionReducer from "../features/PromotionSlice";
 import etudiantReducer from "../features/EtudiantSlice";
@@ -6,7 +6,8 @@ import qualificatifReducer from "../features/QualificatifSlice";
 import questionReducer from "../features/QuestionSlice";
 import rubriqueReducer from "../features/RubriqueSlice";
 import evaluationReducer from "../features/EvaluationSlice";
-import { apiSlice } from "./ApiSlice";
+import unitesEnseignementReducer from "../features/uniteEnseignementSlice.ts";
+import {apiSlice} from "./ApiSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     question:questionReducer,
     rubriques:rubriqueReducer,
     evaluations: evaluationReducer,
+    unitesEnseignement: unitesEnseignementReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(apiSlice.middleware),

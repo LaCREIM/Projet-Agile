@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Evaluation, EvaluationDTO } from "../types/types";
+import { EvaluationDTO } from "../types/types";
 
 interface EvaluationState {
     evaluation: EvaluationDTO;
@@ -48,14 +48,14 @@ export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { 
 );
 
 export const getEvaluationAsync = createAsyncThunk<
-    { content: Evaluation[]; totalPages: number },
+    { content: EvaluationDTO[]; totalPages: number },
     { page: number; size: number },
     { rejectValue: string }
 >(
     "evaluations/getEvaluationAsync",
     async ({ page, size }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<{ content: Evaluation[]; totalPages: number }>(
+            const response = await axiosInstance.get<{ content: EvaluationDTO[]; totalPages: number }>(
                 `/evaluations/paged`,
                 { params: { page, size } }
             );
