@@ -157,6 +157,8 @@ export interface ElementConstitutif {
 export interface EvaluationDTO {
     idEvaluation: number;
     noEnseignant: number;
+    nomEnseignant: string;
+    prenomEnseignant: string;
     designationEC: string;
     designationUE: string;
     anneeUniversitaire: string;

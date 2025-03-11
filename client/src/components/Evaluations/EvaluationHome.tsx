@@ -56,10 +56,6 @@ const EvaluationHome = () => {
         return 0;
       });
     }
-
-    console.log(filtered);
-    
-
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat]);
 
