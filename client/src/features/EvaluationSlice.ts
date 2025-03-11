@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
+
 import { EvaluationDTO, GetEvaluationDTO } from "../types/types";
+
 
 interface EvaluationState {
     evaluation: EvaluationDTO;

@@ -6,6 +6,7 @@ import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { MdClear } from "react-icons/md";
 import { fetchEvaluationAsync } from "../../features/EvaluationSlice";
 import { Enseignant, EvaluationDTO, GetEvaluationDTO, Promotion } from "../../types/types";
+
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
