@@ -57,11 +57,12 @@ export interface DroitId extends Serializable {
 }
 
 export interface Droit {
-    id: DroitId;
-    idEvaluation: Evaluation;
-    noEnseignant: Enseignant;
-    consultation: boolean;
-    duplication: boolean;
+    idEvaluation: number;
+    idEnseignant: number;
+    consultation: string;
+    duplication: string;
+    nom: string;
+    prenom: string;
 }
 
 

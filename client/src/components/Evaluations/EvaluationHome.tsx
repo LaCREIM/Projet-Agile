@@ -104,7 +104,7 @@ const EvaluationHome = () => {
   return (
     <>
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1 className="text-xl">Liste des évaluations</h1>
+        <h1 className="text-xl font-bold">Liste des évaluations</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[90%] px-14">
           <div className="w-2/3 hover:cursor-text flex flex-row items-center gap-5">
             <label className="input input-bordered flex items-center gap-2 shadow-md w-1/3">

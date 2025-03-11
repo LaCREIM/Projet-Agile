@@ -7,6 +7,7 @@ import questionReducer from "../features/QuestionSlice";
 import rubriqueReducer from "../features/RubriqueSlice";
 import evaluationReducer from "../features/EvaluationSlice";
 import unitesEnseignementReducer from "../features/uniteEnseignementSlice.ts";
+import droitReducer from "../features/DroitSlice.ts";
 import {apiSlice} from "./ApiSlice";
 
 const store = configureStore({
@@ -20,6 +21,7 @@ const store = configureStore({
     rubriques:rubriqueReducer,
     evaluations: evaluationReducer,
     unitesEnseignement: unitesEnseignementReducer,
+    droit : droitReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(apiSlice.middleware),

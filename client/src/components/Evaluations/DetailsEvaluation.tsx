@@ -21,11 +21,16 @@ import { fetchAllUnitesEnseignementAsync } from "../../features/uniteEnseignemen
 import { toast, ToastContainer } from "react-toastify";
 import AlertError from "../ui/alert-error";
 import GestionDroit from "./GestionDroit";
+import {
+  getAllEnseignant,
+  getAllEnseignantAsync,
+} from "../../features/EnseignantSlice";
 
 const DetailsEvaluation = () => {
   const evaluationId = useParams().evaluationId;
   const promotions = useAppSelector<Promotion[]>(getPromotions);
   const evaluation = useAppSelector(getEvaluation);
+  const enseignants = useAppSelector(getAllEnseignant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -46,8 +51,20 @@ const DetailsEvaluation = () => {
   useEffect(() => {
     dispatch(getEvaluationByIdAsync(Number(evaluationId)));
     dispatch(getPromotionAsync());
+    dispatch(getAllEnseignantAsync());
     dispatch(fetchAllUnitesEnseignementAsync());
-  }, [evaluationId]);
+
+    console.log(evaluation);
+    
+  }, [dispatch, evaluationId]);
+ 
+  useEffect(() => {
+    dispatch(getAllEnseignantAsync());
+    console.log(enseignants);
+    
+  }, [dispatch]);
+
+
 
   useEffect(() => {
     if (evaluation) {
@@ -59,15 +76,15 @@ const DetailsEvaluation = () => {
     setIsEditing(!isEditing);
   };
 
-   const openModal = (name: string) => {
-     const dialog = document.getElementById(name) as HTMLDialogElement;
-     if (dialog) dialog.showModal();
-   };
+  const openModal = (name: string) => {
+    const dialog = document.getElementById(name) as HTMLDialogElement;
+    if (dialog) dialog.showModal();
+  };
 
-   const closeModal = (id: string) => {
-     const dialog = document.getElementById(id) as HTMLDialogElement;
-     if (dialog) dialog.close();
-   };
+  const closeModal = (id: string) => {
+    const dialog = document.getElementById(id) as HTMLDialogElement;
+    if (dialog) dialog.close();
+  };
 
   const validateDates = (debut: string | null, fin: string | null) => {
     if (!debut || !fin) return false;
@@ -221,7 +238,11 @@ const DetailsEvaluation = () => {
               />
             </div>
             <div className="tooltip" data-tip="Gérer les droits d'accès">
-              <RiUserSettingsFill size={25} className="cursor-pointer" onClick={()=> openModal("droit")} />
+              <RiUserSettingsFill
+                size={25}
+                className="cursor-pointer"
+                onClick={() => openModal("droit")}
+              />
             </div>
           </div>
         </div>
@@ -480,7 +501,10 @@ const DetailsEvaluation = () => {
       </div>
 
       <dialog id="droit" className="modal">
-        <GestionDroit onClose={()=>closeModal("droit")}/>
+        <GestionDroit
+          enseignants={enseignants}
+          onClose={() => closeModal("droit")}
+        />
       </dialog>
     </div>
   );

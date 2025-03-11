@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosConfig';
-import {Enseignant} from "../types/types";
-import {RootState} from "../api/store";
+import { Enseignant } from "../types/types";
+import { RootState } from "../api/store";
 
 interface EnseignantResponse {
     enseignants: Enseignant[];
@@ -37,10 +37,10 @@ export const getEnseignantAsync = createAsyncThunk<
     { rejectValue: string }
 >(
     "enseignants/getEnseignantAsync",
-    async ({page, size}, {rejectWithValue}) => {
+    async ({ page, size }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<EnseignantResponse>(`/enseignants/paged`, {
-                params: {page, size},
+                params: { page, size },
             });
 
             return response.data;
@@ -56,7 +56,7 @@ export const getAllEnseignantAsync = createAsyncThunk<
     { rejectValue: string }
 >(
     "enseignants/getAllEnseignantAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Enseignant[]>(`/enseignants`);
             return response.data;
@@ -69,8 +69,8 @@ export const getAllEnseignantAsync = createAsyncThunk<
 
 
 export const postEnseignantAsync = createAsyncThunk<
-    void, 
-    Enseignant, 
+    void,
+    Enseignant,
     { rejectValue: string }
 >(
     "enseignants/createEnseignantAsync",
@@ -89,10 +89,10 @@ export const postEnseignantAsync = createAsyncThunk<
 
 export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { rejectValue: string }>(
     "paysOrigine/getGroupeTPAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
-           // console.log("from all", response.data);
+            // console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching groupe tps:", error);
@@ -103,9 +103,9 @@ export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { reje
 
 export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectValue: string }>(
     "enseignants/editEnseignantAsync",
-    async (enseignant, {rejectWithValue}) => {
+    async (enseignant, { rejectWithValue }) => {
         try {
-           // console.log("Updating enseignant:", enseignant);
+            // console.log("Updating enseignant:", enseignant);
 
             if (!enseignant.id) {
                 throw new Error("L'enseignant n'a pas d'ID valide.");
@@ -122,23 +122,23 @@ export const editEnseignantAsync = createAsyncThunk<void, Enseignant, { rejectVa
 
 
 export const deleteEnseignantAsync = createAsyncThunk<
-  number, // Retourne l'ID supprimé
-  Enseignant,
-  { rejectValue: string }
+    number, // Retourne l'ID supprimé
+    Enseignant,
+    { rejectValue: string }
 >(
-  "enseignants/deleteEnseignantAsync",
-  async (enseignant, { rejectWithValue }) => {
-    try {
-      if (!enseignant.id) {
-        throw new Error("L'enseignant n'a pas d'ID valide.");
-      }
-      await axiosInstance.delete(`/enseignants/${enseignant.id}`);
-      return enseignant.id; // Retourner l'ID supprimé pour mise à jour du state
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Erreur lors de la suppression.");
+    "enseignants/deleteEnseignantAsync",
+    async (enseignant, { rejectWithValue }) => {
+        try {
+            if (!enseignant.id) {
+                throw new Error("L'enseignant n'a pas d'ID valide.");
+            }
+            await axiosInstance.delete(`/enseignants/${enseignant.id}`);
+            return enseignant.id; // Retourner l'ID supprimé pour mise à jour du state
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la suppression.");
 
+        }
     }
-  }
 );
 
 
@@ -155,8 +155,8 @@ const enseignantSlice = createSlice({
             })
             .addCase(getAllEnseignantAsync.fulfilled, (state, action: PayloadAction<Enseignant[]>) => {
                 state.loading = false;
-                state.allEnseignants 
-                = action.payload;
+                state.allEnseignants
+                    = action.payload;
             })
             .addCase(deleteEnseignantAsync.fulfilled, (state, action: PayloadAction<number>) => {
                 state.enseignants = state.enseignants.filter(ens => ens.id !== action.payload);
@@ -172,6 +172,6 @@ const enseignantSlice = createSlice({
 export const getEnseignants = (state: RootState) => state.enseignants.enseignants;
 export const getTotalePages = (state: RootState) => state.enseignants.totalPages;
 export const getAllEnseignant = (state: RootState) => state.enseignants.allEnseignants;
-export const getPays = (state: {enseignants: EnseignantState}) => state.enseignants.pays;
+export const getPays = (state: { enseignants: EnseignantState }) => state.enseignants.pays;
 export default enseignantSlice.reducer;
 
