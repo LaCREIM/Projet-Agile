@@ -12,8 +12,11 @@ import com.example.backendagile.mapper.EvaluationPartagerMapper;
 import com.example.backendagile.repositories.DroitRepository;
 import com.example.backendagile.repositories.EvaluationRepository;
 import com.example.backendagile.repositories.FormationRepository;
+import com.example.backendagile.repositories.UniteEnseignementRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,12 +34,15 @@ public class EvaluationService {
 
    private final EvaluationPartagerMapper evaluationPartagerMapper;
 
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper) {
+   private final UniteEnseignementRepository uniteEnseignementRepository;
+
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper,UniteEnseignementRepository uniteEnseignementRepository) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
         this.droitRepository = droitRepository;
         this.enseignantService = enseignantService;
         this.evaluationPartagerMapper = evaluationPartagerMapper;
+        this.uniteEnseignementRepository = uniteEnseignementRepository;
     }
 
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
@@ -59,11 +65,41 @@ public class EvaluationService {
     }
     
 
-    public EvaluationDTO createEvaluation(EvaluationDTO dto) {
+    /*public EvaluationDTO createEvaluation(EvaluationDTO dto) {
         Evaluation evaluation = EvaluationMapper.toEntity(dto);
         Evaluation saved = evaluationRepository.save(evaluation);
         return EvaluationMapper.toDTO(saved);
+    }*/
+
+    public EvaluationDTO createEvaluation(EvaluationDTO dto) {
+        // 🔍 Log pour vérifier les données du DTO avant conversion
+        System.out.println("✅ DTO reçu dans createEvaluation:");
+        System.out.println("   → ID Evaluation: " + dto.getIdEvaluation());
+        System.out.println("   → Code Formation: " + dto.getCodeFormation());
+        System.out.println("   → Année Universitaire: " + dto.getAnneeUniversitaire());
+        System.out.println("   → Code UE: " + dto.getCodeUE());
+        
+        // Conversion du DTO vers l'entité
+        Evaluation evaluation = EvaluationMapper.toEntity(dto,uniteEnseignementRepository);
+    
+        // 🔍 Log pour vérifier les données après conversion
+        System.out.println("🔍 Après conversion en entité Evaluation:");
+        System.out.println("   → ID Evaluation: " + evaluation.getId());
+        System.out.println("   → Code Formation: " + evaluation.getCodeFormation());
+    
+        // 🔍 Vérifier avant insertion
+        if (evaluation.getCodeFormation() == null) {
+            System.out.println("❌ ERREUR : Code Formation est NULL avant l'insertion !");
+        } else {
+            System.out.println("✅ Code Formation est bien présent avant l'insertion.");
+        }
+    
+        // Sauvegarde en base
+        Evaluation saved = evaluationRepository.save(evaluation);
+    
+        return EvaluationMapper.toDTO(saved);
     }
+    
 
     public EvaluationDTO getEvaluationByEnseignantAndId(Long idEnseignant, Long idEvaluation) {
         return evaluationRepository.findByEnseignant_IdAndId(idEnseignant, idEvaluation)
@@ -81,7 +117,7 @@ public class EvaluationService {
     
                     return dto;
                 })
-                .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Évaluation non trouvée pour l'enseignant avec ID " + idEnseignant));
     }
     
     
