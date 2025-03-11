@@ -130,11 +130,6 @@ const DetailsEvaluation = () => {
     console.log(evaluationEdit);
   };
 
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    return date instanceof Date ? date.toISOString().split("T")[0] : date;
-  };
-
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPromotion = promotions.find(
       (p) => `${p.anneeUniversitaire}-${p.codeFormation}` === e.target.value
