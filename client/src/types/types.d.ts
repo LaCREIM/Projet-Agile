@@ -167,9 +167,32 @@ export interface EvaluationDTO {
     periode: string;
     debutReponse: string;
     finReponse: string;
+    rubriques: RubriqueEvaluation[];
     codeUE:string;
     noEvaluation: number;
 }
+
+export interface GetEvaluationDTO {
+    evaluation:
+    {
+        idEvaluation: number;
+        noEnseignant: number;
+        designationEC: string;
+        designationUE: string;
+        anneeUniversitaire: string;
+        codeFormation: string;
+        nomFormation: string;
+        designation: string;
+        etat: string;
+        periode: string;
+        debutReponse: string;
+        finReponse: string;
+        rubriques: RubriqueEvaluation[]
+    };
+    droit: Droit
+
+}
+
 
 export interface Formation {
     codeFormation: string;
@@ -234,7 +257,7 @@ export interface QuestionEvaluation {
     id: number;
     idRubriqueEvaluation: RubriqueEvaluation;
     idQuestion: Question;
-    idQualificatif: Qualificatif;
+    qualificatif: Qualificatif;
     ordre: number;
     intitule: string;
 }
@@ -276,6 +299,7 @@ export interface RubriqueEvaluation {
     idRubrique: Rubrique;
     ordre: number;
     designation: string;
+    questions: QuestionEvaluation[];
 }
 
 export interface Rubrique {
