@@ -1,6 +1,4 @@
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { anneesUniv } from './../features/PromotionSlice';
 /* tslint:disable */
 /* eslint-disable */
 
@@ -66,22 +64,6 @@ export interface Droit {
     duplication: boolean;
 }
 
-export interface ElementConstitutifId extends Serializable {
-    codeFormation: string;
-    codeUe: string;
-    codeEc: string;
-}
-
-export interface ElementConstitutif {
-    id: ElementConstitutifId;
-    uniteEnseignement: UniteEnseignement;
-    noEnseignant: Enseignant;
-    designation: string;
-    description: string;
-    nbhCm: number;
-    nbhTd: number;
-    nbhTp: number;
-}
 
 export interface Enseignant {
     password: string;
@@ -171,18 +153,6 @@ export interface ElementConstitutif {
     nbhTp: number;
 }
 
-export interface Evaluation {
-    id: number;
-    noEnseignant: Enseignant;
-    elementConstitutif: ElementConstitutif;
-    promotion: Promotion;
-    noEvaluation: number;
-    designation: string;
-    etat: string;
-    periode: string;
-    debutReponse: Date | null;
-    finReponse: Date | null;
-}
 
 export interface EvaluationDTO {
     idEvaluation: number;
@@ -197,7 +167,16 @@ export interface EvaluationDTO {
     periode: string;
     debutReponse: string;
     finReponse: string;
+    rubriques: RubriqueEvaluation[];
+    codeUE:string;
+    noEvaluation: number;
 }
+
+export interface GetEvaluationDTO {
+    evaluation: EvaluationDTO
+    droit: Droit
+}
+
 
 export interface Formation {
     codeFormation: string;
@@ -262,7 +241,7 @@ export interface QuestionEvaluation {
     id: number;
     idRubriqueEvaluation: RubriqueEvaluation;
     idQuestion: Question;
-    idQualificatif: Qualificatif;
+    qualificatif: Qualificatif;
     ordre: number;
     intitule: string;
 }
@@ -312,6 +291,7 @@ export interface RubriqueEvaluation {
     idRubrique: Rubrique;
     ordre: number;
     designation: string;
+    questions: QuestionEvaluation[];
 }
 
 export interface Rubrique {
@@ -335,19 +315,16 @@ export interface RubriqueQuestion {
     ordre: number;
 }
 
-export interface UniteEnseignementId extends Serializable {
-    codeFormation: string;
-    codeUe: string;
-}
+
 
 export interface Serializable {
 }
 
 export interface UniteEnseignement {
-    id: UniteEnseignementId;
+    codeUE: string;
     codeFormation: Formation;
     noEnseignant: Enseignant;
-    designation: string;
+    designationUE: string;
     semestre: string;
     description: string;
     nbhCm: number;
