@@ -34,7 +34,7 @@ public class UniteEnseignementService {
 
     public List<UniteEnseignementDTO> getUnitesEnseignementByPromotion(long noEnseignant) {
         List<PromotionDTO> prms = promotionService.getPromotionsByEnseignantForEvaluation(noEnseignant);
-    if(prms==null || prms.isEmpty()){
+        if(prms==null || prms.isEmpty()){
             return null;
         }
         Set<String> uniqueCodes = new HashSet<>();
@@ -44,11 +44,17 @@ public class UniteEnseignementService {
         if(uniqueCodes.isEmpty()){
             return null;
         }
-
         List<UniteEnseignement> uniteEnseignements= new ArrayList<>() ;
+
+
         for(String codeFormation : uniqueCodes){
-            List<UniteEnseignement> ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(noEnseignant,codeFormation);
-            if(!ues.isEmpty()){
+            List<UniteEnseignement> ues;
+            if(prms.get(0).getNoEnseignant() == noEnseignant){
+                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(codeFormation);
+            }
+            else {
+                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(noEnseignant, codeFormation);
+            } if(!ues.isEmpty()){
                 uniteEnseignements.addAll(ues);
             }
         }
