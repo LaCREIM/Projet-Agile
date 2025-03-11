@@ -21,4 +21,9 @@ public interface UniteEnseignementRepository extends JpaRepository<UniteEnseigne
 
     @Query("SELECT ue FROM UniteEnseignement ue WHERE ue.codeFormation.codeFormation = :codeFormation AND ue.noEnseignant.id = :noEnseignant")
     List<UniteEnseignement> findUniteEnseignementByPromotion(Long noEnseignant, String codeFormation);
+
+
+    @Query("SELECT ue FROM UniteEnseignement ue WHERE ue.codeFormation.codeFormation = :codeFormation")
+    List<UniteEnseignement> findUniteEnseignementByPromotion(String codeFormation);
+
 }

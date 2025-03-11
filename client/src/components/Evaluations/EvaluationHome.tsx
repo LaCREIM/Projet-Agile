@@ -10,7 +10,6 @@ import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
 import {
-  getPromotionAsync,
   getPromotionByEnseignant,
   getPromotionByEnseignantAsync
 } from "../../features/PromotionSlice";
@@ -56,10 +55,6 @@ const EvaluationHome = () => {
         return 0;
       });
     }
-
-    console.log(filtered);
-    
-
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat]);
 
