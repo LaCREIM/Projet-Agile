@@ -20,11 +20,17 @@ import { useSelector } from "react-redux";
 import { fetchAllUnitesEnseignementAsync } from "../../features/uniteEnseignementSlice";
 import { toast, ToastContainer } from "react-toastify";
 import AlertError from "../ui/alert-error";
+import GestionDroit from "./GestionDroit";
+import {
+  getAllEnseignant,
+  getAllEnseignantAsync,
+} from "../../features/EnseignantSlice";
 
 const DetailsEvaluation = () => {
   const evaluationId = useParams().evaluationId;
   const promotions = useAppSelector<Promotion[]>(getPromotions);
   const evaluation = useAppSelector(getEvaluation);
+  const enseignants = useAppSelector(getAllEnseignant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -45,8 +51,20 @@ const DetailsEvaluation = () => {
   useEffect(() => {
     dispatch(getEvaluationByIdAsync(Number(evaluationId)));
     dispatch(getPromotionAsync());
+    dispatch(getAllEnseignantAsync());
     dispatch(fetchAllUnitesEnseignementAsync());
-  }, [evaluationId]);
+
+    console.log(evaluation);
+    
+  }, [dispatch, evaluationId]);
+ 
+  useEffect(() => {
+    dispatch(getAllEnseignantAsync());
+    console.log(enseignants);
+    
+  }, [dispatch]);
+
+
 
   useEffect(() => {
     if (evaluation) {
@@ -56,6 +74,16 @@ const DetailsEvaluation = () => {
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
+  };
+
+  const openModal = (name: string) => {
+    const dialog = document.getElementById(name) as HTMLDialogElement;
+    if (dialog) dialog.showModal();
+  };
+
+  const closeModal = (id: string) => {
+    const dialog = document.getElementById(id) as HTMLDialogElement;
+    if (dialog) dialog.close();
   };
 
   const validateDates = (debut: string | null, fin: string | null) => {
@@ -128,11 +156,6 @@ const DetailsEvaluation = () => {
       return newEvaluation;
     });
     console.log(evaluationEdit);
-  };
-
-  const formatDate = (date: string | Date | null) => {
-    if (date === null) return "";
-    return date instanceof Date ? date.toISOString().split("T")[0] : date;
   };
 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -215,7 +238,11 @@ const DetailsEvaluation = () => {
               />
             </div>
             <div className="tooltip" data-tip="Gérer les droits d'accès">
-              <RiUserSettingsFill size={25} className="cursor-pointer" />
+              <RiUserSettingsFill
+                size={25}
+                className="cursor-pointer"
+                onClick={() => openModal("droit")}
+              />
             </div>
           </div>
         </div>
@@ -226,7 +253,7 @@ const DetailsEvaluation = () => {
         <h2 className="text-xl font-semibold mb-4">
           {isEditing ? (
             <div className="flex flex-col gap-1">
-              <label className="input input-bordered flex items-center gap-2 w-full">
+              <label className="input input-bordered flex items-center gap-2 w-[50%]">
                 <span className="font-semibold">Désignation </span>
                 <span className="text-red-500">*</span>
                 <input
@@ -346,9 +373,11 @@ const DetailsEvaluation = () => {
 
             {isEditing ? (
               <label className="flex flex-row items-center col-span-2 gap-2 ">
+                <span className="font-semibold w-[15%]">Promotion</span>
+                <span className="text-red-500">*</span>
                 <select
                   required
-                  className="select w-full"
+                  className="select w-[80%]"
                   name="promotion"
                   value={
                     evaluationEdit.anneeUniversitaire &&
@@ -360,7 +389,6 @@ const DetailsEvaluation = () => {
                 >
                   <option value="" disabled>
                     Sélectionner une promotion{" "}
-                    <span className="text-red-500"> *</span>
                   </option>
                   {promotions.map((promotion, idx) => (
                     <option
@@ -381,9 +409,13 @@ const DetailsEvaluation = () => {
 
             {isEditing ? (
               <label className="flex flex-row items-center gap-2">
+                <span className="font-semibold w-[15%]">
+                  Unité d'enseignement
+                </span>
+                <span className="text-red-500">*</span>
                 <select
                   required
-                  className="select w-full"
+                  className="select w-[80%]"
                   name="codeUE"
                   value={evaluationEdit.codeUE || ""}
                   onChange={handleUniteEnseignementChange}
@@ -435,31 +467,45 @@ const DetailsEvaluation = () => {
         </div>
       </div>
 
-      {/* Rubriques et questions */}
       <div className="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-md">
-        {evaluation.rubriques?.map((rubrique) => (
-          <div key={rubrique.id} className="mb-10">
-            <h3 className="text-lg font-semibold mb-4">
-              {rubrique.designation}
-            </h3>
-            <ul className="space-y-3 pl-6">
-              {rubrique.questions.map((question) => (
-                <li key={question.id} className="text-gray-700">
-                  <div className="mb-2 flex flex-row items-center gap-2">
-                    <strong className="min-w-fit">{question.intitule} :</strong>{" "}
-                    <p className="text-left">
-                      {question.qualificatif?.minimal}
-                      <b>{" - "}</b>
-                      {question.qualificatif?.maximal}
-                    </p>
-                  </div>
-                  <div className="pl-4 text-sm text-gray-600"></div>
-                </li>
-              ))}
-            </ul>
+        {evaluation.rubriques?.length === 0 ? (
+          <div className="text-center text-lg text-gray-600">
+            Aucune rubrique n'est associée à cette évaluation.
           </div>
-        ))}
+        ) : (
+          evaluation.rubriques?.map((rubrique) => (
+            <div key={rubrique.id} className="mb-10">
+              <h3 className="text-lg font-semibold mb-4">
+                {rubrique.designation}
+              </h3>
+              <ul className="space-y-3 pl-6">
+                {rubrique.questions.map((question) => (
+                  <li key={question.id} className="text-gray-700">
+                    <div className="mb-2 flex flex-row items-center gap-2">
+                      <strong className="min-w-fit">
+                        {question.intitule} :
+                      </strong>{" "}
+                      <p className="text-left">
+                        {question.qualificatif?.minimal}
+                        <b>{" - "}</b>
+                        {question.qualificatif?.maximal}
+                      </p>
+                    </div>
+                    <div className="pl-4 text-sm text-gray-600"></div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
       </div>
+
+      <dialog id="droit" className="modal">
+        <GestionDroit
+          enseignants={enseignants}
+          onClose={() => closeModal("droit")}
+        />
+      </dialog>
     </div>
   );
 };
