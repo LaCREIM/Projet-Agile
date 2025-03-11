@@ -10,7 +10,6 @@ import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
 import {
-  getPromotionAsync,
   getPromotionByEnseignant,
   getPromotionByEnseignantAsync
 } from "../../features/PromotionSlice";

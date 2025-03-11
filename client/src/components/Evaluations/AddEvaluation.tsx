@@ -26,7 +26,7 @@ const AddEvaluation = ({
         noEvaluationError: null as string | null,
     });
     const [error, setError] = useState<string | null>(null);
-    const unitesEnseignement = useSelector((state: RootState) => state.unitesEnseignement.unitesEnseignement);
+const unitesEnseignement = useSelector((state: RootState) => state.unitesEnseignement.unitesEnseignementByEnseignant);
 
     const initEvaluation = {
         idEvaluation: 0,

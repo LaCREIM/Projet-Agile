@@ -22,7 +22,7 @@ const initialState: EvaluationState = {
 };
 
 
-export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], string, { rejectValue: string }>(
+export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationAsync",
     async (_, {rejectWithValue}) => {
         try {

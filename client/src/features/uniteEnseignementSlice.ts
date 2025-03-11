@@ -1,15 +1,17 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import axiosInstance from "../api/axiosConfig.ts";
-import { UniteEnseignement } from '../types/types';
+import {UniteEnseignement} from '../types/types';
 
 interface UniteEnseignementState {
     unitesEnseignement: UniteEnseignement[];
+    unitesEnseignementByEnseignant: UniteEnseignement[];
     loading: boolean;
     error: string | null;
 }
 
 const initialState: UniteEnseignementState = {
     unitesEnseignement: [],
+    unitesEnseignementByEnseignant: [],
     loading: false,
     error: null,
 };
@@ -20,6 +22,21 @@ export const fetchAllUnitesEnseignementAsync = createAsyncThunk<UniteEnseignemen
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<UniteEnseignement[]>('/unites-enseignement');
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Error fetching Unites Enseignement');
+        }
+    }
+);
+
+// Async thunk to fetch all UniteEnseignement
+export const fetchAllUnitesEnseignementByEnseignentAsync = createAsyncThunk<UniteEnseignement[], void, {
+    rejectValue: string
+}>(
+    'unitesEnseignement/fetchAllByEnseignant',
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<UniteEnseignement[]>('/unites-enseignement/enseignant/' + localStorage.getItem('id'));
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Error fetching Unites Enseignement');
@@ -44,7 +61,20 @@ const uniteEnseignementSlice = createSlice({
             .addCase(fetchAllUnitesEnseignementAsync.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
-            });
+            })
+            .addCase(
+                fetchAllUnitesEnseignementByEnseignentAsync.fulfilled, (state, action: PayloadAction<UniteEnseignement[]>) => {
+                    state.unitesEnseignementByEnseignant = action.payload;
+                    state.loading = false;
+                }
+            )
+            .addCase(
+                fetchAllUnitesEnseignementByEnseignentAsync.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload as unknown as string;
+                }
+            )
+        ;
     },
 });
 
