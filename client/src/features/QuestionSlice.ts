@@ -244,14 +244,13 @@ const questionSlice = createSlice({
       state.error = action.payload as string;
     });
 
-    // **Récupérer les questions paginées**
     builder.addCase(getQuestionAsync.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(getQuestionAsync.fulfilled, (state, action: PayloadAction<{ content: Question[]; totalPages: number }>) => {
-      state.questions = action.payload.content; // Mise à jour de la liste des questions
-      state.totalPages = action.payload.totalPages; // Mise à jour du total de pages
+      state.questions = action.payload.content; 
+      state.totalPages = action.payload.totalPages; 
       state.loading = false;
     });
     builder.addCase(getQuestionAsync.rejected, (state, action) => {

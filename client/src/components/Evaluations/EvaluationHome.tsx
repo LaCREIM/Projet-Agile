@@ -4,19 +4,12 @@ import AddEvaluation from "./AddEvaluation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { MdClear } from "react-icons/md";
-
 import { fetchEvaluationAsync } from "../../features/EvaluationSlice";
-import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
+import { Enseignant, EvaluationDTO, GetEvaluationDTO, Promotion } from "../../types/types";
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
-import {
-  getAllEnseignant,
-  getAllEnseignantAsync,
-} from "../../features/EnseignantSlice";
-import {
-  getPromotionAsync,
-  getPromotions,
-} from "../../features/PromotionSlice";
+import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
+import { getPromotionAsync } from "../../features/PromotionSlice";
 import { etatEvaluationMapper } from "../../mappers/mappers";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -27,16 +20,18 @@ const EvaluationHome = () => {
   const evaluations = useAppSelector(
     (state: RootState) => state.evaluations.evaluations
   );
-  const enseignants = useAppSelector<Enseignant[]>(getAllEnseignant);
-  const promotions = useAppSelector<Promotion[]>(getPromotions);
+  const enseignants = useAppSelector(
+    (state: RootState) => state.enseignants.enseignants
+  );
+  const promotions = useAppSelector(
+    (state: RootState) => state.promotions.promotions
+  );
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const evaluationPerPage = 10;
   const [search, setSearch] = useState<string>("");
-  const [filteredEvaluations, setFilteredEvaluations] = useState<
-    EvaluationDTO[]
-  >([]);
+  const [filteredEvaluations, setFilteredEvaluations] = useState<GetEvaluationDTO[]>([]);
   const [sortField, setSortField] = useState<string>("anneeUniversitaire");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [filterEtat, setFilterEtat] = useState<string>("");
@@ -44,18 +39,15 @@ const EvaluationHome = () => {
 
   useEffect(() => {
     let filtered = evaluations.filter((evaluation) => {
-      // Filtre par recherche
       const matchesSearch = Object.values(evaluation).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
-
-      // Filtre par état
-      const matchesEtat = filterEtat ? evaluation.etat === filterEtat : true;
-
+      const matchesEtat = filterEtat
+        ? evaluation.evlauation.etat === filterEtat
+        : true;
       return matchesSearch && matchesEtat;
     });
 
-    // Tri des évaluations
     if (sortField) {
       filtered.sort((a, b) => {
         if (a[sortField] < b[sortField]) return sortOrder === "asc" ? -1 : 1;
@@ -64,11 +56,14 @@ const EvaluationHome = () => {
       });
     }
 
+    console.log(filtered);
+    
+
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat]);
 
   useEffect(() => {
-    dispatch(fetchEvaluationAsync(localStorage.getItem("id")));
+    dispatch(fetchEvaluationAsync(localStorage.getItem("id") || "-1"));
     dispatch(getAllEnseignantAsync());
     dispatch(getPromotionAsync());
   }, [dispatch]);
@@ -138,10 +133,13 @@ const EvaluationHome = () => {
                 <option value="CLO">Clôturée</option>
               </select>
               <div className="tooltip" data-tip="Réinitialiser le filtre">
-                <button onClick={() => setFilterEtat("")} disabled={filterEtat === ""} className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer">
+                <button
+                  onClick={() => setFilterEtat("")}
+                  disabled={filterEtat === ""}
+                  className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                >
                   <MdClear size={20} />
                 </button>
-
               </div>
             </div>
           </div>
@@ -195,41 +193,51 @@ const EvaluationHome = () => {
               </tr>
             ) : (
               paginatedEvaluations.map(
-                (evaluation: EvaluationDTO, index: number) => (
+                (evaluation: GetEvaluationDTO, index: number) => (
                   <tr
                     key={index}
                     className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                   >
                     <td className="px-4 py-2">
-                      {evaluation.anneeUniversitaire}
+                      {evaluation.evaluation.anneeUniversitaire}
                     </td>
-                    <td className="px-4 py-2">{evaluation.nomFormation}</td>
-                    <td className="px-4 py-2">{evaluation.designation}</td>
-                    <td className="px-4 py-2">{evaluation.periode}</td>
                     <td className="px-4 py-2">
-                      {etatEvaluationMapper(evaluation.etat)}
+                      {evaluation.evaluation.nomFormation}
+                    </td>
+                    <td className="px-4 py-2">
+                      {evaluation.evaluation.designation}
+                    </td>
+                    <td className="px-4 py-2">
+                      {evaluation.evaluation.periode}
+                    </td>
+                    <td className="px-4 py-2">
+                      {etatEvaluationMapper(evaluation.evaluation.etat)}
                     </td>
                     <td className="flex gap-3 justify-center items-center">
                       <FontAwesomeIcon
                         icon={faEye}
                         className="text-black text-base cursor-pointer"
-                        onClick={() => {
-                          handleInspect(evaluation.idEvaluation);
-                        }}
+                        onClick={() =>
+                          handleInspect(evaluation.evaluation.idEvaluation)
+                        }
                       />
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="text-black text-base cursor-pointer"
                         onClick={() =>
-                          openModal(`delete-${evaluation.idEvaluation}`)
+                          openModal(
+                            `delete-${evaluation.evaluation.idEvaluation}`
+                          )
                         }
                       />
                     </td>
                     <dialog
-                      id={`delete-${evaluation.idEvaluation}`}
+                      id={`delete-${evaluation.evaluation.idEvaluation}`}
                       className="modal"
                     >
-                      <DeleteEvaluationConfirmation evaluation={evaluation} />
+                      <DeleteEvaluationConfirmation
+                        evaluation={evaluation.evaluation}
+                      />
                     </dialog>
                   </tr>
                 )
@@ -263,7 +271,7 @@ const EvaluationHome = () => {
         <AddEvaluation
           promotions={promotions}
           enseignants={enseignants}
-          onClose={() => closeModal(`addEvaluation`)}
+          onClose={() => closeModal("addEvaluation")}
         />
       </dialog>
     </>

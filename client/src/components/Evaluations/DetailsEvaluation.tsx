@@ -486,7 +486,7 @@ const DetailsEvaluation = () => {
 
       {/* Rubriques et questions */}
       <div className="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-md">
-        {evaluation.rubriques.map((rubrique) => (
+        {realEvaluation.rubriques?.map((rubrique) => (
           <div key={rubrique.id} className="mb-10">
             <h3 className="text-lg font-semibold mb-4">
               {rubrique.designation}
@@ -496,12 +496,12 @@ const DetailsEvaluation = () => {
                 <li key={question.id} className="text-gray-700">
                   <div className="mb-2 flex flex-row items-center gap-2">
                     <strong className="min-w-fit">
-                      {question.designation} :
+                      {question.intitule} :
                     </strong>{" "}
                     <p className="text-left">
-                      {question.qualificatif.minimal}
+                      {question.qualificatif?.minimal}
                       <b>{" - "}</b>
-                      {question.qualificatif.maximal}
+                      {question.qualificatif?.maximal}
                     </p>
                   </div>
                   <div className="pl-4 text-sm text-gray-600"></div>
