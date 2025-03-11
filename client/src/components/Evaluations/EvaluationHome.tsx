@@ -56,15 +56,11 @@ const EvaluationHome = () => {
         return 0;
       });
     }
-
-    console.log(filtered);
-    
-
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat]);
 
   useEffect(() => {
-    dispatch(fetchEvaluationAsync(localStorage.getItem("id") || "-1"));
+    dispatch(fetchEvaluationAsync());
     dispatch(getAllEnseignantAsync());
     dispatch(getPromotionAsync());
   }, [dispatch]);

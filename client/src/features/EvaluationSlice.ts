@@ -22,11 +22,11 @@ const initialState: EvaluationState = {
 };
 
 
-export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], string, { rejectValue: string }>(
+export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationAsync",
-    async (enseignantId = localStorage.getItem("id"), {rejectWithValue}) => {
+    async (_, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${enseignantId}`);
+            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${localStorage.getItem("id") }`);
             console.log(response.data);
             return response.data;
         } catch (error: any) {
@@ -55,6 +55,18 @@ export const createEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationD
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la création de la Evaluation");
+        }
+    }
+);
+
+export const updateEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationDTO, { rejectValue: string }>(
+    "evaluations/updateEvaluationAsync",
+    async (evaluation, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.put(`/evaluations/${evaluation.idEvaluation}`, evaluation);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la modification de la Evaluation");
         }
     }
 );
