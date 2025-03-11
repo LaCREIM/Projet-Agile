@@ -2,7 +2,7 @@
 import {useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
-import {fetchQuestionsAsync, getAllQuestionsPersoAsync} from "../../features/QuestionSlice";
+import { getAllQuestionsPersoAsync} from "../../features/QuestionSlice";
 import {Qualificatif, Question} from "../../types/types";
 import {RootState} from "../../api/store";
 import {fetchQualificatifsAsync} from "../../features/QualificatifSlice";
@@ -46,7 +46,7 @@ const QuestionHome = () => {
   
   useEffect(() => {
     if(role === "ADM") {
-        dispatch(fetchQuestionsAsync());
+      dispatch(getAllQuestionsPersoAsync({ idEnseignant: 0 }));
     } else {
         dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
     }
@@ -196,9 +196,10 @@ const QuestionHome = () => {
               ) : (
                   paginatedQuestions.map((question: Question, index: number) => {
                     const isEnseneigentQuestionPerso = role == "ENS" && question.type === "QUS";
+                    console.log("🔎 question", question);
                     return (
                         <tr
-                            key={question.id}
+                            key={question.idQuestion}
                             className=" transition-all duration-75 "
                         >
                           <td className="px-4 py-2 w-[20%]">
@@ -261,6 +262,7 @@ const QuestionHome = () => {
 
                           <dialog id={`delete-${index}`} className="modal">
                             <DeleteQuestionConfirmation
+                                idEns={Number(userId)}
                                 question={question}
                                 currentPage={currentPage}
                             />

@@ -3,26 +3,29 @@ import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
 import {
   deleteQuestionAsync,
-  fetchQuestionsAsync,
+  //fetchQuestionsAsync,
+  getAllQuestionsPersoAsync,
 } from "../../features/QuestionSlice";
 
 interface DeleteProps {
   question: Question;
   currentPage: number;
+  idEns: number;
 }
 
-const DeleteQuestionConfirmation = ({ question }: DeleteProps) => {
+const DeleteQuestionConfirmation = ({ question , idEns }: DeleteProps) => {
   const dispatch = useAppDispatch();
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await dispatch(deleteQuestionAsync(question.id));
+      console.log("question.id", question);
+      const response = await dispatch(deleteQuestionAsync(question.idQuestion));
 
       if (response?.type === "questions/delete/rejected") {
         toast.error(response.payload as string);
       } else if (response?.type === "questions/delete/fulfilled") {
         toast.success("La question a été supprimée avec succès.");
-        dispatch(fetchQuestionsAsync());
+        dispatch(getAllQuestionsPersoAsync({ idEnseignant: idEns }));
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);

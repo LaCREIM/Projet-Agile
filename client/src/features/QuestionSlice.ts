@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Question } from "../types/types";
+//import { Enseignant } from "../types/types";
 import { RootState } from "../api/store"; 
 
 interface QuestionState {
@@ -19,6 +19,24 @@ const initialState: QuestionState = {
   loading: false,
   error: null,
 };
+export interface QuestionP {
+    //id: number;4    noEnseignant: Enseignant;
+    noEnseignant: number;
+   // type: string;
+    intitule: string;
+    idQualificatif: number;
+    maxQualificatif: string;
+    minQualificatif: string;
+}
+export interface Question {
+    idQuestion: number;
+    type: string;
+    noEnseignant: number;
+    idQualificatif: number;
+    maxQualificatif: string;
+    minQualificatif: string;
+    intitule: string;
+}
 
 
 export const fetchQuestionsAsync = createAsyncThunk<Question[], void, { rejectValue: string }>(
@@ -81,17 +99,19 @@ export const getAllQuestionsPersoAsync = createAsyncThunk<
   "questions/getAllQuestionsPersoAsync",  // Nom de l'action
   async ({ idEnseignant }, { rejectWithValue }) => {
     try {
-      // Appel à l'API sans pagination
-      const response = await axiosInstance.get<Question[]>(
-        `/questionsPrs/std-prs/${idEnseignant}`
-      );
-      console.log(response.data);
+      const id = Number(idEnseignant);
+      console.log("ID enseignant:", idEnseignant, "ID converti:", id);
+      
+      const response = await axiosInstance.get(`/questionsPrs/std-prs/${id}`);
+      console.log(`URL appelée : /questionsPrs/std-prs/${id}`);
+      console.log("Données reçues :", response.data);
+  
       return response.data;
     } catch (error: any) {
-      // Gestion des erreurs
+      console.error("Erreur lors de la récupération des questions perso :", error);
       return rejectWithValue(error.response?.data || "Erreur lors de la récupération des questions perso.");
     }
-  }
+  }  
 );
 
 
@@ -122,21 +142,27 @@ export const createQuestionPersoAsync = createAsyncThunk<
   "questions/createQuestionPersoAsync",
   async (question, { rejectWithValue }) => {
     try {
-      // Construction de l'objet questionPrs pour envoyer au backend
-      const questionPrs = {
-        type: question.type,
-        noEnseignant: question.noEnseignant,
-        idQualificatif: question.idQualificatif, 
-        intitule: question.intitule,
+      const questionPrs: QuestionP = {
+        noEnseignant: Number(question.noEnseignant),
+        intitule: question.intitule.trim(),
+        //id: Number(question.id),  // ➡️ Ajout du champ `idQuestion`
+        idQualificatif: Number(question.idQualificatif),
+        maxQualificatif: String(question.maxQualificatif),  // ➡️ Conversion en string
+        minQualificatif: String(question.minQualificatif),  // ➡️ Conversion en string
       };
 
-      // Envoi de la requête POST au backend
-      const response = await axiosInstance.post("/questionsPrs", questionPrs);
-      console.log(response.data);  // Si vous souhaitez logger la réponse
-      return response.data;  // Renvoie la donnée reçue du backend
+      console.log("Données envoyées :", questionPrs);
 
+      const response = await axiosInstance.post(
+        "/questionsPrs",
+        questionPrs,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      console.log("Réponse reçue :", response.data);
+      return response.data;
     } catch (error: any) {
-      // Gestion d'erreur, retour de message spécifique ou erreur générique
+      console.error("Erreur lors de la création de la question :", error);
       return rejectWithValue(
         error.response?.data || "Erreur lors de la création de la question"
       );
@@ -199,7 +225,7 @@ export const deleteQuestionAsync = createAsyncThunk<
   "questions/delete",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/questionsStd/${id}`);
+      const response = await axiosInstance.delete(`/questionsPrs/${id}`);
       console.log(response);
 
     } catch (error: any) {

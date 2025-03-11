@@ -37,8 +37,6 @@ public class RubriqueQuestionPrsDTO {
         this.designationRubrique = designationRubrique;
     }
 
-
-
     public Long getOrdre() {
         return ordre;
     }

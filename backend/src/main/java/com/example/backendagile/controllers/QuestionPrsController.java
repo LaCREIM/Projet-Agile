@@ -143,7 +143,7 @@ public class QuestionPrsController {
     }
 
     @GetMapping("/std-prs/{noEnseignant}")
-    public List<QuestionPrsDTO> getQuestionsStdAndPerso(Long noEnseignant) {
+    public List<QuestionPrsDTO> getQuestionsStdAndPerso(@PathVariable Long noEnseignant) {
         return questionPrsService.getQuestionsStdAndPerso(noEnseignant);
     }
 }

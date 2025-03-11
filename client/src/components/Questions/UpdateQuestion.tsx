@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
@@ -42,20 +43,20 @@ const UpdateQuestion = ({
     if (selectedQualificatif) {
       setQuestion((prev) => ({
         ...prev,
-        idQualificatif: selectedQualificatif, 
+        idQualificatif: selectedQualificatif.id, 
       }));
     }
   };
 
   const canSave =
-    question.intitule.trim() !== "" && question.idQualificatif?.id !== -1;
+    question.intitule.trim() !== "" && question.idQualificatif !== -1;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       const res = await dispatch(
-        updateQuestionAsync({ id: question.id, data: question })
+        updateQuestionAsync({ id: question.idQualificatif, data: question })
       );
 
       if (res?.type === "questions/update/rejected") {
@@ -95,7 +96,7 @@ const UpdateQuestion = ({
             <select
               required
               onChange={handleSelectQualificatif}
-              value={question.idQualificatif?.id || ""}
+              value={question.idQualificatif || ""}
               className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
             >
               <option value="">Sélectionnez un qualificatif</option>
