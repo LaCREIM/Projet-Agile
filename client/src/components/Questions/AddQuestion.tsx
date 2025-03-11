@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
 import {
-  fetchQuestionsAsync,
+  //fetchQuestionsAsync,
   createQuestionAsync,
   createQuestionPersoAsync,
+  getAllQuestionsPersoAsync,
 } from "../../features/QuestionSlice";
-import { Question, Enseignant, Qualificatif } from "../../types/types";
+import { Question, Qualificatif } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
 
@@ -20,8 +21,10 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
   const [question, setQuestion] = useState<Question>({
     id: 0,
     type: "",
-    noEnseignant: {} as Enseignant,
-    idQualificatif: { id: -1, minimal: "", maximal: "" },
+    noEnseignant: 0,
+    idQualificatif: -1,
+    maxQualificatif: "",
+    minQualificatif: "",
     intitule: "",
   });
   const [error, setError] = useState<string | null>(null);
@@ -46,16 +49,14 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     );
     setQuestion((prev) => ({
       ...prev,
-      idQualificatif: selectedQualificatif || {
-        id: -1,
-        minimal: "",
-        maximal: "",
-      },
+      idQualificatif: selectedQualificatif?.id || -1,
+      maxQualificatif: selectedQualificatif?.maximal || "",
+      minQualificatif: selectedQualificatif?.minimal || "",
     }));
   };
 
   const canSave =
-    question.intitule.trim() !== "" && question.idQualificatif.id !== -1;
+    question.intitule.trim() !== "" && question.idQualificatif !== -1;
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -64,8 +65,8 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     
       const role = localStorage.getItem("role");
       const userId = localStorage.getItem("id");
-    console.log("role", role);
-    console.log("userId", userId);
+      console.log("role", role);
+      console.log("userId", userId);
       if (!userId) {
         toast.error("Utilisateur non identifié !");
         setError("Impossible de récupérer l'identifiant de l'utilisateur.");
@@ -74,7 +75,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     
       const isEnseignant = role === "ENS";
       const questionToSend = question;
-      questionToSend.noEnseignant = Number(userId) as unknown as Enseignant;
+      questionToSend.noEnseignant = Number(userId) ;
       const action = isEnseignant
         ? createQuestionPersoAsync(questionToSend)
         : createQuestionAsync(questionToSend);
@@ -84,8 +85,12 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     
         if (res.meta.requestStatus === "fulfilled") {
           toast.success("Question ajoutée avec succès !");
-          dispatch(fetchQuestionsAsync()); // Rafraîchissement de la liste
-          handleReset();
+        if(role === "ADM") {
+          dispatch(getAllQuestionsPersoAsync({ idEnseignant: 0 }));
+        } else {
+            dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
+        }          
+        handleReset();
         } else {
           console.error("Erreur lors de l'ajout :", res.payload);
           toast.error(res.payload as string);
@@ -102,8 +107,10 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     setQuestion({
       id: 0,
       type: "",
-      noEnseignant: {} as Enseignant,
-      idQualificatif: { id: -1, minimal: "", maximal: "" },
+      noEnseignant: 0,
+      idQualificatif: -1,
+      maxQualificatif: "", 
+      minQualificatif: "" ,
       intitule: "",
     });
     setError(null);
@@ -135,7 +142,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
               <select
                 required
                 onChange={handleSelectQualificatif}
-                value={question.idQualificatif.id} // Lier la valeur à question.idQualificatif.id
+                value={question.idQualificatif} // Lier la valeur à question.idQualificatif.id
                 className="select select-bordered w-[70%] max-w-full  hover:cursor-pointer"
               >
                 <option value={-1}>Sélectionnez un qualificatif</option>

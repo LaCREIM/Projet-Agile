@@ -157,6 +157,8 @@ export interface ElementConstitutif {
 export interface EvaluationDTO {
     idEvaluation: number;
     noEnseignant: number;
+    nomEnseignant: string;
+    prenomEnseignant: string;
     designationEC: string;
     designationUE: string;
     anneeUniversitaire: string;
@@ -245,11 +247,19 @@ export interface QuestionEvaluation {
     ordre: number;
     intitule: string;
 }
-
+export interface QuestionP {
+    //id: number;4    noEnseignant: Enseignant;
+    noEnseignant: number;
+   // type: string;
+    intitule: string;
+    idQualificatif: number;
+    maxQualificatif: string;
+    minQualificatif: string;
+}
 export interface Question {
-    id: number;
+    idQuestion: number;
     type: string;
-    noEnseignant: Enseignant;
+    noEnseignant: number;
     idQualificatif: number;
     maxQualificatif: string;
     minQualificatif: string;

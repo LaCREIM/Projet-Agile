@@ -1,5 +1,4 @@
 package com.example.backendagile.repositories;
-import com.example.backendagile.entities.Enseignant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import com.example.backendagile.entities.UniteEnseignement;
@@ -20,5 +19,6 @@ public interface UniteEnseignementRepository extends JpaRepository<UniteEnseigne
     UniteEnseignement findById(String codeFormation, String codeUE);
 
 
-
+    @Query("SELECT ue FROM UniteEnseignement ue WHERE ue.codeFormation.codeFormation = :codeFormation AND ue.noEnseignant.id = :noEnseignant")
+    List<UniteEnseignement> findUniteEnseignementByPromotion(Long noEnseignant, String codeFormation);
 }
