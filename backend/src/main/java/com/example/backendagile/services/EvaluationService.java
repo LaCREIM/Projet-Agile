@@ -150,14 +150,12 @@ public class EvaluationService {
         return evaluations;
     }
 
-    public EvaluationDTO dupliquerEvaluation(Long idEvaluation, Long noEnseignant) {
+    public void dupliquerEvaluation(Long idEvaluation, Long noEnseignant) {
         Evaluation evaluation = getEvaluationByID(idEvaluation);
         Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
-        System.out.println("No enseignant : " + evaluationCopy.getEnseignant().getNoEnseignant());
-
-        return createEvaluation(EvaluationMapper.toDTO(evaluationCopy));
+        createEvaluation(EvaluationMapper.toDTO(evaluationCopy));
     }
 
 

@@ -34,9 +34,11 @@ public class UniteEnseignementService {
 
     public List<UniteEnseignementDTO> getUnitesEnseignementByPromotion(long noEnseignant) {
         List<PromotionDTO> prms = promotionService.getPromotionsByEnseignantForEvaluation(noEnseignant);
-    if(prms==null || prms.isEmpty()){
+
+        if(prms==null || prms.isEmpty()){
             return null;
         }
+
         Set<String> uniqueCodes = new HashSet<>();
         // Extraction et insertion dans le Set pour rendre unique
         prms.forEach(ue -> uniqueCodes.add(ue.getCodeFormation()));
