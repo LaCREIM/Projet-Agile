@@ -243,7 +243,9 @@ export interface Question {
     id: number;
     type: string;
     noEnseignant: Enseignant;
-    idQualificatif: Qualificatif;
+    idQualificatif: number;
+    maxQualificatif: string;
+    minQualificatif: string;
     intitule: string;
 }
 
