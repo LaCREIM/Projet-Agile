@@ -197,7 +197,9 @@ export interface EvaluationDTO {
     periode: string;
     debutReponse: string;
     finReponse: string;
+    rubriques: RubriqueEvaluation[]
 }
+
 
 export interface Formation {
     codeFormation: string;
@@ -262,7 +264,7 @@ export interface QuestionEvaluation {
     id: number;
     idRubriqueEvaluation: RubriqueEvaluation;
     idQuestion: Question;
-    idQualificatif: Qualificatif;
+    qualificatif: Qualificatif;
     ordre: number;
     intitule: string;
 }
@@ -304,6 +306,7 @@ export interface RubriqueEvaluation {
     idRubrique: Rubrique;
     ordre: number;
     designation: string;
+    questions: QuestionEvaluation[];
 }
 
 export interface Rubrique {
