@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 import {RootState} from "../api/store";
 import {Formation, Promotion, PromotionCreate, PromotionId} from "../types/types";
@@ -40,6 +40,7 @@ export interface Domaine {
 
 interface PromotionState {
     formations: Formation[];
+    promotionsByEnseignant: Promotion[];
     promotions: Promotion[];
     salle: Domaine[];
     diplome: Domaine[];
@@ -50,6 +51,7 @@ interface PromotionState {
 
 const initialState: PromotionState = {
     promotions: [],
+    promotionsByEnseignant: [],
     formations: [],
     salle: [],
     diplome: [],
@@ -104,6 +106,20 @@ export const getPromotionAsync = createAsyncThunk<Promotion[], void, { rejectVal
         try {
 
             const response = await axiosInstance.get<Promotion[]>(`/promotions`);            
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+export const getPromotionByEnseignantAsync = createAsyncThunk<Promotion[], void, { rejectValue: string }>(
+    "promotions/getPromotionByEnseignantAsync",
+    async (_, {rejectWithValue}) => {
+        try {
+
+            const response = await axiosInstance.get<Promotion[]>(`/promotions/enseignant/${localStorage.getItem("id")}`);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -189,7 +205,14 @@ const promotionSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch promotions.";
             })
-
+            .addCase(getPromotionByEnseignantAsync.fulfilled, (state, action: PayloadAction<Promotion[]>) => {
+                state.loading = false;
+                state.promotionsByEnseignant = action.payload;
+            })
+            .addCase(getPromotionByEnseignantAsync.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch promotions.";
+            })
             // Fetch formations
             .addCase(getFormationAsync.pending, (state) => {
                 state.loading = true;
@@ -226,6 +249,7 @@ export const getPromotions = (state: RootState) => state.promotions.promotions;
 export const getSalles = (state: RootState) => state.promotions.salle;
 export const getProcessusStages = (state: RootState) => state.promotions.processsusStage;
 export const getDiplomes = (state: RootState) => state.promotions.diplome;
+export const getPromotionByEnseignant = (state: RootState) => state.promotions.promotionsByEnseignant;
 
 
 export default promotionSlice.reducer;

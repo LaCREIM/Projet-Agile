@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
 import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
@@ -27,6 +27,7 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
     async (_, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${localStorage.getItem("id") }`);
+
             console.log(response.data);
             return response.data;
         } catch (error: any) {

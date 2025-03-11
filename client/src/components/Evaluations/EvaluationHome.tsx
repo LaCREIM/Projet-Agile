@@ -6,11 +6,14 @@ import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { MdClear } from "react-icons/md";
 import { fetchEvaluationAsync } from "../../features/EvaluationSlice";
 import { GetEvaluationDTO } from "../../types/types";
-
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
-import { getPromotionAsync } from "../../features/PromotionSlice";
+import {
+  getPromotionAsync,
+  getPromotionByEnseignant,
+  getPromotionByEnseignantAsync
+} from "../../features/PromotionSlice";
 import { etatEvaluationMapper } from "../../mappers/mappers";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -24,11 +27,8 @@ const EvaluationHome = () => {
   const enseignants = useAppSelector(
     (state: RootState) => state.enseignants.enseignants
   );
-  const promotions = useAppSelector(
-    (state: RootState) => state.promotions.promotions
-  );
+  const promotions = useAppSelector(getPromotionByEnseignant);
   const navigate = useNavigate();
-
   const [currentPage, setCurrentPage] = useState(1);
   const evaluationPerPage = 10;
   const [search, setSearch] = useState<string>("");
@@ -62,7 +62,7 @@ const EvaluationHome = () => {
   useEffect(() => {
     dispatch(fetchEvaluationAsync());
     dispatch(getAllEnseignantAsync());
-    dispatch(getPromotionAsync());
+    dispatch(getPromotionByEnseignantAsync());
   }, [dispatch]);
 
   const openModal = (id: string) => {
