@@ -27,8 +27,6 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
     async (_, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/evaluations-partage/${localStorage.getItem("id") }`);
-
-            console.log(response.data);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -40,7 +38,7 @@ export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { 
     "evaluations/getEvaluationByIdAsync",
     async (evaluationId, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<EvaluationDTO>(`/evaluations/enseignants/${localStorage.getItem("id")}/${evaluationId}`);
+            const response = await axiosInstance.get<EvaluationDTO>(`/evaluations/${evaluationId}`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -115,7 +113,6 @@ const EvaluationSlice = createSlice({
                 state.error = action.payload as string;
             })
             .addCase(duplicateEvaluationAsync.fulfilled, (state, action) => {
-                state.evaluations=action.payload;
                 state.loading = false;
             })
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
