@@ -214,6 +214,9 @@ const DetailsEvaluation = () => {
       }
     }
   };
+   const filteredPromotionsByRole = promotions.filter((promotion) => {
+       return promotion.noEnseignant == localStorage.getItem("id");
+   });
 
   return (
     <div className="w-full min-h-screen p-5 bg-gray-100 overflow-y-auto">
@@ -229,22 +232,46 @@ const DetailsEvaluation = () => {
           <h1 className="text-center text-2xl font-bold">
             Détails de l'évaluation
           </h1>
-          <div className="flex flex-row w-fit items-center justify-between gap-5">
-            <div className="tooltip" data-tip="Modifier l'évaluation">
-              <BiSolidEdit
-                size={25}
-                className="cursor-pointer"
-                onClick={handleEditClick}
-              />
+          {evaluation.noEnseignant === Number(localStorage.getItem("id")) ? (
+            <div className="flex flex-row w-fit items-center justify-between gap-5">
+              {/* Icône de modification */}
+              <div
+                className="tooltip tooltip-left"
+                data-tip={
+                  evaluation.etat === "CLO"
+                    ? "Cette évaluation est clôturée et ne peut pas être modifiée"
+                    : "Modifier l'évaluation"
+                }
+              >
+                <BiSolidEdit
+                  size={25}
+                  className={`cursor-pointer ${
+                    evaluation.etat === "CLO"
+                      ? "text-gray-400 hover:cursor-not-allowed"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (evaluation.etat !== "CLO") {
+                      handleEditClick();
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Icône de gestion des droits */}
+              <div className="tooltip" data-tip={"Gérer les droits d'accès"}>
+                <RiUserSettingsFill
+                  size={25}
+                  className={`cursor-pointer`}
+                  onClick={() => {
+                    openModal("droit");
+                  }}
+                />
+              </div>
             </div>
-            <div className="tooltip" data-tip="Gérer les droits d'accès">
-              <RiUserSettingsFill
-                size={25}
-                className="cursor-pointer"
-                onClick={() => openModal("droit")}
-              />
-            </div>
-          </div>
+          ) : (
+            <div></div>
+          )}
         </div>
       </div>
 
@@ -390,7 +417,7 @@ const DetailsEvaluation = () => {
                   <option value="" disabled>
                     Sélectionner une promotion{" "}
                   </option>
-                  {promotions.map((promotion, idx) => (
+                  {filteredPromotionsByRole.map((promotion, idx) => (
                     <option
                       key={idx}
                       value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
