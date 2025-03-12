@@ -17,7 +17,7 @@ import {
 } from "../../features/PromotionSlice";
 import { RootState } from "../../api/store";
 import { useSelector } from "react-redux";
-import { fetchAllUnitesEnseignementAsync } from "../../features/uniteEnseignementSlice";
+import { fetchAllUnitesEnseignementAsync, fetchAllUnitesEnseignementByEnseignentAsync, fetchAllUnitesEnseignementEnsAsync } from "../../features/uniteEnseignementSlice";
 import { toast, ToastContainer } from "react-toastify";
 import AlertError from "../ui/alert-error";
 import GestionDroit from "./GestionDroit";
@@ -52,15 +52,12 @@ const DetailsEvaluation = () => {
     dispatch(getEvaluationByIdAsync(Number(evaluationId)));
     dispatch(getPromotionAsync());
     dispatch(getAllEnseignantAsync());
-    dispatch(fetchAllUnitesEnseignementAsync());
-
-    console.log(evaluation);
-    
+    dispatch(fetchAllUnitesEnseignementEnsAsync());    
   }, [dispatch, evaluationId]);
  
   useEffect(() => {
     dispatch(getAllEnseignantAsync());
-    console.log(enseignants);
+    console.log(unitesEnseignement);
     
   }, [dispatch]);
 

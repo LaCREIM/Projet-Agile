@@ -29,6 +29,20 @@ export const fetchAllUnitesEnseignementAsync = createAsyncThunk<UniteEnseignemen
     }
 );
 
+export const fetchAllUnitesEnseignementEnsAsync = createAsyncThunk<UniteEnseignement[], void, { rejectValue: string }>(
+    'unitesEnseignement/fetchAllUnitesEnseignementEnsAsync',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<UniteEnseignement[]>(`/unites-enseignement/enseignant/${Number(localStorage.getItem('id'))}`); 
+            console.log(response.data);
+            
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || 'Error fetching Unites Enseignement');
+        }
+    }
+);
+
 // Async thunk to fetch all UniteEnseignement
 export const fetchAllUnitesEnseignementByEnseignentAsync = createAsyncThunk<UniteEnseignement[], void, {
     rejectValue: string
@@ -65,6 +79,12 @@ const uniteEnseignementSlice = createSlice({
             .addCase(
                 fetchAllUnitesEnseignementByEnseignentAsync.fulfilled, (state, action: PayloadAction<UniteEnseignement[]>) => {
                     state.unitesEnseignementByEnseignant = action.payload;
+                    state.loading = false;
+                }
+            )
+            .addCase(
+                fetchAllUnitesEnseignementEnsAsync.fulfilled, (state, action: PayloadAction<UniteEnseignement[]>) => {
+                    state.unitesEnseignement = action.payload;
                     state.loading = false;
                 }
             )

@@ -23,7 +23,6 @@ import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
   const dispatch = useAppDispatch();
@@ -116,13 +115,12 @@ const EvaluationHome = () => {
 
   const confirmDuplicate = async (evaluationId: number) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
-    console.log(response)
+    console.log(response);
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       toast.success("L'évaluation a été dupliquée avec succès");
       await dispatch(fetchEvaluationAsync());
     } else {
-
-      toast.error((response.payload as unknown as {message:string}).message);
+      toast.error((response.payload as unknown as { message: string }).message);
     }
     closeModal(`duplicate-${evaluationId}`);
   };
@@ -215,118 +213,134 @@ const EvaluationHome = () => {
               </tr>
             ) : (
               paginatedEvaluations.map(
-                (evaluation: GetEvaluationDTO, index: number) => (
-                  <tr
-                    key={index}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                  >
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.anneeUniversitaire}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.nomFormation}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.designation}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.periode}
-                    </td>
-                    <td className="px-4 py-2">
-                      {etatEvaluationMapper(evaluation.evaluation.etat)}
-                    </td>
-                    <td className="flex gap-3 justify-center items-center">
-                      {/* Icône de duplication */}
-                      <div
-                        className={"tooltip"}
-                        data-tip={`${
-                          evaluation?.droit?.duplication === "O"
-                            ? "Dupliquer l'évaluation"
-                            : "Vous n'avez pas le droit de dupliquer cette évaluation"
-                        }`}
-                      >
-                        <FontAwesomeIcon
-                          icon={faCopy}
-                          className={`text-black text-base cursor-pointer ${
-                            evaluation?.droit?.duplication === "O"
-                              ? ""
-                              : "text-gray-400 hover:cursor-not-allowed"
+                (evaluation: GetEvaluationDTO, index: number) => {
+                  const canDel =
+                    evaluation.evaluation.noEnseignant ===
+                      Number(localStorage.getItem("id")) ||
+                    evaluation.evaluation.etat !== "CLO";
+
+                  const canDup = evaluation?.droit?.duplication === "O";
+                  return (
+                    <tr
+                      key={index}
+                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                    >
+                      <td className="px-4 py-2">
+                        {evaluation.evaluation.anneeUniversitaire}
+                      </td>
+                      <td className="px-4 py-2">
+                        {evaluation.evaluation.nomFormation}
+                      </td>
+                      <td className="px-4 py-2">
+                        {evaluation.evaluation.designation}
+                      </td>
+                      <td className="px-4 py-2">
+                        {evaluation.evaluation.periode}
+                      </td>
+                      <td className="px-4 py-2">
+                        {etatEvaluationMapper(evaluation.evaluation.etat)}
+                      </td>
+                      <td className="flex gap-3 justify-center items-center">
+                        {/* Icône de duplication */}
+                        <div
+                          className={"tooltip"}
+                          data-tip={`${
+                            evaluation?.droit?.duplication === "O" ||
+                            evaluation.evaluation.noEnseignant ===
+                              Number(localStorage.getItem("id"))
+                              ? "Dupliquer l'évaluation"
+                              : "Vous n'avez pas le droit de dupliquer cette évaluation"
                           }`}
+                        >
+                          <FontAwesomeIcon
+                            icon={faCopy}
+                            className={`text-black text-base cursor-pointer ${
+                              evaluation?.droit?.duplication === "O" ||
+                              evaluation.evaluation.noEnseignant ===
+                                Number(localStorage.getItem("id"))
+                                ? ""
+                                : "text-gray-400 hover:cursor-not-allowed"
+                            }`}
+                            onClick={() =>
+                              canDup &&
+                              handleDuplicate(
+                                evaluation.evaluation.idEvaluation
+                              )
+                            }
+                          />
+                        </div>
+
+                        {/* Icône d'inspection */}
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="text-black text-base cursor-pointer"
                           onClick={() =>
-                            evaluation?.droit?.duplication === "O" &&
-                            handleDuplicate(evaluation.evaluation.idEvaluation)
+                            handleInspect(evaluation.evaluation.idEvaluation)
                           }
                         />
-                      </div>
 
-                      {/* Icône d'inspection */}
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-black text-base cursor-pointer"
-                        onClick={() =>
-                          handleInspect(evaluation.evaluation.idEvaluation)
-                        }
-                      />
-
-                      {/* Icône de suppression */}
-                      <div
-                        className={"tooltip"}
-                        data-tip={`${
-                          evaluation?.droit?.duplication === "O"
-                            ? "Vous n'avez pas le droit de supprimer cette évaluation"
-                            : evaluation.evaluation.etat === "CLO"
-                            ? "Cette évaluation est clôturée et ne peut pas être supprimée"
-                            : "Supprimer l'évaluation"
-                        }`}
-                      >
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className={`text-black text-base cursor-pointer ${
-                            evaluation?.droit?.duplication === "O" ||
+                        {/* Icône de suppression */}
+                        <div
+                          className={"tooltip"}
+                          data-tip={
                             evaluation.evaluation.etat === "CLO"
-                              ? "text-gray-400 hover:cursor-not-allowed"
-                              : ""
-                          }`}
-                          onClick={() => {
-                            if (
-                              evaluation?.evaluation.noEnseignant ===
+                              ? "Cette évaluation est clôturée et ne peut pas être supprimée"
+                              : evaluation.evaluation.noEnseignant !==
+                                Number(localStorage.getItem("id"))
+                              ? "Vous n'avez pas le droit de supprimer cette évaluation"
+                              : "Supprimer l'évaluation"
+                          }
+                        >
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className={`text-black text-base cursor-pointer ${
+                              evaluation.evaluation.noEnseignant ===
                                 Number(localStorage.getItem("id")) &&
                               evaluation.evaluation.etat !== "CLO"
-                            ) {
-                              openModal(
-                                `delete-${evaluation.evaluation.idEvaluation}`
-                              );
-                            }
-                          }}
+                                ? ""
+                                : "text-gray-400 hover:cursor-not-allowed"
+                            }`}
+                            onClick={() => {
+                              if (
+                                evaluation.evaluation.noEnseignant ===
+                                  Number(localStorage.getItem("id")) &&
+                                evaluation.evaluation.etat !== "CLO"
+                              ) {
+                                openModal(
+                                  `delete-${evaluation.evaluation.idEvaluation}`
+                                );
+                              }
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <dialog
+                        id={`delete-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                      >
+                        <DeleteEvaluationConfirmation
+                          evaluation={evaluation.evaluation}
                         />
-                      </div>
-                    </td>
-                    <dialog
-                      id={`delete-${evaluation.evaluation.idEvaluation}`}
-                      className="modal"
-                    >
-                      <DeleteEvaluationConfirmation
-                        evaluation={evaluation.evaluation}
-                      />
-                    </dialog>
-                    <dialog
-                      id={`duplicate-${evaluation.evaluation.idEvaluation}`}
-                      className="modal"
-                    >
-                      <DuplicateEvaluationConfirmation
-                        evaluation={evaluation.evaluation}
-                        onClose={() =>
-                          closeModal(
-                            `duplicate-${evaluation.evaluation.idEvaluation}`
-                          )
-                        }
-                        onConfirm={() =>
-                          confirmDuplicate(evaluation.evaluation.idEvaluation)
-                        }
-                      />
-                    </dialog>
-                  </tr>
-                )
+                      </dialog>
+                      <dialog
+                        id={`duplicate-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                      >
+                        <DuplicateEvaluationConfirmation
+                          evaluation={evaluation.evaluation}
+                          onClose={() =>
+                            closeModal(
+                              `duplicate-${evaluation.evaluation.idEvaluation}`
+                            )
+                          }
+                          onConfirm={() =>
+                            confirmDuplicate(evaluation.evaluation.idEvaluation)
+                          }
+                        />
+                      </dialog>
+                    </tr>
+                  );
+                }
               )
             )}
           </tbody>

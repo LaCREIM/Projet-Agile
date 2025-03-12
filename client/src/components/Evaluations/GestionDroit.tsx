@@ -68,18 +68,15 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
       enseignant.id !== Number(localStorage.getItem("id"))
   );
 
-  // Fonction pour basculer le mode édition
   const toggleEditionMode = () => {
     setEditionMode(!editionMode);
   };
 
-  // Fonction pour fermer la modal
   const handleClose = () => {
     setEditionMode(false);
     onClose();
   };
 
-  // Fonction pour modifier les droits d'un enseignant
   const handleDroitChange = (idEnseignant: number, droit: keyof Droit) => {
     const updatedDroits = droitsLocaux.map((d) =>
       d.idEnseignant === idEnseignant
@@ -88,7 +85,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
     );
     setDroitsLocaux(updatedDroits);
 
-    // Ajouter le droit modifié à la liste des droits modifiés
     const droitModifie = updatedDroits.find(
       (d) => d.idEnseignant === idEnseignant
     );

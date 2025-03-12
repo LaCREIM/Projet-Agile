@@ -325,7 +325,7 @@ export interface Serializable {
 
 export interface UniteEnseignement {
     codeUE: string;
-    codeFormation: Formation;
+    codeFormation: string;
     noEnseignant: Enseignant;
     designationUE: string;
     semestre: string;
