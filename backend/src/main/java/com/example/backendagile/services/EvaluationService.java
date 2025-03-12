@@ -42,6 +42,12 @@ public class EvaluationService {
         this.uniteEnseignementRepository = uniteEnseignementRepository;
     }
 
+
+    public boolean isEvaluationUnique(String anneeUniversitaire, Long noEnseignant,
+                                      Short noEvaluation, String codeFormation, String codeUE) {
+        return !evaluationRepository.existsByUniqueConstraint(anneeUniversitaire, noEnseignant,
+                noEvaluation, codeFormation, codeUE);
+    }
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
         List<Evaluation> evaluations = evaluationRepository.findByEnseignant_Id(id);
 
@@ -49,6 +55,10 @@ public class EvaluationService {
     }
 
     public EvaluationDTO createEvaluation(EvaluationDTO dto) {
+        //validate is the evaluation is unique?
+        if (!isEvaluationUnique(dto.getAnneeUniversitaire(), dto.getNoEnseignant(), dto.getNoEvaluation(), dto.getCodeFormation(), dto.getCodeUE())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'évaluation existe déjà.");
+        }
         // Validate input DTO
         if (dto.getCodeFormation() == null || dto.getCodeFormation().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le code de formation est requis.");
@@ -84,7 +94,7 @@ public class EvaluationService {
         Evaluation saved = evaluationRepository.save(evaluation);
 
         // Convert saved entity to DTO
-        return EvaluationMapper.toDTO(saved);
+        return EvaluationMapper.toDTO(saved,uniteEnseignementRepository);
     }
 
 
@@ -93,7 +103,7 @@ public class EvaluationService {
     }
 
     private EvaluationDTO getEvaluationDTO(Evaluation evaluation) {
-        EvaluationDTO dto = EvaluationMapper.toDTO(evaluation);
+        EvaluationDTO dto = EvaluationMapper.toDTO(evaluation,uniteEnseignementRepository);
 
         formationRepository.findById(evaluation.getCodeFormation()).ifPresent(formation -> {
             dto.setNomFormation(formation.getNomFormation());
@@ -121,7 +131,7 @@ public class EvaluationService {
             existingEvaluation.setDebutReponse(dto.getDebutReponse());
             existingEvaluation.setFinReponse(dto.getFinReponse());
             Evaluation updated = evaluationRepository.save(existingEvaluation);
-            return EvaluationMapper.toDTO(updated);
+            return EvaluationMapper.toDTO(updated,uniteEnseignementRepository);
         });
     }
 
@@ -153,7 +163,7 @@ public class EvaluationService {
         Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
-        createEvaluation(EvaluationMapper.toDTO(evaluationCopy));
+        evaluationRepository.save(evaluationCopy);
     }
 
 

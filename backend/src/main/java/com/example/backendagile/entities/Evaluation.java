@@ -41,7 +41,7 @@ public class Evaluation {
 })
     private ElementConstitutif elementConstitutif; */ 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumns({
         @JoinColumn(name = "CODE_FORMATION", referencedColumnName = "CODE_FORMATION", insertable = false, updatable = false),
@@ -227,4 +227,13 @@ public String getCodeFormation() {
         return copie;
     }
 
+
+    @Override
+    public String toString() {
+        return "Evaluation{" +
+                "id=" + id +
+                ", enseignant=" + enseignant +
+                ", uniteEnseignement=" + uniteEnseignement +
+                '}';
+    }
 }

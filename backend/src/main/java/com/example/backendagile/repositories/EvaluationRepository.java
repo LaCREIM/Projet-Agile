@@ -16,8 +16,21 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
 
     @Query("select e from Evaluation e where e.id = :idEvaluation")
     Evaluation findByIdEvaluation(Long idEvaluation);
-    
 
-    
+    @Query("SELECT COUNT(e) > 0 FROM Evaluation e " +
+                "WHERE e.anneeUniversitaire = :anneeUniversitaire " +
+                "AND e.enseignant.id = :noEnseignant " +
+                "AND e.noEvaluation = :noEvaluation " +
+                "AND e.codeFormation = :codeFormation " +
+                "AND e.codeUE = :codeUE")
+    boolean existsByUniqueConstraint(String anneeUniversitaire,
+                                          Long noEnseignant,
+                                          Short noEvaluation,
+                                          String codeFormation,
+                                          String codeUE);
+    }
 
-}
+
+
+
+
