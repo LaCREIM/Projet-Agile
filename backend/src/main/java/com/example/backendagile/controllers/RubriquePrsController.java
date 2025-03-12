@@ -134,8 +134,28 @@ public class RubriquePrsController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/std-prs/{noEnseignant}")
-    public List<RubriquePrsDTO> getRubriquesStdAndPerso(@PathVariable Long noEnseignant) {
-        return rubriqueService.getRubriqueStdAndPerso(noEnseignant);
+    @GetMapping("/std-prs/paged")
+    public ResponseEntity<Map<String, Object>> getAllRubriquesPrsStdPaged(
+            @RequestParam long noEnseignant,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<RubriquePrsDTO> rubriques = rubriqueService.getAllRubriquesPrsStdPaged(noEnseignant, page, size);
+        int totalPages = rubriqueService.getTotalPages2(noEnseignant, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("rubriques", rubriques);  // Maintenant ce sont des DTOs
+        response.put("currentPage", page);
+        response.put("size", size);
+        response.put("totalPages", totalPages);
+
+        return ResponseEntity.ok(response);
     }
+
+
+
+    //@GetMapping("/std-prs/{noEnseignant}")
+    //public List<RubriquePrsDTO> getRubriquesStdAndPerso(@PathVariable Long noEnseignant) {
+    //    return rubriqueService.getRubriqueStdAndPerso(noEnseignant);
+    //}
 }
