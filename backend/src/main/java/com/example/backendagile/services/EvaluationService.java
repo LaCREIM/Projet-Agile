@@ -163,10 +163,12 @@ public class EvaluationService {
     }
 
     public void dupliquerEvaluation(Long idEvaluation, Long noEnseignant) {
+        Short noEva= 99 ;
         Evaluation evaluation = getEvaluationByID(idEvaluation);
         Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
+        evaluationCopy.setNoEvaluation(noEva);
         Evaluation newEvaluation = evaluationRepository.save(evaluationCopy);
         List<RubriqueEvaluation> rubriqueEvaluations = rubriqueEvaluationRepository.findAllByIdEvaluation(idEvaluation);
         for (RubriqueEvaluation rubriqueEvaluation : rubriqueEvaluations) {

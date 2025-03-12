@@ -135,7 +135,11 @@ public class PromotionService {
             }
         }
 
-        return promotionsByEnseignant.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
-    }
+        List<PromotionDTO> prmDto= promotionsByEnseignant.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
+        if(prmDto.isEmpty()){
+            return null;
+        }
+        return prmDto;
 
+}
 }
