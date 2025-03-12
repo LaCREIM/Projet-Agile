@@ -14,12 +14,15 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
     e.stopPropagation();
     try {
       const response = await dispatch(deleteEvaluationAsync(evaluation.idEvaluation));
-
+      console.log(response);
+      
       if (response?.type === "evaluations/delete/rejected") {
         toast.error((response.payload as unknown as { message: string }).message);
       } else if (response?.type === "evaluations/delete/fulfilled") {
         toast.success("L'évaluation a été supprimée avec succès.");
-        dispatch(fetchEvaluationAsync());
+
+        await dispatch(fetchEvaluationAsync());
+
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
