@@ -7,10 +7,6 @@ import com.example.backendagile.repositories.EnseignantRepository;
 import com.example.backendagile.repositories.FormationRepository;
 import com.example.backendagile.repositories.PromotionRepository;
 import com.example.backendagile.repositories.UniteEnseignementRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 

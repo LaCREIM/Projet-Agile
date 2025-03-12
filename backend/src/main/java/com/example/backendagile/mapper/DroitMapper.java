@@ -30,7 +30,7 @@ public class DroitMapper {
         }
         char consultation = droit.getConsultation() ;
         char duplication = droit.getDuplication();
-        System.out.println("Consultation : "+consultation);
+//        System.out.println("Consultation : "+consultation);
         String nom = droit.getNoEnseignant().getNom();
         String prenom = droit.getNoEnseignant().getPrenom();
 
@@ -42,7 +42,7 @@ public class DroitMapper {
         droitDTO.setPrenom(prenom);
         droitDTO.setConsultation(consultation);
         droitDTO.setDuplication(duplication);
-        System.out.println("sa passe!!!!!!!!!!!!");
+//        System.out.println("heeeeeere in Droit Mapper ToDTO");
         return droitDTO;
     }
 

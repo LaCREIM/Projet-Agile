@@ -114,4 +114,17 @@ public class UniteEnseignement {
         this.nbhTp = nbhTp;
     }
 
+
+    @Override
+    public String toString() {
+        return "UniteEnseignement{" +
+                "id=" + id +
+                ", designation='" + designation + '\'' +
+                ", semestre='" + semestre + '\'' +
+                ", description='" + description + '\'' +
+                ", nbhCm=" + nbhCm +
+                ", nbhTd=" + nbhTd +
+                ", nbhTp=" + nbhTp +
+                '}';
+    }
 }

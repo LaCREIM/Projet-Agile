@@ -45,6 +45,7 @@ export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValu
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/rubriquesStd");
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la récupération des rubriques");
@@ -52,6 +53,72 @@ export const getRubriquesAsync = createAsyncThunk<Rubrique[], void, { rejectValu
   }
 );
 
+export const getAllRubriquesPersoAsync = createAsyncThunk<
+  Rubrique[],
+  { idEnseignant: number },
+  { rejectValue: string }
+>(
+  "rubriques/getAllRubriquesPersoAsync",
+  async ({ idEnseignant }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/rubriquesPrs/std-prs/${idEnseignant}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la récupération de toutes les rubriques personnelles.");
+    }
+  }
+);
+
+export const getAllRubriquesPrsStdPagedAsync = createAsyncThunk<
+  { rubriques: Rubrique[]; currentPage: number; size: number; totalPages: number },
+  { idEnseignant: number; page: number; size: number },
+  { rejectValue: string }
+>(
+  "rubriques/getAllRubriquesPrsStdPagedAsync",
+  async ({ idEnseignant, page, size }, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get<{
+        rubriques: Rubrique[];
+        currentPage: number;
+        size: number;
+        totalPages: number;
+      }>("/rubriquesPrs/std-prs/paged", {
+        params: { noEnseignant: idEnseignant, page, size },
+      });
+
+      return data;
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Erreur lors de la récupération des rubriques.";
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
+
+export const createRubriquePersoAsync = createAsyncThunk<
+  Rubrique,
+  { designation: string; noEnseignant: number },
+  { rejectValue: string }
+>(
+  "rubriques/createRubriquePersoAsync",
+  async (rubriqueData, { rejectWithValue }) => {
+
+    try {
+      const response = await axiosInstance.post("/rubriquesPrs", rubriqueData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la création de la rubrique personnelle.");
+    }
+  }
+);
+//
 export const searchRubriquesAsync = createAsyncThunk<
   { rubriques: Rubrique[]; totalPages: number },
   { page: number; size: number },
@@ -63,6 +130,7 @@ export const searchRubriquesAsync = createAsyncThunk<
       const response = await axiosInstance.get("/rubriquesStd/paged", {
         params: { page, size },
       });
+      console.log(response.data);
       return response.data; // L'API renvoie un objet contenant rubriques et totalPages
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la recherche des rubriques");
@@ -229,6 +297,20 @@ const rubriqueSlice = createSlice({
     });
     builder.addCase(deleteRubriqueAsync.rejected, (state, action) => {
       state.error = action.payload as string;
+    });
+    builder 
+    .addCase(getAllRubriquesPrsStdPagedAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(getAllRubriquesPrsStdPagedAsync.fulfilled, (state, action) => {
+      state.loading = false;
+      state.rubriques = action.payload.rubriques;
+      state.totalPages = action.payload.totalPages;
+    })
+    .addCase(getAllRubriquesPrsStdPagedAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Une erreur est survenue.";
     });
   },
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Question, Rubrique } from "../../types/types";
 import {
@@ -65,7 +66,7 @@ const DetailsRubrique = ({
 
   const [unusedQuestions, setUnusedQuestions] = useState(
     allQuestions.filter(
-      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.idQuestion)
     )
   );
 
@@ -133,7 +134,7 @@ const DetailsRubrique = ({
 
   useEffect(() => {
     const unused = allQuestions.filter(
-      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.id)
+      (q) => !questions.some((usedQ) => usedQ.idQuestion === q.idQuestion)
     );
     setUnusedQuestions(unused);
   }, [questions, allQuestions]);
@@ -205,7 +206,7 @@ const DetailsRubrique = ({
     if (selectedQuestion === -1) return;
 
     const questionToAdd = unusedQuestions.find(
-      (q) => q.id === Number(selectedQuestion)
+      (q) => q.idQuestion === Number(selectedQuestion)
     );
 
     if (!questionToAdd) return;
@@ -213,17 +214,17 @@ const DetailsRubrique = ({
     const newQuestion: RequestQuestionOrderDetails = {
       idRubrique: rubrique.id,
       designationRubrique: rubrique.designation,
-      idQuestion: questionToAdd.id,
+      idQuestion: questionToAdd.idQuestion,
       questionStdDTO: {
-        idQualificatif: questionToAdd.idQualificatif.id,
+        idQualificatif: questionToAdd.idQualificatif,
         intitule: questionToAdd.intitule,
-        maxQualificatif: questionToAdd.idQualificatif.maximal,
-        minQualificatif: questionToAdd.idQualificatif.minimal,
+        maxQualificatif: questionToAdd.maxQualificatif,
+        minQualificatif: questionToAdd.minQualificatif,
       },
       ordre: questionsOrder.length + 1,
     };
 
-    setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
+    setUnusedQuestions((prev) => prev.filter((q) => q.idQuestion !== questionToAdd.idQuestion));
 
     setAddQuestion((prev) => [...prev, newQuestion]);
 
@@ -233,13 +234,13 @@ const DetailsRubrique = ({
       setQuestionsOrder((prev) => [
         ...prev,
         {
-          id: questionToAdd.id,
-          idQuestion: questionToAdd.id,
+          id: questionToAdd.idQuestion,
+          idQuestion: questionToAdd.idQuestion,
           idRubrique: rubrique.id,
           ordre: prev.length + 1,
           intitule: questionToAdd.intitule,
-          qualificatifMax: questionToAdd.idQualificatif.maximal,
-          qualificatifMin: questionToAdd.idQualificatif.minimal,
+          qualificatifMax: questionToAdd.maxQualificatif,
+          qualificatifMin: questionToAdd.minQualificatif,
         },
       ]);
     } else {
@@ -259,7 +260,7 @@ const DetailsRubrique = ({
 
     if (response?.type === "rubriques-questions/delete/fulfilled") {
       // Réajouter la question supprimée à unusedQuestions
-      const removedQuestion = allQuestions.find((q) => q.id === idQuestion);
+      const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
       if (removedQuestion) {
         setUnusedQuestions((prev) => [...prev, removedQuestion]);
       }
@@ -324,7 +325,7 @@ const DetailsRubrique = ({
                 >
                   <option value={-1}>Sélectionner une question</option>
                   {unusedQuestions.map((q) => (
-                    <option key={q.id} value={q.id}>
+                    <option key={q.idQuestion} value={q.idQuestion}>
                       {q.intitule}
                     </option>
                   ))}

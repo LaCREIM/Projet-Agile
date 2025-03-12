@@ -24,20 +24,20 @@ const DetailsQuestion = ({ question }: QuestionDetailsProps) => {
             {question.noEnseignant && (
               <div className="text-base font-medium text-gray-900">
                 <dt>No Enseignant :</dt>
-                <dd className="mt-1 text-gray-500">
+                {/* <dd className="mt-1 text-gray-500">
                   {question.noEnseignant.nom +
                     " " +
                     question.noEnseignant.prenom}
-                </dd>
+                </dd> */}
               </div>
             )}
             {question.idQualificatif && (
               <div className="text-base font-medium text-gray-900">
                 <dt>Qualificatif :</dt>
                 <dd className="mt-1 text-gray-500">
-                  {question.idQualificatif.maximal +
+                  {question.maxQualificatif +
                     " - " +
-                    question.idQualificatif.minimal}
+                    question.minQualificatif}
                 </dd>
               </div>
             )}

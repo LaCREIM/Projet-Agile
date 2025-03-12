@@ -19,7 +19,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
   const dispatch = useAppDispatch();
 
   const [question, setQuestion] = useState<Question>({
-    id: 0,
+    idQuestion: 0,
     type: "",
     noEnseignant: 0,
     idQualificatif: -1,
@@ -105,7 +105,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
 
   const handleReset = () => {
     setQuestion({
-      id: 0,
+      idQuestion: 0,
       type: "",
       noEnseignant: 0,
       idQualificatif: -1,

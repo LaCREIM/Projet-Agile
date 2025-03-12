@@ -17,7 +17,7 @@ public class EvaluationPartagerMapper {
 
     public EvaluationPartagerDTO fromDroit(Droit droit){
         DroitDTO droitDTO = droitMapper.toDTO(droit);
-        EvaluationDTO evaluationDTO = EvaluationMapper.toDTO(droit.getIdEvaluation());
+        EvaluationDTO evaluationDTO = EvaluationMapper.toDTO(droit.getIdEvaluation(),null);
 
         return new EvaluationPartagerDTO(evaluationDTO, droitDTO);
     }

@@ -61,11 +61,10 @@ public class EvaluationController {
         }
     }
 
-    @GetMapping("/enseignants/{idEnseignant}/{idEvaluation}")
+    @GetMapping("/{idEvaluation}")
     public ResponseEntity<EvaluationDTO> getEvaluation(
-            @PathVariable Long idEnseignant,
             @PathVariable Long idEvaluation) {
-        EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEnseignant, idEvaluation);
+        EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEvaluation);
         return ResponseEntity.ok(evaluation);
     }
 
@@ -80,11 +79,13 @@ public class EvaluationController {
         Map<String, Object> response = new HashMap<>();
         try {
             evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
-            response.put("evaluations", evaluationService.getEvaluationsPartagees(noEnseignant));
+            //response.put("message", "La duplication de l'évaluation a été effectuée avec succès.");
+            response.put("evaluation", evaluationService.getEvaluationsByEnseignant(noEnseignant));
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            response.put("message", "Erreur lors de la duplication de l'évaluation.");
+            response.put("message", "Evaluation déja dupliquée");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
