@@ -64,7 +64,8 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
   // Fonction pour filtrer les enseignants disponibles
   const enseignantsDisponibles = enseignants.filter(
     (enseignant) =>
-      !droitsLocaux.some((droit) => droit.idEnseignant === enseignant.id)
+      !droitsLocaux.some((droit) => droit.idEnseignant === enseignant.id) &&
+      enseignant.id !== Number(localStorage.getItem("id"))
   );
 
   // Fonction pour basculer le mode édition
@@ -307,69 +308,83 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
             </tr>
           </thead>
           <tbody>
-            {droitsLocaux.map((droit) => {
-              const estASupprimer = droitsASupprimer.some(
-                (d) => d.idEnseignant === droit.idEnseignant
-              );
-              return (
-                <tr
-                  key={droit.idEnseignant}
-                  className={estASupprimer ? "bg-red-100" : ""}
+            {droitsLocaux.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={editionMode ? 4 : 3}
+                  className="text-center py-4 text-base text-gray-600"
                 >
-                  <td>
-                    {droit.nom} {droit.prenom}
-                  </td>
-                  <td>
-                    {editionMode ? (
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={droit.duplication === "O"}
-                        onChange={() =>
-                          handleDroitChange(droit.idEnseignant, "duplication")
-                        }
-                      />
-                    ) : droit.duplication === "O" ? (
-                      <MdCheck size={20} className="font-bold" />
-                    ) : (
-                      <RxCross2 size={20} className="font-bold" />
-                    )}
-                  </td>
-                  <td>
-                    {editionMode ? (
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={droit.consultation === "O"}
-                        onChange={() =>
-                          handleDroitChange(droit.idEnseignant, "consultation")
-                        }
-                      />
-                    ) : droit.consultation === "O" ? (
-                      <MdCheck size={20} className="font-bold" />
-                    ) : (
-                      <RxCross2 size={20} className="font-bold" />
-                    )}
-                  </td>
-                  {editionMode && (
+                  Pas de droit affecté à cette évaluation pour le moment
+                </td>
+              </tr>
+            ) : (
+              droitsLocaux.map((droit) => {
+                const estASupprimer = droitsASupprimer.some(
+                  (d) => d.idEnseignant === droit.idEnseignant
+                );
+                return (
+                  <tr
+                    key={droit.idEnseignant}
+                    className={estASupprimer ? "bg-red-100" : ""}
+                  >
                     <td>
-                      <button
-                        className="cursor-pointer tooltip"
-                        data-tip="Supprimer le droit"
-                        onClick={() => handleSupprimerDroit(droit)}
-                      >
-                        <FaTrash
-                          className={
-                            estASupprimer ? "text-red-500" : "text-black"
-                          }
-                          size={18}
-                        />
-                      </button>
+                      {droit.nom} {droit.prenom}
                     </td>
-                  )}
-                </tr>
-              );
-            })}
+                    <td>
+                      {editionMode ? (
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          checked={droit.duplication === "O"}
+                          onChange={() =>
+                            handleDroitChange(droit.idEnseignant, "duplication")
+                          }
+                        />
+                      ) : droit.duplication === "O" ? (
+                        <MdCheck size={20} className="font-bold" />
+                      ) : (
+                        <RxCross2 size={20} className="font-bold" />
+                      )}
+                    </td>
+                    <td>
+                      {editionMode ? (
+                        <input
+                          type="checkbox"
+                          className="checkbox"
+                          checked={droit.consultation === "O"}
+                          onChange={() =>
+                            handleDroitChange(
+                              droit.idEnseignant,
+                              "consultation"
+                            )
+                          }
+                        />
+                      ) : droit.consultation === "O" ? (
+                        <MdCheck size={20} className="font-bold" />
+                      ) : (
+                        <RxCross2 size={20} className="font-bold" />
+                      )}
+                    </td>
+                    {editionMode && (
+                      <td>
+                        <button
+                          className="cursor-pointer tooltip"
+                          data-tip="Supprimer le droit"
+                          onClick={() => handleSupprimerDroit(droit)}
+                        >
+                          <FaTrash
+                            className={
+                              estASupprimer ? "text-red-500" : "text-black"
+                            }
+                            size={18}
+                          />
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
         {error && <AlertError error={error} />}

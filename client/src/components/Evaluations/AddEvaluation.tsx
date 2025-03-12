@@ -163,6 +163,10 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
     evaluation.noEvaluation >= 1 &&
     evaluation.noEvaluation <= 99;
 
+     const filteredPromotionsByRole = promotions.filter((promotion) => {
+       return promotion.noEnseignant == localStorage.getItem("id");
+     });
+
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -234,7 +238,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
                   Sélectionner une promotion{" "}
                   <span className="text-red-500"> *</span>
                 </option>
-                {promotions.map((promotion, idx) => (
+                {filteredPromotionsByRole.map((promotion, idx) => (
                   <option
                     key={idx}
                     value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
@@ -334,9 +338,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
             </div>
           </div>
         </form>
-        <div className={"mt-2"}>
-        {error && <AlertError error={error} />}
-        </div>
+        <div className={"mt-2"}>{error && <AlertError error={error} />}</div>
 
         <div className="modal-action">
           <button className="btn" onClick={resetEvaluation}>
