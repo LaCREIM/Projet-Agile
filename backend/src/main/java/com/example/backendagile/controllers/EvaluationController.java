@@ -85,7 +85,7 @@ public class EvaluationController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            response.put("message", "Erreur lors de la duplication de l'évaluation.");
+            response.put("message", "Evaluation déja dupliquée");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
