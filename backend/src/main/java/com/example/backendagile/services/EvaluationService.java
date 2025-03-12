@@ -88,10 +88,8 @@ public class EvaluationService {
     }
 
 
-    public EvaluationDTO getEvaluationByEnseignantAndId(Long idEnseignant, Long idEvaluation) {
-        return evaluationRepository.findByEnseignant_IdAndId(idEnseignant, idEvaluation)
-                .map(this::getEvaluationDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Évaluation non trouvée pour l'enseignant avec ID " + idEnseignant));
+    public EvaluationDTO getEvaluationByEnseignantAndId(Long idEvaluation) {
+        return mapEvaulation(evaluationRepository.findByIdEvaluation(idEvaluation));
     }
 
     private EvaluationDTO getEvaluationDTO(Evaluation evaluation) {

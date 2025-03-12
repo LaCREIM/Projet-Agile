@@ -61,11 +61,10 @@ public class EvaluationController {
         }
     }
 
-    @GetMapping("/enseignants/{idEnseignant}/{idEvaluation}")
+    @GetMapping("/{idEvaluation}")
     public ResponseEntity<EvaluationDTO> getEvaluation(
-            @PathVariable Long idEnseignant,
             @PathVariable Long idEvaluation) {
-        EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEnseignant, idEvaluation);
+        EvaluationDTO evaluation = evaluationService.getEvaluationByEnseignantAndId(idEvaluation);
         return ResponseEntity.ok(evaluation);
     }
 
