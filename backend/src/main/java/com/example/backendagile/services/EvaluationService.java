@@ -49,7 +49,7 @@ public class EvaluationService {
                 noEvaluation, codeFormation, codeUE);
     }
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
-        List<Evaluation> evaluations = evaluationRepository.findByEnseignant_Id(id);
+        List<Evaluation> evaluations = evaluationRepository.findByIdEnseignantEvaluationSorted(id);
 
         return evaluations.stream().map(this::mapEvaulation).collect(Collectors.toList());
     }

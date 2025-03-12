@@ -5,12 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //import org.springframework.data.jpa.repository.Query;
 //import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
-   
+
+    @Query("SELECT e FROM Evaluation e WHERE e.enseignant.id = :idEnseignant ORDER BY e.anneeUniversitaire")
+    List<Evaluation> findByIdEnseignantEvaluationSorted(@Param("idEnseignant") Long id);
+
     List<Evaluation> findByEnseignant_Id(Long id);
     Optional<Evaluation> findByEnseignant_IdAndId(Long idEnseignant, Long idEvaluation);
 
