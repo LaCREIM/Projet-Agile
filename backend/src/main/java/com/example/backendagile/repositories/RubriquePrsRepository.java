@@ -28,6 +28,22 @@ public interface RubriquePrsRepository extends JpaRepository<Rubrique, Long> {
 """, nativeQuery = true)
     List<Rubrique> findAllWithPagination(@Param("noEnseignant") long noEnseignant , @Param("startRow") int startRow, @Param("endRow") int endRow);
 
+    @Query(value = """
+    SELECT * FROM (
+        SELECT r.*, ROWNUM rnum FROM (
+            SELECT * FROM RUBRIQUE 
+            WHERE (type = 'RBS' OR NO_ENSEIGNANT = :noEnseignant) OR type = 'STD'
+            ORDER BY DESIGNATION ASC
+        ) r WHERE ROWNUM <= :endRow
+    ) WHERE rnum > :startRow
+""", nativeQuery = true)
+    List<Rubrique> findAllWithPrsStdPagination(
+            @Param("noEnseignant") long noEnseignant,
+            @Param("startRow") int startRow,
+            @Param("endRow") int endRow
+    );
+
+
     @Query("select r from Rubrique r where r.type = 'RBS' or r.noEnseignant.id = :noEnseignant")
     List<Rubrique> findRubriqueStdAndPerso(Long noEnseignant);
 
@@ -40,4 +56,13 @@ public interface RubriquePrsRepository extends JpaRepository<Rubrique, Long> {
 
     @Query("select count(e) > 0 from RubriqueEvaluation e where e.idRubrique.id = :id")
     boolean existsRubriqueInEvaluation(Long id);
+
+    @Query(value = """
+    SELECT COUNT(*) FROM RUBRIQUE 
+    WHERE (type = 'RBS' AND NO_ENSEIGNANT = :noEnseignant) 
+    OR type = 'STD'
+""", nativeQuery = true)
+    long countByNoEnseignant(@Param("noEnseignant") long noEnseignant);
+
+
 }

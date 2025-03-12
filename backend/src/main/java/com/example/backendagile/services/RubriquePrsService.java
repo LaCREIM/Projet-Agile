@@ -101,16 +101,24 @@ public class RubriquePrsService {
         long totalItems = rubriqueRepository.count();
         return (int) Math.ceil((double) totalItems / size);
     }
+    public int getTotalPages2(long noEnseignant, int size) {
+        long totalRubriques = rubriqueRepository.countByNoEnseignant(noEnseignant);
+        return (int) Math.ceil((double) totalRubriques / size);
+    }
 
     public Optional<Rubrique> findByDesignationAndDiffrentID(Long id , String des){
         return rubriqueRepository.findRubriqueByDesignationAndDiffrentID(id,des).stream().findFirst();
     }
 
 
-    public List<RubriquePrsDTO> getRubriqueStdAndPerso(Long noEnseignant) {
-        List<Rubrique> rubriques = rubriqueRepository.findRubriqueStdAndPerso(noEnseignant);
+    public List<RubriquePrsDTO> getAllRubriquesPrsStdPaged(long noEnseignant, int page, int size) {
+        int startRow = (page - 1) * size;
+        int endRow = page * size;
+
+        List<Rubrique> rubriques = rubriqueRepository.findAllWithPrsStdPagination(noEnseignant, startRow, endRow);
+
         return rubriques.stream()
-                .map(rubriqueMapper::toDTO)
+                .map(rubriqueMapper::toDTO) // Utilisation du mapper
                 .collect(Collectors.toList());
     }
 

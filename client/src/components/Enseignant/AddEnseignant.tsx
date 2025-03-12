@@ -57,7 +57,6 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {  const dispatc
     { champ: "emailUbo", valeur: enseignant.emailUbo.trim() },
     { champ: "codePostal", valeur: enseignant.codePostal.trim() },
     { champ: "mobile", valeur: enseignant.mobile.trim() },
-    { champ: "telephone", valeur: enseignant.telephone.trim() },
     { champ: "type", valeur: enseignant.type },
     { champ: "pays", valeur: enseignant.pays },
     { champ: "ville", valeur: enseignant.ville.trim() },

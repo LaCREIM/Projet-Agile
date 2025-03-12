@@ -12,6 +12,7 @@ import { GetEvaluationDTO } from "../../types/types";
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
+
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
 import {
   getPromotionByEnseignant,
@@ -21,6 +22,7 @@ import { etatEvaluationMapper } from "../../mappers/mappers";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -114,11 +116,13 @@ const EvaluationHome = () => {
 
   const confirmDuplicate = async (evaluationId: number) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
-    if (response.type === "evaluation/duplicateEvaluationAsync/fulfilled") {
+    console.log(response)
+    if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       toast.success("L'évaluation a été dupliquée avec succès");
+      await dispatch(fetchEvaluationAsync());
     } else {
-      console.log(response);
-      toast.error((response.payload as unknown as { message: string }).message);
+
+      toast.error((response.payload as unknown as {message:string}).message);
     }
     closeModal(`duplicate-${evaluationId}`);
   };

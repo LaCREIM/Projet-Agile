@@ -1,8 +1,8 @@
-import { EvaluationDTO } from "../../types/types";
-import { useAppDispatch } from "../../hook/hooks";
-import { toast } from "react-toastify";
+import {EvaluationDTO} from "../../types/types";
+import {useAppDispatch} from "../../hook/hooks";
+import {toast} from "react-toastify";
 
-import { deleteEvaluationAsync, fetchEvaluationAsync } from "../../features/EvaluationSlice";
+import {deleteEvaluationAsync, fetchEvaluationAsync} from "../../features/EvaluationSlice";
 
 interface DeleteProps {
   evaluation: EvaluationDTO;
@@ -17,10 +17,12 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
       console.log(response);
       
       if (response?.type === "evaluations/delete/rejected") {
-        toast.error(response.payload as string);
+        toast.error((response.payload as unknown as { message: string }).message);
       } else if (response?.type === "evaluations/delete/fulfilled") {
         toast.success("L'évaluation a été supprimée avec succès.");
+
         await dispatch(fetchEvaluationAsync());
+
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);
