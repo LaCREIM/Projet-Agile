@@ -31,7 +31,7 @@ public class RubriqueController {
     public ResponseEntity<List<Rubrique>> getRubriques(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @PathVariable String enseignantId) {
+            @PathVariable long enseignantId) {
         return ResponseEntity.ok(rubriqueService.getRubriquesPaged(enseignantId,page, size));
     }
 

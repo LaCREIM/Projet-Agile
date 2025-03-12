@@ -20,7 +20,7 @@ public class RubriqueService {
         return rubriqueRepository.findAll();
     }
 
-    public List<Rubrique> getRubriquesPaged(String  enseignantId, int page, int size) {
+    public List<Rubrique> getRubriquesPaged(long  enseignantId, int page, int size) {
         int startRow = page * size;
         int endRow = startRow + size;
         return rubriqueRepository.findAllWithPagination(enseignantId,startRow, endRow);
