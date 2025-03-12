@@ -150,7 +150,7 @@ export const createQuestionPersoAsync = createAsyncThunk<
         maxQualificatif: String(question.maxQualificatif),  // ➡️ Conversion en string
         minQualificatif: String(question.minQualificatif),  // ➡️ Conversion en string
       };
-
+ 
       console.log("Données envoyées :", questionPrs);
 
       const response = await axiosInstance.post(
@@ -307,7 +307,7 @@ const questionSlice = createSlice({
     
     // **Mettre à jour une question**
     builder.addCase(updateQuestionAsync.fulfilled, (state, action: PayloadAction<Question>) => {
-      const index = state.questions.findIndex((q) => q.id === action.payload.id);
+      const index = state.questions.findIndex((q) => q.idQuestion === action.payload.idQuestion);
       if (index !== -1) {
         state.questions[index] = action.payload;
       }
@@ -336,8 +336,8 @@ export const selectAllQuestions = (state: RootState, role: string) => {
     ? state.question.questionsPerso
     : state.question.questions;
 
-  return Array.from(new Set(allQuestions.map(q => q.id)))
-              .map(id => allQuestions.find(q => q.id === id));
+  return Array.from(new Set(allQuestions.map(q => q.idQuestion)))
+              .map(id => allQuestions.find(q => q.idQuestion === id));
 };
 
 

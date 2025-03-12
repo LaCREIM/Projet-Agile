@@ -38,7 +38,7 @@ const RubriqueHome = () => {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
   const [search, setSearch] = useState<string>("");
-  const [sortField, setSortField] = useState<string>("designation");
+  const [sortField, setSortField] = useState<keyof Rubrique>("designation");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [selectedType, setSelectedType] = useState<string>("");
   const [filteredRubriques, setFilteredRubriques] = useState<Rubrique[]>([]);
