@@ -56,7 +56,7 @@ public class EvaluationService {
 
     public EvaluationDTO createEvaluation(EvaluationDTO dto) {
         //validate is the evaluation is unique?
-        if (isEvaluationUnique(dto.getAnneeUniversitaire(), dto.getNoEnseignant(), dto.getNoEvaluation(), dto.getCodeFormation(), dto.getCodeUE())) {
+        if (!isEvaluationUnique(dto.getAnneeUniversitaire(), dto.getNoEnseignant(), dto.getNoEvaluation(), dto.getCodeFormation(), dto.getCodeUE())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'évaluation existe déjà.");
         }
         // Validate input DTO
