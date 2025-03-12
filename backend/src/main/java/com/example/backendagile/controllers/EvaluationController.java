@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +53,16 @@ public class EvaluationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEvaluation(@PathVariable Long id) {
+    public ResponseEntity<Map<String,String>> deleteEvaluation(@PathVariable Long id) {
+        Map<String,String> response = new HashMap<>();
         try {
+            response.put("message", "L'évaluation a été supprimée avec succès.");
             evaluationService.deleteEvaluation(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Évaluation supprimée avec succès.");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("L'évaluation ne peut pas être supprimée car elle est déjà remplie.");
+            System.out.println(e.getMessage());
+            response.put("message", "L'évaluation ne peut pas être supprimée car elle est déjà remplie.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -73,14 +78,13 @@ public class EvaluationController {
         return ResponseEntity.ok(evaluationService.getEvaluationsPartagees(noEnseignant));
 
     }
-
+    @Transactional
     @PostMapping("/dupliquer/{idEvaluation}/{noEnseignant}")
     public ResponseEntity<Map<String, Object>> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
         Map<String, Object> response = new HashMap<>();
         try {
             evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
-            //response.put("message", "La duplication de l'évaluation a été effectuée avec succès.");
-            response.put("evaluation", evaluationService.getEvaluationsByEnseignant(noEnseignant));
+            response.put("message", "La duplication de l'évaluation a été effectuée avec succès.");
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

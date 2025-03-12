@@ -2,19 +2,16 @@ package com.example.backendagile.services;
 
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
-import com.example.backendagile.entities.Droit;
-import com.example.backendagile.entities.Enseignant;
-import com.example.backendagile.entities.Evaluation;
+import com.example.backendagile.entities.*;
 import com.example.backendagile.mapper.EvaluationMapper;
 import com.example.backendagile.mapper.EvaluationPartagerMapper;
-import com.example.backendagile.repositories.DroitRepository;
-import com.example.backendagile.repositories.EvaluationRepository;
-import com.example.backendagile.repositories.FormationRepository;
-import com.example.backendagile.repositories.UniteEnseignementRepository;
+import com.example.backendagile.repositories.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,17 +26,23 @@ public class EvaluationService {
 
     private final EnseignantService enseignantService;
 
+    private final QuestionEvaluationRepository questionEvaluationRepository;
+
+    private final RubriqueEvaluationRepository rubriqueEvaluationRepository;
+
     private final EvaluationPartagerMapper evaluationPartagerMapper;
 
     private final UniteEnseignementRepository uniteEnseignementRepository;
 
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository) {
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository, QuestionEvaluationRepository questionEvaluationRepository, RubriqueEvaluationRepository rubriqueEvaluationRepository) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
         this.droitRepository = droitRepository;
         this.enseignantService = enseignantService;
         this.evaluationPartagerMapper = evaluationPartagerMapper;
         this.uniteEnseignementRepository = uniteEnseignementRepository;
+        this.questionEvaluationRepository = questionEvaluationRepository;
+        this.rubriqueEvaluationRepository = rubriqueEvaluationRepository;
     }
 
 
@@ -48,6 +51,7 @@ public class EvaluationService {
         return !evaluationRepository.existsByUniqueConstraint(anneeUniversitaire, noEnseignant,
                 noEvaluation, codeFormation, codeUE);
     }
+
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
         List<Evaluation> evaluations = evaluationRepository.findByIdEnseignantEvaluationSorted(id);
 
@@ -94,7 +98,7 @@ public class EvaluationService {
         Evaluation saved = evaluationRepository.save(evaluation);
 
         // Convert saved entity to DTO
-        return EvaluationMapper.toDTO(saved,uniteEnseignementRepository);
+        return EvaluationMapper.toDTO(saved, uniteEnseignementRepository);
     }
 
 
@@ -103,7 +107,7 @@ public class EvaluationService {
     }
 
     private EvaluationDTO getEvaluationDTO(Evaluation evaluation) {
-        EvaluationDTO dto = EvaluationMapper.toDTO(evaluation,uniteEnseignementRepository);
+        EvaluationDTO dto = EvaluationMapper.toDTO(evaluation, uniteEnseignementRepository);
 
         formationRepository.findById(evaluation.getCodeFormation()).ifPresent(formation -> {
             dto.setNomFormation(formation.getNomFormation());
@@ -131,7 +135,7 @@ public class EvaluationService {
             existingEvaluation.setDebutReponse(dto.getDebutReponse());
             existingEvaluation.setFinReponse(dto.getFinReponse());
             Evaluation updated = evaluationRepository.save(existingEvaluation);
-            return EvaluationMapper.toDTO(updated,uniteEnseignementRepository);
+            return EvaluationMapper.toDTO(updated, uniteEnseignementRepository);
         });
     }
 
@@ -163,9 +167,32 @@ public class EvaluationService {
         Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
-        evaluationRepository.save(evaluationCopy);
-    }
+        Evaluation newEvaluation = evaluationRepository.save(evaluationCopy);
+        List<RubriqueEvaluation> rubriqueEvaluations = rubriqueEvaluationRepository.findAllByIdEvaluation(idEvaluation);
+        for (RubriqueEvaluation rubriqueEvaluation : rubriqueEvaluations) {
+            RubriqueEvaluation rubriqueEvaluationDupliquer = new RubriqueEvaluation();
 
+            rubriqueEvaluationDupliquer.setDesignation(rubriqueEvaluation.getDesignation());
+            rubriqueEvaluationDupliquer.setIdRubrique(rubriqueEvaluation.getIdRubrique());
+            rubriqueEvaluationDupliquer.setOrdre(rubriqueEvaluation.getOrdre());
+            rubriqueEvaluationDupliquer.setIdEvaluation(newEvaluation);
+
+            RubriqueEvaluation rubriqueEvaluationDuplicated = rubriqueEvaluationRepository.save(rubriqueEvaluationDupliquer);
+
+            // copy les questions
+            List<QuestionEvaluation> questionEvaluations = rubriqueEvaluation.getQuestions();
+            for (QuestionEvaluation questionEvaluation : questionEvaluations) {
+                QuestionEvaluation questionEvaluationDupliquer = new QuestionEvaluation();
+                questionEvaluationDupliquer.setIdQuestion(questionEvaluation.getIdQuestion());
+                questionEvaluationDupliquer.setOrdre(questionEvaluation.getOrdre());
+                questionEvaluationDupliquer.setIdQualificatif(questionEvaluation.getIdQualificatif());
+                questionEvaluationDupliquer.setIdRubriqueEvaluation(rubriqueEvaluationDuplicated);
+                questionEvaluationRepository.save(questionEvaluationDupliquer);
+            }
+        }
+
+
+    }
 
     private EvaluationDTO mapEvaulation(Evaluation evaluation) {
         return getEvaluationDTO(evaluation);

@@ -54,7 +54,6 @@ public class PromotionService {
      */
     public PromotionDTO getPromotionById(String anneeUniversitaire, String codeFormation) {
         PromotionId key = new PromotionId(anneeUniversitaire, codeFormation);
-        //System.out.println(key);
         Optional<Promotion> promotion = promotionRepository.findById(key);
         return promotion.map(promotionMapper::fromPromotion).orElse(null);
     }

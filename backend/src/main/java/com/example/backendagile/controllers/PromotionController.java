@@ -102,7 +102,6 @@ public class PromotionController {
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("error", "Erreur lors de la mise à jour de la promotion");
-            System.out.println(e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
