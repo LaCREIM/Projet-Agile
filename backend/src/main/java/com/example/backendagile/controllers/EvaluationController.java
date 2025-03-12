@@ -80,7 +80,9 @@ public class EvaluationController {
         Map<String, Object> response = new HashMap<>();
         try {
             evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
-            response.put("evaluations", evaluationService.getEvaluationsPartagees(noEnseignant));
+            //response.put("message", "La duplication de l'évaluation a été effectuée avec succès.");
+            response.put("evaluation", evaluationService.getEvaluationsByEnseignant(noEnseignant));
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());

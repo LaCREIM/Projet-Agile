@@ -9,12 +9,21 @@ import java.util.stream.Collectors;
 public class EvaluationMapper {
 
   
-    public static EvaluationDTO toDTO(Evaluation evaluation) {
+    public static EvaluationDTO toDTO(Evaluation evaluation,UniteEnseignementRepository uniteEnseignementRepository) {
+//        System.out.println("Evaluation dans toDTO : "+evaluation);
         EvaluationDTO dto = new EvaluationDTO();
         dto.setIdEvaluation(evaluation.getId());
         dto.setCodeFormation(evaluation.getCodeFormation());
         dto.setCodeUE(evaluation.getCodeUE());
-        dto.setDesignationUE(evaluation.getUniteEnseignement().getDesignation());
+        if(evaluation.getUniteEnseignement()!=null){
+            dto.setDesignationUE(evaluation.getUniteEnseignement().getDesignation());
+        }
+        else{
+            UniteEnseignement ue = uniteEnseignementRepository.findById(evaluation.getCodeFormation(), evaluation.getCodeUE());
+            dto.setDesignationUE(ue.getDesignation());
+
+        }
+
         dto.setCodeEC(evaluation.getCodeEC());
         dto.setAnneeUniversitaire(evaluation.getAnneeUniversitaire());
         dto.setNoEvaluation(evaluation.getNoEvaluation());
