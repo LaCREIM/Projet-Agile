@@ -4,6 +4,8 @@ import com.example.backendagile.services.UniteEnseignementService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,7 +25,11 @@ public class UniteEnseignementController {
 
     @GetMapping("/enseignant/{noEnseignant}")
     public List<UniteEnseignementDTO> getUnitesEnseignementByEnseignant(Long noEnseignant) {
-        return uniteEnseignementService.getUnitesEnseignementByPromotion(noEnseignant);
+        List<UniteEnseignementDTO> ues =  uniteEnseignementService.getUnitesEnseignementByPromotion(noEnseignant);
+        if(ues==null || ues.isEmpty()){
+                ues = new ArrayList<>();
+        }
+        return ues;
     }
 }
 
