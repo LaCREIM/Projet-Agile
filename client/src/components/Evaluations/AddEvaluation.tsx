@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../../hooks/hooks";
-import {createEvaluationAsync, fetchEvaluationAsync} from "../../features/EvaluationSlice";
+
+import { createEvaluationAsync, fetchEvaluationAsync } from "../../features/EvaluationSlice";
+
 import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
@@ -131,8 +133,8 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
       if (res?.type === "evaluations/createEvaluationAsync/rejected") {
         setError(res.payload as string);
       } else if (res?.type === "evaluations/createEvaluationAsync/fulfilled") {
-        toast.success("L'evaluation a été ajoutée avec succès.");
-        dispatch(fetchEvaluationAsync());
+        await dispatch(fetchEvaluationAsync())
+        toast.success("Évaluation ajoutée avec succès!");
         resetEvaluation();
       }
     }
