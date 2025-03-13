@@ -8,7 +8,7 @@ import com.example.backendagile.entities.UniteEnseignementId;
 
 public interface UniteEnseignementRepository extends JpaRepository<UniteEnseignement, UniteEnseignementId> {
 
-    @Query("SELECT new com.example.backendagile.dto.UniteEnseignementDTO(ue.id.codeUe, ue.designation) FROM UniteEnseignement ue")
+    @Query("SELECT new com.example.backendagile.dto.UniteEnseignementDTO(ue.id.codeUe, ue.designation,ue.id.codeFormation) FROM UniteEnseignement ue")
     List<UniteEnseignementDTO> findAllUesWithCodeAndDesignation();
 
 
