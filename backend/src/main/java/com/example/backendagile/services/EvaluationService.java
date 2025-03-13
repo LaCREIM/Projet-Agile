@@ -139,6 +139,7 @@ public class EvaluationService {
     }
 
     public void deleteEvaluation(Long id) {
+        droitRepository.deleteDroitsByIdEvaluation_Id(id);
         evaluationRepository.deleteById(id);
     }
 

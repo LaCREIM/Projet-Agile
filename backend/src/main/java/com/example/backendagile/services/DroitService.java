@@ -4,13 +4,16 @@ package com.example.backendagile.services;
 import com.example.backendagile.dto.DroitDTO;
 import com.example.backendagile.entities.Droit;
 import com.example.backendagile.entities.DroitId;
+import com.example.backendagile.entities.Evaluation;
 import com.example.backendagile.mapper.DroitMapper;
 import com.example.backendagile.mapper.PromotionMapper;
 import com.example.backendagile.repositories.DroitRepository;
+import com.example.backendagile.repositories.EvaluationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +25,8 @@ public class DroitService {
 
     @Autowired
     private DroitRepository droitRepository;
+    @Autowired
+    private EvaluationRepository evaluationRepository;
 
     public DroitService(DroitMapper droitMapper, DroitRepository droitRepository) {
         this.droitMapper = droitMapper;
@@ -59,7 +64,7 @@ public class DroitService {
         DroitId id = new DroitId(idEvaluation, idEnseignant);
 
         if (!droitRepository.existsById(id)) {
-            throw new EntityNotFoundException("Droit non trouvé avec l'ID: " + id);
+            throw new EntityNotFoundException("Droit non trouvé avec l'ID: " + id.getIdEvaluation() + " " + id.getNoEnseignant());
         }
         droitRepository.deleteById(id);
     }
@@ -67,7 +72,5 @@ public class DroitService {
     public Optional<Droit> findById(DroitId id) {
         return droitRepository.findByIdEvaluationAndIdEnseignant(id.getIdEvaluation(),id.getNoEnseignant().longValue()).stream().findFirst();
     }
-
-
 
 }
