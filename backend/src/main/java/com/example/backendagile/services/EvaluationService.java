@@ -221,9 +221,11 @@ public class EvaluationService {
             Map<String, Object> map = new HashMap<>();
             map.put("noEvaluation", evaluation.getNoEvaluation());
             map.put("codeUE", evaluation.getCodeUE());
-            //map.put("codeEC", evaluation.getCodeEC());
             map.put("designation", evaluation.getDesignation());
             map.put("etat", evaluation.getEtat());
+            map.put("periode", evaluation.getPeriode());
+            map.put("debutReponse", evaluation.getDebutReponse());
+            map.put("finReponse", evaluation.getFinReponse());
             return map;
         }).collect(Collectors.toList());
     
