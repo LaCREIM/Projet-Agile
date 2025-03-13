@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
 import {
   createRubriqueAsync,
-  getRubriquesAsync,
+  searchRubriquesAsync,
 } from "../../features/RubriqueSlice";
-import { Rubrique, Enseignant } from "../../types/types";
+import { Rubrique } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
 
@@ -15,10 +15,11 @@ interface AddRubriqueProps {
 const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const dispatch = useAppDispatch();
 
+  const role = localStorage.getItem("role");
   const [rubrique, setRubrique] = useState<Rubrique>({
     id: 0,
-    type: "",
-    noEnseignant: {} as Enseignant,
+    type: role === "ENS" ? "RBP" : "RBS",
+    noEnseignant: Number(localStorage.getItem("id")),
     designation: "",
     ordre: 0,
     questions: [],
@@ -38,7 +39,7 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("hhh");
-    
+    const idEns= localStorage.getItem("id");
     const res = await dispatch(createRubriqueAsync(rubrique));
     console.log(res);
 
@@ -47,15 +48,19 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
     } else if (res?.type === "rubriques/create/fulfilled") {
       toast.success(res?.payload as string);
       handleClose();
-      dispatch(getRubriquesAsync());
-    }
+      if (idEns) {
+        await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+      } else {
+        toast.error("ID de l'enseignant non trouvé.");
+      }
+        }
   };
 
   const handleClose = () => {
     setRubrique({
       id: 0,
       type: "",
-      noEnseignant: {} as Enseignant,
+      noEnseignant: 0,
       designation: "",
       ordre: 0,
       questions: [],

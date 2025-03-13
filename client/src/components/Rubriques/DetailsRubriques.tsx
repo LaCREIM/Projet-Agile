@@ -5,6 +5,7 @@ import {
   deleteRubriqueQuestionsAsync,
   getRubriquesAsync,
   RubriqueQuestion,
+  searchRubriquesAsync,
   updateRubriqueAsync,
   updateRubriqueQuestionsAsync,
 } from "../../features/RubriqueSlice";
@@ -160,25 +161,34 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const userRole = localStorage.getItem("role");
+  
+    if (userRole === "ENS" && rubriqueData.type == "RBS" ) {
+      toast.error("Vous n'avez pas l'autorisation de modifier cette rubrique.", {
+        autoClose: 10000, // Affichage de 10s
+      });
+      return;
+    }
+  
     if (isEditing) {
-      const response = await dispatch(
-        updateRubriqueQuestionsAsync(newQuestionsOrder)
-      );
-
+      const response = await dispatch(updateRubriqueQuestionsAsync(newQuestionsOrder));
+  
       const responseDesignation = await dispatch(
         updateRubriqueAsync({
           id: rubriqueData.id,
           designation: rubriqueData.designation,
         })
       );
+  
       if (response?.type === "rubriques-questions/update/rejected") {
         setError(response.payload);
       }
-
+  
       if (responseDesignation?.type === "rubriques/update/rejected") {
         setError(responseDesignation.payload as string);
       }
-
+  
       if (
         responseDesignation?.type === "rubriques/update/fulfilled" &&
         response?.type === "rubriques-questions/update/fulfilled"
@@ -186,14 +196,23 @@ const DetailsRubrique = ({
         setIsEditing(false);
         onClose();
         setError(null);
-        toast.success("Rubrique mise à jour avec succès.");
-        dispatch(getRubriquesAsync());
+        toast.success("Rubrique mise à jour avec succès.", {
+          autoClose: 10000, // Affichage de 10s
+        });
+        const idEns = localStorage.getItem("id");
+      if (idEns) {
+        await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+      } else {
+        toast.error("ID de l'enseignant non trouvé.");
       }
+  }
     } else {
       setIsEditing(true);
       setError(null);
     }
   };
+  
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

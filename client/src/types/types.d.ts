@@ -180,6 +180,10 @@ export interface GetEvaluationDTO {
     droit: Droit
 }
 
+export interface EtudiantEvaluation{
+    
+}
+
 
 export interface Formation {
     codeFormation: string;
@@ -300,7 +304,7 @@ export interface RubriqueEvaluation {
 export interface Rubrique {
     id: number;
     type: string;
-    noEnseignant: Enseignant;
+    noEnseignant: number;
     designation: string;
     ordre: number;
     questions: Question[];
