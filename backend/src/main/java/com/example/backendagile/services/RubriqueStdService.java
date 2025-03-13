@@ -30,7 +30,7 @@ public class RubriqueStdService {
             .stream()
             .sorted(Comparator.comparing(Rubrique::getDesignation, String.CASE_INSENSITIVE_ORDER))
             .collect(Collectors.toList());
-}
+    }
 
 
     /**

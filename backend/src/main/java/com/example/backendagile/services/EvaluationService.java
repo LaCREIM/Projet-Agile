@@ -168,6 +168,7 @@ public class EvaluationService {
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
         evaluationCopy.setNoEvaluation(noEva);
+        evaluationCopy.setEtat("ELA");
         Evaluation newEvaluation = evaluationRepository.save(evaluationCopy);
         List<RubriqueEvaluation> rubriqueEvaluations = rubriqueEvaluationRepository.findAllByIdEvaluation(idEvaluation);
         for (RubriqueEvaluation rubriqueEvaluation : rubriqueEvaluations) {

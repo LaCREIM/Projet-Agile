@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -21,11 +21,13 @@ import {fetchQuestionsAsync} from "../../features/QuestionSlice";
 import DeleteRubriqueConfirmation from "./DeleteRubriqueConfirmation";
 import {MdClear} from "react-icons/md";
 import {typeRubriqueMapper} from "../../mappers/mappers.ts";
+import { useSelector } from "react-redux";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
   const dispatch = useAppDispatch();
-  const rubriques = useAppSelector(getRubriques);
+  const rubriques = useSelector(getRubriques);
+  console.log("Rubriques depuis Redux dans le composant :", rubriques);
   const questions = useAppSelector(getQuestionsRubrique);
   const allQuestions = useAppSelector(
       (state: RootState) => state.question.questions
@@ -52,20 +54,23 @@ const RubriqueHome = () => {
     let idEns="";
     role === "ENS" && id ? idEns = id : idEns = "0";
     if (id) {
-      dispatch(searchRubriquesAsync({ enseignantId: idEns, page: page, size: pageSize }))
+      console.log("idEns", idEns);
+      dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: pageSize }))
         .unwrap()
-        .then((data: { totalPages: React.SetStateAction<number>; }) => {
-          setTotalPages(data.totalPages);
+        .then((data: Rubrique[]) => {
+          setTotalPages(Math.ceil(data.length / pageSize));
         })
         .catch(() => {
           setTotalPages(1);
+          
         });
+        
     } else {
       setTotalPages(1);
     }
 
     dispatch(fetchQuestionsAsync());
-  }, [dispatch, page]);
+  }, [dispatch, pageSize]);
 
   useEffect(() => {
     if (modal.rubrique && rubriqueDetailsModalRef.current) {
@@ -96,19 +101,20 @@ const RubriqueHome = () => {
       setQuestionPass(questions.length > 0 ? questions : []);
     }
   }, [questions, modal.rubrique]);
-
   useEffect(() => {
-    const filtered = rubriques.filter((rubrique) => {
-      // Filter by search
-      const matchesSearch = rubrique.designation.toLowerCase().includes(search.toLowerCase());
-
-      // Filter by type
-      const matchesType = selectedType ? rubrique.type === selectedType : true;
-
-      return matchesSearch && matchesType;
-    });
-
-    // Sort rubriques
+    if (!rubriques) return; // Si rubriques est undefined, ne rien faire
+    const filtered = rubriques
+      ?.filter((rubrique) => {
+        const matchesSearch = rubrique.designation
+          ?.toLowerCase()
+          ?.includes(search.toLowerCase());
+  
+        const matchesType = selectedType ? rubrique.type === selectedType : true;
+  
+        return matchesSearch && matchesType;
+      });
+  
+    // Trier les rubriques si nécessaire
     if (sortField) {
       filtered.sort((a, b) => {
         if (a[sortField] < b[sortField]) return sortOrder === "asc" ? -1 : 1;
@@ -116,9 +122,10 @@ const RubriqueHome = () => {
         return 0;
       });
     }
-
-    setFilteredRubriques(filtered);
+  
+    setFilteredRubriques(filtered || []); // Assurer qu'on ne stocke jamais undefined
   }, [rubriques, search, sortField, sortOrder, selectedType]);
+  
 
   function handleSortChange(field: string) {
     const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
@@ -191,18 +198,21 @@ const RubriqueHome = () => {
                     </td>
                   </tr>
               ) : (
-                  filteredRubriques.map((rubrique: Rubrique, index: number) => (
-                      <tr key={rubrique.id}>
+                  filteredRubriques.map((rubrique: Rubrique, index: number) => 
+                    {
+                        const isDeleteable = role === "ENS" && rubrique.noEnseignant === Number(localStorage.getItem("id"));
+            
+                 return ( <tr key={rubrique.id}>
                         <td className="px-4 py-2 ">{rubrique.designation}</td>
 
                         {
                             role == "ENS" && <td className="px-4 py-2 ">
                               {rubrique.type === "RBS" ? (
-                                  <div className="badge badge-accent text-white">
+                                  <div className="badge badge-success text-white">
                                     {typeRubriqueMapper(rubrique.type)}
                                   </div>
                               ) : (
-                                  <div className="RBP badge-success text-white">
+                                <div className="badge badge-accent text-white">
                                     {typeRubriqueMapper(rubrique.type)}
                                   </div>
                               )}
@@ -217,11 +227,13 @@ const RubriqueHome = () => {
                                 openModal(`inspect-${index}`);
                               }}
                           />
+                          <div className="tooltip" data-tip={isDeleteable ? "Supprimer" : " suppression non autorisé."}>
                           <FontAwesomeIcon
                               icon={faTrash}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() => openModal(`delete-${index}`)}
+                              className={`text-black text-base cursor-pointer ${isDeleteable ? "" : "text-gray-400 hover:cursor-not-allowed"}`}
+                              onClick={() =>isDeleteable && openModal(`delete-${index}`)}
                           />
+                          </div>
                         </td>
                         <dialog id={`updateRubrique-${index}`} className="modal">
                           <UpdateRubrique rubriqueData={rubrique}/>
@@ -240,7 +252,9 @@ const RubriqueHome = () => {
                           )}
                         </dialog>
                       </tr>
-                  ))
+                 )
+                    }
+                  )
               )}
               </tbody>
             </table>

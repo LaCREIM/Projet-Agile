@@ -300,7 +300,7 @@ export interface RubriqueEvaluation {
 export interface Rubrique {
     id: number;
     type: string;
-    noEnseignant: Enseignant;
+    noEnseignant: number;
     designation: string;
     ordre: number;
     questions: Question[];
