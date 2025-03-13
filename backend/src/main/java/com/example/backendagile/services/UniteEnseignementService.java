@@ -40,6 +40,7 @@ public class UniteEnseignementService {
         }
         List<UniteEnseignement> uniteEnseignements = new ArrayList<>();
         for (PromotionDTO prm : prms) {
+            System.out.println("prm.getNoEnseignant : "+prm.toString());
             if(prm.getNoEnseignant()==noEnseignant){
                 uniteEnseignements.addAll(uniteEnseignementRepository.findUniteEnseignementByPromotion(prm.getCodeFormation()));
             }
