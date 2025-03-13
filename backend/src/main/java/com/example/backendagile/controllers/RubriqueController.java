@@ -50,4 +50,6 @@ public class RubriqueController {
         RubriqueDTO createdRubrique = rubriqueService.createRubrique(dto);
         return ResponseEntity.ok(createdRubrique);
     }
+
+
 }
