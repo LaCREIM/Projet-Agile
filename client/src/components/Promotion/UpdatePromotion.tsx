@@ -53,7 +53,7 @@ const EditPromotion = ({
     "codeFormation",
   ];
 
-  const emptyFields = requiredFields.filter((field) => !(promotion[field]));
+  const emptyFields = requiredFields.filter((field) => !promotion[field]);
 
   const handleSubmit = async () => {
     const emptyFields = requiredFields.filter((field) => !promotion[field]);

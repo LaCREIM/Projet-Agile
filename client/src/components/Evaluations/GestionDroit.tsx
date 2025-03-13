@@ -49,7 +49,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
   const [droitsAjoutes, setDroitsAjoutes] = useState<Droit[]>([]); // Droits ajoutés
   const [droitsModifies, setDroitsModifies] = useState<Droit[]>([]); // Droits modifiés
   const [droitsASupprimer, setDroitsASupprimer] = useState<Droit[]>([]); // Droits à supprimer
-  const [recherche, setRecherche] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   // Charger les droits depuis l'API au montage du composant
@@ -69,54 +68,27 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
       enseignant.id !== Number(localStorage.getItem("id"))
   );
 
+  // Fonction pour basculer le mode édition
   const toggleEditionMode = () => {
     setEditionMode(!editionMode);
   };
 
+  // Fonction pour fermer la modal
   const handleClose = () => {
     setEditionMode(false);
     onClose();
   };
 
-  const handleDuplicationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = e.target.checked;
-    setDroitsAjout({
-      duplication: isChecked,
-      consultation: isChecked ? true : droitsAjout.consultation, 
-    });
-  };
-
-  const handleConsultationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!droitsAjout.duplication) {
-      setDroitsAjout({
-        ...droitsAjout,
-        consultation: e.target.checked,
-      });
-    }
-  };
-
+  // Fonction pour modifier les droits d'un enseignant
   const handleDroitChange = (idEnseignant: number, droit: keyof Droit) => {
-    const updatedDroits = droitsLocaux.map((d) => {
-      if (d.idEnseignant === idEnseignant) {
-        const newDroit = { ...d, [droit]: d[droit] === "O" ? "N" : "O" };
-
-        // Si les deux droits sont désactivés, ajouter à la liste des droits à supprimer
-        if (newDroit.duplication === "N" && newDroit.consultation === "N") {
-          setDroitsASupprimer((prev) => [...prev, newDroit]);
-        } else {
-          // Si un droit est réactivé, retirer de la liste des droits à supprimer
-          setDroitsASupprimer((prev) =>
-            prev.filter((d) => d.idEnseignant !== idEnseignant)
-          );
-        }
-
-        return newDroit;
-      }
-      return d;
-    });
-
+    const updatedDroits = droitsLocaux.map((d) =>
+      d.idEnseignant === idEnseignant
+        ? { ...d, [droit]: d[droit] === "O" ? "N" : "O" }
+        : d
+    );
     setDroitsLocaux(updatedDroits);
 
+    // Ajouter le droit modifié à la liste des droits modifiés
     const droitModifie = updatedDroits.find(
       (d) => d.idEnseignant === idEnseignant
     );
@@ -143,12 +115,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
       setDroitsASupprimer((prev) => [...prev, droit]);
     }
   };
-
-  const enseignantsFiltres = enseignantsDisponibles.filter((enseignant) =>
-    `${enseignant.nom} ${enseignant.prenom}`
-      .toLowerCase()
-      .includes(recherche.toLowerCase())
-  );
 
   const validerModifications = async () => {
     let resultat = false;
@@ -198,7 +164,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
     setDroitsAjoutes([]);
     setDroitsModifies([]);
     setDroitsASupprimer([]);
-    setRecherche("")
   };
 
   const handleAjoutEnseignant = () => {
@@ -206,11 +171,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
       const nouvelDroit: Droit = {
         idEvaluation: Number(evaluationId),
         idEnseignant: enseignantSelectionne.id,
-        consultation: droitsAjout.duplication
-          ? "O"
-          : droitsAjout.consultation
-          ? "O"
-          : "N",
+        consultation: droitsAjout.consultation ? "O" : "N",
         duplication: droitsAjout.duplication ? "O" : "N",
         nom: enseignantSelectionne.nom,
         prenom: enseignantSelectionne.prenom,
@@ -250,49 +211,37 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
         <div className="flex flex-row gap-3 w-full justify-between items-center mb-4">
           {editionMode && (
             <>
-              <div className="flex flex-col gap-2 w-full">
-                {/* Barre de recherche */}
-                <input
-                  type="text"
-                  placeholder="Rechercher un enseignant..."
-                  className="input input-bordered w-full"
-                  value={recherche}
-                  onChange={(e) => setRecherche(e.target.value)}
-                />
-
-                {recherche && (
-                  <div className="dropdown menu w-full rounded-box bg-base-100 shadow-sm z-50">
-                    {enseignantsFiltres.length > 0 ? (
-                      enseignantsFiltres.slice(0, 5).map((ens) => (
-                        <div
-                          key={ens.id}
-                          className={`p-2 hover:bg-gray-100 cursor-pointer rounded-lg ${
-                            enseignantSelectionne?.id === ens.id
-                              ? "bg-blue-100"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            setEnseignantSelectionne({
-                              id: ens.id,
-                              nom: ens.nom,
-                              prenom: ens.prenom,
-                            })
-                          }
-                        >
-                          {ens.nom} {ens.prenom}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-2 text-gray-500">
-                        Aucun enseignant trouvé
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <motion.select
+                variants={MotionVariant}
+                initial="initial"
+                animate={MotionVariant.final(1)}
+                className="select select-bordered w-full max-w-xs"
+                value={enseignantSelectionne ? enseignantSelectionne.id : ""}
+                onChange={(e) => {
+                  const selectedId = parseInt(e.target.value);
+                  const selectedEnseignant = enseignantsDisponibles.find(
+                    (ens) => ens.id === selectedId
+                  );
+                  if (selectedEnseignant) {
+                    setEnseignantSelectionne({
+                      id: selectedEnseignant.id,
+                      nom: selectedEnseignant.nom,
+                      prenom: selectedEnseignant.prenom,
+                    });
+                  }
+                }}
+              >
+                <option value="" disabled>
+                  Sélectionnez un enseignant
+                </option>
+                {enseignantsDisponibles.map((ens) => (
+                  <option key={ens.id} value={ens.id}>
+                    {ens.nom} {ens.prenom}
+                  </option>
+                ))}
+              </motion.select>
 
               <div className="flex flex-row gap-10 w-full">
-                {/* Cases à cocher pour les droits */}
                 <motion.label
                   className="label cursor-pointer"
                   variants={MotionVariant}
@@ -304,7 +253,12 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     type="checkbox"
                     disabled={!enseignantSelectionne}
                     checked={droitsAjout.duplication}
-                    onChange={handleDuplicationChange}
+                    onChange={(e) =>
+                      setDroitsAjout({
+                        ...droitsAjout,
+                        duplication: e.target.checked,
+                      })
+                    }
                     className="checkbox checkbox-sm"
                   />
                 </motion.label>
@@ -317,9 +271,14 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                   <span className="label-text mr-2">Consultation</span>
                   <input
                     type="checkbox"
-                    disabled={!enseignantSelectionne || droitsAjout.duplication}
+                    disabled={!enseignantSelectionne}
                     checked={droitsAjout.consultation}
-                    onChange={handleConsultationChange}
+                    onChange={(e) =>
+                      setDroitsAjout({
+                        ...droitsAjout,
+                        consultation: e.target.checked,
+                      })
+                    }
                     className="checkbox checkbox-sm"
                   />
                 </motion.label>
@@ -331,7 +290,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                 animate={MotionVariant.final(2.5)}
                 className="btn btn-circle btn-sm"
                 onClick={handleAjoutEnseignant}
-                disabled={!droitsAjout.duplication && !droitsAjout.consultation}
+                disabled={!enseignantSelectionne}
               >
                 +
               </motion.button>
@@ -399,7 +358,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                               "consultation"
                             )
                           }
-                          disabled={droit.duplication === "O"} // Désactiver si duplication est activé
                         />
                       ) : droit.consultation === "O" ? (
                         <MdCheck size={20} className="font-bold" />
