@@ -6,7 +6,7 @@ import { createEvaluationAsync, fetchEvaluationAsync } from "../../features/Eval
 import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
-import { fetchAllUnitesEnseignementAsync, fetchAllUnitesEnseignementByEnseignentAsync } from "../../features/uniteEnseignementSlice.ts";
+import { fetchAllUnitesEnseignementByEnseignentAsync } from "../../features/uniteEnseignementSlice.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../api/store.ts";
 
@@ -164,10 +164,6 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
     evaluation.noEvaluation >= 1 &&
     evaluation.noEvaluation <= 99;
 
-     const filteredPromotionsByRole = promotions.filter((promotion) => {
-       return promotion.noEnseignant == localStorage.getItem("id");
-     });
-
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -254,6 +250,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
               <select
                 required
                 className="select w-full"
+                disabled={evaluation.codeFormation === "" && evaluation.anneeUniversitaire===""}
                 name="codeUE"
                 value={evaluation.codeUE}
                 onChange={(e) => {
