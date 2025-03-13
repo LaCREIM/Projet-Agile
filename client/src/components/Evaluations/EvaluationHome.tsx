@@ -395,13 +395,18 @@ const EvaluationHome = () => {
                       )}
 
                       {role == "ETU" && (
-                        <FontAwesomeIcon
-                          icon={faArrowRight}
-                          className="text-black text-base cursor-pointer"
+                        <div
+                          className="tooltip"
+                          data-tip="Répondre à l'évaluation"
                           onClick={() =>
                             handleInspect(evaluation.evaluation.idEvaluation)
                           }
-                        />
+                        >
+                          <FontAwesomeIcon
+                            icon={faArrowRight}
+                            className="text-black text-base cursor-pointer"
+                          />
+                        </div>
                       )}
                     </td>
                     <dialog
