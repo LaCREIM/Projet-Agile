@@ -46,4 +46,7 @@ List<Etudiant> searchEtudiants(@Param("keyword") String keyword);
     @Query("SELECT e FROM Etudiant e WHERE e.email = :email AND e.noEtudiant != :id")
     List<Etudiant> findByEmailandId(@NotBlank String email, String id);
 
+    Optional<Etudiant> findById(String id);
+
+
 }

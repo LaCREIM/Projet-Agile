@@ -233,5 +233,16 @@ public class Etudiant {
     public void setGroupeAnglais(Long groupeAnglais) {
         this.groupeAnglais = groupeAnglais;
     }
+    public String getCodeFormation() {
+        return (promotion != null) ? promotion.getCodeFormation() : null;
+    }
+    
+    public String getAnneeUniversitaire() {
+        return (promotion != null) ? promotion.getAnneeUniversitaire() : null;
+    }
+
+  
+    
+    
 
 }
