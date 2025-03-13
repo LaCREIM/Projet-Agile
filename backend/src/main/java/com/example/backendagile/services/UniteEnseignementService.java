@@ -29,7 +29,8 @@ public class UniteEnseignementService {
     }
 
     public List<UniteEnseignementDTO> getAllUnitesEnseignement() {
-        return uniteEnseignementRepository.findAllUesWithCodeAndDesignation();
+       return uniteEnseignementRepository.findAllUesWithCodeAndDesignation();
+
     }
 
     public List<UniteEnseignementDTO> getUnitesEnseignementByPromotion(long noEnseignant) {
@@ -37,29 +38,43 @@ public class UniteEnseignementService {
         if(prms==null || prms.isEmpty()){
             return null;
         }
-        Set<String> uniqueCodes = new HashSet<>();
+        List<UniteEnseignement> uniteEnseignements = new ArrayList<>();
+        for (PromotionDTO prm : prms) {
+            if(prm.getNoEnseignant()==noEnseignant){
+                uniteEnseignements.addAll(uniteEnseignementRepository.findUniteEnseignementByPromotion(prm.getCodeFormation()));
+            }
+            else{
+                uniteEnseignements.addAll(uniteEnseignementRepository.findUniteEnseignementByPromotion(noEnseignant, prm.getCodeFormation()));
+            }
+        }
+        Set<UniteEnseignement> uniqueUniteEnseignements = new HashSet<>();
         // Extraction et insertion dans le Set pour rendre unique
-        prms.forEach(ue -> uniqueCodes.add(ue.getCodeFormation()));
-
-        if(uniqueCodes.isEmpty()){
-            return null;
-        }
-        List<UniteEnseignement> uniteEnseignements= new ArrayList<>() ;
+        uniteEnseignements.forEach(ue -> uniqueUniteEnseignements.add(ue));
 
 
-        for(String codeFormation : uniqueCodes){
-            List<UniteEnseignement> ues;
-            if(prms.get(0).getNoEnseignant() == noEnseignant){
-                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(codeFormation);
-            }
-            else {
-                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(noEnseignant, codeFormation);
-            } if(!ues.isEmpty()){
-                uniteEnseignements.addAll(ues);
-            }
-        }
+//        Set<String> uniqueCodes = new HashSet<>();
+//        // Extraction et insertion dans le Set pour rendre unique
+//        prms.forEach(ue -> uniqueCodes.add(ue.getCodeFormation()));
+//
+//        if(uniqueCodes.isEmpty()){
+//            return null;
+//        }
+//        List<UniteEnseignement> uniteEnseignements= new ArrayList<>() ;
+//
+//
+//        for(String codeFormation : uniqueCodes){
+//            List<UniteEnseignement> ues;
+//            if(prms.get(0).getNoEnseignant() == noEnseignant){
+//                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(codeFormation);
+//            }
+//            else {
+//                 ues = uniteEnseignementRepository.findUniteEnseignementByPromotion(noEnseignant, codeFormation);
+//            } if(!ues.isEmpty()){
+//                uniteEnseignements.addAll(ues);
+//            }
+//        }
 
-        return uniteEnseignements.stream().map(uniteEnseignementMapper::toDTO).collect(Collectors.toList());
+        return uniqueUniteEnseignements.stream().map(uniteEnseignementMapper::toDTO).collect(Collectors.toList());
     }
 
 

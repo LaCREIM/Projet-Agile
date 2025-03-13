@@ -180,6 +180,10 @@ export interface GetEvaluationDTO {
     droit: Droit
 }
 
+export interface EtudiantEvaluation{
+    
+}
+
 
 export interface Formation {
     codeFormation: string;

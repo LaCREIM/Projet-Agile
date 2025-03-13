@@ -66,34 +66,47 @@ export function Dashboard() {
       icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Logout",
+      label: "Consultation des évaluations",
+      href: "/admin/home/evaluations",
+      icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Déconnexion",
       href: "/",
       icon: <FiLogOut className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
   ];
 
-  const links =
-    role === "ENS"
-      ? allLinks.filter((link) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Consultation des promotions",
-            "Gestion des évaluations",
-            "Logout",
-          ].includes(link.label)
-        )
-      : allLinks.filter((link) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Gestion des promotions",
-            "Gestion des qualificatifs",
-            "Gestion des enseignants",
-            "Gestion des étudiants",
-            "Logout",
-          ].includes(link.label)
-        );
+  let links = [] as any[];
+
+  if (role === "ENS") {
+    links = allLinks.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Consultation des promotions",
+        "Gestion des évaluations",
+        "Déconnexion",
+      ].includes(link.label)
+    );
+  } else if(role === "ADM") {
+    links = allLinks.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Gestion des promotions",
+        "Gestion des qualificatifs",
+        "Gestion des enseignants",
+        "Gestion des étudiants",
+        "Déconnexion",
+      ].includes(link.label)
+    );
+  }else if(role === "ETU") {
+    links = allLinks.filter((link) =>
+      ["Consultation des évaluations", "Déconnexion"].includes(link.label)
+    );
+  }
+
 
   const [open, setOpen] = useState(false);
   return (
