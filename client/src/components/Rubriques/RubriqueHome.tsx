@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 
 import React, {useEffect, useRef, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hook/hooks";
@@ -43,11 +44,15 @@ const RubriqueHome = () => {
   const [selectedType, setSelectedType] = useState<string>("");
   const [filteredRubriques, setFilteredRubriques] = useState<Rubrique[]>([]);
   const role = localStorage.getItem("role");
-
   const rubriqueDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    dispatch(searchRubriquesAsync({ page, size: pageSize }))
+    const role = localStorage.getItem("role");
+    const id = localStorage.getItem("id");
+    let idEns="";
+    role === "ENS" && id ? idEns = id : idEns = "0";
+    if (id) {
+      dispatch(searchRubriquesAsync({ enseignantId: idEns, page: page, size: pageSize }))
         .unwrap()
         .then((data: { totalPages: React.SetStateAction<number>; }) => {
           setTotalPages(data.totalPages);
@@ -55,6 +60,10 @@ const RubriqueHome = () => {
         .catch(() => {
           setTotalPages(1);
         });
+    } else {
+      setTotalPages(1);
+    }
+
     dispatch(fetchQuestionsAsync());
   }, [dispatch, page]);
 
@@ -165,9 +174,9 @@ const RubriqueHome = () => {
                 <th onClick={() => handleSortChange("designation")}>
                   Désignation {sortField === "designation" && (sortOrder === "asc" ? "↑" : "↓")}
                 </th>
-                <th onClick={() => handleSortChange("type")}>
+                { role =="ENS" ? <th onClick={() => handleSortChange("type")}>
                   Type {sortField === "type" && (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
+                </th> : null }
                 <th>Actions</th>
               </tr>
               </thead>

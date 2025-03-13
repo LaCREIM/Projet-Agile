@@ -20,8 +20,6 @@ public class QuestionStdController {
     @Autowired
     private QuestionStdService questionStdService;
 
-  
-
     /**
      * Récupérer toutes les questions standards PAGINÉES et ordonnées alphabétiquement
      */
