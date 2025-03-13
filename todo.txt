@@ -1,0 +1,8 @@
+*******Error lors de delete d'enseignant:
+/] [delete from dosi_dev.enseignant where no_enseignant=?]; SQL [delete from dosi_dev.enseignant where no_enseignant=?]; constraint [DOSI_DEV.EC_ENS_FK]] with root cause
+
+oracle.jdbc.OracleDatabaseException: ORA-02292: integrity constraint (DOSI_DEV.EC_ENS_FK) violated - child record found
+
+******la modification d enseignants n'a pas complete.!!
+
+****** les messages d erreurs?

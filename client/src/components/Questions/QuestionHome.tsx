@@ -45,11 +45,11 @@ const QuestionHome = () => {
   }, [dispatch]);
   
   useEffect(() => {
-    if(role === "ADM") {
-      dispatch(getAllQuestionsPersoAsync({ idEnseignant: 0 }));
-    } else {
-        dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
-    }
+    const userId = localStorage.getItem('id');
+    const id = role === "ADM" ? 0 : Number(userId);
+
+    dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(id) }));
+    
     //console.log("🔎 questions state:", questions); // Vérifie si l'état initial est bien peuplé
 }, [dispatch, role, userId]);
 
@@ -118,9 +118,9 @@ const QuestionHome = () => {
   };
 
   const paginatedQuestions = filteredQuestions.slice(
-      (currentPage - 1) * questionsPerPage,
-      currentPage * questionsPerPage
-  );
+    (currentPage - 1) * questionsPerPage,
+    currentPage * questionsPerPage
+);
 
   return (
       <>

@@ -32,6 +32,20 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
                                           Short noEvaluation,
                                           String codeFormation,
                                           String codeUE);
+
+
+
+    @Query("""
+        SELECT e FROM Evaluation e 
+        WHERE e.codeFormation = :codeFormation 
+        AND e.anneeUniversitaire = :anneeUniversitaire 
+        AND e.etat <> 'ELA'
+    """)
+    List<Evaluation> findByPromotionAndEtatNotELA(
+        @Param("codeFormation") String codeFormation, 
+        @Param("anneeUniversitaire") String anneeUniversitaire
+    );
+    
     }
 
 
