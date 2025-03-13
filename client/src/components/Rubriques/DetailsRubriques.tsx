@@ -5,6 +5,7 @@ import {
   deleteRubriqueQuestionsAsync,
   getRubriquesAsync,
   RubriqueQuestion,
+  searchRubriquesAsync,
   updateRubriqueAsync,
   updateRubriqueQuestionsAsync,
 } from "../../features/RubriqueSlice";
@@ -162,9 +163,8 @@ const DetailsRubrique = ({
     e.preventDefault();
     
     const userRole = localStorage.getItem("role");
-    const userId = localStorage.getItem("idEns");
   
-    if (userRole !== "ENS" || rubriqueData.noEnseignant !== Number(userId)) {
+    if (userRole === "ENS" && rubriqueData.type == "RBS" ) {
       toast.error("Vous n'avez pas l'autorisation de modifier cette rubrique.", {
         autoClose: 10000, // Affichage de 10s
       });
@@ -199,8 +199,13 @@ const DetailsRubrique = ({
         toast.success("Rubrique mise à jour avec succès.", {
           autoClose: 10000, // Affichage de 10s
         });
-        dispatch(getRubriquesAsync());
+        const idEns = localStorage.getItem("id");
+      if (idEns) {
+        await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+      } else {
+        toast.error("ID de l'enseignant non trouvé.");
       }
+  }
     } else {
       setIsEditing(true);
       setError(null);
