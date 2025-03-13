@@ -123,19 +123,24 @@ public class PromotionService {
         Set<String> uniqueCodes = new HashSet<>();
         // Extraction et insertion dans le Set pour rendre unique
         ues.forEach(ue -> uniqueCodes.add(ue.getCodeFormation().getCodeFormation()));
-
+        System.out.println("List uniqueCodes : "+uniqueCodes);
         if(uniqueCodes.isEmpty()){
             return null;
         }
         List<Promotion> promotionsByEnseignant = new ArrayList<>() ;
         for(String codeFormation : uniqueCodes){
             List<Promotion> prm = promotionRepository.findByCodeFormationActuel(codeFormation);
+            System.out.println("List Promotions prm : "+prm);
             if(!prm.isEmpty()){
                 promotionsByEnseignant.addAll(prm);
             }
         }
+        System.out.println("List PromotionsbyEnseignant : "+promotionsByEnseignant);
+        List<PromotionDTO> prmDto= promotionsByEnseignant.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
+        if(prmDto.isEmpty()){
+            return null;
+        }
+        return prmDto;
 
-        return promotionsByEnseignant.stream().map(promotionMapper::fromPromotion).collect(Collectors.toList());
-    }
-
+}
 }

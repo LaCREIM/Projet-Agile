@@ -1,16 +1,18 @@
 package com.example.backendagile.dto;
 
 public class RubriquePrsDTO {
-    private Long idRubriquePrs;
+    private Long id;
     private String designation;
     private Long ordre;
     private Long noEnseignant;
+    private String type;
 
-    public RubriquePrsDTO(Long idRubriquePrs, String designation, Long ordre, Long noEnseignant) {
-        this.idRubriquePrs = idRubriquePrs;
+    public RubriquePrsDTO(Long id, String designation, Long ordre, Long noEnseignant) {
+        this.id = id;
         this.designation = designation;
         this.ordre = ordre;
         this.noEnseignant = (noEnseignant != null) ? noEnseignant : null;
+        this.type = "RBP";
     }
 
 
@@ -32,11 +34,11 @@ public class RubriquePrsDTO {
     }
 
     public Long getIdRubriquePrs() {
-        return idRubriquePrs;
+        return id;
     }
 
     public void setIdRubriquePrs(Long idRubriquePrs) {
-        this.idRubriquePrs = idRubriquePrs;
+        this.id = idRubriquePrs;
     }
 
     public String getDesignation() {

@@ -15,10 +15,11 @@ interface AddRubriqueProps {
 const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const dispatch = useAppDispatch();
 
+  const role = localStorage.getItem("role");
   const [rubrique, setRubrique] = useState<Rubrique>({
     id: 0,
-    type: "",
-    noEnseignant: {} as Enseignant,
+    type: role === "ENS" ? "RBP" : "RBS",
+    noEnseignant: Number(localStorage.getItem("id")),
     designation: "",
     ordre: 0,
     questions: [],

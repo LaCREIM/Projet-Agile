@@ -119,15 +119,16 @@ export const createRubriquePersoAsync = createAsyncThunk<
   }
 );
 //
+
 export const searchRubriquesAsync = createAsyncThunk<
-  { rubriques: Rubrique[]; totalPages: number },
-  { page: number; size: number },
+   Rubrique[],
+  { enseignantId: string; page: number; size: number },
   { rejectValue: string }
 >(
   "rubriques/search",
-  async ({page, size }, { rejectWithValue }) => {
+  async ({ enseignantId, page, size }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/rubriquesStd/paged", {
+      const response = await axiosInstance.get<Rubrique[]>(`/rubriques/paged/enseignants/${enseignantId}`, {
         params: { page, size },
       });
       console.log(response.data);
@@ -137,7 +138,6 @@ export const searchRubriquesAsync = createAsyncThunk<
     }
   }
 );
-
 
 export const getQuestionsStandardAsync = createAsyncThunk<RubriqueQuestion[], number, { rejectValue: any }>(
   "standard/getQuestionsStandardAsync",
@@ -157,7 +157,7 @@ export const createRubriqueAsync = createAsyncThunk<Rubrique, { designation: str
   "rubriques/create",
   async (rubriqueData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/rubriquesStd", rubriqueData);
+      const response = await axiosInstance.post("/rubriques", rubriqueData);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la création de la rubrique");
@@ -258,16 +258,19 @@ const rubriqueSlice = createSlice({
     builder.addCase(searchRubriquesAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
-    });
-    builder.addCase(
+    })
+    .addCase(
           searchRubriquesAsync.fulfilled,
-          (state, action: PayloadAction<{ rubriques: Rubrique[]; totalPages: number }>) => {
-            state.rubriques = action.payload.rubriques;
-            state.totalPages = action.payload.totalPages;
+          (state, action: PayloadAction<Rubrique[]>) => {
+            console.log("Mise à jour Redux réussie :", action.payload);
+            state.rubriques = action.payload;
+            console.log("Rubriques dans Redux :", state.rubriques);
+            
+            
             state.loading = false;
           }
-        );
-        builder.addCase(searchRubriquesAsync.rejected, (state, action) => {
+        )
+        .addCase(searchRubriquesAsync.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload as string;
         });

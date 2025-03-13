@@ -1,5 +1,6 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.services.DroitService;
 import org.springframework.http.ResponseEntity;
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +22,11 @@ import java.util.Map;
 public class EvaluationController {
 
     private final EvaluationService evaluationService;
+    private final DroitService droitService;
 
-    public EvaluationController(EvaluationService evaluationService) {
+    public EvaluationController(EvaluationService evaluationService, DroitService droitService) {
         this.evaluationService = evaluationService;
+        this.droitService = droitService;
     }
 
     @GetMapping("/enseignant/{id}")
@@ -52,12 +57,15 @@ public class EvaluationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String,String>> deleteEvaluation(@PathVariable Long id) {
-        Map<String,String> response = new HashMap<>();
+    @DeleteMapping("/{idEvaluation}/enseignant/{noEnseignant}")
+    public ResponseEntity<Map<String, String>> deleteEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+        Map<String, String> response = new HashMap<>();
         try {
             response.put("message", "L'évaluation a été supprimée avec succès.");
-            evaluationService.deleteEvaluation(id);
+            // supprimer l'évaluation droite
+            droitService.deleteDroit(idEvaluation, noEnseignant);
+            // supprimer l'évaluation
+            evaluationService.deleteEvaluation(idEvaluation);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -78,6 +86,7 @@ public class EvaluationController {
         return ResponseEntity.ok(evaluationService.getEvaluationsPartagees(noEnseignant));
 
     }
+
     @Transactional
     @PostMapping("/dupliquer/{idEvaluation}/{noEnseignant}")
     public ResponseEntity<Map<String, Object>> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
@@ -89,9 +98,25 @@ public class EvaluationController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            response.put("message", "Evaluation déja dupliquée");
+            response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
+    }
+  /*   @GetMapping("/etudiant/{idEtudiant}")
+    public ResponseEntity<Map<String, Object>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
+        Map<String, Object> response = evaluationService.getEvaluationsByEtudiant(idEtudiant);
+        return ResponseEntity.ok(response);
+    }*/
+
+    @GetMapping("/etudiant/{idEtudiant}")
+    public ResponseEntity<Map<String, Object>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
+        try {
+            Map<String, Object> response = evaluationService.getEvaluationsByEtudiant(idEtudiant);
+            return ResponseEntity.ok(response);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(Collections.singletonMap("message", ex.getReason()));
+        }
     }
 }

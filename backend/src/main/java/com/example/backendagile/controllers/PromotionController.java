@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -140,6 +138,9 @@ public class PromotionController {
     @GetMapping("/enseignant/{noEnseignant}")
     public ResponseEntity<List<PromotionDTO>> getPromotionsByEnseignantForEvaluation(@PathVariable Long noEnseignant) {
         List<PromotionDTO> promotions = promotionService.getPromotionsByEnseignantForEvaluation(noEnseignant);
+        if(promotions == null || promotions.isEmpty() ){
+            promotions = new ArrayList<>();
+        }
         return ResponseEntity.ok(promotions);
     }
 }
