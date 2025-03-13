@@ -12,6 +12,7 @@ import { GetEvaluationDTO } from "../../types/types";
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
+import { FaArrowRight } from "react-icons/fa";
 
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
 import {
@@ -214,12 +215,6 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => {
-                  const canDel =
-                    evaluation.evaluation.noEnseignant ===
-                      Number(localStorage.getItem("id")) ||
-                    evaluation.evaluation.etat !== "CLO";
-
-                  const canDup = evaluation?.droit?.duplication === "O";
                   return (
                     <tr
                       key={index}
@@ -237,38 +232,48 @@ const EvaluationHome = () => {
                       <td className="px-4 py-2">
                         {evaluation.evaluation.periode}
                       </td>
-                      <td className="px-4 py-2">
-                        {etatEvaluationMapper(evaluation.evaluation.etat)}
-                      </td>
+                      {localStorage.getItem("role") === "ENS" && (
+                        <td className="px-4 py-2">
+                          {etatEvaluationMapper(evaluation.evaluation.etat)}
+                        </td>
+                      )}
+
                       <td className="flex gap-3 justify-center items-center">
                         {/* Icône de duplication */}
-                        <div
-                          className={"tooltip"}
-                          data-tip={`${
-                            evaluation?.droit?.duplication === "O" ||
-                            evaluation.evaluation.noEnseignant ===
-                              Number(localStorage.getItem("id"))
-                              ? "Dupliquer l'évaluation"
-                              : "Vous n'avez pas le droit de dupliquer cette évaluation"
-                          }`}
-                        >
-                          <FontAwesomeIcon
-                            icon={faCopy}
-                            className={`text-black text-base cursor-pointer ${
+                        {localStorage.getItem("role") === "ENS" && (
+                          <div
+                            className={"tooltip"}
+                            data-tip={`${
                               evaluation?.droit?.duplication === "O" ||
                               evaluation.evaluation.noEnseignant ===
                                 Number(localStorage.getItem("id"))
-                                ? ""
-                                : "text-gray-400 hover:cursor-not-allowed"
+                                ? "Dupliquer l'évaluation"
+                                : "Vous n'avez pas le droit de dupliquer cette évaluation"
                             }`}
-                            onClick={() =>
-                              canDup &&
-                              handleDuplicate(
-                                evaluation.evaluation.idEvaluation
-                              )
-                            }
-                          />
-                        </div>
+                          >
+                            <FontAwesomeIcon
+                              icon={faCopy}
+                              className={`text-black text-base cursor-pointer ${
+                                evaluation?.droit?.duplication === "O" ||
+                                evaluation.evaluation.noEnseignant ===
+                                  Number(localStorage.getItem("id"))
+                                  ? ""
+                                  : "text-gray-400 hover:cursor-not-allowed"
+                              }`}
+                              onClick={() => {
+                                if (
+                                  evaluation?.droit?.duplication === "O" ||
+                                  evaluation.evaluation.noEnseignant ===
+                                    Number(localStorage.getItem("id"))
+                                ) {
+                                  handleDuplicate(
+                                    evaluation.evaluation.idEvaluation
+                                  );
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
 
                         {/* Icône d'inspection */}
                         <FontAwesomeIcon
@@ -283,11 +288,11 @@ const EvaluationHome = () => {
                         <div
                           className={"tooltip"}
                           data-tip={
-                            evaluation.evaluation.etat === "CLO"
-                              ? "Cette évaluation est clôturée et ne peut pas être supprimée"
-                              : evaluation.evaluation.noEnseignant !==
-                                Number(localStorage.getItem("id"))
+                            evaluation.evaluation.noEnseignant !==
+                            Number(localStorage.getItem("id"))
                               ? "Vous n'avez pas le droit de supprimer cette évaluation"
+                              : evaluation.evaluation.etat === "CLO"
+                              ? "Cette évaluation est clôturée et ne peut pas être supprimée"
                               : "Supprimer l'évaluation"
                           }
                         >

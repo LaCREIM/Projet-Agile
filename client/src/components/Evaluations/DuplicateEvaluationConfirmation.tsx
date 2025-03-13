@@ -14,7 +14,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
       <p className="py-4">Êtes-vous sûr de vouloir dupliquer l'évaluation "{evaluation.designation}" ?</p>
       <div className="modal-action">
         <button className="btn" onClick={onClose}>Annuler</button>
-        <button className="btn btn-primary" onClick={onConfirm}>Confirmer</button>
+        <button className="btn btn-neutral" onClick={onConfirm}>Confirmer</button>
       </div>
     </div>
   );

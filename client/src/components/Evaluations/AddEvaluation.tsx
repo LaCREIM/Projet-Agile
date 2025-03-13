@@ -61,7 +61,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
     if (!debut || !fin) return false;
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize today’s date for comparison
+    today.setHours(0, 0, 0, 0); 
 
     const newErrors = { ...errors };
 
@@ -238,7 +238,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
                   Sélectionner une promotion{" "}
                   <span className="text-red-500"> *</span>
                 </option>
-                {filteredPromotionsByRole.map((promotion, idx) => (
+                {promotions.map((promotion, idx) => (
                   <option
                     key={idx}
                     value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
