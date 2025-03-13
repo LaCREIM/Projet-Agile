@@ -12,10 +12,9 @@ import { Link, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 
-
 export function Dashboard() {
-  const role = localStorage.getItem("role")
-  
+  const role = localStorage.getItem("role");
+
   const allLinks = [
     {
       label: "Gestion des enseignants",
@@ -66,34 +65,46 @@ export function Dashboard() {
       icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
+      label: "Consultation des évaluations",
+      href: "/admin/home/evaluations",
+      icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
+    },
+    {
       label: "Logout",
       href: "/",
       icon: <FiLogOut className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
   ];
 
-  const links =
-    role === "ENS"
-      ? allLinks.filter((link) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Consultation des promotions",
-            "Gestion des évaluations",
-            "Logout",
-          ].includes(link.label)
-        )
-      : allLinks.filter((link) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Gestion des promotions",
-            "Gestion des qualificatifs",
-            "Gestion des enseignants",
-            "Gestion des étudiants",
-            "Logout",
-          ].includes(link.label)
-        );
+  let links = [] as string[];
+
+  if (role === "ENS") {
+    links = allLinks.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Consultation des promotions",
+        "Gestion des évaluations",
+        "Logout",
+      ].includes(link.label)
+    );
+  } else if (role === "ADM") {
+    links = allLinks.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Gestion des promotions",
+        "Gestion des qualificatifs",
+        "Gestion des enseignants",
+        "Gestion des étudiants",
+        "Logout",
+      ].includes(link.label)
+    );
+  } else if (role === "ETU") {
+    links = allLinks.filter((link) =>
+      ["Consultation des évaluations", "Logout"].includes(link.label)
+    );
+  }
 
   const [open, setOpen] = useState(false);
   return (
@@ -146,4 +157,3 @@ export const LogoIcon = () => {
     </Link>
   );
 };
-

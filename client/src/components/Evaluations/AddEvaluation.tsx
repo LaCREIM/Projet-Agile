@@ -4,9 +4,9 @@ import { useAppDispatch } from "../../hooks/hooks";
 import { createEvaluationAsync, fetchEvaluationAsync } from "../../features/EvaluationSlice";
 
 import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import AlertError from "../ui/alert-error";
-import { fetchAllUnitesEnseignementAsync } from "../../features/uniteEnseignementSlice.ts";
+import { fetchAllUnitesEnseignementAsync, fetchAllUnitesEnseignementByEnseignentAsync, fetchAllUnitesEnseignementEnsAsync } from "../../features/uniteEnseignementSlice.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../api/store.ts";
 
@@ -54,14 +54,14 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
   const [evaluation, setEvaluation] = useState<EvaluationDTO>(initEvaluation);
 
   useEffect(() => {
-    dispatch(fetchAllUnitesEnseignementAsync());
+    dispatch(fetchAllUnitesEnseignementEnsAsync());
   }, [dispatch]);
 
   const validateDates = (debut: string | null, fin: string | null) => {
     if (!debut || !fin) return false;
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize today’s date for comparison
+    today.setHours(0, 0, 0, 0); 
 
     const newErrors = { ...errors };
 
@@ -133,8 +133,8 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
       if (res?.type === "evaluations/createEvaluationAsync/rejected") {
         setError(res.payload as string);
       } else if (res?.type === "evaluations/createEvaluationAsync/fulfilled") {
-        await dispatch(fetchEvaluationAsync())
         toast.success("Évaluation ajoutée avec succès!");
+        await dispatch(fetchEvaluationAsync())
         resetEvaluation();
       }
     }
@@ -238,7 +238,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
                   Sélectionner une promotion{" "}
                   <span className="text-red-500"> *</span>
                 </option>
-                {filteredPromotionsByRole.map((promotion, idx) => (
+                {promotions.map((promotion, idx) => (
                   <option
                     key={idx}
                     value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
