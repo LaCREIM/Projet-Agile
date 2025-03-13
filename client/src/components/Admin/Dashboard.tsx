@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
-import { FiDéconnexion } from "react-icons/fi";
+import { FiLogOut } from "react-icons/fi";
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuSchool } from "react-icons/lu";
 import { IoSchool } from "react-icons/io5";
@@ -73,7 +73,7 @@ export function Dashboard() {
     {
       label: "Déconnexion",
       href: "/",
-      icon: <FiDéconnexion className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
+      icon: <FiLogOut className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
   ];
 
