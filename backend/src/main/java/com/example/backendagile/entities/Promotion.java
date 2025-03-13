@@ -1,5 +1,6 @@
 package com.example.backendagile.entities;
 
+import com.example.backendagile.repositories.FormationRepository;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -138,12 +139,16 @@ public class Promotion {
     public String getCodeFormation() {
         return id != null ? id.getCodeFormation() : null;
     }
-
+    public String getAnneeUniversitaire() {
+        return id != null ? id.getAnneeUniversitaire() : null;
+    }
     public void setCodeFormation(String codeFormation) {
         if (id == null) {
             id = new PromotionId(); 
         }
         id.setCodeFormation(codeFormation);
     }
+
+
 
 }

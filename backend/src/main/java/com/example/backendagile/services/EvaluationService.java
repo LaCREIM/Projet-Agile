@@ -6,6 +6,8 @@ import com.example.backendagile.entities.*;
 import com.example.backendagile.mapper.EvaluationMapper;
 import com.example.backendagile.mapper.EvaluationPartagerMapper;
 import com.example.backendagile.repositories.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
@@ -23,6 +25,7 @@ public class EvaluationService {
     private final FormationRepository formationRepository;
 
     private final DroitRepository droitRepository;
+    private final EtudiantRepository etudiantRepository;
 
     private final EnseignantService enseignantService;
 
@@ -33,8 +36,10 @@ public class EvaluationService {
     private final EvaluationPartagerMapper evaluationPartagerMapper;
 
     private final UniteEnseignementRepository uniteEnseignementRepository;
+ 
+   
 
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository, QuestionEvaluationRepository questionEvaluationRepository, RubriqueEvaluationRepository rubriqueEvaluationRepository) {
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository, QuestionEvaluationRepository questionEvaluationRepository, RubriqueEvaluationRepository rubriqueEvaluationRepository,EtudiantRepository etudiantRepository) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
         this.droitRepository = droitRepository;
@@ -43,6 +48,7 @@ public class EvaluationService {
         this.uniteEnseignementRepository = uniteEnseignementRepository;
         this.questionEvaluationRepository = questionEvaluationRepository;
         this.rubriqueEvaluationRepository = rubriqueEvaluationRepository;
+        this.etudiantRepository = etudiantRepository;
     }
 
 
@@ -59,11 +65,9 @@ public class EvaluationService {
     }
 
     public EvaluationDTO createEvaluation(EvaluationDTO dto) {
-        //validate is the evaluation is unique?
         if (!isEvaluationUnique(dto.getAnneeUniversitaire(), dto.getNoEnseignant(), dto.getNoEvaluation(), dto.getCodeFormation(), dto.getCodeUE())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'évaluation existe déjà.");
         }
-        // Validate input DTO
         if (dto.getCodeFormation() == null || dto.getCodeFormation().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le code de formation est requis.");
         }
@@ -83,21 +87,16 @@ public class EvaluationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le numéro de l'enseignant est requis.");
         }
 
-        // Set default state
         dto.setEtat("ELA");
 
-        // Convert DTO to entity
         Evaluation evaluation = EvaluationMapper.toEntity(dto, uniteEnseignementRepository);
 
-        // Check if the entity is valid before saving
         if (evaluation.getCodeFormation() == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Le code de formation est NULL avant l'insertion.");
         }
 
-        // Save the entity
         Evaluation saved = evaluationRepository.save(evaluation);
 
-        // Convert saved entity to DTO
         return EvaluationMapper.toDTO(saved, uniteEnseignementRepository);
     }
 
@@ -181,7 +180,6 @@ public class EvaluationService {
 
             RubriqueEvaluation rubriqueEvaluationDuplicated = rubriqueEvaluationRepository.save(rubriqueEvaluationDupliquer);
 
-            // copy les questions
             List<QuestionEvaluation> questionEvaluations = rubriqueEvaluation.getQuestions();
             for (QuestionEvaluation questionEvaluation : questionEvaluations) {
                 QuestionEvaluation questionEvaluationDupliquer = new QuestionEvaluation();
@@ -199,4 +197,41 @@ public class EvaluationService {
     private EvaluationDTO mapEvaulation(Evaluation evaluation) {
         return getEvaluationDTO(evaluation);
     }
+
+    public Map<String, Object> getEvaluationsByEtudiant(String idEtudiant) {
+        Etudiant etudiant = etudiantRepository.findById(idEtudiant)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
+    
+        Promotion promotion = etudiant.getPromotion();
+        if (promotion == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucune promotion trouvée pour cet étudiant");
+        }
+    
+        String codeFormation = promotion.getCodeFormation();
+        String anneeUniversitaire = promotion.getAnneeUniversitaire();
+    
+        String nomFormation = formationRepository.findById(codeFormation)
+                .map(Formation::getNomFormation)
+                .orElse("Formation inconnue");
+    
+        List<Evaluation> evaluations = evaluationRepository.findByPromotionAndEtatNotELA(codeFormation, anneeUniversitaire);
+    
+        List<Map<String, Object>> evaluationList = evaluations.stream().map(evaluation -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("noEvaluation", evaluation.getNoEvaluation());
+            map.put("codeUE", evaluation.getCodeUE());
+            //map.put("codeEC", evaluation.getCodeEC());
+            map.put("designation", evaluation.getDesignation());
+            map.put("etat", evaluation.getEtat());
+            return map;
+        }).collect(Collectors.toList());
+    
+        Map<String, Object> response = new HashMap<>();
+        response.put("nomFormation", nomFormation); 
+        response.put("anneeUniversitaire", anneeUniversitaire);
+        response.put("evaluations", evaluationList);
+    
+        return response;
+    }
+    
 }
