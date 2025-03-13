@@ -1,0 +1,34 @@
+	
+1-Page Etudiant: *on doit corriger la colonne Promotion par Formation et ajouter une autre colonne Annee promotion. 
+		 *lors de la recherche , s'il n existe pas des etudiants d une promotion , on doit afficher un message informative.
+		 *Après la modification d'un étudiant et le clic sur 'Modifier', la popup ne se ferme pas.
+		 *Selectionner payer ==> Selectionner payer d'origine
+		 *Selectionner Formation ??
+		 *Mobile, EmailUBO , codePostal , ne doit pas etre obligatoire
+		 *Pagination
+		 *Suppression Etudiant
+		 *Recherche Tous
+		
+2-Page qualificatif :
+		 *Switch Max with Min (il y a un prob dans l affichage).
+		 *Apres l ajout, la popup ne se ferme pas.
+		 *Doit refresh apres la suppression.
+		 *Afficher un message informative au cas de suppression d'un qualificatif deja utiliser dans une question.
+		 *Je pense en doit pas modifier un qualificatif si deja est utiliser dans une question.
+		 
+3-Page Question: 
+		*prq on a afficher l id dans qualificatif et non pas dans question??
+		*Dans la consultation des questions c est pas la peine d afficher le type car par defaut c est standard pour l Admin.
+		*Apres l ajout, la popup ne se ferme pas.
+		
+
+4-page Promotion :*le CODE doit afficher le code formation et non pas le sigle??
+		  *Lors de la consultation des etudiants de chaque promotion, il doit afficher le code formation + l anne de promotion.
+		  	et si aucun etudiant n'existe c'est mieux d'afficher un message informative.
+		 
+	
+5-Dashboard:
+	  	*Logout icon ne marche pas.
+	  	
+6-page consultation des etudiants d'une promotion: *c'est mieux de ne pas afficher la colonne Promotion dans la table etudiant, (la redondance)
+
