@@ -15,7 +15,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
       <p className="py-4 text-red">Il est impératif de modifier le numéro d'évaluation attribué par défaut après la duplication !</p>
       <div className="modal-action">
         <button className="btn" onClick={onClose}>Annuler</button>
-        <button className="btn btn-neutral" onClick={onConfirm}>Confirmer</button>
+        <button className="btn btn-primary" onClick={onConfirm}>Confirmer</button>
       </div>
     </div>
   );

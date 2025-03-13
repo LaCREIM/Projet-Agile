@@ -74,7 +74,7 @@ export const deleteEvaluationAsync = createAsyncThunk<void, number, { rejectValu
     "evaluations/delete",
     async (id, { rejectWithValue }) => {
         try {
-            await axiosInstance.delete(`/evaluations/${id}/enseignant/${localStorage.getItem("id")}`);
+            await axiosInstance.delete(`/evaluations/${id}`);
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la suppression de l'évaluation");
         }

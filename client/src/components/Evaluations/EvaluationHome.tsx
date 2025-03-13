@@ -9,8 +9,6 @@ import {GetEvaluationDTO} from "../../types/types";
 import {RootState} from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-import { FaArrowRight } from "react-icons/fa";
-
 
 import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
 import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
@@ -117,12 +115,13 @@ const EvaluationHome = () => {
 
   const confirmDuplicate = async (evaluationId: number) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
-    console.log(response);
+    console.log(response)
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       toast.success("L'évaluation a été dupliquée avec succès");
       await dispatch(fetchEvaluationAsync());
     } else {
-      toast.error((response.payload as unknown as { message: string }).message);
+
+      toast.error((response.payload as unknown as {message:string}).message);
     }
     closeModal(`duplicate-${evaluationId}`);
   };
@@ -226,7 +225,6 @@ const EvaluationHome = () => {
             </thead>
             <tbody>
             {filteredEvaluations.length === 0 ? (
-<
                 <tr>
                   <td
                       colSpan={7}
