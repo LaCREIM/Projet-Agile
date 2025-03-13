@@ -1,7 +1,7 @@
 import { Rubrique } from "../../types/types";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
-import { deleteRubriqueAsync, getRubriquesAsync } from "../../features/RubriqueSlice";
+import { deleteRubriqueAsync, searchRubriquesAsync } from "../../features/RubriqueSlice";
 
 interface DeleteProps {
   rubrique: Rubrique;
@@ -12,24 +12,38 @@ const DeleteRubriqueConfirmation = ({
   rubrique,
 //   currentPage,
 }: DeleteProps) => {
+  const idEns = localStorage.getItem("id");
+  const role = localStorage.getItem("role");
   const dispatch = useAppDispatch();
-  const handleDelete = async ( e : React.MouseEvent) => {
-      console.log(e);
-      try {
-        const response = await dispatch(deleteRubriqueAsync(rubrique.id));
-        if (response?.type == "rubriques/delete/rejected") {
-          toast.error(
-            response.payload as string
-          );
-        } else if (response?.type == "rubriques/delete/fulfilled") {
-          toast.success(response.payload as string);
-          await dispatch(getRubriquesAsync());
+  const handleDelete = async (e: React.MouseEvent) => {
+    console.log(e);
+  
+    // Vérification des autorisations avant la suppression
+    if (role === "ENS" && rubrique.noEnseignant !== Number(idEns)) {
+      toast.error("Vous n'avez pas l'autorisation de supprimer cette rubrique.");
+      return;
+    }
+  
+    try {
+      const response = await dispatch(deleteRubriqueAsync(rubrique.id));
+  
+      if (response?.type === "rubriques/delete/rejected") {
+        toast.error(response.payload as string);
+      } else if (response?.type === "rubriques/delete/fulfilled") {
+        toast.success("Rubrique supprimée avec succès.");
+  
+        if (idEns) {
+          await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+        } else {
+          toast.error("ID de l'enseignant non trouvé.");
         }
-      } catch (error) {
-        console.error("Erreur lors de la suppression :", error);
-        toast.error("Une erreur est survenue lors de la suppression.");
       }
-    };
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error);
+      toast.error("Une erreur est survenue lors de la suppression.");
+    }
+  };
+  
   return (
     <>
       <div className="modal-box">

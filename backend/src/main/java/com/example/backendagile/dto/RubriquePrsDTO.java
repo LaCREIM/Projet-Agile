@@ -12,6 +12,7 @@ public class RubriquePrsDTO {
         this.designation = designation;
         this.ordre = ordre;
         this.noEnseignant = (noEnseignant != null) ? noEnseignant : null;
+        this.type = "RBP";
     }
 
 
