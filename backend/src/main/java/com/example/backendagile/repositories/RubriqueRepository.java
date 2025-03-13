@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface RubriqueRepository extends JpaRepository<Rubrique, Long> {
@@ -28,6 +29,8 @@ public interface RubriqueRepository extends JpaRepository<Rubrique, Long> {
     );
 
 
-}
+    // 🔹 Rechercher une rubrique par sa désignation (JPQL)
+    @Query("SELECT r FROM Rubrique r WHERE r.designation = :designation")
+    Optional<Rubrique> findByDesignation(@Param("designation") String designation);}
 
 
