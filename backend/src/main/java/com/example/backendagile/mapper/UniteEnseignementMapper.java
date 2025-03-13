@@ -9,6 +9,6 @@ public class UniteEnseignementMapper {
 
 
     public UniteEnseignementDTO toDTO(UniteEnseignement uniteEnseignement) {
-        return new UniteEnseignementDTO(uniteEnseignement.getId().getCodeUe(), uniteEnseignement.getDesignation());
+        return new UniteEnseignementDTO(uniteEnseignement.getId().getCodeUe(), uniteEnseignement.getDesignation(), uniteEnseignement.getId().getCodeFormation());
     }
 }
