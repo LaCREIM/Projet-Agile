@@ -119,15 +119,16 @@ export const createRubriquePersoAsync = createAsyncThunk<
   }
 );
 //
+
 export const searchRubriquesAsync = createAsyncThunk<
   { rubriques: Rubrique[]; totalPages: number },
-  { page: number; size: number },
+  { enseignantId: string; page: number; size: number },
   { rejectValue: string }
 >(
   "rubriques/search",
-  async ({page, size }, { rejectWithValue }) => {
+  async ({ enseignantId, page, size }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/rubriquesStd/paged", {
+      const response = await axiosInstance.get(`/rubrique/paged/enseignants/${enseignantId}`, {
         params: { page, size },
       });
       console.log(response.data);
@@ -137,7 +138,6 @@ export const searchRubriquesAsync = createAsyncThunk<
     }
   }
 );
-
 
 export const getQuestionsStandardAsync = createAsyncThunk<RubriqueQuestion[], number, { rejectValue: any }>(
   "standard/getQuestionsStandardAsync",
