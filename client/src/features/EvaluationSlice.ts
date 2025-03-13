@@ -1,3 +1,4 @@
+import { EtudiantEvaluation } from './../types/types.d';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -8,6 +9,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
+    evaluationsEtu: EtudiantEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -16,7 +18,8 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
-    totalPages: 0,  // Ajout du total de pages
+    evaluationsEtu: [],
+    totalPages: 0, 
     loading: false,
     error: null,
 };
@@ -34,11 +37,11 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
     }
 );
 
-export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
+export const fetchEvaluationByEtuAsync = createAsyncThunk<EtudiantEvaluation[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/etudiant/${localStorage.getItem("id") }`);
+            const response = await axiosInstance.get<EtudiantEvaluation[]>(`/evaluations/etudiant/${localStorage.getItem("id") }`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
@@ -117,6 +120,10 @@ const EvaluationSlice = createSlice({
                 state.evaluations = action.payload;
                 state.loading = false;
             })
+            .addCase(fetchEvaluationByEtuAsync.fulfilled, (state, action: PayloadAction<EtudiantEvaluation[]>) => {
+                state.evaluationsEtu = action.payload;
+                state.loading = false;
+            })
             .addCase(getEvaluationByIdAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
                 state.evaluation = action.payload;
                 state.loading = false;
@@ -134,6 +141,7 @@ const EvaluationSlice = createSlice({
 });
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
+export const getEtuEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluationsEtu;
 
 export default EvaluationSlice.reducer;
 

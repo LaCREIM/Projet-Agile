@@ -242,10 +242,29 @@ const EvaluationHome = () => {
                 Période{" "}
                 {sortField === "periode" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
-              <th onClick={() => handleSortChange("etat")}>
-                État {sortField === "etat" && (sortOrder === "asc" ? "↑" : "↓")}
-              </th>
-              <th>Type</th>
+              {localStorage.getItem("role") === "ENS" ? (
+                <>
+                  <th onClick={() => handleSortChange("etat")}>
+                    État{" "}
+                    {sortField === "etat" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th>Type</th>
+                </>
+              ) : (
+                <>
+                  <th onClick={() => handleSortChange("debutReponse")}>
+                    Date de début{" "}
+                    {sortField === "debutReponse" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("finReponse")}>
+                    Date de fin{" "}
+                    {sortField === "finReponse" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                </>
+              )}
+
               <th className="text-center">Actions</th>
             </tr>
           </thead>
@@ -278,15 +297,35 @@ const EvaluationHome = () => {
                     <td className="px-4 py-2">
                       {evaluation.evaluation.periode}
                     </td>
-                    <td className="px-4 py-2">
-                      {etatEvaluationMapper(evaluation.evaluation.etat)}
-                    </td>
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.noEnseignant ===
-                      Number(localStorage.getItem("id"))
-                        ? "Personnelle"
-                        : "Partagée"}
-                    </td>
+                    {localStorage.getItem("role") === "ENS" ? (
+                      <>
+                        <td className="px-4 py-2">
+                          {etatEvaluationMapper(evaluation.evaluation.etat)}
+                        </td>
+                        <td className="px-4 py-2">
+                          {evaluation.evaluation.noEnseignant ===
+                          Number(localStorage.getItem("id")) ? (
+                            <div className="badge badge-accent text-white">
+                              {"Personnell"}
+                            </div>
+                          ) : (
+                            <div className="badge badge-success text-white">
+                              {"Partagée"}
+                            </div>
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-4 py-2">
+                          {evaluation.evaluation.debutReponse}
+                        </td>
+                        <td className="px-4 py-2">
+                          {evaluation.evaluation.finReponse}
+                        </td>
+                      </>
+                    )}
+
                     <td className="flex gap-3 justify-center items-center">
                       {/* Icône de duplication */}
                       {role == "ENS" && (
@@ -354,8 +393,6 @@ const EvaluationHome = () => {
                           </div>
                         </>
                       )}
-
-                      {/* Icône d'inspection */}
 
                       {role == "ETU" && (
                         <FontAwesomeIcon

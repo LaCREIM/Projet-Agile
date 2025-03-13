@@ -226,7 +226,7 @@ const DetailsEvaluation = () => {
           <div className="justify-start hover:cursor-pointer hover:transition hover:-translate-x-1 duration-300">
             <IoMdArrowBack
               size={25}
-              onClick={() => navigate("/admin/home/evaluations")}
+              onClick={() => navigate("/user/home/evaluations")}
             />
           </div>
           <h1 className="text-center text-2xl font-bold">

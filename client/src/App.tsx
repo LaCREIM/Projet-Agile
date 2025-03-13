@@ -31,8 +31,8 @@ function App() {
         <Routes>
           <Route path="/" element={<RootLayout />}>
             <Route index element={<LoginForm />} />
-            <Route path="admin" element={<AdminLayout />} />
-            <Route path="/admin/home" element={<Dashboard />}>
+            <Route path="user" element={<AdminLayout />} />
+            <Route path="/user/home" element={<Dashboard />}>
               <Route path="enseignants" element={<EnseignantsHome />} />
               <Route path="promotions" element={<PromotionHome />} />
               <Route
