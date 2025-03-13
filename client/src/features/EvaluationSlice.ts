@@ -38,7 +38,7 @@ export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], vo
     "evaluations/fetchEvaluationByEtuAsync",
     async (_, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/etudiants/${localStorage.getItem("id") }`);
+            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/etudiant/${localStorage.getItem("id") }`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");

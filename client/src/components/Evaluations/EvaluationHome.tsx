@@ -4,7 +4,7 @@ import AddEvaluation from "./AddEvaluation";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCopy, faEye, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {MdClear} from "react-icons/md";
-import {duplicateEvaluationAsync, fetchEvaluationAsync,} from "../../features/EvaluationSlice";
+import {duplicateEvaluationAsync, fetchEvaluationAsync, fetchEvaluationByEtuAsync,} from "../../features/EvaluationSlice";
 import {GetEvaluationDTO} from "../../types/types";
 import {RootState} from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
@@ -40,6 +40,8 @@ const EvaluationHome = () => {
   const [filterType, setFilterType] = useState<string>("");
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
+  console.log(promotions);
+  
 
   useEffect(() => {
     const filtered = evaluations.filter((evaluation) => {
@@ -67,7 +69,11 @@ const EvaluationHome = () => {
   }, [evaluations, search, sortField, sortOrder, filterEtat, filterType]);
 
   useEffect(() => {
-    dispatch(fetchEvaluationAsync());
+    if(localStorage.getItem("role") == "ENS") {
+      dispatch(fetchEvaluationAsync());
+    } else{
+      dispatch(fetchEvaluationByEtuAsync())
+    }
     dispatch(getAllEnseignantAsync());
     dispatch(getPromotionByEnseignantAsync());
   }, [dispatch]);

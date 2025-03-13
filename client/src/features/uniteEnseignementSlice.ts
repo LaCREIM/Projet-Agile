@@ -36,7 +36,7 @@ export const fetchAllUnitesEnseignementByEnseignentAsync = createAsyncThunk<Unit
     'unitesEnseignement/fetchAllByEnseignant',
     async (_, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<UniteEnseignement[]>('/unites-enseignement/enseignant/' + localStorage.getItem('id'));
+            const response = await axiosInstance.get<UniteEnseignement[]>(`/unites-enseignement/enseignant/${Number(localStorage.getItem('id'))}` );
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Error fetching Unites Enseignement');
