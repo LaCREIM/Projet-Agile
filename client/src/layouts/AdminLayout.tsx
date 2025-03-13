@@ -61,36 +61,48 @@ export function AdminLayout() {
       description: "Gérer les évaluations.",
       link: "/admin/home/evaluations",
     },
+    {
+      title: "Consultation des évaluations",
+      icon: <FaFileAlt size={60} className="mx-auto" />,
+      description: "Consulter les évaluations.",
+      link: "/admin/home/evaluations",
+    },
   ];
 
-  const projects =
-    role === "ENS"
-      ? allProjects.filter((project) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Gestion des évaluations",
-            "Consultation des promotions",
-          ].includes(project.title)
-        )
-      : allProjects.filter((project) =>
-          [
-            "Gestion des questions",
-            "Gestion des rubriques",
-            "Gestion des promotions",
-            "Gestion des qualificatifs",
-            "Gestion des enseignants",
-            "Gestion des étudiants",
-          ].includes(project.title)
-        );
+  let projets = [] as any[];
+
+  if (role === "ENS") {
+    projets = allProjects.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Consultation des promotions",
+        "Gestion des évaluations",
+      ].includes(link.title)
+    );
+  } else if (role === "ADM") {
+    projets = allProjects.filter((link) =>
+      [
+        "Gestion des questions",
+        "Gestion des rubriques",
+        "Gestion des promotions",
+        "Gestion des qualificatifs",
+        "Gestion des enseignants",
+        "Gestion des étudiants",
+        ,
+      ].includes(link.title)
+    );
+  } else if (role === "ETU") {
+    projets = allProjects.filter((link) =>
+      ["Consultation des évaluations"].includes(link.title)
+    );
+  }
   return (
     <>
       <NavBar />
       <div className="max-w-5xl h-screen mx-auto px-8">
-        <HoverEffect items={projects} />
+        <HoverEffect items={projets} />
       </div>
-
     </>
   );
 }
-
