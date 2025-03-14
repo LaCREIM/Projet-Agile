@@ -93,6 +93,7 @@ public class ReponseEvaluationService {
         ReponseEvaluation reponse = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant); 
         String commentaire = reponse.getCommentaire();
         Long idReponseEvaluation = reponse.getId();
+        System.out.println("idReponseEvaluation: "+idReponseEvaluation);
 
         //get les rubriques de l'evaluation avec les questions et leurs qualificatifs et le positionnement
         
