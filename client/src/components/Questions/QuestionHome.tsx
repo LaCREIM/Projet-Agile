@@ -214,25 +214,50 @@ const QuestionHome = () => {
                   </td>
                 </tr>
               ) : (
-                paginatedQuestions.map((question: Question, index: number) => {
-                  return (
-                    <tr
-                      key={question.idQuestion}
-                      className=" transition-all duration-75 "
-                    >
-                      <td className="px-4 py-2 w-[20%]">
-                        {question.intitule || "N/A"}
-                      </td>
-                      <td className="px-4 py-2">
-                        {question?.maxQualificatif +
-                          " - " +
-                          question?.minQualificatif || "N/A"}
-                      </td>
-                      {role == "ENS" && (
-                        <td className="px-4 py-2 ">
-                          {question.noEnseignant ? (
-                            <div className="badge badge-accent text-white">
-                              {"Question personnelle"}
+                  paginatedQuestions.map((question: Question, index: number) => {
+                    const isEnseneigentQuestionPerso = role == "ENS" && question.type === "QUS";
+                   // console.log("🔎 question", question);
+                    return (
+                        <tr
+                            key={question.idQuestion}
+                            className=" transition-all duration-75 "
+                        >
+                          <td className="px-4 py-2 w-[20%]">
+                            {question.intitule || "N/A"}
+                          </td>
+                          <td className="px-4 py-2">
+                            {question?.maxQualificatif +
+                                " - " +
+                                question?.minQualificatif || "N/A"}
+                          </td>
+                          {
+                              role == "ENS" && <td className="px-4 py-2 ">
+                                {question.noEnseignant ? (
+                                    <div className="badge badge-accent text-white">
+                                      {"Question personnel"} 
+                                    </div>
+                                ) : (
+                                    <div className="badge badge-success text-white">
+                                       {"Question standard"} 
+                                    </div>
+                                )}
+                              </td>
+                          }
+
+                          <td className="flex gap-3 justify-center items-center">
+                            <div className="tooltip"
+                                 data-tip={isEnseneigentQuestionPerso ? "Vous ne pouvez pas modifier une question standard" : "Modifier"}>
+                              <FontAwesomeIcon
+                                  icon={faPenToSquare}
+                                  className={`text-black text-base cursor-pointer ${isEnseneigentQuestionPerso ? "text-gray-400 cursor-not-allowed" : ''}`}
+                                  onClick={() => {
+                                    if (!isEnseneigentQuestionPerso) {
+                                      handleClickUpdate(index);
+                                      openModal(`updateQuestion-${index}`);
+                                    }
+                                  }}
+                              />
+
                             </div>
                           ) : (
                             <div className="badge badge-success text-white">
