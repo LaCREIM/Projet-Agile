@@ -263,12 +263,12 @@ export interface QuestionP {
 }
 export interface Question {
     idQuestion: number;
-    type: string;
     noEnseignant: number;
     idQualificatif: number;
     maxQualificatif: string;
     minQualificatif: string;
     intitule: string;
+    type: string;
 }
 
 export interface ReponseEvaluation {

@@ -196,7 +196,7 @@ const QuestionHome = () => {
               ) : (
                   paginatedQuestions.map((question: Question, index: number) => {
                     const isEnseneigentQuestionPerso = role == "ENS" && question.type === "QUS";
-                    console.log("🔎 question", question);
+                   // console.log("🔎 question", question);
                     return (
                         <tr
                             key={question.idQuestion}
