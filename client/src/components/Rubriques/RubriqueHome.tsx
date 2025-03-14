@@ -169,7 +169,7 @@ const RubriqueHome = () => {
             </select>
             <div className="tooltip" data-tip="Réinitialiser le filtre">
               <button
-                onClick={() => setSelectedType("")}
+                onClick={() =>{ setSelectedType(""); setSearch("");}}
                 disabled={selectedType === ""}
                 className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
               >
