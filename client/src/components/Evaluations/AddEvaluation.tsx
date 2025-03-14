@@ -6,7 +6,7 @@ import { createEvaluationAsync, fetchEvaluationAsync } from "../../features/Eval
 import { Enseignant, EvaluationDTO, Promotion } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
-import { fetchAllUnitesEnseignementAsync } from "../../features/uniteEnseignementSlice.ts";
+import { fetchAllUnitesEnseignementByEnseignentAsync } from "../../features/uniteEnseignementSlice.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../api/store.ts";
 
@@ -26,7 +26,8 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
   });
   const [error, setError] = useState<string | null>(null);
   const unitesEnseignement = useSelector(
-    (state: RootState) => state.unitesEnseignement.unitesEnseignement
+    (state: RootState) =>
+      state.unitesEnseignement.unitesEnseignementByEnseignant
   );
 
   const initEvaluation = {
@@ -54,7 +55,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
   const [evaluation, setEvaluation] = useState<EvaluationDTO>(initEvaluation);
 
   useEffect(() => {
-    dispatch(fetchAllUnitesEnseignementAsync());
+    dispatch(fetchAllUnitesEnseignementByEnseignentAsync());
   }, [dispatch]);
 
   const validateDates = (debut: string | null, fin: string | null) => {
@@ -163,10 +164,6 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
     evaluation.noEvaluation >= 1 &&
     evaluation.noEvaluation <= 99;
 
-     const filteredPromotionsByRole = promotions.filter((promotion) => {
-       return promotion.noEnseignant == localStorage.getItem("id");
-     });
-
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl">
@@ -238,7 +235,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
                   Sélectionner une promotion{" "}
                   <span className="text-red-500"> *</span>
                 </option>
-                {filteredPromotionsByRole.map((promotion, idx) => (
+                {promotions.map((promotion, idx) => (
                   <option
                     key={idx}
                     value={`${promotion.anneeUniversitaire}-${promotion.codeFormation}`}
@@ -253,6 +250,7 @@ const AddEvaluation = ({ promotions, onClose }: AddEvaluationProps) => {
               <select
                 required
                 className="select w-full"
+                disabled={evaluation.codeFormation === "" && evaluation.anneeUniversitaire===""}
                 name="codeUE"
                 value={evaluation.codeUE}
                 onChange={(e) => {

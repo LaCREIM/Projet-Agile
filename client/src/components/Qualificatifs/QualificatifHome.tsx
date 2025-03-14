@@ -9,15 +9,15 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-
 import {
-  fetchQualificatifsPagedAsync,
+  fetchQualificatifsAsync,
   updateQualificatifAsync,
 } from "../../features/QualificatifSlice";
 import { Qualificatif } from "../../types/types";
 import { toast } from "react-toastify";
 import { RootState } from "../../api/store";
 import DeleteQualificatifConfirmation from "./DeleteQualificatifConfirmation";
+import { FaSearch } from "react-icons/fa";
 
 const QualificatifHome = () => {
   document.title = "UBO | Qualificatifs";
@@ -25,14 +25,55 @@ const QualificatifHome = () => {
   const qualificatifs = useAppSelector(
     (state: RootState) => state.qualificatif.qualificatifs
   );
-  const totalPages = useAppSelector((state) => state.qualificatif.totalPages);
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [updatingIndex, setUpdatingIndex] = useState<number | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [sortField, setSortField] = useState<string>("minimal");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
+
+  const itemsPerPage = 10; // Nombre d'éléments par page
+
+  // Filtrer les qualificatifs
+  const filteredQualificatifs = qualificatifs.filter((qualificatif) => {
+    return (
+      qualificatif.minimal.toLowerCase().includes(search.toLowerCase()) ||
+      qualificatif.maximal.toLowerCase().includes(search.toLowerCase())
+    );
+  });
+
+  // Trier les qualificatifs
+  const sortedQualificatifs = filteredQualificatifs.sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedQualificatifs.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(sortedQualificatifs.length / itemsPerPage);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setCurrentPage(1); // Réinitialiser à la première page lors d'une nouvelle recherche
+  };
+
+  const handleSortChange = (field: string) => {
+    const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(order);
+  };
 
   useEffect(() => {
-    dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
-  }, [dispatch, currentPage]);
+    dispatch(fetchQualificatifsAsync());
+  }, [dispatch]);
 
   const [editingValues, setEditingValues] = useState<{
     [key: number]: Qualificatif;
@@ -57,7 +98,7 @@ const QualificatifHome = () => {
       ...prev,
       [index]: {
         ...prev[index],
-        [name]: value, 
+        [name]: value,
       },
     }));
   };
@@ -66,7 +107,7 @@ const QualificatifHome = () => {
     setUpdatingIndex(index);
     setEditingValues((prev) => ({
       ...prev,
-      [index]: { ...qualificatifs[index] }, 
+      [index]: { ...qualificatifs[index] },
     }));
   };
 
@@ -74,11 +115,11 @@ const QualificatifHome = () => {
     if (editingValues[index]) {
       const res = await dispatch(updateQualificatifAsync(editingValues[index]));
       setUpdatingIndex(null);
-      if(res?.type === "qualificatifs/update/rejected") {
+      if (res?.type === "qualificatifs/update/rejected") {
         toast.error(res.payload as string);
       } else if (res?.type === "qualificatifs/update/fulfilled") {
-      toast.success(res.payload as string);
-      dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
+        toast.success(res.payload as string);
+        dispatch(fetchQualificatifsAsync());
       }
     } else {
       toast.error("Veuillez remplir tous les champs avant de sauvegarder.");
@@ -88,16 +129,14 @@ const QualificatifHome = () => {
   const handleCancelEdit = (index: number) => {
     setEditingValues((prev) => {
       const updatedValues = { ...prev };
-      delete updatedValues[index]; 
+      delete updatedValues[index];
       return updatedValues;
     });
-    setUpdatingIndex(null); 
+    setUpdatingIndex(null);
   };
 
-  const handlePageChange = async (newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    const res = await dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
-    console.log(res);
   };
 
   const MotionVariant = {
@@ -119,7 +158,7 @@ const QualificatifHome = () => {
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl">Liste des couples qualificatifs</h1>
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
-          <div className="tooltip" data-tip="Ajouter un couple qualifactif">
+          <div className="tooltip" data-tip="Ajouter un couple qualificatif">
             <button
               className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
               onClick={() => openModal("addQualificatif")}
@@ -129,117 +168,146 @@ const QualificatifHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[60%]">
-          <motion.table
-            className="table table-zebra"
-            variants={MotionVariant}
-            initial="initial"
-            animate={MotionVariant.final()}
-          >
-            <thead>
-              <tr>
-                <th>Minimal</th>
-                <th>Maximal</th>
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {qualificatifs.length === 0 ? (
+        <div className="w-[60%] flex flex-col gap-3">
+          <label className="input input-bordered flex items-center gap-2 shadow-md">
+            <input
+              type="text"
+              className="grow placeholder:font-medium"
+              placeholder="Rechercher..."
+              value={search}
+              onChange={handleSearchChange}
+            />
+            <FaSearch />
+          </label>
+
+          <div className="overflow-y-auto">
+            <motion.table
+              className="table table-zebra"
+              variants={MotionVariant}
+              initial="initial"
+              animate={MotionVariant.final()}
+            >
+              <thead>
                 <tr>
-                  <td
-                    colSpan={4}
-                    className="uppercase tracking-widest text-center text-gray-500"
-                  >
-                    Pas de qualificatifs trouvés.
-                  </td>
+                  <th onClick={() => handleSortChange("minimal")}>
+                    Minimal{" "}
+                    {sortField === "minimal" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th onClick={() => handleSortChange("maximal")}>
+                    Maximal{" "}
+                    {sortField === "maximal" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th className="text-center">Actions</th>
                 </tr>
-              ) : (
-                qualificatifs.map(
-                  (qualificatif: Qualificatif, index: number) => (
-                    <tr
-                      key={qualificatif.id}
-                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+              </thead>
+              <tbody>
+                {currentItems.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="uppercase tracking-widest text-center text-gray-500"
                     >
-                      <td className="px-4 py-2">
-                        {updatingIndex !== index ? (
-                          <span>{qualificatif?.minimal}</span>
-                        ) : (
-                          <motion.input
-                            variants={MotionVariant}
-                            initial="initial"
-                            animate={MotionVariant.final()}
-                            required
-                            type="text"
-                            name="minimal"
-                            value={editingValues[index]?.minimal || ""}
-                            onChange={(e) => handleChange(e, index)}
-                            className="input input-bordered"
-                          />
-                        )}
-                      </td>
-                      <td className="px-4 py-2">
-                        {updatingIndex !== index ? (
-                          <span>{qualificatif?.maximal}</span>
-                        ) : (
-                          <motion.input
-                            variants={MotionVariant}
-                            initial="initial"
-                            animate={MotionVariant.final()}
-                            required
-                            type="text"
-                            name="maximal"
-                            value={editingValues[index]?.maximal || ""}
-                            onChange={(e) => handleChange(e, index)}
-                            className="input input-bordered"
-                          />
-                        )}
-                      </td>
-                      <td className="px-4 py-2 flex gap-3 justify-center items-center">
-                        {updatingIndex === index ? (
-                          <>
-                            <FontAwesomeIcon
-                              icon={faFloppyDisk}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() => handleUpdate(index)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTimes}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() => handleCancelEdit(index)}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <FontAwesomeIcon
-                              icon={faPenToSquare}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() => handleClickUpdate(index)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="text-black text-base cursor-pointer"
-                              onClick={() =>
-                                openModal(`delete-${qualificatif.id}`)
-                              }
-                            />
-                          </>
-                        )}
-                      </td>
-                      <dialog
-                        id={`delete-${qualificatif.id}`}
-                        className="modal"
+                      Pas de qualificatifs trouvés.
+                    </td>
+                  </tr>
+                ) : (
+                  currentItems.map(
+                    (qualificatif: Qualificatif, index: number) => (
+                      <tr
+                        key={qualificatif.id}
+                        className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                       >
-                        <DeleteQualificatifConfirmation
-                          qualificatif={qualificatif}
-                          currentPage={currentPage}
-                        />
-                      </dialog>
-                    </tr>
+                        <td className="px-4 py-2">
+                          {updatingIndex !== index ? (
+                            <span>{qualificatif?.minimal}</span>
+                          ) : (
+                            <motion.input
+                              variants={MotionVariant}
+                              initial="initial"
+                              animate={MotionVariant.final()}
+                              required
+                              type="text"
+                              name="minimal"
+                              value={editingValues[index]?.minimal || ""}
+                              onChange={(e) => handleChange(e, index)}
+                              className="input input-bordered"
+                            />
+                          )}
+                        </td>
+                        <td className="px-4 py-2">
+                          {updatingIndex !== index ? (
+                            <span>{qualificatif?.maximal}</span>
+                          ) : (
+                            <motion.input
+                              variants={MotionVariant}
+                              initial="initial"
+                              animate={MotionVariant.final()}
+                              required
+                              type="text"
+                              name="maximal"
+                              value={editingValues[index]?.maximal || ""}
+                              onChange={(e) => handleChange(e, index)}
+                              className="input input-bordered"
+                            />
+                          )}
+                        </td>
+                        <td className="px-4 py-2 flex gap-3 justify-center items-center">
+                          {updatingIndex === index ? (
+                            <>
+                              <div className="tooltip" data-tip="Enregistrer">
+                                <FontAwesomeIcon
+                                  icon={faFloppyDisk}
+                                  className="text-black text-base cursor-pointer"
+                                  onClick={() => handleUpdate(index)}
+                                />
+                              </div>
+                              <div className="tooltip" data-tip="Annuler">
+                                <FontAwesomeIcon
+                                  icon={faTimes}
+                                  className="text-black text-base cursor-pointer"
+                                  onClick={() => handleCancelEdit(index)}
+                                />
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="tooltip" data-tip="Modifier">
+                                <FontAwesomeIcon
+                                  icon={faPenToSquare}
+                                  className="text-black text-base cursor-pointer"
+                                  onClick={() => handleClickUpdate(index)}
+                                />
+                              </div>
+                              <div className="tooltip" data-tip="Supprimer">
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  className="text-black text-base cursor-pointer"
+                                  onClick={() =>
+                                    openModal(`delete-${qualificatif.id}`)
+                                  }
+                                />
+                              </div>
+                            </>
+                          )}
+                        </td>
+                        <dialog
+                          id={`delete-${qualificatif.id}`}
+                          className="modal"
+                        >
+                          <DeleteQualificatifConfirmation
+                            qualificatif={qualificatif}
+                            currentPage={currentPage}
+                          />
+                        </dialog>
+                      </tr>
+                    )
                   )
-                )
-              )}
-            </tbody>
-          </motion.table>
+                )}
+              </tbody>
+            </motion.table>
+          </div>
         </div>
         <div className="flex justify-center items-center mt-2">
           <button

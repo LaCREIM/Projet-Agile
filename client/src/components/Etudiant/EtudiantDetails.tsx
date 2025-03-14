@@ -61,7 +61,7 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Lieu de naissance :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.lieuNaissance.toUpperCase()}</dd>
+              <dd className="mt-1 text-gray-500">{etudiant.lieuNaissance?.toUpperCase()}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Nationalité :</dt>

@@ -19,55 +19,55 @@ export function Dashboard() {
   const allLinks = [
     {
       label: "Gestion des enseignants",
-      href: "/admin/home/enseignants",
+      href: "/user/home/enseignants",
       icon: (
         <AiOutlineTeam className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des promotions",
-      href: "/admin/home/promotions",
+      href: "/user/home/promotions",
       icon: <LuSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Consultation des promotions",
-      href: "/admin/home/promotions",
+      href: "/user/home/promotions",
       icon: <LuSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Gestion des étudiants",
-      href: "/admin/home/etudiants",
+      href: "/user/home/etudiants",
       icon: <IoSchool className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Gestion des qualificatifs",
-      href: "/admin/home/qualificatifs",
+      href: "/user/home/qualificatifs",
       icon: (
         <FaArrowsLeftRightToLine className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des questions",
-      href: "/admin/home/questions",
+      href: "/user/home/questions",
       icon: (
         <PiSealQuestionFill className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des rubriques",
-      href: "/admin/home/rubriques",
+      href: "/user/home/rubriques",
       icon: (
         <BsCardHeading className="text-neutral-700 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Gestion des évaluations",
-      href: "/admin/home/evaluations",
+      href: "/user/home/evaluations",
       icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Consultation des évaluations",
-      href: "/admin/home/evaluations",
+      href: "/user/home/evaluations",
       icon: <FaFileAlt className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
     },
     {

@@ -56,7 +56,7 @@ const LoginInformation = () => {
 
         console.log("User data:", userData);
 
-        navigate("/admin");
+        navigate("/user");
     };
 
     return (
