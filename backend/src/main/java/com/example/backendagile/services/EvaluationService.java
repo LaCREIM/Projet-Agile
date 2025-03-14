@@ -194,7 +194,7 @@ public class EvaluationService {
 
     }
 
-    private EvaluationDTO mapEvaulation(Evaluation evaluation) {
+    public EvaluationDTO mapEvaulation(Evaluation evaluation) {
         return getEvaluationDTO(evaluation);
     }
 
