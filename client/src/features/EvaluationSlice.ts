@@ -9,7 +9,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
-    evaluationsEtu: EtudiantEvaluation[];
+
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -18,7 +18,7 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
-    evaluationsEtu: [],
+
     totalPages: 0, 
     loading: false,
     error: null,
@@ -37,14 +37,28 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
     }
 );
 
-export const fetchEvaluationByEtuAsync = createAsyncThunk<EtudiantEvaluation[], void, { rejectValue: string }>(
+export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<EtudiantEvaluation[]>(`/evaluations/etudiant/${localStorage.getItem("id") }`);
-            return response.data;
+            const response = await axiosInstance.get<EvaluationDTO[]>(`/evaluations/etudiant/${localStorage.getItem("id")}`);
+
+            // Transformer les données en GetEvaluationDTO
+            const evaluationsWithDroit: GetEvaluationDTO[] = response.data.map((evaluation) => ({
+                evaluation,
+                droit: {
+                    idEvaluation: -1,
+                    idEnseignant: -1,
+                    nom: "",
+                    prenom: "",
+                    consultation: "O", // Par défaut, l'étudiant a le droit de consultation
+                    duplication: "N", // Par défaut, l'étudiant n'a pas le droit de duplication
+                },
+            }));
+
+            return evaluationsWithDroit;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des évaluations");
         }
     }
 );
@@ -120,8 +134,10 @@ const EvaluationSlice = createSlice({
                 state.evaluations = action.payload;
                 state.loading = false;
             })
-            .addCase(fetchEvaluationByEtuAsync.fulfilled, (state, action: PayloadAction<EtudiantEvaluation[]>) => {
-                state.evaluationsEtu = action.payload;
+            .addCase(fetchEvaluationByEtuAsync.fulfilled, (state, action: PayloadAction<GetEvaluationDTO[]>) => {
+                console.log("action.payload", action.payload);
+                
+                state.evaluations = action.payload;
                 state.loading = false;
             })
             .addCase(getEvaluationByIdAsync.fulfilled, (state, action: PayloadAction<EvaluationDTO>) => {
@@ -141,7 +157,6 @@ const EvaluationSlice = createSlice({
 });
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
-export const getEtuEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluationsEtu;
 
 export default EvaluationSlice.reducer;
 

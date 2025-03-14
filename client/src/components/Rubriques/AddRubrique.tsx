@@ -39,21 +39,23 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("hhh");
-    const idEns= localStorage.getItem("id");
+    const idEns = localStorage.getItem("id");
     const res = await dispatch(createRubriqueAsync(rubrique));
     console.log(res);
 
     if (res?.type === "rubriques/create/rejected") {
       setError(res.payload as string);
     } else if (res?.type === "rubriques/create/fulfilled") {
-      toast.success(res?.payload as string);
+      toast.success("La rubrique a été crée avec succès!");
       handleClose();
       if (idEns) {
-        await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+        await dispatch(
+          searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 })
+        );
       } else {
         toast.error("ID de l'enseignant non trouvé.");
       }
-        }
+    }
   };
 
   const handleClose = () => {
@@ -75,7 +77,6 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter une Rubrique</h3>
-
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             <label className="input input-bordered flex items-center w-full gap-2">
@@ -90,7 +91,7 @@ const AddRubrique = ({ onClose }: AddRubriqueProps) => {
                 placeholder="Nom de la rubrique"
               />
             </label>
-          {error && <AlertError error={error} />}
+            {error && <AlertError error={error} />}
           </div>
 
           <div className="modal-action">

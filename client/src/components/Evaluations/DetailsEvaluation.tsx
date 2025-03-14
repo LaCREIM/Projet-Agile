@@ -529,7 +529,7 @@ const DetailsEvaluation = () => {
 
       <dialog id="droit" className="modal">
         <GestionDroit
-          enseignants={enseignants}
+          enseignants={enseignants} 
           onClose={() => closeModal("droit")}
         />
       </dialog>

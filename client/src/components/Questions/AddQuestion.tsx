@@ -93,7 +93,6 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
         handleReset();
         } else {
           console.error("Erreur lors de l'ajout :", res.payload);
-          toast.error(res.payload as string);
           setError(res.payload as string);
         }
       } catch (err) {

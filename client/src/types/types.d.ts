@@ -274,10 +274,11 @@ export interface QuestionP {
     minQualificatif: string;
 }
 export interface Question {
+    id: number;
     idQuestion: number;
     type: string;
     noEnseignant: number;
-    idQualificatif: number;
+    idQualificatif: Qualificatif;
     maxQualificatif: string;
     minQualificatif: string;
     intitule: string;
