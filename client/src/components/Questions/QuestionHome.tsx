@@ -52,7 +52,7 @@ const QuestionHome = () => {
   }, [dispatch, role, userId]);
 
   useEffect(() => {
-    let filtered = questions.filter((question) => {
+    const filtered = questions.filter((question) => {
       // Filter by search
       const matchesSearch = Object.values(question).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
@@ -166,7 +166,9 @@ const QuestionHome = () => {
                 </select>
                 <div className="tooltip" data-tip="Réinitialiser le filtre">
                   <button
-                    onClick={() => setSelectedType("")}
+                    onClick={() => {setSelectedType("");
+                      setSearch("");
+                    }}
                     disabled={selectedType === ""}
                     className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
                   >
