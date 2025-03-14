@@ -68,7 +68,7 @@ public class EvaluationMapper {
                 return rubriqueDTO;
             }).collect(Collectors.toList()));
         }
-
+        
         return dto;
     }
 

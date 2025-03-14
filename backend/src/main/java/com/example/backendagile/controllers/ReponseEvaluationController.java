@@ -17,15 +17,11 @@ public class ReponseEvaluationController {
         this.reponseEvaluationService = reponseEvaluationService;
     }
 
-    @PostMapping
-    public ResponseEntity<ReponseEvaluationDTO> addReponse(@RequestBody ReponseEvaluationDTO dto) {
-        ReponseEvaluationDTO response = reponseEvaluationService.addReponse(dto);
-        return ResponseEntity.ok(response);
+    @GetMapping("/{idEvaluation}/{idEtudiant}")
+    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluation(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
+        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluation(idEvaluation, idEtudiant));
     }
 
-    @GetMapping("/{idEvaluation}")
-    public ResponseEntity<List<ReponseEvaluationDTO>> getReponsesByEvaluation(@PathVariable Long idEvaluation) {
-        List<ReponseEvaluationDTO> reponses = reponseEvaluationService.getReponsesByEvaluation(idEvaluation);
-        return ResponseEntity.ok(reponses);
-    }
+
+   
 }

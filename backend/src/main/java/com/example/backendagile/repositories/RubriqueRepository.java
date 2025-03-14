@@ -27,10 +27,23 @@ public interface RubriqueRepository extends JpaRepository<Rubrique, Long> {
             @Param("startRow") int startRow,
             @Param("endRow") int endRow
     );
+    @Query(value = """
+            SELECT * FROM RUBRIQUE 
+            WHERE NO_ENSEIGNANT = :enseignantId OR 
+                  type='RBS' 
+            ORDER BY DESIGNATION ASC
+""", nativeQuery = true)
+    List<Rubrique> findAll(
+                @Param("enseignantId") long enseignantId
+    );
 
 
     // 🔹 Rechercher une rubrique par sa désignation (JPQL)
     @Query("SELECT r FROM Rubrique r WHERE r.designation = :designation")
-    Optional<Rubrique> findByDesignation(@Param("designation") String designation);}
+    Optional<Rubrique> findByDesignation(@Param("designation") String designation);
+
+    @Query("SELECT r.designation FROM Rubrique r WHERE r.id = :id")
+    String findDesignation(Long id);
+}
 
 

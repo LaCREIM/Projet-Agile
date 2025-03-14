@@ -105,17 +105,19 @@ const RubriqueHome = () => {
   }, [questions, modal.rubrique]);
   useEffect(() => {
     if (!rubriques) return; // Si rubriques est undefined, ne rien faire
-    const filtered = rubriques?.filter((rubrique) => {
+  
+    // Appliquer le filtre
+    const filtered = rubriques.filter((rubrique) => {
       const matchesSearch = rubrique.designation
         ?.toLowerCase()
         ?.includes(search.toLowerCase());
-
+  
       const matchesType = selectedType ? rubrique.type === selectedType : true;
-
+  
       return matchesSearch && matchesType;
     });
-
-    // Trier les rubriques si nécessaire
+  
+    // Trier les rubriques
     if (sortField) {
       filtered.sort((a, b) => {
         if (a[sortField] < b[sortField]) return sortOrder === "asc" ? -1 : 1;
@@ -123,9 +125,16 @@ const RubriqueHome = () => {
         return 0;
       });
     }
-
-    setFilteredRubriques(filtered || []); // Assurer qu'on ne stocke jamais undefined
-  }, [rubriques, search, sortField, sortOrder, selectedType]);
+  
+    // Mettre à jour le nombre total de pages
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+  
+    // Sélectionner uniquement les rubriques de la page actuelle
+    const paginatedRubriques = filtered.slice((page - 1) * pageSize, page * pageSize);
+  
+    setFilteredRubriques(paginatedRubriques);
+  }, [rubriques, search, sortField, sortOrder, selectedType, page, pageSize]);
+  
 
   function handleSortChange(field: string) {
     const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
@@ -160,7 +169,7 @@ const RubriqueHome = () => {
             </select>
             <div className="tooltip" data-tip="Réinitialiser le filtre">
               <button
-                onClick={() => setSelectedType("")}
+                onClick={() =>{ setSelectedType(""); setSearch("");}}
                 disabled={selectedType === ""}
                 className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
               >
@@ -288,24 +297,25 @@ const RubriqueHome = () => {
           </table>
 
           <div className="flex justify-center items-center gap-4 mt-4">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-              Précédent
-            </button>
-            <span>
-              Page {page} sur {totalPages}
-            </span>
-            <button
-              disabled={page === totalPages}
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
-              Suivant
-            </button>
-          </div>
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Précédent
+              </button>
+              <span>
+                Page {page} sur {totalPages}
+              </span>
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Suivant
+              </button>
+            </div>
+
         </div>
       </div>
 
