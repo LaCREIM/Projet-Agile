@@ -187,160 +187,117 @@ const QuestionHome = () => {
         </div>
 
         <div className="overflow-y-auto w-full">
-          <table
-            className={`table table-zebra  mx-auto ${
-              role == "ADM" ? "w-[50%]" : "w-[80%]"
-            }`}
-          >
-            <thead>
-              <tr>
-                <th
-                  className={"w-1/3"}
-                  onClick={() => handleSortChange("intitule")}
-                >
-                  Intitulé{" "}
-                  {sortField === "intitule" &&
-                    (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-                <th>Qualificatifs </th>
-                {role == "ENS" && <th>Type</th>}
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedQuestions.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="uppercase tracking-widest text-center text-gray-500"
-                  >
-                    Pas de questions trouvées.
-                  </td>
-                </tr>
-              ) : (
-                  paginatedQuestions.map((question: Question, index: number) => {
-                    const isEnseneigentQuestionPerso = role == "ENS" && question.type === "QUS";
-                   // console.log("🔎 question", question);
-                    return (
-                        <tr
-                            key={question.idQuestion}
-                            className=" transition-all duration-75 "
-                        >
-                          <td className="px-4 py-2 w-[20%]">
-                            {question.intitule || "N/A"}
-                          </td>
-                          <td className="px-4 py-2">
-                            {question?.maxQualificatif +
-                                " - " +
-                                question?.minQualificatif || "N/A"}
-                          </td>
-                          {
-                              role == "ENS" && <td className="px-4 py-2 ">
-                                {question.noEnseignant ? (
-                                    <div className="badge badge-accent text-white">
-                                      {"Question personnel"} 
-                                    </div>
-                                ) : (
-                                    <div className="badge badge-success text-white">
-                                       {"Question standard"} 
-                                    </div>
-                                )}
-                              </td>
-                          }
+  <table
+    className={`table table-zebra mx-auto ${
+      role === "ADM" ? "w-[50%]" : "w-[80%]"
+    }`}
+  >
+    <thead>
+      <tr>
+        <th className="w-1/3" onClick={() => handleSortChange("intitule")}>
+          Intitulé {sortField === "intitule" && (sortOrder === "asc" ? "↑" : "↓")}
+        </th>
+        <th>Qualificatifs</th>
+        {role === "ENS" && <th>Type</th>}
+        <th className="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {paginatedQuestions.length === 0 ? (
+        <tr>
+          <td colSpan={6} className="uppercase tracking-widest text-center text-gray-500">
+            Pas de questions trouvées.
+          </td>
+        </tr>
+      ) : (
+        paginatedQuestions.map((question: Question, index: number) => {
+          const isEnseignantQuestionPerso = role === "ENS" && question.type === "QUS";
 
-                          <td className="flex gap-3 justify-center items-center">
-                            <div className="tooltip"
-                                 data-tip={isEnseneigentQuestionPerso ? "Vous ne pouvez pas modifier une question standard" : "Modifier"}>
-                              <FontAwesomeIcon
-                                  icon={faPenToSquare}
-                                  className={`text-black text-base cursor-pointer ${isEnseneigentQuestionPerso ? "text-gray-400 cursor-not-allowed" : ''}`}
-                                  onClick={() => {
-                                    if (!isEnseneigentQuestionPerso) {
-                                      handleClickUpdate(index);
-                                      openModal(`updateQuestion-${index}`);
-                                    }
-                                  }}
-                              />
-
-                            </div>
-                          ) : (
-                            <div className="badge badge-success text-white">
-                              {"Question standard"}
-                            </div>
-                          )}
-                        </td>
-                      )}
-
-                      <td className="flex gap-3 justify-center items-center">
-                        <div
-                          className="tooltip"
-                          data-tip={
-                            canEditQuestion(question)
-                              ? "Modifier"
-                              : "Vous n'avez pas le droit de modifier cette question"
-                          }
-                        >
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className={`text-black text-base cursor-pointer ${
-                              !canEditQuestion(question)
-                                ? "text-gray-400 cursor-not-allowed"
-                                : ""
-                            }`}
-                            onClick={() => {
-                              if (canEditQuestion(question)) {
-                                handleClickUpdate(index);
-                                openModal(`updateQuestion-${index}`);
-                              }
-                            }}
-                          />
-                        </div>
-                        <div
-                          className="tooltip"
-                          data-tip={
-                            canEditQuestion(question)
-                              ? "Supprimer"
-                              : "Vous n'avez pas le droit de supprimer cette question"
-                          }
-                        >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            className={`text-black text-base cursor-pointer ${
-                              !canEditQuestion(question)
-                                ? "text-gray-400 cursor-not-allowed"
-                                : ""
-                            }`}
-                            onClick={() => {
-                              if (canEditQuestion(question)) {
-                                openModal(`delete-${index}`);
-                              }
-                            }}
-                          />
-                        </div>
-                      </td>
-
-                      <dialog id={`updateQuestion-${index}`} className="modal">
-                        <UpdateQuestion
-                          questionData={question}
-                          qualificatifs={qualificatifs}
-                          onClose={() => closeModal(`updateQuestion-${index}`)}
-                        />
-                      </dialog>
-
-                      <dialog id={`delete-${index}`} className="modal">
-                        <DeleteQuestionConfirmation
-                          idEns={Number(userId)}
-                          question={question}
-                          currentPage={currentPage}
-                        />
-                      </dialog>
-                    </tr>
-                  );
-                })
+          return (
+            <tr key={question.idQuestion} className="transition-all duration-75">
+              <td className="px-4 py-2 w-[20%]">{question.intitule || "N/A"}</td>
+              <td className="px-4 py-2">
+                {question?.maxQualificatif + " - " + question?.minQualificatif || "N/A"}
+              </td>
+              {role === "ENS" && (
+                <td className="px-4 py-2">
+                  {question.noEnseignant ? (
+                    <div className="badge badge-accent text-white">Question personnelle</div>
+                  ) : (
+                    <div className="badge badge-success text-white">Question standard</div>
+                  )}
+                </td>
               )}
-            </tbody>
-          </table>
-        </div>
+
+              <td className="flex gap-3 justify-center items-center">
+                <div
+                  className="tooltip"
+                  data-tip={
+                    isEnseignantQuestionPerso
+                      ? "Vous ne pouvez pas modifier une question standard"
+                      : "Modifier"
+                  }
+                >
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    className={`text-black text-base cursor-pointer ${
+                      isEnseignantQuestionPerso ? "text-gray-400 cursor-not-allowed" : ""
+                    }`}
+                    onClick={() => {
+                      if (!isEnseignantQuestionPerso) {
+                        handleClickUpdate(index);
+                        openModal(`updateQuestion-${index}`);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div
+                  className="tooltip"
+                  data-tip={
+                    isEnseignantQuestionPerso
+                      ? "Vous ne pouvez pas supprimer une question standard"
+                      : "Supprimer"
+                  }
+                >
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className={`text-black text-base cursor-pointer ${
+                      isEnseignantQuestionPerso ? "text-gray-400 cursor-not-allowed" : ""
+                    }`}
+                    onClick={() => {
+                      if (!isEnseignantQuestionPerso) {
+                        openModal(`delete-${index}`);
+                      }
+                    }}
+                  />
+                </div>
+              </td>
+
+              {/* Modals pour la mise à jour et la suppression */}
+              <dialog id={`updateQuestion-${index}`} className="modal">
+                <UpdateQuestion
+                  questionData={question}
+                  qualificatifs={qualificatifs}
+                  onClose={() => closeModal(`updateQuestion-${index}`)}
+                />
+              </dialog>
+
+              <dialog id={`delete-${index}`} className="modal">
+                <DeleteQuestionConfirmation
+                  idEns={Number(userId)}
+                  question={question}
+                  currentPage={currentPage}
+                />
+              </dialog>
+            </tr>
+          );
+        })
+      )}
+    </tbody>
+  </table>
+</div>
+
 
         <div className="flex justify-center gap-4 mt-4">
           <button

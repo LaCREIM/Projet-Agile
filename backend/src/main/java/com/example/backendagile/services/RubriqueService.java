@@ -44,6 +44,17 @@ public class RubriqueService {
                 .map(rubriqueMapper::toDTO) // Mapping vers DTO
                 .collect(Collectors.toList());
     }
+
+    public List<RubriqueDTO> getRubriques(long enseignantId) {
+
+        List<Rubrique> rubriques = rubriqueRepository.findAll(enseignantId);
+
+        // Convertir les entités Rubrique en DTOs
+        return rubriques.stream()
+                .map(rubriqueMapper::toDTO) // Mapping vers DTO
+                .collect(Collectors.toList());
+    }
+
     // 🔹 Ajouter une nouvelle rubrique (avec vérification d'existence)
     public RubriqueDTO createRubrique(RubriqueDTO dto) {
         // Vérifier si une rubrique avec la même désignation existe déjà

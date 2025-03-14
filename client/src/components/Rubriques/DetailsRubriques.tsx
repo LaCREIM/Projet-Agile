@@ -14,7 +14,6 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
-import { fetchQuestionsAsync } from "../../features/QuestionSlice";
 
 interface RubriqueDetailsProps {
   rubrique: Rubrique;
@@ -32,6 +31,7 @@ export interface QuestionOrderDetails {
   qualificatifMax: string;
   qualificatifMin: string;
 }
+
 
 export interface RequestQuestionOrderDetails {
   idRubrique: number;
@@ -161,94 +161,76 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let resultAdd = "";
-    let resultRem = "";
-
+  
     if (isEditing) {
       try {
-        if (pendingQuestions.length > 0) {
-          const newQuestionsToSend = pendingQuestions.map((q) => ({
-            idRubrique: q.idRubrique,
-            designationRubrique: rubrique.designation,
-            idQuestion: q.idQuestion,
-            questionStdDTO: {
-              idQualificatif: -1,
-              intitule: q.intitule,
-              maxQualificatif: q.qualificatifMax,
-              minQualificatif: q.qualificatifMin,
-            },
-            ordre: q.ordre,
-          }));
-
-          const res = await dispatch(
-            updateRubriqueQuestionsAsync(newQuestionsToSend)
-          );
-          if (res.type === "rubriques-questions/update/rejected") {
-            resultAdd = res.payload as string;
-          }
+        let resultAdd = "";
+        let resultRem = "";
+  
+        // 🛠️ Mettre à jour les questions
+        const formattedQuestions = questionsOrder.map((q, idx) => ({
+          idRubrique: rubrique.id,
+          designationRubrique: rubrique.designation,
+          idQuestion: q.idQuestion,
+          questionStdDTO: {
+            idQualificatif: -1, // Remplace par la vraie valeur si disponible
+            intitule: q.intitule,
+            maxQualificatif: q.qualificatifMax,
+            minQualificatif: q.qualificatifMin,
+          },
+          ordre: idx + 1,
+        }));
+  
+        const res = await dispatch(updateRubriqueQuestionsAsync(formattedQuestions));
+        if (res.type === "rubriques-questions/update/rejected") {
+          resultAdd = res.payload as string;
         }
-
+  
+        // 🛠️ Suppression des questions
         if (removedQuestions.length > 0) {
           for (const idQuestion of removedQuestions) {
-            const res = await dispatch(
-              deleteRubriqueQuestionsAsync({
-                idRubrique: rubrique.id,
-                idQuestion,
-              })
-            );
+            const res = await dispatch(deleteRubriqueQuestionsAsync({ idRubrique: rubrique.id, idQuestion }));
             if (res.type === "rubriques-questions/delete/rejected") {
               resultRem = res.payload as string;
             }
           }
         }
-
-        const res = await dispatch(
-          updateRubriqueAsync({
-            id: rubriqueData.id,
-            designation: rubriqueData.designation,
-          })
-        );
-
-        if (res.type !== "rubriques/update/fulfilled") {
-          setError(res.payload as string);
+  
+        // 🛠️ Mise à jour de la rubrique
+        const rubriqueUpdateRes = await dispatch(updateRubriqueAsync({ id: rubriqueData.id, designation: rubriqueData.designation }));
+        if (rubriqueUpdateRes.type !== "rubriques/update/fulfilled") {
+          setError(rubriqueUpdateRes.payload as string);
           return;
         }
-
-        if (resultAdd != "") {
-          setError(resultAdd);
+  
+        if (resultAdd || resultRem) {
+          setError(resultAdd || resultRem);
           return;
         }
-
-        if (resultRem != "") {
-          setError(resultRem);
-          return;
-        }
-
-        toast.success("Rubrique mise à jour avec succès.", {
-          autoClose: 10000,
-        });
-
+  
+        toast.success("Rubrique mise à jour avec succès.", { autoClose: 10000 });
+  
+        // 🔄 Rafraîchir la liste des rubriques
         const idEns = localStorage.getItem("id");
         if (idEns) {
-          await dispatch(
-            searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 })
-          );
+          await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
         }
-
+  
         setIsEditing(false);
         setError(null);
-
         onClose();
       } catch (error) {
         setError("Erreur lors de la mise à jour de la rubrique.");
         toast.error("Erreur lors de la mise à jour de la rubrique.");
       }
     } else {
-      // Passez en mode édition
+      // Passer en mode édition
       setIsEditing(true);
       setError(null);
     }
   };
+  
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -280,23 +262,22 @@ const DetailsRubrique = ({
     setQuestionsOrder((prev) => [...prev, newQuestion]);
     setPendingQuestions((prev) => [...prev, newQuestion]);
     setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
-
-    // Réinitialisez la sélection
     setSelectedQuestion(-1);
   };
+  
 
   const handleRemoveQuestion = (idQuestion: number) => {
-    // Ajoutez la question supprimée à removedQuestions
     setRemovedQuestions((prev) => [...prev, idQuestion]);
-
-    // Réajoutez la question à unusedQuestions
-    const removedQuestion = allQuestions.find(
-      (q) => q.idQuestion === idQuestion
-    );
+  
+    const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
     if (removedQuestion) {
       setUnusedQuestions((prev) => [...prev, removedQuestion]);
     }
+  
+    setQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
+    setNewQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
   };
+  
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
