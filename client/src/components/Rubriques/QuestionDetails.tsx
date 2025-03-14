@@ -41,7 +41,7 @@ const QuestionDetails = ({
     }),
   };
   return (
-    <motion.div
+    <div
       variants={MotionVariant}
       initial="initial"
       animate={MotionVariant.final(1.5)}
@@ -86,7 +86,7 @@ const QuestionDetails = ({
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
