@@ -26,25 +26,8 @@ const QuestionDetails = ({
     transition,
     transform: CSS.Transform.toString(transform),
   };
-  const MotionVariant = {
-    initial: {
-      opacity: 0,
-      y: 10,
-    },
-    final: (d: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.15,
-        delay: 0.1 * d,
-      },
-    }),
-  };
   return (
     <div
-      variants={MotionVariant}
-      initial="initial"
-      animate={MotionVariant.final(1.5)}
       ref={setNodeRef}
       style={style}
       className={`flex flex-row justify-between gap-3 items-center`}
