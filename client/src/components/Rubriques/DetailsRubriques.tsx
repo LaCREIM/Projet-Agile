@@ -166,8 +166,10 @@ const DetailsRubrique = ({
 
     if (isEditing) {
       try {
+        console.log(pendingQuestions);
+        
         if (pendingQuestions.length > 0) {
-          const newQuestionsToSend = pendingQuestions.map((q) => ({
+          const newQuestionsToSend = pendingQuestions.map((q, index) => ({
             idRubrique: q.idRubrique,
             designationRubrique: rubrique.designation,
             idQuestion: q.idQuestion,
@@ -177,12 +179,14 @@ const DetailsRubrique = ({
               maxQualificatif: q.qualificatifMax,
               minQualificatif: q.qualificatifMin,
             },
-            ordre: q.ordre,
+            ordre: index+1,
           }));
 
           const res = await dispatch(
             updateRubriqueQuestionsAsync(newQuestionsToSend)
           );
+          console.log(res);
+          
           if (res.type === "rubriques-questions/update/rejected") {
             resultAdd = res.payload as string;
           }

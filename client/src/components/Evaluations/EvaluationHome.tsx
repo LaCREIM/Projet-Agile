@@ -127,7 +127,9 @@ const EvaluationHome = () => {
   };
 
   const handleInspect = (evaluationId: number) => {
-    navigate(`${evaluationId}`);
+    if (localStorage.getItem("role") === "ENS") navigate(`${evaluationId}`);
+    else if (localStorage.getItem("role") === "ETU")
+      navigate(`repondre/${evaluationId}`);
   };
 
   const handleDuplicate = (evaluationId: number) => {
