@@ -137,4 +137,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
     """, nativeQuery = true)
     long countSearchQuestions(@Param("keyword") String keyword);
 
+
+    @Query("select q.intitule from Question q where q.id = :id")
+    String findIntitule(Long id);
 }

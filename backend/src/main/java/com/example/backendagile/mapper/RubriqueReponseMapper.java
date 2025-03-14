@@ -14,6 +14,7 @@ public class RubriqueReponseMapper {
         public RubriqueReponseDTO toDTO(RubriqueEvaluation rubriqueEvaluation) {
 
             RubriqueReponseDTO dto = new RubriqueReponseDTO();
+            dto.setIdRubriqueEvaluation(rubriqueEvaluation.getId());
             dto.setIdRubrique(rubriqueEvaluation.getIdRubrique().getId());
             dto.setDesignation(rubriqueEvaluation.getDesignation());
             return dto;

@@ -17,5 +17,11 @@ public class ReponseEvaluationController {
         this.reponseEvaluationService = reponseEvaluationService;
     }
 
+    @GetMapping("/{idEvaluation}/{idEtudiant}")
+    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluation(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
+        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluation(idEvaluation, idEtudiant));
+    }
+
+
    
 }
