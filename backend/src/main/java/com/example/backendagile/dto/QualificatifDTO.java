@@ -5,6 +5,13 @@ public class QualificatifDTO {
     private String minimal;
 
 
+    public QualificatifDTO() {
+    }
+
+    public QualificatifDTO(String minimal, String maximal) {
+        this.maximal = maximal;
+        this.minimal = minimal;
+    }
     public String getMaximal() {
         return maximal;
     }

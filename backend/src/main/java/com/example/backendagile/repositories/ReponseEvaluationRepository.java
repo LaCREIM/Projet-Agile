@@ -10,4 +10,6 @@ import java.util.List;
 public interface ReponseEvaluationRepository extends JpaRepository<ReponseEvaluation, Long> {
     List<ReponseEvaluation> findByIdEvaluation_Id(Long idEvaluation);
     boolean existsByIdEvaluation_IdAndNoEtudiant_NoEtudiant(Long idEvaluation, String idEtudiant);
+
+    ReponseEvaluation findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(Long idEvaluation, String idEtudiant);
 }

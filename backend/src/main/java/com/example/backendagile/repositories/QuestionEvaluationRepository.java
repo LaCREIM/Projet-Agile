@@ -11,4 +11,6 @@ public interface QuestionEvaluationRepository extends JpaRepository<QuestionEval
     boolean existsByQuestionId(Long id);
 
     List<QuestionEvaluation> findQuestionEvaluationsById (Long IdRubriqueEvaluation );
+
+    
 }
