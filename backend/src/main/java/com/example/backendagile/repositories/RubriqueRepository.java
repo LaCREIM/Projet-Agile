@@ -40,6 +40,10 @@ public interface RubriqueRepository extends JpaRepository<Rubrique, Long> {
 
     // 🔹 Rechercher une rubrique par sa désignation (JPQL)
     @Query("SELECT r FROM Rubrique r WHERE r.designation = :designation")
-    Optional<Rubrique> findByDesignation(@Param("designation") String designation);}
+    Optional<Rubrique> findByDesignation(@Param("designation") String designation);
+
+    @Query("SELECT r.designation FROM Rubrique r WHERE r.id = :id")
+    String findDesignation(Long id);
+}
 
 

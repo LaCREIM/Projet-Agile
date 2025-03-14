@@ -6,13 +6,14 @@ import java.util.List;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 public class ReponseEvaluationDTO {
     private Long idEvaluation;
     private String idEtudiant;
     private String commentaire;
-    private String nomEtudiant;
-    private String prenomEtudiant;
     private Long noEnseignant;
     private String nomEnseignant;
     private String prenomEnseignant;
@@ -32,44 +33,4 @@ public class ReponseEvaluationDTO {
     private LocalDate finReponse;
     private List<RubriqueReponseDTO> rubriques;
 
-
-    public Long getIdEvaluation() {
-        return idEvaluation;
-    }
-
-    public void setIdEvaluation(Long idEvaluation) {
-        this.idEvaluation = idEvaluation;
-    }
-
-    public String getIdEtudiant() {
-        return idEtudiant;
-    }
-
-    public void setIdEtudiant(String idEtudiant) {
-        this.idEtudiant = idEtudiant;
-    }
-
-    public String getCommentaire() {
-        return commentaire;
-    }
-
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
-
-    public String getNom() {
-        return nomEtudiant;
-    }
-
-    public void setNom(String nom) {
-        this.nomEtudiant = nom;
-    }
-
-    public String getPrenom() {
-        return prenomEtudiant;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenomEtudiant = prenom;
-    }
 }
