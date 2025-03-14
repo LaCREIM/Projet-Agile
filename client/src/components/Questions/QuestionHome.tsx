@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQuestion from "./AddQuestion";
@@ -76,6 +75,17 @@ const QuestionHome = () => {
 
     setFilteredQuestions(filtered);
   }, [questions, search, sortField, sortOrder, selectedType]);
+
+  // Fonction pour vérifier les droits de modification
+  const canEditQuestion = (question: Question) => {
+    if (role === "ENS" && question.noEnseignant !== null) {
+      return true; // ENS peut modifier si noEnseignant n'est pas null
+    }
+    if (role === "ADM" && question.noEnseignant === null) {
+      return true; // ADM peut modifier si noEnseignant est null
+    }
+    return false; // Par défaut, pas de droit de modification
+  };
 
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
@@ -205,8 +215,6 @@ const QuestionHome = () => {
                 </tr>
               ) : (
                 paginatedQuestions.map((question: Question, index: number) => {
-                  const isEnseneigentQuestionPerso =
-                    role == "ENS" && question.type === "QUS";
                   return (
                     <tr
                       key={question.idQuestion}
@@ -238,27 +246,20 @@ const QuestionHome = () => {
                         <div
                           className="tooltip"
                           data-tip={
-                            question.noEnseignant !==
-                            Number(localStorage.getItem("id"))
-                              ? "Vous ne pouvez pas modifier une question standard"
-                              : "Modifier"
+                            canEditQuestion(question)
+                              ? "Modifier"
+                              : "Vous n'avez pas le droit de modifier cette question"
                           }
                         >
                           <FontAwesomeIcon
                             icon={faPenToSquare}
                             className={`text-black text-base cursor-pointer ${
-                              question.noEnseignant !==
-                              Number(localStorage.getItem("id"))
+                              !canEditQuestion(question)
                                 ? "text-gray-400 cursor-not-allowed"
                                 : ""
                             }`}
                             onClick={() => {
-                              if (
-                                !(
-                                  question.noEnseignant !==
-                                  Number(localStorage.getItem("id"))
-                                )
-                              ) {
+                              if (canEditQuestion(question)) {
                                 handleClickUpdate(index);
                                 openModal(`updateQuestion-${index}`);
                               }
@@ -268,27 +269,20 @@ const QuestionHome = () => {
                         <div
                           className="tooltip"
                           data-tip={
-                            question.noEnseignant !==
-                            Number(localStorage.getItem("id"))
-                              ? "Vous ne pouvez pas supprimer une question standard"
-                              : "Supprimer"
+                            canEditQuestion(question)
+                              ? "Supprimer"
+                              : "Vous n'avez pas le droit de supprimer cette question"
                           }
                         >
                           <FontAwesomeIcon
                             icon={faTrash}
                             className={`text-black text-base cursor-pointer ${
-                              question.noEnseignant !==
-                              Number(localStorage.getItem("id"))
+                              !canEditQuestion(question)
                                 ? "text-gray-400 cursor-not-allowed"
                                 : ""
                             }`}
                             onClick={() => {
-                              if (
-                                !(
-                                  question.noEnseignant !==
-                                  Number(localStorage.getItem("id"))
-                                )
-                              ) {
+                              if (canEditQuestion(question)) {
                                 openModal(`delete-${index}`);
                               }
                             }}

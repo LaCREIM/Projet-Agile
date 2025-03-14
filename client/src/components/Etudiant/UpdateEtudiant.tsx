@@ -140,8 +140,8 @@ const UpdateEtudiant = ({
     if (canSave) {
       const cleanedStudent = {
         ...student,
-        telephone: student.telephone.replace(/\s/g, ""),
-        mobile: student.mobile.replace(/\s/g, ""),
+        telephone: student.telephone?.replace(/\s/g, ""),
+        mobile: student.mobile?.replace(/\s/g, ""),
       };
       const res = await dispatch(updateEtudiantAsync(cleanedStudent));
 
