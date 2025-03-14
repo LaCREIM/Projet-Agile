@@ -1,7 +1,7 @@
 import { Qualificatif } from "../../types/types";
 import {
   deleteQualificatifAsync,
-  fetchQualificatifsPagedAsync,
+  fetchQualificatifsAsync,
 } from "../../features/QualificatifSlice";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ const DeleteQualificatifConfirmation = ({
       if ((response?.type as string) === "qualificatifs/delete/rejected") {
         toast.error(response.payload);
       } else if ((response?.type as string) === "qualificatifs/delete/fulfilled") {
-        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
+        dispatch(fetchQualificatifsAsync());
         toast.success(response.payload);
       }
     } catch (error) {

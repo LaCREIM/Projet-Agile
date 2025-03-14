@@ -326,14 +326,10 @@ const StudentHome = ({
                 </tr>
               ) : (
                 filteredEtudiants.map((etudiant: Etudiant, index: number) => (
-                  <tr
-                    key={index}
-                  >
+                  <tr key={index}>
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
-                    <td className="px-4 py-2">
-                      {etudiant.nationalite}
-                    </td>
+                    <td className="px-4 py-2">{etudiant.nationalite}</td>
                     <td className="px-4 py-2">{etudiant.email}</td>
                     <td className="px-4 py-2">
                       <div
@@ -358,7 +354,7 @@ const StudentHome = ({
                       <div className="tooltip" data-tip="Consulter">
                         <FontAwesomeIcon
                           icon={faEye}
-                          className="text-black text-base cursor-pointer"
+                          className="text-blue-600 text-base cursor-pointer"
                           onClick={() => {
                             handleClick(etudiant, index);
                             openModal(`inspect-${etudiant.noEtudiant}`);
@@ -370,7 +366,7 @@ const StudentHome = ({
                         <div className="tooltip" data-tip="Modifer">
                           <FontAwesomeIcon
                             icon={faPenToSquare}
-                            className="text-black text-base cursor-pointer"
+                            className="text-green-600 text-base cursor-pointer"
                             onClick={() => {
                               handleClickUpdate(etudiant, index);
                               openModal(`updateStudent-${etudiant.noEtudiant}`);
@@ -382,7 +378,7 @@ const StudentHome = ({
                         <div className="tooltip" data-tip="Supprimer">
                           <FontAwesomeIcon
                             icon={faTrash}
-                            className="text-black text-base cursor-pointer"
+                            className="text-red-600 text-base cursor-pointer"
                             onClick={() =>
                               openModal(`delete-${etudiant.noEtudiant}`)
                             }
