@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../hook/hooks";
 import {
   updateQuestionAsync,
   fetchQuestionsAsync,
+  getAllQuestionsPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
@@ -63,7 +64,8 @@ const UpdateQuestion = ({
         setError(res.payload as string);
       } else if (res?.type === "questions/update/fulfilled") {
         toast.success(res.payload as string); 
-        dispatch(fetchQuestionsAsync()); 
+        const id = localStorage.getItem("id");
+         dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(id) }));
         onClose(); 
       }
     } catch (error) {

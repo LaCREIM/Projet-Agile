@@ -90,11 +90,15 @@ const QuestionHome = () => {
   const openModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.showModal();
+    dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(id) }));
+
   };
 
   const closeModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.close();
+    dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(id) }));
+
   };
 
   const handleClickUpdate = (index: number) => {
