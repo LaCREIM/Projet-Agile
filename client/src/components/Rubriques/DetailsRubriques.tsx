@@ -161,18 +161,18 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let resultAdd = "";
+    let resultRem = "";
 
     if (isEditing) {
-      // Envoyez les modifications à l'API
       try {
-        // Ajoutez les nouvelles questions
         if (pendingQuestions.length > 0) {
           const newQuestionsToSend = pendingQuestions.map((q) => ({
             idRubrique: q.idRubrique,
             designationRubrique: rubrique.designation,
             idQuestion: q.idQuestion,
             questionStdDTO: {
-              idQualificatif: -1, 
+              idQualificatif: -1,
               intitule: q.intitule,
               maxQualificatif: q.qualificatifMax,
               minQualificatif: q.qualificatifMin,
@@ -180,28 +180,54 @@ const DetailsRubrique = ({
             ordre: q.ordre,
           }));
 
-          await dispatch(updateRubriqueQuestionsAsync(newQuestionsToSend));
+          const res = await dispatch(
+            updateRubriqueQuestionsAsync(newQuestionsToSend)
+          );
+          if (res.type === "rubriques-questions/update/rejected") {
+            resultAdd = res.payload as string;
+          }
         }
 
         if (removedQuestions.length > 0) {
           for (const idQuestion of removedQuestions) {
-            await dispatch(
+            const res = await dispatch(
               deleteRubriqueQuestionsAsync({
                 idRubrique: rubrique.id,
                 idQuestion,
               })
             );
+            if (res.type === "rubriques-questions/delete/rejected") {
+              resultRem = res.payload as string;
+            }
           }
         }
 
-        await dispatch(
+        const res = await dispatch(
           updateRubriqueAsync({
             id: rubriqueData.id,
             designation: rubriqueData.designation,
           })
         );
 
-        // Rafraîchissez les données
+        if (res.type !== "rubriques/update/fulfilled") {
+          setError(res.payload as string);
+          return;
+        }
+
+        if (resultAdd != "") {
+          setError(resultAdd);
+          return;
+        }
+
+        if (resultRem != "") {
+          setError(resultRem);
+          return;
+        }
+
+        toast.success("Rubrique mise à jour avec succès.", {
+          autoClose: 10000,
+        });
+
         const idEns = localStorage.getItem("id");
         if (idEns) {
           await dispatch(
@@ -209,13 +235,10 @@ const DetailsRubrique = ({
           );
         }
 
-        // Réinitialisez les états
         setIsEditing(false);
         setError(null);
-        toast.success("Rubrique mise à jour avec succès.", {
-          autoClose: 10000,
-        });
-        onClose()
+
+        onClose();
       } catch (error) {
         setError("Erreur lors de la mise à jour de la rubrique.");
         toast.error("Erreur lors de la mise à jour de la rubrique.");
@@ -263,15 +286,17 @@ const DetailsRubrique = ({
   };
 
   const handleRemoveQuestion = (idQuestion: number) => {
-  // Ajoutez la question supprimée à removedQuestions
-  setRemovedQuestions((prev) => [...prev, idQuestion]);
+    // Ajoutez la question supprimée à removedQuestions
+    setRemovedQuestions((prev) => [...prev, idQuestion]);
 
-  // Réajoutez la question à unusedQuestions
-  const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
-  if (removedQuestion) {
-    setUnusedQuestions((prev) => [...prev, removedQuestion]);
-  }
-};
+    // Réajoutez la question à unusedQuestions
+    const removedQuestion = allQuestions.find(
+      (q) => q.idQuestion === idQuestion
+    );
+    if (removedQuestion) {
+      setUnusedQuestions((prev) => [...prev, removedQuestion]);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
