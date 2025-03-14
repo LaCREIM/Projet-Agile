@@ -42,7 +42,7 @@ const RubriqueHome = () => {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
   const [search, setSearch] = useState<string>("");
   const [sortField, setSortField] = useState<keyof Rubrique>("designation");
   const [sortOrder, setSortOrder] = useState<string>("asc");

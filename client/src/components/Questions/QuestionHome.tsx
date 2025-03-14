@@ -22,7 +22,7 @@ const QuestionHome = () => {
   );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 10;
+  const questionsPerPage = 8;
   const [search, setSearch] = useState<string>("");
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [sortField, setSortField] = useState<string>("intitule");
@@ -58,9 +58,12 @@ const QuestionHome = () => {
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
 
-      // Filter by type
-      const matchesType = selectedType ? question.type === selectedType : true;
-
+      console.log(question);
+      
+       const matchesType = selectedType
+         ? (selectedType === "QUP" && question.noEnseignant !== null) || // Question personnelle
+           (selectedType === "QUS" && question.noEnseignant === null) // Question standard
+         : true;
       return matchesSearch && matchesType;
     });
 
