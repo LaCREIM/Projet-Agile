@@ -131,7 +131,6 @@ export const searchRubriquesAsync = createAsyncThunk<
       const response = await axiosInstance.get<Rubrique[]>(`/rubriques/paged/enseignants/${enseignantId}`, {
         params: { page, size },
       });
-      console.log(response.data);
       return response.data; // L'API renvoie un objet contenant rubriques et totalPages
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la recherche des rubriques");
@@ -262,11 +261,7 @@ const rubriqueSlice = createSlice({
     .addCase(
           searchRubriquesAsync.fulfilled,
           (state, action: PayloadAction<Rubrique[]>) => {
-            console.log("Mise à jour Redux réussie :", action.payload);
             state.rubriques = action.payload;
-            console.log("Rubriques dans Redux :", state.rubriques);
-            
-            
             state.loading = false;
           }
         )

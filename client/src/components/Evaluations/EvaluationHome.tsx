@@ -18,7 +18,6 @@ import { GetEvaluationDTO } from "../../types/types";
 import { RootState } from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-
 import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
 import {
   getPromotionByEnseignant,
@@ -32,7 +31,7 @@ import { toast } from "react-toastify";
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
   const dispatch = useAppDispatch();
-  const evaluations = useAppSelector(
+  const evaluations = useAppSelector<GetEvaluationDTO[]>(
     (state: RootState) => state.evaluations.evaluations
   );
   const enseignants = useAppSelector(
@@ -52,11 +51,10 @@ const EvaluationHome = () => {
   const [filterType, setFilterType] = useState<string>("");
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
-  console.log(promotions);
 
   useEffect(() => {
     const filtered = evaluations.filter((evaluation) => {
-      const matchesSearch = Object.values(evaluation).some((value) =>
+      const matchesSearch = Object.values(evaluation.evaluation).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
       const matchesEtat = filterEtat
@@ -75,8 +73,10 @@ const EvaluationHome = () => {
 
     if (sortField) {
       filtered.sort((a, b) => {
-        if (a[sortField] < b[sortField]) return sortOrder === "asc" ? -1 : 1;
-        if (a[sortField] > b[sortField]) return sortOrder === "asc" ? 1 : -1;
+        const aValue = a.evaluation[sortField];
+        const bValue = b.evaluation[sortField];
+        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
         return 0;
       });
     }
@@ -86,7 +86,7 @@ const EvaluationHome = () => {
   useEffect(() => {
     if (localStorage.getItem("role") == "ENS") {
       dispatch(fetchEvaluationAsync());
-    } else {
+    } else if (localStorage.getItem("role") == "ETU") {
       dispatch(fetchEvaluationByEtuAsync());
     }
     dispatch(getAllEnseignantAsync());
@@ -136,7 +136,6 @@ const EvaluationHome = () => {
 
   const confirmDuplicate = async (evaluationId: number) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
-    console.log(response);
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       toast.success("L'évaluation a été dupliquée avec succès");
       await dispatch(fetchEvaluationAsync());
@@ -281,10 +280,7 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
-                  <tr
-                    key={index}
-                    className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                  >
+                  <tr key={index}>
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
@@ -306,7 +302,7 @@ const EvaluationHome = () => {
                           {evaluation.evaluation.noEnseignant ===
                           Number(localStorage.getItem("id")) ? (
                             <div className="badge badge-accent text-white">
-                              {"Personnell"}
+                              {"Personnelle"}
                             </div>
                           ) : (
                             <div className="badge badge-success text-white">
@@ -327,13 +323,15 @@ const EvaluationHome = () => {
                     )}
 
                     <td className="flex gap-3 justify-center items-center">
-                      {/* Icône de duplication */}
                       {role == "ENS" && (
                         <>
                           <div
                             className={"tooltip"}
                             data-tip={`${
-                              evaluation?.droit?.duplication === "O"
+                              evaluation?.evaluation.noEnseignant ===
+                              Number(localStorage.getItem("id"))
+                                ? "Dupliquer l'évaluation"
+                                : evaluation?.droit?.duplication === "O"
                                 ? "Dupliquer l'évaluation"
                                 : "Vous n'avez pas le droit de dupliquer cette évaluation"
                             }`}
@@ -341,12 +339,16 @@ const EvaluationHome = () => {
                             <FontAwesomeIcon
                               icon={faCopy}
                               className={`text-black text-base cursor-pointer ${
+                                evaluation?.evaluation.noEnseignant ===
+                                  Number(localStorage.getItem("id")) ||
                                 evaluation?.droit?.duplication === "O"
                                   ? ""
                                   : "text-gray-400 hover:cursor-not-allowed"
                               }`}
                               onClick={() =>
-                                evaluation?.droit?.duplication === "O" &&
+                                (evaluation?.evaluation.noEnseignant ===
+                                  Number(localStorage.getItem("id")) ||
+                                  evaluation?.droit?.duplication === "O") &&
                                 handleDuplicate(
                                   evaluation.evaluation.idEvaluation
                                 )

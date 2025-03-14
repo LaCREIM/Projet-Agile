@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Question, Rubrique } from "../../types/types";
 import {
   deleteRubriqueQuestionsAsync,
-  getRubriquesAsync,
   RubriqueQuestion,
   searchRubriquesAsync,
   updateRubriqueAsync,
@@ -15,6 +14,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useAppDispatch } from "../../hook/hooks";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
+import { fetchQuestionsAsync } from "../../features/QuestionSlice";
 
 interface RubriqueDetailsProps {
   rubrique: Rubrique;
@@ -61,10 +61,6 @@ const DetailsRubrique = ({
     RequestQuestionOrderDetails[]
   >([]);
 
-  const [addQuestion, setAddQuestion] = useState<RequestQuestionOrderDetails[]>(
-    []
-  );
-
   const [unusedQuestions, setUnusedQuestions] = useState(
     allQuestions.filter(
       (q) => !questions.some((usedQ) => usedQ.idQuestion === q.idQuestion)
@@ -77,6 +73,10 @@ const DetailsRubrique = ({
   const [error, setError] = useState<string | null>(null);
 
   const [selectedQuestion, setSelectedQuestion] = useState(-1);
+  const [pendingQuestions, setPendingQuestions] = useState<
+    QuestionOrderDetails[]
+  >([]);
+  const [removedQuestions, setRemovedQuestions] = useState<number[]>([]); // IDs des questions supprimées
 
   useEffect(() => {
     const formattedQuestions = questions.map((q) => ({
@@ -161,58 +161,71 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const userRole = localStorage.getItem("role");
-  
-    if (userRole === "ENS" && rubriqueData.type == "RBS" ) {
-      toast.error("Vous n'avez pas l'autorisation de modifier cette rubrique.", {
-        autoClose: 10000, // Affichage de 10s
-      });
-      return;
-    }
-  
+
     if (isEditing) {
-      const response = await dispatch(updateRubriqueQuestionsAsync(newQuestionsOrder));
-  
-      const responseDesignation = await dispatch(
-        updateRubriqueAsync({
-          id: rubriqueData.id,
-          designation: rubriqueData.designation,
-        })
-      );
-  
-      if (response?.type === "rubriques-questions/update/rejected") {
-        setError(response.payload);
-      }
-  
-      if (responseDesignation?.type === "rubriques/update/rejected") {
-        setError(responseDesignation.payload as string);
-      }
-  
-      if (
-        responseDesignation?.type === "rubriques/update/fulfilled" &&
-        response?.type === "rubriques-questions/update/fulfilled"
-      ) {
+      // Envoyez les modifications à l'API
+      try {
+        // Ajoutez les nouvelles questions
+        if (pendingQuestions.length > 0) {
+          const newQuestionsToSend = pendingQuestions.map((q) => ({
+            idRubrique: q.idRubrique,
+            designationRubrique: rubrique.designation,
+            idQuestion: q.idQuestion,
+            questionStdDTO: {
+              idQualificatif: -1, 
+              intitule: q.intitule,
+              maxQualificatif: q.qualificatifMax,
+              minQualificatif: q.qualificatifMin,
+            },
+            ordre: q.ordre,
+          }));
+
+          await dispatch(updateRubriqueQuestionsAsync(newQuestionsToSend));
+        }
+
+        if (removedQuestions.length > 0) {
+          for (const idQuestion of removedQuestions) {
+            await dispatch(
+              deleteRubriqueQuestionsAsync({
+                idRubrique: rubrique.id,
+                idQuestion,
+              })
+            );
+          }
+        }
+
+        await dispatch(
+          updateRubriqueAsync({
+            id: rubriqueData.id,
+            designation: rubriqueData.designation,
+          })
+        );
+
+        // Rafraîchissez les données
+        const idEns = localStorage.getItem("id");
+        if (idEns) {
+          await dispatch(
+            searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 })
+          );
+        }
+
+        // Réinitialisez les états
         setIsEditing(false);
-        onClose();
         setError(null);
         toast.success("Rubrique mise à jour avec succès.", {
-          autoClose: 10000, // Affichage de 10s
+          autoClose: 10000,
         });
-        const idEns = localStorage.getItem("id");
-      if (idEns) {
-        await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
-      } else {
-        toast.error("ID de l'enseignant non trouvé.");
+        onClose()
+      } catch (error) {
+        setError("Erreur lors de la mise à jour de la rubrique.");
+        toast.error("Erreur lors de la mise à jour de la rubrique.");
       }
-  }
     } else {
+      // Passez en mode édition
       setIsEditing(true);
       setError(null);
     }
   };
-  
-  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -221,90 +234,44 @@ const DetailsRubrique = ({
     setRubriqueData({ ...rubriqueData, [name]: value });
   };
 
-  const handleAddQuestion = async () => {
+  const handleAddQuestion = () => {
     if (selectedQuestion === -1) return;
 
     const questionToAdd = unusedQuestions.find(
-      (q) => q.idQuestion === Number(selectedQuestion)
+      (q) => q.id === Number(selectedQuestion)
     );
 
     if (!questionToAdd) return;
 
-    const newQuestion: RequestQuestionOrderDetails = {
+    // Ajoutez la question à l'état local
+    const newQuestion: QuestionOrderDetails = {
+      id: questionToAdd.id,
+      idQuestion: questionToAdd.id,
       idRubrique: rubrique.id,
-      designationRubrique: rubrique.designation,
-      idQuestion: questionToAdd.idQuestion,
-      questionStdDTO: {
-        idQualificatif: questionToAdd.idQualificatif,
-        intitule: questionToAdd.intitule,
-        maxQualificatif: questionToAdd.maxQualificatif,
-        minQualificatif: questionToAdd.minQualificatif,
-      },
       ordre: questionsOrder.length + 1,
+      intitule: questionToAdd.intitule,
+      qualificatifMax: questionToAdd.idQualificatif.maximal,
+      qualificatifMin: questionToAdd.idQualificatif.minimal,
     };
 
-    setUnusedQuestions((prev) => prev.filter((q) => q.idQuestion !== questionToAdd.idQuestion));
+    setQuestionsOrder((prev) => [...prev, newQuestion]);
+    setPendingQuestions((prev) => [...prev, newQuestion]);
+    setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
 
-    setAddQuestion((prev) => [...prev, newQuestion]);
-
-    const res = await dispatch(updateRubriqueQuestionsAsync([newQuestion]));
-
-    if (res?.type === "rubriques-questions/update/fulfilled") {
-      setQuestionsOrder((prev) => [
-        ...prev,
-        {
-          id: questionToAdd.idQuestion,
-          idQuestion: questionToAdd.idQuestion,
-          idRubrique: rubrique.id,
-          ordre: prev.length + 1,
-          intitule: questionToAdd.intitule,
-          qualificatifMax: questionToAdd.maxQualificatif,
-          qualificatifMin: questionToAdd.minQualificatif,
-        },
-      ]);
-    } else {
-      toast.error("Erreur lors de l'ajout de la question.");
-    }
-
+    // Réinitialisez la sélection
     setSelectedQuestion(-1);
   };
 
-  const handleRemoveQuestion = async (
-    idRubrique: number,
-    idQuestion: number
-  ) => {
-    const response = await dispatch(
-      deleteRubriqueQuestionsAsync({ idRubrique, idQuestion })
-    );
+  const handleRemoveQuestion = (idQuestion: number) => {
+  // Ajoutez la question supprimée à removedQuestions
+  setRemovedQuestions((prev) => [...prev, idQuestion]);
 
-    if (response?.type === "rubriques-questions/delete/fulfilled") {
-      // Réajouter la question supprimée à unusedQuestions
-      const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
-      if (removedQuestion) {
-        setUnusedQuestions((prev) => [...prev, removedQuestion]);
-      }
-
-      setQuestionsOrder((prev) => {
-        const updatedOrder = prev
-          .filter((q) => q.idQuestion !== idQuestion)
-          .map((q, index) => ({ ...q, ordre: index + 1 }));
-
-        return updatedOrder;
-      });
-
-      setNewQuestionsOrder((prev) => {
-        const updatedNewOrder = prev
-          .filter((q) => q.idQuestion !== idQuestion)
-          .map((q, index) => ({ ...q, ordre: index + 1 }));
-
-        return updatedNewOrder;
-      });
-
-      toast.success(response?.payload as string);
-    } else if (response?.type === "rubriques-questions/delete/rejected") {
-      toast.error(response?.payload as string);
-    }
-  };
+  // Réajoutez la question à unusedQuestions
+  const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
+  if (removedQuestion) {
+    setUnusedQuestions((prev) => [...prev, removedQuestion]);
+  }
+};
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -339,12 +306,16 @@ const DetailsRubrique = ({
               <div className="flex flex-row items-center justify-between gap-5">
                 <select
                   value={selectedQuestion}
-                  onChange={(e) => setSelectedQuestion(Number(e.target.value))}
+                  name="selectedQuestion"
+                  onChange={(e) => {
+                    console.log("Selected question:", e.target.value);
+                    setSelectedQuestion(Number(e.target.value));
+                  }}
                   className="select select-bordered w-full"
                 >
                   <option value={-1}>Sélectionner une question</option>
                   {unusedQuestions.map((q) => (
-                    <option key={q.idQuestion} value={q.idQuestion}>
+                    <option key={q.id} value={q.id}>
                       {q.intitule}
                     </option>
                   ))}
@@ -390,6 +361,7 @@ const DetailsRubrique = ({
                 questions={questionsOrder}
                 isEditing={isEditing}
                 handleDeleteQuestion={handleRemoveQuestion}
+                removedQuestions={removedQuestions}
               />
             </DndContext>
           ) : (
@@ -399,19 +371,27 @@ const DetailsRubrique = ({
         {error && <AlertError error={error} />}
 
         <div className="modal-action">
+          {(localStorage.getItem("role") === "ADM" &&
+            rubrique.type === "RBS") ||
+          (localStorage.getItem("role") === "ENS" &&
+            rubrique.type === "RBP") ? (
+            <button
+              type="button"
+              className="btn btn-neutral"
+              onClick={handleEdit}
+              disabled={isEditing === true && !canSave}
+            >
+              {isEditing ? "Enregistrer" : "Modifier"}
+            </button>
+          ) : null}
+
           <button
-            type="button"
-            className="btn btn-neutral"
-            onClick={handleEdit}
-            disabled={isEditing === true && !canSave}
-          >
-            {isEditing ? "Enregistrer" : "Modifier"}
-          </button>
-          <button
-            className="btn "
+            className="btn"
             onClick={() => {
               setIsEditing(false);
               setError(null);
+              setPendingQuestions([]);
+              setRemovedQuestions([]);
               onClose();
             }}
           >
