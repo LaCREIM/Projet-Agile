@@ -126,11 +126,9 @@ export const searchRubriquesAsync = createAsyncThunk<
   { rejectValue: string }
 >(
   "rubriques/search",
-  async ({ enseignantId, page, size }, { rejectWithValue }) => {
+  async ({ enseignantId,}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get<Rubrique[]>(`/rubriques/paged/enseignants/${enseignantId}`, {
-        params: { page, size },
-      });
+      const response = await axiosInstance.get<Rubrique[]>(`/rubriques/enseignants/${enseignantId}`);
       return response.data; // L'API renvoie un objet contenant rubriques et totalPages
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la recherche des rubriques");

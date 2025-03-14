@@ -37,6 +37,11 @@ public class RubriqueController {
             @PathVariable long enseignantId) {
         return ResponseEntity.ok(rubriqueService.getRubriquesPaged(enseignantId,page, size));
     }
+    @GetMapping("/enseignants/{enseignantId}")
+    public ResponseEntity<List<RubriqueDTO>> getRubriques2(
+            @PathVariable long enseignantId) {
+        return ResponseEntity.ok(rubriqueService.getRubriques(enseignantId));
+    }
 
 
     /*

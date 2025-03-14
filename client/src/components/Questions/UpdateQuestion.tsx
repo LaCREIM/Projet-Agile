@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useAppDispatch } from "../../hook/hooks";
 import {
   updateQuestionAsync,
-  fetchQuestionsAsync,
   getAllQuestionsPersoAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
@@ -50,7 +49,7 @@ const UpdateQuestion = ({
   };
 
   const canSave =
-    question.intitule.trim() !== "" && question.idQualificatif !== -1;
+    question.intitule.trim() !== "" && Number(question.idQualificatif) !== -1;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +62,7 @@ const UpdateQuestion = ({
       if (res?.type === "questions/update/rejected") {
         setError(res.payload as string);
       } else if (res?.type === "questions/update/fulfilled") {
-        toast.success(res.payload as string); 
+        toast.success("La question a été mise à jour avec succès!"); 
         const id = localStorage.getItem("id");
          dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(id) }));
         onClose(); 
