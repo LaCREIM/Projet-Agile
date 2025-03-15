@@ -240,13 +240,15 @@ const DetailsEvaluation = () => {
                 data-tip={
                   evaluation.etat === "CLO"
                     ? "Cette évaluation est clôturée et ne peut pas être modifiée"
+                    : evaluation.etat === "DIS"
+                    ? "Cette évaluation est mise en disposition et ne peut pas être modifiée"
                     : "Modifier l'évaluation"
                 }
               >
                 <BiSolidEdit
                   size={25}
                   className={`cursor-pointer ${
-                    evaluation.etat === "CLO"
+                    (evaluation.etat === "CLO" || evaluation.etat === "DIS")
                       ? "text-gray-400 hover:cursor-not-allowed"
                       : ""
                   }`}
@@ -529,7 +531,7 @@ const DetailsEvaluation = () => {
 
       <dialog id="droit" className="modal">
         <GestionDroit
-          enseignants={enseignants} 
+          enseignants={enseignants}
           onClose={() => closeModal("droit")}
         />
       </dialog>

@@ -56,7 +56,7 @@ const RubriqueHome = () => {
     const id = localStorage.getItem("id");
     let idEns = "";
     role === "ENS" && id ? (idEns = id) : (idEns = "0");
-    if (id) {
+    if (id != "0" ) {
       dispatch(
         searchRubriquesAsync({ enseignantId: idEns, page: 0, size: pageSize })
       )
