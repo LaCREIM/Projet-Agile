@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddEvaluation from "./AddEvaluation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { VscGraph } from "react-icons/vsc";
 import {
   faArrowRight,
   faCopy,
   faEye,
+  faSquarePollVertical,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { MdClear } from "react-icons/md";
@@ -27,6 +29,7 @@ import { etatEvaluationMapper } from "../../mappers/mappers";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { RiUserSettingsFill } from "react-icons/ri";
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -234,6 +237,15 @@ const EvaluationHome = () => {
                 {sortField === "nomFormation" &&
                   (sortOrder === "asc" ? "↑" : "↓")}
               </th>
+              {localStorage.getItem("role") === "ETU" && (
+                <>
+                  <th onClick={() => handleSortChange("nomEnseignant")}>
+                    Enseignant{" "}
+                    {sortField === "nomEnseignant" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                </>
+              )}
               <th onClick={() => handleSortChange("designation")}>
                 Désignation{" "}
                 {sortField === "designation" &&
@@ -286,9 +298,23 @@ const EvaluationHome = () => {
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
-                    <td className="px-4 py-2">
-                      {evaluation.evaluation.nomFormation}
-                    </td>
+                    {}
+
+                    {localStorage.getItem("role") === "ETU" ? (
+                      <>
+                        <td className="px-4 py-2">
+                          {evaluation.evaluation.codeFormation}
+                        </td>
+                        <td className="px-4 py-2">
+                          {evaluation.evaluation.nomEnseignant}{" "}
+                          {evaluation.evaluation.prenomEnseignant}
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-4 py-2">
+                        {evaluation.evaluation.nomFormation}
+                      </td>
+                    )}
                     <td className="px-4 py-2">
                       {evaluation.evaluation.designation}
                     </td>
@@ -328,6 +354,18 @@ const EvaluationHome = () => {
                       {role == "ENS" && (
                         <>
                           <div
+                            className="tooltip"
+                            data-tip="Consulter l'évaluation"
+                            onClick={() =>
+                              handleInspect(evaluation.evaluation.idEvaluation)
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={faEye}
+                              className="text-black text-base cursor-pointer"
+                            />
+                          </div>
+                          <div
                             className={"tooltip"}
                             data-tip={`${
                               evaluation?.evaluation.noEnseignant ===
@@ -357,13 +395,31 @@ const EvaluationHome = () => {
                               }
                             />
                           </div>
-                          <FontAwesomeIcon
-                            icon={faEye}
-                            className="text-black text-base cursor-pointer"
+
+                          <div
+                            className="tooltip"
+                            data-tip={"Gérer les droits d'accès"}
+                          >
+                            <RiUserSettingsFill
+                              size={20}
+                              className={`cursor-pointer`}
+                              onClick={() => {
+                                openModal("droit");
+                              }}
+                            />
+                          </div>
+                          <div
+                            className="tooltip"
+                            data-tip="Consulter les réponses"
                             onClick={() =>
                               handleInspect(evaluation.evaluation.idEvaluation)
                             }
-                          />
+                          >
+                            <FontAwesomeIcon
+                              icon={faSquarePollVertical}
+                              className="text-black text-base cursor-pointer"
+                            />
+                          </div>
                           <div
                             className={"tooltip"}
                             data-tip={`${
@@ -399,18 +455,32 @@ const EvaluationHome = () => {
                       )}
 
                       {role == "ETU" && (
-                        <div
-                          className="tooltip"
-                          data-tip="Répondre à l'évaluation"
-                          onClick={() =>
-                            handleInspect(evaluation.evaluation.idEvaluation)
-                          }
-                        >
-                          <FontAwesomeIcon
-                            icon={faArrowRight}
-                            className="text-black text-base cursor-pointer"
-                          />
-                        </div>
+                        <>
+                          <div
+                            className="tooltip"
+                            data-tip="Répondre à l'évaluation"
+                            onClick={() =>
+                              handleInspect(evaluation.evaluation.idEvaluation)
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={faArrowRight}
+                              className="text-black text-base cursor-pointer"
+                            />
+                          </div>
+                          <div
+                            className="tooltip"
+                            data-tip="Consulter l'évaluation"
+                            onClick={() =>
+                              handleInspect(evaluation.evaluation.idEvaluation)
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={faEye}
+                              className="text-black text-base cursor-pointer"
+                            />
+                          </div>
+                        </>
                       )}
                     </td>
                     <dialog

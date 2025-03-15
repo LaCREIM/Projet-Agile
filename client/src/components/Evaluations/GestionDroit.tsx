@@ -259,7 +259,7 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                     value={recherche}
                     onChange={(e) => setRecherche(e.target.value)}
                   />
-                  <div className="flex flex-row gap-10 w-[40%]">
+                  <div className="flex flex-row gap-10 w-fit">
                     {/* Cases à cocher pour les droits */}
                     <motion.label
                       className="label cursor-pointer"
@@ -293,6 +293,18 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                         className="checkbox checkbox-sm"
                       />
                     </motion.label>
+                    <motion.button
+                      variants={MotionVariant}
+                      initial="initial"
+                      animate={MotionVariant.final(2.5)}
+                      className="btn btn-circle btn-sm"
+                      onClick={handleAjoutEnseignant}
+                      disabled={
+                        !droitsAjout.duplication && !droitsAjout.consultation
+                      }
+                    >
+                      +
+                    </motion.button>
                   </div>
                 </div>
                 {/* Barre de recherche */}
@@ -335,17 +347,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                   </div>
                 )}
               </div>
-
-              <motion.button
-                variants={MotionVariant}
-                initial="initial"
-                animate={MotionVariant.final(2.5)}
-                className="btn btn-circle btn-sm"
-                onClick={handleAjoutEnseignant}
-                disabled={!droitsAjout.duplication && !droitsAjout.consultation}
-              >
-                +
-              </motion.button>
             </>
           )}
         </div>

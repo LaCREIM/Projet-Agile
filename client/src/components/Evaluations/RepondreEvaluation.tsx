@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import StepperWithContent from "./stepper";
 import { Rubrique } from "@/types/types";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { getEvaluation, getEvaluationByIdAsync } from "@/features/EvaluationSlice";
+import { IoMdArrowBack } from "react-icons/io";
 
 export const rubriques: Rubrique[] = [
   {
@@ -105,6 +106,8 @@ export const rubriques: Rubrique[] = [
 
 const RepondreEvaluation = () => {
       const evaluationId = useParams().evaluationId;
+  const navigate = useNavigate();
+
 
     const dispatch = useAppDispatch();
     const evaluation = useAppSelector(getEvaluation)
@@ -115,9 +118,20 @@ const RepondreEvaluation = () => {
 
   return (
     <>
-      <div className="w-[80%] mx-auto mt-[10%] ">
-        <div className="text-center font-bold text-xl my-[3%]">
-          Répondre à l'évaluation {evaluation.designation}{" "}
+      <div className="w-full min-h-screen p-5 bg-gray-100 overflow-y-auto">
+        <div className="flex flex-row items-center justify-between gap-5 w-full px-14 py-5 bg-white shadow-md rounded-lg">
+          <div className="flex flex-row w-full items-center justify-between gap-5">
+            <div className="justify-start hover:cursor-pointer hover:transition hover:-translate-x-1 duration-300">
+              <IoMdArrowBack
+                size={25}
+                onClick={() => navigate("/user/home/evaluations")}
+              />
+            </div>
+            <h1 className="text-center text-2xl">
+              Répondre à l'évaluation <span className="font-bold"> {evaluation.designation}</span>
+            </h1>
+            <div></div>
+          </div>
         </div>
         <StepperWithContent rubriques={rubriques} />
       </div>
