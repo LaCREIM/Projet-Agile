@@ -1,5 +1,11 @@
 package com.example.backendagile.services;
 
+
+import com.example.backendagile.dto.EvaluationDTO;
+import com.example.backendagile.dto.QuestionReponseDTO;
+import com.example.backendagile.dto.ReponseEvaluationDTO;
+import com.example.backendagile.dto.RubriqueReponseDTO;
+
 import com.example.backendagile.dto.*;
 import com.example.backendagile.entities.*;
 import com.example.backendagile.mapper.QuestionReponseMapper;
@@ -13,6 +19,7 @@ import com.example.backendagile.mapper.RubriqueReponseMapper;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,26 +55,7 @@ public class ReponseEvaluationService {
         this.formationRepository = formationRepository;
     }
 
-    /*public ReponseEvaluationDTO addReponse(ReponseEvaluationDTO dto) {
-        Evaluation evaluation = evaluationRepository.findById(dto.getIdEvaluation())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Évaluation non trouvée"));
 
-        if (!"DIS".equals(evaluation.getEtat())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vous ne pouvez répondre qu'aux évaluations mises à disposition.");
-        }
-
-        Etudiant etudiant = etudiantRepository.findById(dto.getIdEtudiant())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
-
-        if (reponseEvaluationRepository.existsByIdEvaluation_IdAndNoEtudiant_NoEtudiant(dto.getIdEvaluation(), dto.getIdEtudiant())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vous avez déjà répondu à cette évaluation.");
-        }
-
-        ReponseEvaluation reponse = ReponseEvaluationMapper.toEntity(dto, etudiant, evaluation);
-        reponse = reponseEvaluationRepository.save(reponse);
-
-        return ReponseEvaluationMapper.toDTO(reponse);
-    }*/
 
     public ReponseEvaluationDTO getReponsesByEvaluationByEtudiant(Long idEvaluation, String idEtudiant) {
         //Get evqluation en utilisant evaluationDTO, on mappe ensuite avec ReponseEvaluationDTO
@@ -142,4 +130,117 @@ public class ReponseEvaluationService {
                 .sorted(Comparator.comparingInt(dto -> dto.getIdEtudiant().hashCode()))
                 .collect(Collectors.toList());
     }
+
+
+
+    public String addReponseEvaluation(ReponseEvaluationDTO reponseEvaluationDTO){
+        try {
+            //Get evaluation
+            Evaluation evaluation = evaluationRepository.findByIdEvaluation(reponseEvaluationDTO.getIdEvaluation());
+            if (evaluation == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Évaluation non trouvée");
+            }
+            //Get etudiant
+            Optional<Etudiant> etudiant = etudiantRepository.findById(reponseEvaluationDTO.getIdEtudiant());
+            if (etudiant.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+            }
+
+            //Save reponseEvaluation
+            ReponseEvaluation reponseEvaluation = new ReponseEvaluation();
+            reponseEvaluation.setIdEvaluation(evaluation);
+            reponseEvaluation.setNoEtudiant(etudiant.get());
+            reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
+            reponseEvaluation.setNom(etudiant.get().getNom());
+            reponseEvaluation.setPrenom(etudiant.get().getPrenom());
+            ReponseEvaluation reponseSaved = reponseEvaluationRepository.save(reponseEvaluation);
+
+            //looper pour chaque rubrique
+            for (RubriqueReponseDTO rubriqueReponseDTO : reponseEvaluationDTO.getRubriques()) {
+                //get rubrique
+                RubriqueEvaluation rubriqueEvaluation = rubriqueEvaluationRepository.findByIdEvaluationAndIdRubrique(evaluation.getId(), rubriqueReponseDTO.getIdRubrique());
+                if (rubriqueEvaluation == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rubrique non trouvée");
+                }
+                //looper pour chaque question
+                for (QuestionReponseDTO questionReponseDTO : rubriqueReponseDTO.getQuestions()) {
+                    //get question
+                    QuestionEvaluation questionEvaluation = questionEvaluationRepository.findQuestionEvaluationByIdRubriqueEvaluationAndIdQuestion(rubriqueEvaluation.getId(), questionReponseDTO.getIdQuestion());
+                    if (questionEvaluation == null) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Question non trouvée");
+                    }
+                    //save reponseQuestion
+                    ReponseQuestion reponseQuestion = new ReponseQuestion();
+                    reponseQuestion.setId(new ReponseQuestionId(reponseSaved.getId(), questionEvaluation.getId()));
+                    reponseQuestion.setIdReponseEvaluation(reponseSaved);
+                    reponseQuestion.setIdQuestionEvaluation(questionEvaluation);
+                    reponseQuestion.setPositionnement(questionReponseDTO.getPositionnement());
+                    reponseQuestionRepository.save(reponseQuestion);
+                }
+            }
+            return "Reponse Evaluation ajoutée avec succès";
+        } catch (Exception e) {
+//            return "Erreur lors de l'ajout de la réponse à l'évaluation";
+              return  e.getMessage();
+            }
+
+    }
+
+    public String updateReponseEvaluation(Long idEvaluation, String idEtudiant, ReponseEvaluationDTO reponseEvaluationDTO) {
+        try {
+            // Vérifier l'évaluation
+            Evaluation evaluation = evaluationRepository.findByIdEvaluation(idEvaluation);
+            if (evaluation == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Évaluation non trouvée");
+            }
+
+            // Vérifier l'étudiant
+            Optional<Etudiant> etudiant = etudiantRepository.findById(idEtudiant);
+            if (etudiant.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+            }
+
+            // Récupérer la réponse d'évaluation existante
+            ReponseEvaluation reponseEvaluation = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
+            if (reponseEvaluation == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réponse d'évaluation non trouvée");
+            }
+
+            // Mise à jour des champs simples
+            reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
+            reponseEvaluationRepository.save(reponseEvaluation);
+
+            // Supprimer toutes les réponses aux questions existantes liées à cette évaluation
+            reponseQuestionRepository.deleteByIdReponseEvaluation(reponseEvaluation.getId());
+
+            // Réinsérer les nouvelles réponses aux questions depuis le DTO
+            for (RubriqueReponseDTO rubriqueReponseDTO : reponseEvaluationDTO.getRubriques()) {
+                RubriqueEvaluation rubriqueEvaluation = rubriqueEvaluationRepository.findByIdEvaluationAndIdRubrique(evaluation.getId(), rubriqueReponseDTO.getIdRubrique());
+                if (rubriqueEvaluation == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rubrique non trouvée");
+                }
+
+                for (QuestionReponseDTO questionReponseDTO : rubriqueReponseDTO.getQuestions()) {
+                    QuestionEvaluation questionEvaluation = questionEvaluationRepository.findQuestionEvaluationByIdRubriqueEvaluationAndIdQuestion(rubriqueEvaluation.getId(), questionReponseDTO.getIdQuestion());
+                    if (questionEvaluation == null) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Question non trouvée");
+                    }
+
+                    // Recréer chaque réponse
+                    ReponseQuestion reponseQuestion = new ReponseQuestion();
+                    reponseQuestion.setId(new ReponseQuestionId(reponseEvaluation.getId(), questionEvaluation.getId()));
+                    reponseQuestion.setIdReponseEvaluation(reponseEvaluation);
+                    reponseQuestion.setIdQuestionEvaluation(questionEvaluation);
+                    reponseQuestion.setPositionnement(questionReponseDTO.getPositionnement());
+                    reponseQuestionRepository.save(reponseQuestion);
+                }
+            }
+
+            return "Réponse d'évaluation mise à jour avec succès";
+
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
 }
