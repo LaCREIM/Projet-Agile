@@ -20,9 +20,7 @@ const DeleteEvaluationConfirmation = ({ evaluation }: DeleteProps) => {
         toast.error((response.payload as unknown as { message: string }).message);
       } else if (response?.type === "evaluations/delete/fulfilled") {
         toast.success("L'évaluation a été supprimée avec succès.");
-
         await dispatch(fetchEvaluationAsync());
-
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);

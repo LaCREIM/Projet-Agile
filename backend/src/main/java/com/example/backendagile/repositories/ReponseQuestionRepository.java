@@ -1,10 +1,12 @@
 package com.example.backendagile.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.backendagile.entities.ReponseEvaluation;
 import com.example.backendagile.entities.ReponseQuestion;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,4 +16,11 @@ public interface ReponseQuestionRepository extends  JpaRepository<ReponseQuestio
     Long findPositionnement(Long idReponseEval, Long idQuestionEval);
 
     List<ReponseQuestion> findReponseQuestionByIdQuestionEvaluation_Id(Long idQuestionEvaluationId);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ReponseQuestion rq WHERE rq.idReponseEvaluation.id = ?1")
+    void deleteByIdReponseEvaluation(Long idReponseEval);
+
+
 }

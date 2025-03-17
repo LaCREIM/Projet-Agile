@@ -1,35 +1,37 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hook/hooks";
+import {useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
 import AddEvaluation from "./AddEvaluation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { VscGraph } from "react-icons/vsc";
 import {
   faArrowRight,
   faCopy,
   faEye,
+  faLock,
+  faShareNodes,
   faSquarePollVertical,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { MdClear } from "react-icons/md";
+import {MdClear} from "react-icons/md";
 import {
+  clouterEvaluationAsync,
+  dispositionEvaluationAsync,
   duplicateEvaluationAsync,
   fetchEvaluationAsync,
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
-import { GetEvaluationDTO } from "../../types/types";
-import { RootState } from "../../api/store";
+import {GetEvaluationDTO} from "../../types/types";
+import {RootState} from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
-import {
-  getPromotionByEnseignant,
-  getPromotionByEnseignantAsync,
-} from "../../features/PromotionSlice";
-import { etatEvaluationMapper } from "../../mappers/mappers";
-import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { RiUserSettingsFill } from "react-icons/ri";
+import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
+import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
+import {etatEvaluationMapper} from "../../mappers/mappers";
+import {FaSearch} from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import {RiUserSettingsFill} from "react-icons/ri";
+import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
+import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -41,6 +43,8 @@ const EvaluationHome = () => {
     (state: RootState) => state.enseignants.enseignants
   );
   const promotions = useAppSelector(getPromotionByEnseignant);
+  console.log(promotions);
+
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const evaluationPerPage = 10;
@@ -54,6 +58,17 @@ const EvaluationHome = () => {
   const [filterType, setFilterType] = useState<string>("");
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
+
+
+// Add this function to handle the clouter action
+  const handleClouter = async (evaluationId: number) => {
+    openModal(`clouter-${evaluationId}`);
+    await dispatch(clouterEvaluationAsync(evaluationId));
+  };
+  const handleDisposition = async (evaluationId: number) => {
+    openModal(`disposition-${evaluationId}`);
+    await dispatch(dispositionEvaluationAsync(evaluationId));
+  };
 
   useEffect(() => {
     const filtered = evaluations.filter((evaluation) => {
@@ -76,8 +91,8 @@ const EvaluationHome = () => {
 
     if (sortField) {
       filtered.sort((a, b) => {
-        const aValue = a.evaluation[sortField];
-        const bValue = b.evaluation[sortField];
+        const aValue = a.evaluation[sortField as keyof typeof a.evaluation];
+        const bValue = b.evaluation[sortField as keyof typeof b.evaluation];
         if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
         if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
         return 0;
@@ -141,10 +156,13 @@ const EvaluationHome = () => {
 
   const confirmDuplicate = async (evaluationId: number) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
+    console.log(response);
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       toast.success("L'évaluation a été dupliquée avec succès");
       await dispatch(fetchEvaluationAsync());
-    } else {
+    } else if (
+      response.type === "evaluations/duplicateEvaluationAsync/rejected"
+    ) {
       toast.error((response.payload as unknown as { message: string }).message);
     }
     closeModal(`duplicate-${evaluationId}`);
@@ -152,7 +170,7 @@ const EvaluationHome = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
+      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
         <h1 className="text-xl font-bold">Liste des évaluations</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[90%] px-14">
           <div className="w-2/3 hover:cursor-text flex flex-row items-center gap-5">
@@ -395,22 +413,23 @@ const EvaluationHome = () => {
                               }
                             />
                           </div>
-
                           <div
                             className="tooltip"
-                            data-tip={"Gérer les droits d'accès"}
+                            data-tip="Consulter les réponses"
+                            onClick={() =>
+                              navigate(
+                                `reponses/${evaluation.evaluation.idEvaluation}`
+                              )
+                            }
                           >
-                            <RiUserSettingsFill
+                            <LuArrowRight
                               size={20}
-                              className={`cursor-pointer`}
-                              onClick={() => {
-                                openModal("droit");
-                              }}
+                              className="text-black text-base cursor-pointer"
                             />
                           </div>
                           <div
                             className="tooltip"
-                            data-tip="Consulter les réponses"
+                            data-tip="Consulter les statistiques"
                             onClick={() =>
                               handleInspect(evaluation.evaluation.idEvaluation)
                             }
@@ -418,6 +437,28 @@ const EvaluationHome = () => {
                             <FontAwesomeIcon
                               icon={faSquarePollVertical}
                               className="text-black text-base cursor-pointer"
+                            />
+                          </div>
+
+                          <div
+                              className="tooltip"
+                              data-tip="Clôturer l'évaluation"
+                              onClick={() => evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
+                          >
+                            <FontAwesomeIcon
+                                icon={faLock}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "DIS" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
+                            />
+                          </div>
+
+                          <div
+                              className="tooltip"
+                              data-tip={evaluation.evaluation.etat === "CLO" ? "L'évaluation est déjà cloitrée" : evaluation.evaluation.etat === "DIS" ? "L'évaluation est déjà en disposition" : "Mettre en disposition"}
+                              onClick={() => evaluation.evaluation.etat == "ELA" && handleDisposition(evaluation.evaluation.idEvaluation)}
+                          >
+                            <FontAwesomeIcon
+                                icon={faShareNodes}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "ELA" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
                             />
                           </div>
                           <div
@@ -454,6 +495,7 @@ const EvaluationHome = () => {
                         </>
                       )}
 
+
                       {role == "ETU" && (
                         <>
                           <div
@@ -489,6 +531,24 @@ const EvaluationHome = () => {
                     >
                       <DeleteEvaluationConfirmation
                         evaluation={evaluation.evaluation}
+                      />
+                    </dialog>
+                    <dialog
+                        id={`clouter-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                    >
+                      <ClouterEvaluationConfirmation
+                          evaluationId={evaluation.evaluation.idEvaluation}
+                          onClose={() => closeModal(`clouter-${evaluation.evaluation.idEvaluation}`)}
+                      />
+                    </dialog>
+                    <dialog
+                        id={`disposition-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                    >
+                      <DispositionEvaluationConfirmation
+                          evaluationId={evaluation.evaluation.idEvaluation}
+                          onClose={() => closeModal(`disposition-${evaluation.evaluation.idEvaluation}`)}
                       />
                     </dialog>
                     <dialog
