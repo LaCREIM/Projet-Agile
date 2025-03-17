@@ -77,7 +77,19 @@ export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { 
         }
     }
 );
-
+export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluationDTO, { idEvaluation: number; idEtudiant: string }, { rejectValue: string }>(
+    "evaluations/fetchReponseEvaluationAsync",
+    async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<ReponseEvaluationDTO>(
+                `/reponse-evaluation/${idEvaluation}/${idEtudiant}`
+            );
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
+        }
+    }
+);
 export const createEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationDTO, { rejectValue: string }>(
     "evaluations/createEvaluationAsync",
     async (evaluation, { rejectWithValue }) => {
@@ -148,14 +160,26 @@ export const dispositionEvaluationAsync = createAsyncThunk<void, number, { rejec
 );
 
 
-export const getAllReponsesEvaluationAsync = createAsyncThunk<ReponseEvaluation[], number, { rejectValue: string }>(
+export const getAllReponsesEvaluationAsync = createAsyncThunk<GetReponseEvaluation[], number, { rejectValue: string }>(
     "evaluations/getAllReponsesEvaluationAsync",
     async (idEvaluation, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<ReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
+            const response = await axiosInstance.get<GetReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récuperation des résulats de l'évaluation");
+        }
+    }
+);
+
+export const envoyerReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, ReponseEvaluation, { rejectValue: string }>(
+    "evaluations/envoyerReponseEvaluationAsync",
+    async (reponse, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.post<ReponseEvaluation>(`/reponse-evaluation`, reponse);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de l'envoie du réponse de l'évaluation");
         }
     }
 );
@@ -186,19 +210,29 @@ const EvaluationSlice = createSlice({
             })
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
+            });
+        builder
+            .addCase(fetchReponseEvaluationAsync.pending, (state) => {
+                state.loading = true;
+                state.error = null;
             })
-            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation[]>) => {
+            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
+
                 state.loading = false;
             })
-            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
-                state.statistiques = action.payload;
+            .addCase(fetchReponseEvaluationAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
                 state.loading = false;
             })
+           .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
+            state.statistiques = action.payload;
+            state.loading = false;
+        })
             .addCase(fetchStatistiquesAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            
+
     },
 });
 
@@ -217,6 +251,7 @@ export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number
 
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
+
 export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
 
 export default EvaluationSlice.reducer;

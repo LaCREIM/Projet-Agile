@@ -154,7 +154,8 @@ const RubriqueHome = () => {
                 className="grow placeholder:font-medium"
                 placeholder="Rechercher..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {setPage(1);
+                  setSearch(e.target.value)}}
               />
               <FaSearch />
             </label>

@@ -9,6 +9,7 @@ import {
 } from "@/features/EvaluationSlice";
 import { IoMdArrowBack } from "react-icons/io";
 
+
 export const rubriques: Rubrique[] = [
   {
     id: 1,

@@ -261,6 +261,16 @@ public class EvaluationService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public boolean updateEvaluationStatus(Long idEvaluation,String etat) {
+        Evaluation evaluation = evaluationRepository.findByIdEvaluation(idEvaluation);
+        if (evaluation == null) {
+            throw new ErrorResponseException(HttpStatus.NOT_FOUND);
+        }
+        evaluation.setEtat(etat);
+        evaluationRepository.save(evaluation);
+        return true;
+    }
 }
     
 
