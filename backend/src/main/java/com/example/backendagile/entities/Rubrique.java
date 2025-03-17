@@ -2,9 +2,13 @@ package com.example.backendagile.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "RUBRIQUE", schema = "DOSI_DEV", indexes = {
         @Index(name = "RUB_ENS_FK_I", columnList = "NO_ENSEIGNANT")
@@ -32,46 +36,6 @@ public class Rubrique {
     private Long ordre;
 
     public Rubrique() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Enseignant getNoEnseignant() {
-        return noEnseignant;
-    }
-
-    public void setNoEnseignant(Enseignant noEnseignant) {
-        this.noEnseignant = noEnseignant;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
-
-    public Long getOrdre() {
-        return ordre;
-    }
-
-    public void setOrdre(Long ordre) {
-        this.ordre = ordre;
     }
 
 }

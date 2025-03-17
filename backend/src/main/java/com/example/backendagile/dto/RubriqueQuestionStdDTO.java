@@ -1,5 +1,10 @@
 package com.example.backendagile.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class RubriqueQuestionStdDTO {
     private Long idRubrique;
     private String designationRubrique;
@@ -15,43 +20,4 @@ public class RubriqueQuestionStdDTO {
         this.ordre = ordre;
     }
 
-    public Long getIdQuestion() {
-        return idQuestion;
-    }
-
-    public void setIdQuestion(Long idQuestion) {
-        this.idQuestion = idQuestion;
-    }
-
-    public Long getIdRubrique() {
-        return idRubrique;
-    }
-
-    public void setIdRubrique(Long idRubrique) {
-        this.idRubrique = idRubrique;
-    }
-
-    public String getDesignationRubrique() {
-        return designationRubrique;
-    }
-
-    public void setDesignationRubrique(String designationRubrique) {
-        this.designationRubrique = designationRubrique;
-    }
-
-    public QuestionStdDTO getQuestionStdDTO() {
-        return questionStdDTO;
-    }
-
-    public void setQuestionStdDTO(QuestionStdDTO questionStdDTO) {
-        this.questionStdDTO = questionStdDTO;
-    }
-
-    public Long getOrdre() {
-        return ordre;
-    }
-
-    public void setOrdre(Long ordre) {
-        this.ordre = ordre;
-    }
 }
