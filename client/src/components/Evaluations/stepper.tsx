@@ -8,8 +8,52 @@ import {
 } from "@material-tailwind/react";
 import { Rubrique } from "@/types/types";
 import Positionement from "./Positionement";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+// import { toast } from "react-toastify";
+// import { useNavigate } from "react-router-dom";
+
+interface StepperProp {
+  rubriques: Rubrique[];
+}
+
+interface Qualificatif {
+  maximal: string;
+  minimal: string;
+}
+
+interface QuestionReponse {
+  idQuestion: number;
+  positionnement: number;
+  intitule: string;
+  qualificatif: Qualificatif;
+}
+
+interface RubriqueReponse {
+  idRubriqueEvaluation: number;
+  idRubrique: number;
+  designation: string;
+  questions: QuestionReponse[];
+}
+
+interface ReponseEvaluation {
+  idEvaluation: number;
+  idEtudiant: string;
+  commentaire: string;
+  noEnseignant: number;
+  nomEnseignant: string;
+  prenomEnseignant: string;
+  codeFormation: string;
+  anneeUniversitaire: string;
+  codeUE: string;
+  designationUE: string;
+  nomFormation: string;
+  noEvaluation: number;
+  designation: string;
+  etat: string;
+  periode: string;
+  debutReponse: string;
+  finReponse: string;
+  rubriques: RubriqueReponse[];
+}
 
 interface StepperProp {
   rubriques: Rubrique[];
@@ -18,16 +62,16 @@ interface StepperProp {
 const StepperWithContent = ({ rubriques }: StepperProp) => {
   const stepsData = [
     ...rubriques,
-    { designation: "Commentaire", questions: [] }, // Étape pour le commentaire
-    { designation: "Récapitulatif", questions: [] }, // Étape pour le récapitulatif
+    { designation: "Commentaire", questions: [] },
+    { designation: "Récapitulatif", questions: [] },
   ];
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
   const [hover, setHover] = useState<{ [key: number]: number }>({});
   const [activeStep, setActiveStep] = React.useState(0);
   const [isLastStep, setIsLastStep] = React.useState(false);
   const [isFirstStep, setIsFirstStep] = React.useState(false);
-  const [comment, setComment] = useState(""); // État pour stocker le commentaire
-  const navigate = useNavigate(); // Hook pour la redirection
+  const [comment, setComment] = useState("");
+  // const navigate = useNavigate();
 
   if (!rubriques || rubriques.length === 0) {
     return <div>No rubriques available</div>;
@@ -50,24 +94,43 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     }));
   };
 
-  const handleSubmit = () => {
-    // Logique pour envoyer les réponses (ratings et comment)
-    console.log("Réponses envoyées :", { ratings, comment });
+  const handleSubmit = async () => {
+    
+    const reponseEvaluation: ReponseEvaluation = {
+      idEvaluation: 2, 
+      idEtudiant: localStorage.getItem("id") || "", 
+      commentaire: comment,
+      noEnseignant: -1,
+      nomEnseignant: "", 
+      prenomEnseignant: "", 
+      codeFormation: "", 
+      anneeUniversitaire: "", 
+      codeUE: "", 
+      designationUE: "", 
+      nomFormation: "", 
+      noEvaluation: -1, 
+      designation: "", 
+      etat: "", 
+      periode: "", 
+      debutReponse: "", 
+      finReponse: "", 
+      rubriques: rubriques.map((rubrique) => ({
+        idRubriqueEvaluation: -1, 
+        idRubrique: rubrique.id, 
+        designation: rubrique.designation,
+        questions: rubrique.questions.map((question) => ({
+          idQuestion: question.id,
+          positionnement: ratings[question.id] || 0, 
+          intitule: question.intitule,
+          qualificatif: {
+            maximal: question.maxQualificatif,
+            minimal: question.minQualificatif,
+          },
+        })),
+      })),
+    };
 
-    // Afficher un toast de succès
-    toast.success("Réponses envoyées avec succès !", {
-      position: "top-right",
-      autoClose: 3000, // Fermer le toast après 3 secondes
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-
-    // Rediriger vers la page des évaluations après 3 secondes
-    setTimeout(() => {
-      navigate("/user/home/evaluations"); // Remplacez "/evaluations" par le chemin de votre page des évaluations
-    }, 1000);
+    console.log(reponseEvaluation);
   };
 
   return (
@@ -96,11 +159,9 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                       : "text-gray-400"
                   }
                 >
-                  {/* Afficher la désignation complète sur les grands écrans */}
-                  <span className="hidden lg:inline">
+                  <span className="hidden lg:inline max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
                     {rubrique.designation}
                   </span>
-                  {/* Afficher "Étape X" sur les écrans medium et petits */}
                   <span className="lg:hidden">Étape {index + 1}</span>
                 </Typography>
               </Tooltip>
@@ -110,7 +171,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
       </Stepper>
 
       <div className="mt-20 flex flex-col gap-4">
-        {/* Afficher la désignation de la rubrique au-dessus des questions sur les petits et moyens écrans */}
         {activeStep !== rubriques.length &&
           activeStep !== stepsData.length - 1 && (
             <Typography
@@ -123,7 +183,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
           )}
 
         {activeStep === rubriques.length ? (
-          // Étape du commentaire
           <div>
             <Typography
               {...({} as React.ComponentProps<typeof Typography>)}
@@ -139,7 +198,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             />
           </div>
         ) : activeStep === stepsData.length - 1 ? (
-          // Étape du récapitulatif
           <div className="flex flex-col gap-6">
             <Typography
               {...({} as React.ComponentProps<typeof Typography>)}
@@ -154,7 +212,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"
-                    className="font-semibold mb-4"
+                    className="font-semibold mb-4 max-w-xs overflow-hidden text-ellipsis whitespace-nowrap"
                   >
                     {rubrique.designation}
                   </Typography>
@@ -194,7 +252,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             </div>
           </div>
         ) : (
-          // Étape des questions
           rubriques[activeStep].questions.map((question) => (
             <div key={question.id}>
               <div className="flex flex-row justify-between">
@@ -242,7 +299,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
           Précédent
         </Button>
         {activeStep === stepsData.length - 1 ? (
-          // Bouton "Envoyer" pour la dernière étape
           <Button
             {...({} as React.ComponentProps<typeof Button>)}
             onClick={handleSubmit}
@@ -251,7 +307,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             Envoyer
           </Button>
         ) : (
-          // Bouton "Suivant" pour les autres étapes
           <Button
             {...({} as React.ComponentProps<typeof Button>)}
             onClick={handleNext}

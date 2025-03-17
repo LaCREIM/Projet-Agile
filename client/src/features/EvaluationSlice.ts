@@ -1,5 +1,8 @@
 
+import { ReponseEvaluation } from './../types/types.d';
+
 import { EtudiantEvaluation, ReponseEvaluation } from './../types/types.d';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -181,9 +184,6 @@ const EvaluationSlice = createSlice({
             })
             .addCase(createEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
-            })
-            .addCase(duplicateEvaluationAsync.fulfilled, (state ) => {
-                state.loading = false;
             })
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
