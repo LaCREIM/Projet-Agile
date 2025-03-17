@@ -13,5 +13,7 @@ public interface QuestionEvaluationRepository extends JpaRepository<QuestionEval
     @Query("SELECT q FROM QuestionEvaluation q WHERE q.idRubriqueEvaluation.id = ?1")
     List<QuestionEvaluation> findQuestionEvaluationsById (Long IdRubriqueEvaluation );
 
+    @Query("SELECT q FROM QuestionEvaluation q WHERE q.idRubriqueEvaluation.id = ?1 AND q.idQuestion.id = ?2")
+    QuestionEvaluation findQuestionEvaluationByIdRubriqueEvaluationAndIdQuestion(Long idRubriqueEvaluation, Long idQuestion);
     
 }

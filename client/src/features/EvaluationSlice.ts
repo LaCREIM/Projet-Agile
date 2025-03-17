@@ -1,3 +1,5 @@
+
+import { EtudiantEvaluation, ReponseEvaluation } from './../types/types.d';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -8,7 +10,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "@/types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
-
+    reponsesEvaluation: ReponseEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -17,7 +19,7 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
-
+    reponsesEvaluation: [],
     totalPages: 0, 
     loading: false,
     error: null,
@@ -144,6 +146,18 @@ export const dispositionEvaluationAsync = createAsyncThunk<void, number, { rejec
 );
 
 
+export const getAllReponsesEvaluationAsync = createAsyncThunk<ReponseEvaluation[], number, { rejectValue: string }>(
+    "evaluations/getAllReponsesEvaluationAsync",
+    async (idEvaluation, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<ReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récuperation des résulats de l'évaluation");
+        }
+    }
+);
+
 
 const EvaluationSlice = createSlice({
     name: "evaluations",
@@ -173,11 +187,17 @@ const EvaluationSlice = createSlice({
             })
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
-            });
+            })
+            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation[]>) => {
+                state.reponsesEvaluation = action.payload;
+                state.loading = false;
+            })
+            
     },
 });
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
+export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
 
 export default EvaluationSlice.reducer;
 
