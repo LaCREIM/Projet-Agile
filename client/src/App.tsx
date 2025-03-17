@@ -15,6 +15,7 @@ import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
 import DetailsEvaluation from "./components/Evaluations/DetailsEvaluation.tsx";
 import {ToastContainer} from "react-toastify";
+import ConsulterReponseETD from "./components/Evaluations/ConsulterReponseETD.tsx";
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="evaluations/:evaluationId" element={<DetailsEvaluation />} />
+              <Route path="evaluations/mesRéponse/:evaluationId" element={<ConsulterReponseETD />} />
 
               <Route path="rubriques" element={<RubriqueHome />} />
             </Route>

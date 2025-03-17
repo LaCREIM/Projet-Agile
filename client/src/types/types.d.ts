@@ -357,3 +357,58 @@ export interface PromotionDetails {
     anneePro: string;
     siglePro: string;
 }
+
+interface Evaluation {
+    idEvaluation: number;
+    idEtudiant: string;
+    commentaire: string;
+    noEnseignant: number;
+    nomEnseignant: string;
+    prenomEnseignant: string;
+    codeFormation: string;
+    anneeUniversitaire: string;
+    codeUE: string;
+    designationUE: string;
+    nomFormation: string;
+    noEvaluation: number;
+    designation: string;
+    etat: string;
+    periode: string;
+    debutReponse: string; // Peut être changé en Date si nécessaire
+    finReponse: string; // Peut être changé en Date si nécessaire
+    rubriques: Rubrique[];
+  }
+
+  export interface ReponseEvaluationDTO {
+    idEvaluation: number;
+    idEtudiant: string;
+    commentaire: string;
+    noEnseignant: number;
+    nomEnseignant: string;
+    prenomEnseignant: string;
+    codeFormation: string;
+    anneeUniversitaire: string;
+    codeUE: string;
+    designationUE: string;
+    nomFormation: string;
+    noEvaluation: number;
+    designation: string;
+    etat: string;
+    periode: string;
+    debutReponse: string;
+    finReponse: string;
+    rubriques: {
+        idRubriqueEvaluation: number;
+        idRubrique: number;
+        designation: string;
+        questions: {
+            idQuestion: number;
+            positionnement: number;
+            intitule: string;
+            qualificatif: {
+                maximal: string;
+                minimal: string;
+            };
+        }[];
+    }[];
+}

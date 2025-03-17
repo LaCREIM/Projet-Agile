@@ -41,10 +41,7 @@ const QuestionDetails = ({
     }),
   };
   return (
-    <motion.div
-      variants={MotionVariant}
-      initial="initial"
-      animate={MotionVariant.final(1.5)}
+    <div
       ref={setNodeRef}
       style={style}
       className={`flex flex-row justify-between gap-3 items-center`}
@@ -86,7 +83,7 @@ const QuestionDetails = ({
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { EtudiantEvaluation } from './../types/types.d';
+import {  ReponseEvaluationDTO } from './../types/types.d';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -9,6 +9,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
+    reponseEvaluation: ReponseEvaluationDTO | null;
 
     totalPages: number;
     loading: boolean;
@@ -18,11 +19,13 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
+    reponseEvaluation: null,
 
-    totalPages: 0, 
+    totalPages: 0,
     loading: false,
     error: null,
 };
+
 
 
 export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
@@ -36,6 +39,7 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
         }
     }
 );
+
 
 export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
@@ -74,7 +78,19 @@ export const getEvaluationByIdAsync = createAsyncThunk<EvaluationDTO, number, { 
         }
     }
 );
-
+export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluationDTO, { idEvaluation: number; idEtudiant: string }, { rejectValue: string }>(
+    "evaluations/fetchReponseEvaluationAsync",
+    async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<ReponseEvaluationDTO>(
+                `/reponse-evaluation/${idEvaluation}/${idEtudiant}`
+            );
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
+        }
+    }
+);
 export const createEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationDTO, { rejectValue: string }>(
     "evaluations/createEvaluationAsync",
     async (evaluation, { rejectWithValue }) => {
@@ -153,10 +169,24 @@ const EvaluationSlice = createSlice({
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
+        builder
+            .addCase(fetchReponseEvaluationAsync.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluationDTO>) => {
+                state.reponseEvaluation = action.payload;
+                state.loading = false;
+            })
+            .addCase(fetchReponseEvaluationAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
+                state.loading = false;
+            });
+
     },
 });
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
-
+export const getReponseEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
 export default EvaluationSlice.reducer;
 
