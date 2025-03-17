@@ -11,4 +11,7 @@ import java.util.List;
 public interface RubriqueEvaluationRepository extends JpaRepository<RubriqueEvaluation, Long> {
     @Query("SELECT r FROM RubriqueEvaluation r WHERE r.idEvaluation.id = :id")
     List<RubriqueEvaluation> findAllByIdEvaluation(Long id);
+
+    @Query("SELECT r FROM RubriqueEvaluation r WHERE r.idEvaluation.id = :id AND r.idRubrique.id = :idRubrique")
+    RubriqueEvaluation findByIdEvaluationAndIdRubrique(Long id, Long idRubrique);
 }

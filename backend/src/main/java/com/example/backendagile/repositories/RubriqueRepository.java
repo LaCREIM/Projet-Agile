@@ -44,6 +44,9 @@ public interface RubriqueRepository extends JpaRepository<Rubrique, Long> {
 
     @Query("SELECT r.designation FROM Rubrique r WHERE r.id = :id")
     String findDesignation(Long id);
+
+    @Query("SELECT r FROM Rubrique r WHERE r.id = :id")
+    Rubrique findRubriqueById(Long id);
 }
 
 

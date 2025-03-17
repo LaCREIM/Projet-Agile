@@ -22,6 +22,22 @@ public class ReponseEvaluationController {
         return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluation(idEvaluation, idEtudiant));
     }
 
+    @PostMapping
+    public ResponseEntity<String> createReponseEvaluation(@RequestBody ReponseEvaluationDTO reponseEvaluationDTO) {
+        return ResponseEntity.ok(reponseEvaluationService.addReponseEvaluation(reponseEvaluationDTO));
+    }
 
-   
+    @PutMapping("/reponse-evaluation")
+    public ResponseEntity<String> updateReponseEvaluation(
+            @RequestParam("idEvaluation") Long idEvaluation,
+            @RequestParam("idEtudiant") String idEtudiant,
+            @RequestBody ReponseEvaluationDTO reponseEvaluationDTO) {
+
+        String result = reponseEvaluationService.updateReponseEvaluation(idEvaluation, idEtudiant, reponseEvaluationDTO);
+        return ResponseEntity.ok(result);
+    }
+
+
+
+
 }
