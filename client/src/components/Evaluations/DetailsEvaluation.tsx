@@ -53,18 +53,12 @@ const DetailsEvaluation = () => {
     dispatch(getPromotionAsync());
     dispatch(getAllEnseignantAsync());
     dispatch(fetchAllUnitesEnseignementAsync());
-
-    console.log(evaluation);
-    
   }, [dispatch, evaluationId]);
- 
+
   useEffect(() => {
     dispatch(getAllEnseignantAsync());
     console.log(enseignants);
-    
   }, [dispatch]);
-
-
 
   useEffect(() => {
     if (evaluation) {
@@ -214,9 +208,9 @@ const DetailsEvaluation = () => {
       }
     }
   };
-   const filteredPromotionsByRole = promotions.filter((promotion) => {
-       return promotion.noEnseignant == localStorage.getItem("id");
-   });
+  const filteredPromotionsByRole = promotions.filter((promotion) => {
+    return promotion.noEnseignant == localStorage.getItem("id");
+  });
 
   return (
     <div className="w-full min-h-screen p-5 bg-gray-100 overflow-y-auto">
@@ -248,7 +242,7 @@ const DetailsEvaluation = () => {
                 <BiSolidEdit
                   size={25}
                   className={`cursor-pointer ${
-                    (evaluation.etat === "CLO" || evaluation.etat === "DIS")
+                    evaluation.etat === "CLO" || evaluation.etat === "DIS"
                       ? "text-gray-400 hover:cursor-not-allowed"
                       : ""
                   }`}
@@ -399,6 +393,32 @@ const DetailsEvaluation = () => {
               <strong>État :</strong>
               <p>{etatEvaluationMapper(evaluation.etat)}</p>
             </div>
+
+            {isEditing ? (
+              <div className="flex flex-col gap-1">
+                <label className="input input-bordered flex items-center gap-2 w-full">
+                  <span className="font-semibold">No évaluation </span>
+                  <span className="text-red-500">*</span>
+                  <input
+                    required
+                    type="text"
+                    name="noEvaluation"
+                    value={evaluationEdit.noEvaluation}
+                    onChange={handleChange}
+                    className="grow"
+                    placeholder="Ex: DOSI"
+                  />
+                </label>
+                {errors.periodeError && (
+                  <p className="text-red-500 text-sm">{errors.periodeError}</p>
+                )}
+              </div>
+            ) : (
+              <div className=" flex flex-row space-x-3">
+                <strong>No évaluation :</strong>
+                <p>{evaluation.noEvaluation}</p>
+              </div>
+            )}
 
             {isEditing ? (
               <label className="flex flex-row items-center col-span-2 gap-2 ">

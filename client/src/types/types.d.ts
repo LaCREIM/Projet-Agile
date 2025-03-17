@@ -357,3 +357,13 @@ export interface PromotionDetails {
     anneePro: string;
     siglePro: string;
 }
+
+interface ReponseEvaluation {
+    idReponseEvaluation: number;
+    idEvaluation: number;
+    commentaire: string;
+    nomFormation: string;
+    promotion: string;
+    idEtudiant: string;
+}
+

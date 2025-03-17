@@ -57,15 +57,16 @@ public class EvaluationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{idEvaluation}/enseignant/{noEnseignant}")
-    public ResponseEntity<Map<String, String>> deleteEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+    @DeleteMapping("/{idEvaluation}")
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteEvaluation(@PathVariable Long idEvaluation) {
         Map<String, String> response = new HashMap<>();
         try {
-            response.put("message", "L'évaluation a été supprimée avec succès.");
             // supprimer l'évaluation droite
-            droitService.deleteDroit(idEvaluation, noEnseignant);
+//            droitService.deleteDroitByIdEvaluation(idEvaluation);
             // supprimer l'évaluation
             evaluationService.deleteEvaluation(idEvaluation);
+            response.put("message", "L'évaluation a été supprimée avec succès.");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -98,7 +99,7 @@ public class EvaluationController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            response.put("message", e.getMessage());
+            response.put("message", "L'évaluation ne peut pas être dupliquée.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 

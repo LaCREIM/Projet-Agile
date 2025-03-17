@@ -120,10 +120,11 @@ export const getPromotionByEnseignantAsync = createAsyncThunk<Promotion[], void,
         try {
 
             const response = await axiosInstance.get<Promotion[]>(`/promotions/enseignant/${localStorage.getItem("id")}`);
+            console.log(response.data);
             return response.data;
         } catch (error: any) {
-            console.error("Error fetching students:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+            console.error("Error fetching promotions by enseignant:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching promotions by enseignant.");
         }
     }
 );
