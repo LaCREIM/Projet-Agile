@@ -1,6 +1,7 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.ReponseEvaluationDTO;
+import com.example.backendagile.dto.ReponseEvaluationPourEtudiantDTO;
 import com.example.backendagile.services.ReponseEvaluationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,19 @@ public class ReponseEvaluationController {
     }
 
     @GetMapping("/{idEvaluation}/{idEtudiant}")
-    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluation(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
-        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluation(idEvaluation, idEtudiant));
+    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluationParEtudiant(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
+        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluationByEtudiant(idEvaluation, idEtudiant));
+    }
+
+    @GetMapping("/{idEvaluation}")
+    public ResponseEntity<List<ReponseEvaluationPourEtudiantDTO>> getReponseEvaluation(@PathVariable Long idEvaluation) {
+        try {
+            List<ReponseEvaluationPourEtudiantDTO> reponses = reponseEvaluationService.getReponsesByEvaluation(idEvaluation);
+            return ResponseEntity.ok(reponses);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
-   
 }
