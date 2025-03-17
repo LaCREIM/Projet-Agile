@@ -1,34 +1,38 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hook/hooks";
+import {useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
 import AddEvaluation from "./AddEvaluation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faCopy,
   faEye,
+  faLock,
+  faShareNodes,
   faSquarePollVertical,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { MdClear } from "react-icons/md";
+import {MdClear} from "react-icons/md";
 import {
+  clouterEvaluationAsync,
+  dispositionEvaluationAsync,
   duplicateEvaluationAsync,
   fetchEvaluationAsync,
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
-import { GetEvaluationDTO } from "../../types/types";
-import { RootState } from "../../api/store";
+import {GetEvaluationDTO} from "../../types/types";
+import {RootState} from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
-import {
-  getPromotionByEnseignant,
-  getPromotionByEnseignantAsync,
-} from "../../features/PromotionSlice";
-import { etatEvaluationMapper } from "../../mappers/mappers";
-import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { LuArrowRight } from "react-icons/lu";
+import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
+import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
+import {etatEvaluationMapper} from "../../mappers/mappers";
+import {FaSearch} from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import {RiUserSettingsFill} from "react-icons/ri";
+import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
+import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
+
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
   const dispatch = useAppDispatch();
@@ -54,6 +58,17 @@ const EvaluationHome = () => {
   const [filterType, setFilterType] = useState<string>("");
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
+
+
+// Add this function to handle the clouter action
+  const handleClouter = async (evaluationId: number) => {
+    openModal(`clouter-${evaluationId}`);
+    await dispatch(clouterEvaluationAsync(evaluationId));
+  };
+  const handleDisposition = async (evaluationId: number) => {
+    openModal(`disposition-${evaluationId}`);
+    await dispatch(dispositionEvaluationAsync(evaluationId));
+  };
 
   useEffect(() => {
     const filtered = evaluations.filter((evaluation) => {
@@ -424,6 +439,28 @@ const EvaluationHome = () => {
                               className="text-black text-base cursor-pointer"
                             />
                           </div>
+
+                          <div
+                              className="tooltip"
+                              data-tip="Clôturer l'évaluation"
+                              onClick={() => evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
+                          >
+                            <FontAwesomeIcon
+                                icon={faLock}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "DIS" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
+                            />
+                          </div>
+
+                          <div
+                              className="tooltip"
+                              data-tip={evaluation.evaluation.etat === "CLO" ? "L'évaluation est déjà cloitrée" : evaluation.evaluation.etat === "DIS" ? "L'évaluation est déjà en disposition" : "Mettre en disposition"}
+                              onClick={() => evaluation.evaluation.etat == "ELA" && handleDisposition(evaluation.evaluation.idEvaluation)}
+                          >
+                            <FontAwesomeIcon
+                                icon={faShareNodes}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "ELA" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
+                            />
+                          </div>
                           <div
                             className={"tooltip"}
                             data-tip={`${
@@ -457,6 +494,7 @@ const EvaluationHome = () => {
                           </div>
                         </>
                       )}
+
 
                       {role == "ETU" && (
                         <>
@@ -493,6 +531,24 @@ const EvaluationHome = () => {
                     >
                       <DeleteEvaluationConfirmation
                         evaluation={evaluation.evaluation}
+                      />
+                    </dialog>
+                    <dialog
+                        id={`clouter-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                    >
+                      <ClouterEvaluationConfirmation
+                          evaluationId={evaluation.evaluation.idEvaluation}
+                          onClose={() => closeModal(`clouter-${evaluation.evaluation.idEvaluation}`)}
+                      />
+                    </dialog>
+                    <dialog
+                        id={`disposition-${evaluation.evaluation.idEvaluation}`}
+                        className="modal"
+                    >
+                      <DispositionEvaluationConfirmation
+                          evaluationId={evaluation.evaluation.idEvaluation}
+                          onClose={() => closeModal(`disposition-${evaluation.evaluation.idEvaluation}`)}
                       />
                     </dialog>
                     <dialog
