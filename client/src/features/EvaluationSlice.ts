@@ -1,7 +1,4 @@
-
-import { ReponseEvaluation } from './../types/types.d';
-
-import { EtudiantEvaluation, ReponseEvaluation } from './../types/types.d';
+import {ReponseEvaluation, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
@@ -13,6 +10,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "@/types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
+    statistiques: StatistiquesDTO[];
     reponsesEvaluation: ReponseEvaluation[];
     totalPages: number;
     loading: boolean;
@@ -21,6 +19,7 @@ interface EvaluationState {
 
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
+    statistiques: [] as StatistiquesDTO[],
     evaluations: [],
     reponsesEvaluation: [],
     totalPages: 0, 
@@ -192,9 +191,30 @@ const EvaluationSlice = createSlice({
                 state.reponsesEvaluation = action.payload;
                 state.loading = false;
             })
+            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
+                state.statistiques = action.payload;
+                state.loading = false;
+            })
+            .addCase(fetchStatistiquesAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
             
     },
 });
+
+export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number, { rejectValue: string }>(
+    "evaluations/fetchStatistiquesAsync",
+    async (evaluationId, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<StatistiquesDTO[]>(`/evaluations/statistiques/${evaluationId}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des statistiques");
+        }
+    }
+);
+
+
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;

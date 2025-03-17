@@ -17,6 +17,7 @@ import DetailsEvaluation from "./components/Evaluations/DetailsEvaluation.tsx";
 import {ToastContainer} from "react-toastify";
 import RepondreEvaluation from "./components/Evaluations/RepondreEvaluation.tsx";
 import ListeEvaluationReponses from "./components/Evaluations/ListeEvaluationReponses.tsx";
+import StatistiquesEvaluation from "@/components/Evaluations/StatistiquesEvaluation.tsx";
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="evaluations/:evaluationId" element={<DetailsEvaluation />} />
+              <Route path="evaluations/statistiques/:evaluationId" element={<StatistiquesEvaluation/>} />
               <Route path="evaluations/repondre/:evaluationId" element={<RepondreEvaluation />} />
               <Route path="evaluations/reponses/:evaluationId" element={<ListeEvaluationReponses />} />
               <Route path="rubriques" element={<RubriqueHome />} />
