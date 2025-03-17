@@ -226,7 +226,7 @@ const DetailsEvaluation = () => {
           <div className="justify-start hover:cursor-pointer hover:transition hover:-translate-x-1 duration-300">
             <IoMdArrowBack
               size={25}
-              onClick={() => navigate("/admin/home/evaluations")}
+              onClick={() => navigate("/user/home/evaluations")}
             />
           </div>
           <h1 className="text-center text-2xl font-bold">
@@ -240,13 +240,15 @@ const DetailsEvaluation = () => {
                 data-tip={
                   evaluation.etat === "CLO"
                     ? "Cette évaluation est clôturée et ne peut pas être modifiée"
+                    : evaluation.etat === "DIS"
+                    ? "Cette évaluation est mise en disposition et ne peut pas être modifiée"
                     : "Modifier l'évaluation"
                 }
               >
                 <BiSolidEdit
                   size={25}
                   className={`cursor-pointer ${
-                    evaluation.etat === "CLO"
+                    (evaluation.etat === "CLO" || evaluation.etat === "DIS")
                       ? "text-gray-400 hover:cursor-not-allowed"
                       : ""
                   }`}

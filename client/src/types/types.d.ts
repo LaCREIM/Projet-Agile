@@ -180,10 +180,22 @@ export interface GetEvaluationDTO {
     droit: Droit
 }
 
-export interface EtudiantEvaluation{
-    
-}
 
+interface Evaluation {
+    noEvaluation: number;
+    codeUE: string; 
+    designation: string; 
+    debutReponse: string; 
+    finReponse: string; 
+    etat: string; 
+    periode: string; 
+};
+
+export interface EtudiantEvaluation{
+    anneeUniversitaire: string;
+    nomFormation: string;
+    evaluations: Evaluation[];
+}
 
 export interface Formation {
     codeFormation: string;
@@ -262,13 +274,14 @@ export interface QuestionP {
     minQualificatif: string;
 }
 export interface Question {
+    id: number;
     idQuestion: number;
-    type: string;
     noEnseignant: number;
-    idQualificatif: number;
+    idQualificatif: Qualificatif;
     maxQualificatif: string;
     minQualificatif: string;
     intitule: string;
+    type: string;
 }
 
 export interface ReponseEvaluation {

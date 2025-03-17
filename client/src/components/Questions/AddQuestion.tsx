@@ -5,8 +5,9 @@ import {
   createQuestionAsync,
   createQuestionPersoAsync,
   getAllQuestionsPersoAsync,
+  Question,
 } from "../../features/QuestionSlice";
-import { Question, Qualificatif } from "../../types/types";
+import {  Qualificatif, QuestionP } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
 
@@ -28,6 +29,9 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     intitule: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [questionToSend, setQuestionToSend] = useState<QuestionP>(
+    {} as QuestionP
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -47,61 +51,71 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     const selectedQualificatif = qualificatifs.find(
       (qual) => qual.id === Number(e.target.value)
     );
+
     setQuestion((prev) => ({
       ...prev,
+      idQuestion: prev.idQuestion || -1,
       idQualificatif: selectedQualificatif?.id || -1,
       maxQualificatif: selectedQualificatif?.maximal || "",
       minQualificatif: selectedQualificatif?.minimal || "",
+      intitule: prev.intitule,
+      type: prev.type,
+      noEnseignant: prev.noEnseignant,
     }));
   };
 
   const canSave =
     question.intitule.trim() !== "" && question.idQualificatif !== -1;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-    
-      if (!canSave) return;
-    
-      const role = localStorage.getItem("role");
-      const userId = localStorage.getItem("id");
-      console.log("role", role);
-      console.log("userId", userId);
-      if (!userId) {
-        toast.error("Utilisateur non identifié !");
-        setError("Impossible de récupérer l'identifiant de l'utilisateur.");
-        return;
-      }
-    
-      const isEnseignant = role === "ENS";
-      const questionToSend = question;
-      questionToSend.noEnseignant = Number(userId) ;
-      const action = isEnseignant
-        ? createQuestionPersoAsync(questionToSend)
-        : createQuestionAsync(questionToSend);
-    
-      try {
-        const res = await dispatch(action);
-    
-        if (res.meta.requestStatus === "fulfilled") {
-          toast.success("Question ajoutée avec succès !");
-        if(role === "ADM") {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!canSave) return;
+
+    const role = localStorage.getItem("role");
+    const userId = localStorage.getItem("id");
+    console.log("role", role);
+    console.log("userId", userId);
+    if (!userId) {
+      toast.error("Utilisateur non identifié !");
+      setError("Impossible de récupérer l'identifiant de l'utilisateur.");
+      return;
+    }
+
+    const isEnseignant = role === "ENS";
+    setQuestionToSend((prev) => ({
+      ...prev,
+      idQualificatif: question.idQualificatif,
+      maxQualificatif: question.maxQualificatif ?? "",
+      minQualificatif: question.minQualificatif ?? "",
+      intitule: prev.intitule,
+      noEnseignant: question.noEnseignant,
+    }));
+    questionToSend.noEnseignant = Number(userId);
+    const action = isEnseignant
+      ? createQuestionPersoAsync(question)
+      : createQuestionAsync(question);
+
+    try {
+      const res = await dispatch(action);
+
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success("Question ajoutée avec succès !");
+        if (role === "ADM") {
           dispatch(getAllQuestionsPersoAsync({ idEnseignant: 0 }));
         } else {
-            dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
-        }          
-        handleReset();
-        } else {
-          console.error("Erreur lors de l'ajout :", res.payload);
-          toast.error(res.payload as string);
-          setError(res.payload as string);
+          dispatch(getAllQuestionsPersoAsync({ idEnseignant: Number(userId) }));
         }
-      } catch (err) {
-        console.error("Exception lors de l'ajout de la question :", err);
-        toast.error("Une erreur est survenue.");
+        handleReset();
+      } else {
+        console.error("Erreur lors de l'ajout :", res.payload);
+        setError(res.payload as string);
       }
-    };    
-    
+    } catch (err) {
+      console.error("Exception lors de l'ajout de la question :", err);
+      toast.error("Une erreur est survenue.");
+    }
+  };
 
   const handleReset = () => {
     setQuestion({
@@ -109,8 +123,8 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
       type: "",
       noEnseignant: 0,
       idQualificatif: -1,
-      maxQualificatif: "", 
-      minQualificatif: "" ,
+      maxQualificatif: "",
+      minQualificatif: "",
       intitule: "",
     });
     setError(null);

@@ -104,13 +104,9 @@ public class EvaluationController {
         }
 
     }
-  /*   @GetMapping("/etudiant/{idEtudiant}")
-    public ResponseEntity<Map<String, Object>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
-        Map<String, Object> response = evaluationService.getEvaluationsByEtudiant(idEtudiant);
-        return ResponseEntity.ok(response);
-    }*/
+ 
 
-    @GetMapping("/etudiant/{idEtudiant}")
+   /*  @GetMapping("/etudiant/{idEtudiant}")
     public ResponseEntity<Map<String, Object>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
         try {
             Map<String, Object> response = evaluationService.getEvaluationsByEtudiant(idEtudiant);
@@ -119,5 +115,11 @@ public class EvaluationController {
             return ResponseEntity.status(ex.getStatusCode())
                     .body(Collections.singletonMap("message", ex.getReason()));
         }
+    }*/
+
+    @GetMapping("/etudiant/{idEtudiant}")
+    public ResponseEntity<List<EvaluationDTO>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
+        List<EvaluationDTO> evaluations = evaluationService.getEvaluationsByEtudiant(idEtudiant);
+        return ResponseEntity.ok(evaluations);
     }
 }

@@ -60,7 +60,6 @@ public class EvaluationService {
 
     public List<EvaluationDTO> getEvaluationsByEnseignant(Long id) {
         List<Evaluation> evaluations = evaluationRepository.findByIdEnseignantEvaluationSorted(id);
-
         return evaluations.stream().map(this::mapEvaulation).collect(Collectors.toList());
     }
 
@@ -196,11 +195,11 @@ public class EvaluationService {
 
     }
 
-    private EvaluationDTO mapEvaulation(Evaluation evaluation) {
+    public EvaluationDTO mapEvaulation(Evaluation evaluation) {
         return getEvaluationDTO(evaluation);
     }
 
-    public Map<String, Object> getEvaluationsByEtudiant(String idEtudiant) {
+    /*public Map<String, Object> getEvaluationsByEtudiant(String idEtudiant) {
         Etudiant etudiant = etudiantRepository.findById(idEtudiant)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
     
@@ -236,6 +235,32 @@ public class EvaluationService {
         response.put("evaluations", evaluationList);
     
         return response;
+    }*/
+
+    public List<EvaluationDTO> getEvaluationsByEtudiant(String idEtudiant) {
+        Etudiant etudiant = etudiantRepository.findById(idEtudiant)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
+
+        String codeFormation = etudiant.getCodeFormation();
+        String anneeUniversitaire = etudiant.getAnneeUniversitaire();
+
+        // Vérification que la formation existe et récupération du nom
+        String nomFormation = formationRepository.findById(codeFormation)
+                .map(formation -> formation.getNomFormation())
+                .orElse("Formation inconnue");
+
+        // Récupération des évaluations qui ne sont pas en cours d'élaboration
+        List<Evaluation> evaluations = evaluationRepository.findByPromotionAndEtatNotELA(codeFormation, anneeUniversitaire);
+
+        // Conversion des évaluations en DTO
+        return evaluations.stream()
+                .map(evaluation -> {
+                    EvaluationDTO dto = EvaluationMapper.toDTO(evaluation, uniteEnseignementRepository);
+                    dto.setNomFormation(nomFormation);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
-    
 }
+    
+

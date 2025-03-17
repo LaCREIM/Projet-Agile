@@ -1,3 +1,4 @@
+import { EtudiantEvaluation } from './../types/types.d';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -8,6 +9,7 @@ import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
+
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -16,7 +18,8 @@ interface EvaluationState {
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
-    totalPages: 0,  // Ajout du total de pages
+
+    totalPages: 0, 
     loading: false,
     error: null,
 };
@@ -36,12 +39,26 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
 
 export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get<GetEvaluationDTO[]>(`/evaluations/etudiants/${localStorage.getItem("id") }`);
-            return response.data;
+            const response = await axiosInstance.get<EvaluationDTO[]>(`/evaluations/etudiant/${localStorage.getItem("id")}`);
+
+            // Transformer les données en GetEvaluationDTO
+            const evaluationsWithDroit: GetEvaluationDTO[] = response.data.map((evaluation) => ({
+                evaluation,
+                droit: {
+                    idEvaluation: -1,
+                    idEnseignant: -1,
+                    nom: "",
+                    prenom: "",
+                    consultation: "O", // Par défaut, l'étudiant a le droit de consultation
+                    duplication: "N", // Par défaut, l'étudiant n'a pas le droit de duplication
+                },
+            }));
+
+            return evaluationsWithDroit;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des Evaluations");
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des évaluations");
         }
     }
 );
@@ -114,6 +131,12 @@ const EvaluationSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchEvaluationAsync.fulfilled, (state, action: PayloadAction<GetEvaluationDTO[]>) => {
+                state.evaluations = action.payload;
+                state.loading = false;
+            })
+            .addCase(fetchEvaluationByEtuAsync.fulfilled, (state, action: PayloadAction<GetEvaluationDTO[]>) => {
+                console.log("action.payload", action.payload);
+                
                 state.evaluations = action.payload;
                 state.loading = false;
             })

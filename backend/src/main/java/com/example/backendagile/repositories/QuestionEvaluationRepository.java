@@ -10,5 +10,8 @@ public interface QuestionEvaluationRepository extends JpaRepository<QuestionEval
     @Query("SELECT COUNT(q) > 0 FROM QuestionEvaluation q WHERE q.idQuestion.id = ?1")
     boolean existsByQuestionId(Long id);
 
+    @Query("SELECT q FROM QuestionEvaluation q WHERE q.idRubriqueEvaluation.id = ?1")
     List<QuestionEvaluation> findQuestionEvaluationsById (Long IdRubriqueEvaluation );
+
+    
 }

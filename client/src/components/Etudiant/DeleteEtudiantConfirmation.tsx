@@ -23,7 +23,7 @@ const DeleteEtudiantConfirmation = ({
       console.log(e);
       handleFetchByPage(currentPage);
       if (response?.type === "etudiants/deleteEtudiantAsync/rejected") {
-        toast.error(response.payload);
+        toast.error("Cet étudiant ne peux pas être supprimer!");
       } else if (response?.type === "etudiants/deleteEtudiantAsync/fulfilled") {
         toast.success(response.payload);
       }

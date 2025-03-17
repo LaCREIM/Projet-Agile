@@ -8,24 +8,34 @@ import { QuestionOrderDetails } from "./DetailsRubriques";
 interface QuestionListProps {
   questions: QuestionOrderDetails[];
   isEditing: boolean;
-  handleDeleteQuestion: (idRubrique: number, idQuestion: number) => void;
+  handleDeleteQuestion: (idQuestion: number) => void;
+  removedQuestions: number[];
 }
 
-const QuestionsList = ({ questions, isEditing, handleDeleteQuestion }: QuestionListProps) => {
+const QuestionsList = ({
+  questions,
+  isEditing,
+  handleDeleteQuestion,
+  removedQuestions,
+}: QuestionListProps) => {
   return (
     <div className="w-full space-y-4">
       <SortableContext
         items={questions.map((qst) => qst.idQuestion)}
         strategy={verticalListSortingStrategy}
       >
-        {questions.map((qst) => (
-          <QuestionDetails
-            key={qst.idQuestion}
-            question={qst}
-            isEditing={isEditing}
-            handleDeleteQuestion={handleDeleteQuestion}
-          />
-        ))}
+        {questions.map((qst) => {
+          const isRemoved = removedQuestions.includes(qst.idQuestion);
+          return (
+            <QuestionDetails
+              key={qst.idQuestion}
+              question={qst}
+              isEditing={isEditing}
+              handleDeleteQuestion={handleDeleteQuestion}
+              isRemoved={isRemoved}
+            />
+          );
+        })}
       </SortableContext>
     </div>
   );

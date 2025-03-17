@@ -102,7 +102,7 @@ export const getAllQuestionsPersoAsync = createAsyncThunk<
       const id = Number(idEnseignant);
       console.log("ID enseignant:", idEnseignant, "ID converti:", id);
       
-      const response = await axiosInstance.get(`/questionsPrs/std-prs/${id}`);
+      const response = await axiosInstance.get(`/questions/std-prs/${idEnseignant}`);
       console.log(`URL appelée : /questionsPrs/std-prs/${id}`);
       console.log("Données reçues :", response.data);
   
@@ -178,13 +178,20 @@ export const updateQuestionAsync = createAsyncThunk<
 >(
   "questions/update",
   async ({ id, data }, { rejectWithValue }) => {
+    const role = localStorage.getItem("role");
+    const type = role == "ENS" ? "QUP" : "QUS";
     try {
-      const questionSTd = {
-        idQualificatif: data.idQualificatif, // Assurez-vous qu'il est bien un Long
-        intitule: data.intitule
+      const questions :Question = {
+        idQualificatif: Number(id), // Assurez-vous qu'il est bien un Long
+        intitule: data.intitule,
+        maxQualificatif: data.maxQualificatif,
+        minQualificatif: data.minQualificatif,
+        noEnseignant: data.noEnseignant,
+        type: type,
+        idQuestion: data.idQuestion
       };
-      const response = await axiosInstance.put(`/questionsStd/${id}`, questionSTd);
-      console.log("Payload envoyé:", questionSTd);
+      const response = await axiosInstance.put(`/questions/${questions.idQuestion}`, questions);
+      console.log("Payload envoyé:", questions);
       console.log("Réponse API:", response.data);
       return response.data;
     } catch (error: any) {
