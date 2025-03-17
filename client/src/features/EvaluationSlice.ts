@@ -1,19 +1,15 @@
-
-import { ReponseEvaluation } from './../types/types.d';
-
-import { EtudiantEvaluation, ReponseEvaluation } from './../types/types.d';
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import {EvaluationDTO, GetEvaluationDTO} from "@/types/types";
+import {EvaluationDTO, GetEvaluationDTO, GetReponseEvaluation} from "@/types/types";
+import { ReponseEvaluation } from '@/components/Evaluations/stepper';
 
 
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
-    reponsesEvaluation: ReponseEvaluation[];
+    reponsesEvaluation: GetReponseEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -149,14 +145,26 @@ export const dispositionEvaluationAsync = createAsyncThunk<void, number, { rejec
 );
 
 
-export const getAllReponsesEvaluationAsync = createAsyncThunk<ReponseEvaluation[], number, { rejectValue: string }>(
+export const getAllReponsesEvaluationAsync = createAsyncThunk<GetReponseEvaluation[], number, { rejectValue: string }>(
     "evaluations/getAllReponsesEvaluationAsync",
     async (idEvaluation, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.get<ReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
+            const response = await axiosInstance.get<GetReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récuperation des résulats de l'évaluation");
+        }
+    }
+);
+
+export const envoyerReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, ReponseEvaluation, { rejectValue: string }>(
+    "evaluations/envoyerReponseEvaluationAsync",
+    async (reponse, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.post<ReponseEvaluation>(`/reponse-evaluation`, reponse);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de l'envoie du réponse de l'évaluation");
         }
     }
 );
@@ -188,7 +196,7 @@ const EvaluationSlice = createSlice({
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation[]>) => {
+            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
                 state.loading = false;
             })
