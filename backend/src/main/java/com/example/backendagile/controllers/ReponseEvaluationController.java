@@ -1,5 +1,6 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.QuestionStatistiqueDTO;
 import com.example.backendagile.dto.ReponseEvaluationDTO;
 import com.example.backendagile.dto.ReponseEvaluationPourEtudiantDTO;
 import com.example.backendagile.services.ReponseEvaluationService;
@@ -31,6 +32,12 @@ public class ReponseEvaluationController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/statistiques/{idEvaluation}")
+    public ResponseEntity<List<QuestionStatistiqueDTO>> getStatistiquesByEvaluation(@PathVariable Long idEvaluation) {
+        List<QuestionStatistiqueDTO> statistiques = reponseEvaluationService.getStatistiquesByEvaluation(idEvaluation);
+        return ResponseEntity.ok(statistiques);
     }
 
 

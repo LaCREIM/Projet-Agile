@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.backendagile.entities.ReponseEvaluation;
 import com.example.backendagile.entities.ReponseQuestion;
 
+import java.util.List;
+
 public interface ReponseQuestionRepository extends  JpaRepository<ReponseQuestion, ReponseEvaluation>{
     
     @Query("SELECT rq.positionnement FROM ReponseQuestion rq WHERE rq.id.idReponseEvaluation = ?1 AND rq.id.idQuestionEvaluation = ?2")
     Long findPositionnement(Long idReponseEval, Long idQuestionEval);
+
+    List<ReponseQuestion> findReponseQuestionByIdQuestionEvaluation_Id(Long idQuestionEvaluationId);
 }
