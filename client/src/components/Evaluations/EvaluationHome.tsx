@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
 import AddEvaluation from "./AddEvaluation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faCopy,
@@ -58,6 +58,7 @@ const EvaluationHome = () => {
   const [filterType, setFilterType] = useState<string>("");
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
+  const id = localStorage.getItem("id");
 
 
 // Add this function to handle the clouter action
@@ -427,33 +428,29 @@ const EvaluationHome = () => {
                               className="text-black text-base cursor-pointer"
                             />
                           </div>
-                          <div
-                            className="tooltip"
-                            data-tip="Consulter les statistiques"
-                            onClick={() =>
-                              navigate(`statistiques/${evaluation.evaluation.idEvaluation}`)
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faSquarePollVertical}
-                              className="text-black text-base cursor-pointer"
-                            />
-                          </div>
 
                           <div
                               className="tooltip"
                               data-tip="Clôturer l'évaluation"
-                              onClick={() => evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
+                              onClick={() => evaluation.evaluation.noEnseignant == Number(id) && evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
                           >
                             <FontAwesomeIcon
                                 icon={faLock}
-                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "DIS" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.noEnseignant != Number(id) || evaluation.evaluation.etat != "DIS" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
                             />
                           </div>
 
                           <div
                               className="tooltip"
-                              data-tip={evaluation.evaluation.etat === "CLO" ? "L'évaluation est déjà cloitrée" : evaluation.evaluation.etat === "DIS" ? "L'évaluation est déjà en disposition" : "Mettre en disposition"}
+                              data-tip={
+                                evaluation.evaluation.etat === "CLO"
+                                    ? "L'évaluation est déjà cloitrée"
+                                    : evaluation.evaluation.etat === "DIS"
+                                        ? "L'évaluation est déjà en disposition"
+                                        : evaluation.evaluation.noEnseignant != Number(id)
+                                            ? "Vous n'avez pas le droit de mettre à disposition"
+                                            : "Mettre en disposition l'évaluation"
+                              }
                               onClick={() => evaluation.evaluation.etat == "ELA" && handleDisposition(evaluation.evaluation.idEvaluation)}
                           >
                             <FontAwesomeIcon
@@ -461,6 +458,19 @@ const EvaluationHome = () => {
                                 className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "ELA" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
                             />
                           </div>
+                          <div
+                              className="tooltip"
+                              data-tip="Consulter les statistiques"
+                              onClick={() =>
+                                  navigate(`statistiques/${evaluation.evaluation.idEvaluation}`)
+                              }
+                          >
+                            <FontAwesomeIcon
+                                icon={faSquarePollVertical}
+                                className="text-black text-base cursor-pointer"
+                            />
+                          </div>
+
                           <div
                             className={"tooltip"}
                             data-tip={`${
@@ -492,6 +502,7 @@ const EvaluationHome = () => {
                               }}
                             />
                           </div>
+
                         </>
                       )}
 
