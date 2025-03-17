@@ -57,4 +57,16 @@ public class PromotionDTO {
     private String nom;
 
     private String prenom;
+
+    @Override
+    public String toString() {
+        return "PromotionDTO{" +
+                "anneeUniversitaire='" + anneeUniversitaire + '\'' +
+                ", nomFormation='" + nomFormation + '\'' +
+                ", codeFormation='" + codeFormation + '\'' +
+                ", noEnseignant=" + noEnseignant +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                '}';
+    }
 }

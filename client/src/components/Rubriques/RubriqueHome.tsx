@@ -42,7 +42,7 @@ const RubriqueHome = () => {
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
   const [search, setSearch] = useState<string>("");
   const [sortField, setSortField] = useState<keyof Rubrique>("designation");
   const [sortOrder, setSortOrder] = useState<string>("asc");
@@ -56,7 +56,7 @@ const RubriqueHome = () => {
     const id = localStorage.getItem("id");
     let idEns = "";
     role === "ENS" && id ? (idEns = id) : (idEns = "0");
-    if (id) {
+    if (id != "0" ) {
       dispatch(
         searchRubriquesAsync({ enseignantId: idEns, page: 0, size: pageSize })
       )

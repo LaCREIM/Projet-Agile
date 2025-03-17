@@ -251,18 +251,67 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
           {editionMode && (
             <>
               <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-row gap-4">
+                  <input
+                    type="text"
+                    placeholder="Rechercher un enseignant..."
+                    className="input input-bordered w-[55%]"
+                    value={recherche}
+                    onChange={(e) => setRecherche(e.target.value)}
+                  />
+                  <div className="flex flex-row gap-10 w-fit">
+                    {/* Cases à cocher pour les droits */}
+                    <motion.label
+                      className="label cursor-pointer"
+                      variants={MotionVariant}
+                      initial="initial"
+                      animate={MotionVariant.final(1.5)}
+                    >
+                      <span className="label-text mr-2">Duplication</span>
+                      <input
+                        type="checkbox"
+                        disabled={!enseignantSelectionne}
+                        checked={droitsAjout.duplication}
+                        onChange={handleDuplicationChange}
+                        className="checkbox checkbox-sm"
+                      />
+                    </motion.label>
+                    <motion.label
+                      className="label cursor-pointer"
+                      variants={MotionVariant}
+                      initial="initial"
+                      animate={MotionVariant.final(2)}
+                    >
+                      <span className="label-text mr-2">Consultation</span>
+                      <input
+                        type="checkbox"
+                        disabled={
+                          !enseignantSelectionne || droitsAjout.duplication
+                        }
+                        checked={droitsAjout.consultation}
+                        onChange={handleConsultationChange}
+                        className="checkbox checkbox-sm"
+                      />
+                    </motion.label>
+                    <motion.button
+                      variants={MotionVariant}
+                      initial="initial"
+                      animate={MotionVariant.final(2.5)}
+                      className="btn btn-circle btn-sm"
+                      onClick={handleAjoutEnseignant}
+                      disabled={
+                        !droitsAjout.duplication && !droitsAjout.consultation
+                      }
+                    >
+                      +
+                    </motion.button>
+                  </div>
+                </div>
                 {/* Barre de recherche */}
-                <input
-                  type="text"
-                  placeholder="Rechercher un enseignant..."
-                  className="input input-bordered w-full"
-                  value={recherche}
-                  onChange={(e) => setRecherche(e.target.value)}
-                />
 
                 {/* Liste des enseignants filtrés (affichée uniquement lors de la recherche) */}
                 {recherche && (
-                  <div className="dropdown menu w-full rounded-box bg-base-100 shadow-sm relative z-50">
+                  <div className="dropdown menu w-[55%] rounded-box bg-base-100 shadow-sm relative z-50">
                     {enseignantsFiltres.length > 0 ? (
                       <>
                         {enseignantsFiltres.slice(0, 5).map((ens) => (
@@ -298,51 +347,6 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                   </div>
                 )}
               </div>
-
-              <div className="flex flex-row gap-10 w-full">
-                {/* Cases à cocher pour les droits */}
-                <motion.label
-                  className="label cursor-pointer"
-                  variants={MotionVariant}
-                  initial="initial"
-                  animate={MotionVariant.final(1.5)}
-                >
-                  <span className="label-text mr-2">Duplication</span>
-                  <input
-                    type="checkbox"
-                    disabled={!enseignantSelectionne}
-                    checked={droitsAjout.duplication}
-                    onChange={handleDuplicationChange}
-                    className="checkbox checkbox-sm"
-                  />
-                </motion.label>
-                <motion.label
-                  className="label cursor-pointer"
-                  variants={MotionVariant}
-                  initial="initial"
-                  animate={MotionVariant.final(2)}
-                >
-                  <span className="label-text mr-2">Consultation</span>
-                  <input
-                    type="checkbox"
-                    disabled={!enseignantSelectionne || droitsAjout.duplication}
-                    checked={droitsAjout.consultation}
-                    onChange={handleConsultationChange}
-                    className="checkbox checkbox-sm"
-                  />
-                </motion.label>
-              </div>
-
-              <motion.button
-                variants={MotionVariant}
-                initial="initial"
-                animate={MotionVariant.final(2.5)}
-                className="btn btn-circle btn-sm"
-                onClick={handleAjoutEnseignant}
-                disabled={!droitsAjout.duplication && !droitsAjout.consultation}
-              >
-                +
-              </motion.button>
             </>
           )}
         </div>
