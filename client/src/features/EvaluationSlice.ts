@@ -1,9 +1,13 @@
+
 import { ReponseEvaluation } from './../types/types.d';
+
+import { EtudiantEvaluation, ReponseEvaluation } from './../types/types.d';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
+import {EvaluationDTO, GetEvaluationDTO} from "@/types/types";
 
 
 interface EvaluationState {
@@ -122,6 +126,28 @@ export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], num
         }
     }
 );
+export const clouterEvaluationAsync = createAsyncThunk<void, number, { rejectValue: string }>(
+    "evaluations/clouterEvaluationAsync",
+    async (idEvaluation, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(`/evaluations/clouter/${idEvaluation}`);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la clôture de l'évaluation");
+        }
+    }
+);
+
+export const dispositionEvaluationAsync = createAsyncThunk<void, number, { rejectValue: string }>(
+    "evaluations/dispositionEvaluationAsync",
+    async (idEvaluation, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(`/evaluations/disposition/${idEvaluation}`);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la disposition de l'évaluation");
+        }
+    }
+);
+
 
 export const getAllReponsesEvaluationAsync = createAsyncThunk<ReponseEvaluation[], number, { rejectValue: string }>(
     "evaluations/getAllReponsesEvaluationAsync",
@@ -159,7 +185,6 @@ const EvaluationSlice = createSlice({
             .addCase(createEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })

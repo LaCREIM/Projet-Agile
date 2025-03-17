@@ -15,6 +15,14 @@ public class ReponseQuestionId implements java.io.Serializable {
     @Column(name = "ID_QUESTION_EVALUATION", nullable = false)
     private Long idQuestionEvaluation;
 
+    public ReponseQuestionId() {
+    }
+
+    public ReponseQuestionId(Long idReponseEvaluation, Long idQuestionEvaluation) {
+        this.idReponseEvaluation = idReponseEvaluation;
+        this.idQuestionEvaluation = idQuestionEvaluation;
+    }
+
     public Long getIdReponseEvaluation() {
         return idReponseEvaluation;
     }
