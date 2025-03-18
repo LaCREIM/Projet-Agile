@@ -159,6 +159,22 @@ const StudentHome = ({
     }
   };
 
+  useEffect(() => {
+    if (search.trim() === "") {
+      setfilteredEtudiants(etudiants);
+    } else {
+      setfilteredEtudiants(
+          etudiants.filter(
+              (etudiant) =>
+                  etudiant.nom.toLowerCase().includes(search.toLowerCase()) ||
+                  etudiant.prenom.toLowerCase().includes(search.toLowerCase()) ||
+                  etudiant.email.toLowerCase().includes(search.toLowerCase())
+          )
+      );
+    }
+  }, [search, etudiants]);
+
+
   const handleSortChange = (field: string) => {
     const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);

@@ -159,15 +159,19 @@ const RubriqueHome = () => {
               />
               <FaSearch />
             </label>
-            <select
-              className="select select-bordered grow w-full max-w-xs shadow-md"
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-            >
-              <option value="">Tous les types</option>
-              <option value="RBS">Rubriques standard</option>
-              <option value="RBP">Rubrique personnelle</option>
-            </select>
+            {
+              role == "ENS" ? (
+                  <>
+                    <select
+                        className="select select-bordered grow w-full max-w-xs shadow-md"
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                    >
+                      <option value="">Tous les types</option>
+                      <option value="RBS">Rubriques standard</option>
+                      <option value="RBP">Rubrique personnelle</option>
+                    </select>
+
             <div className="tooltip" data-tip="Réinitialiser le filtre">
               <button
                 onClick={() =>{ setSelectedType(""); setSearch("");}}
@@ -177,6 +181,9 @@ const RubriqueHome = () => {
                 <MdClear size={20} />
               </button>
             </div>
+                  </>
+              ) : null
+            }
           </div>
           <div className="tooltip" data-tip="Ajouter une rubrique">
             <button
@@ -220,7 +227,7 @@ const RubriqueHome = () => {
                 filteredRubriques.map((rubrique: Rubrique, index: number) => {
                   return (
                     <tr key={rubrique.id}>
-                      <td className="px-4 py-2 ">{rubrique.designation}</td>
+                      <td className="px-4 py-2 w-[30%]">{rubrique.designation}</td>
 
                       {role == "ENS" && (
                         <td className="px-4 py-2 ">

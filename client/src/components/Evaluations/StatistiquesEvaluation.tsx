@@ -80,7 +80,7 @@ const StatistiquesEvaluation: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-6 text-gray-700">
                                         <p><strong>Maximal:</strong> {stat.maximal}</p>
                                         <p><strong>Minimal:</strong> {stat.minimal}</p>
-                                        <p><strong>Moyenne positionnement:</strong> {stat.moyennePositionnement}</p>
+                                        <p><strong>Moyenne:</strong> {stat.moyennePositionnement.toFixed(2)}</p>
                                         <p><strong>Nombre de réponses:</strong> {stat.nbReponses}</p>
                                     </div>
 
@@ -102,10 +102,22 @@ const StatistiquesEvaluation: React.FC = () => {
                                                 options={{
                                                     responsive: true,
                                                     plugins: {legend: {display: false}},
-                                                    scales: {y: {beginAtZero: true, suggestedMax: 5}},
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true, suggestedMax: 5,
+                                                            ticks: {
+                                                                stepSize: 1,
+                                                                callback: function (value) {
+                                                                    if (Number.isInteger(value)) {
+                                                                        return value;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
                                                 }}
                                             />
-                                        </div>
+                                `        </div>
 
                                         <div className="w-full md:w-1/2">
                                             <Line
@@ -124,7 +136,18 @@ const StatistiquesEvaluation: React.FC = () => {
                                                 options={{
                                                     responsive: true,
                                                     plugins: {legend: {display: false}},
-                                                    scales: {y: {beginAtZero: true, suggestedMax: 5}},
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true, suggestedMax: 5, ticks: {
+                                                                stepSize: 1,
+                                                                callback: function (value) {
+                                                                    if (Number.isInteger(value)) {
+                                                                        return value;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
                                                 }}
                                             />
                                         </div>
