@@ -338,11 +338,11 @@ const PromotionHome = () => {
                           </div>
 
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip={
                               isEditable(promotion)
                                 ? "Modifier"
-                                : "Promotion non modifiable"
+                                : "Cette promotion est ancienne, elle ne peut pas être modifiée"
                             }
                           >
                             <FontAwesomeIcon
@@ -370,7 +370,7 @@ const PromotionHome = () => {
                             data-tip={
                               isEditable(promotion)
                                 ? "Supprimer"
-                                : "Promotion non supprimable"
+                                : "Cette promotion est ancienne, elle ne peut pas être supprimée"
                             }
                           >
                             <FontAwesomeIcon

@@ -70,7 +70,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
       if (!uboRegex.test(value)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          emailUboError: "L'email UBO doit être au format xxxx@univ-brest.fr.",
+          emailUboError: "L'email UBO doit être au format xxxx@univ-brest.fr",
         }));
       } else {
         setErrors((prevErrors) => ({
@@ -108,6 +108,12 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
           [`${name}Error`]: "Le numéro doit contenir exactement 10 chiffres.",
         }));
       } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [`${name}Error`]: null,
+        }));
+      }
+      if(formattedValue.length ===0){
         setErrors((prevErrors) => ({
           ...prevErrors,
           [`${name}Error`]: null,

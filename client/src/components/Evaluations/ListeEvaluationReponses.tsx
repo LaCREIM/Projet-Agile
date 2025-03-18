@@ -63,7 +63,7 @@ const ListeEvaluationReponses = () => {
   );
 
   const handleViewDetails = (reponseId: number) => {
-    navigate(`reponse/${reponseId}`); 
+    navigate(`/user/home/evaluations/reponse/${reponseId}`); 
   };
 
   const handleSort = (field: string) => {
@@ -150,7 +150,7 @@ const ListeEvaluationReponses = () => {
                 <td className="flex gap-3 justify-center items-center">
                   <div
                     className="tooltip"
-                    data-tip="Consulter les détails"
+                    data-tip="Consulter la réponse"
                     onClick={() =>
                       handleViewDetails(reponse.idReponseEvaluation)
                     }

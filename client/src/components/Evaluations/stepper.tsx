@@ -83,17 +83,15 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     if (!evaluationId) {
       return;
     }
-    const res = dispatch(
+    dispatch(
       fetchReponseEvaluationAsync({
         idEvaluation: Number(evaluationId),
         idEtudiant: localStorage.getItem("id") || "",
       })
     );
-    console.log("res", res);
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("stepsData", evaluation);
     setStepsData([
       ...(evaluation?.rubriques || []),
       {
@@ -109,9 +107,10 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         questions: [],
       } as RubriqueReponse,
     ]);
+    console.log("stepsData", evaluation);
+
 
     if (evaluation && evaluation.rubriques) {
-      // Initialize ratings with existing positionnement values
       const initialRatings: { [key: string]: number } = {};
       evaluation.rubriques.forEach((rubrique) => {
         rubrique.questions.forEach((question) => {
