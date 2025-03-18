@@ -1,11 +1,11 @@
-import { HoverEffect } from "../components/ui/card-hover-effect";
-import { AiOutlineTeam } from "react-icons/ai";
-import { LuSchool } from "react-icons/lu";
-import { IoSchool } from "react-icons/io5";
-import { PiSealQuestionFill } from "react-icons/pi";
-import { FaArrowsLeftRightToLine } from "react-icons/fa6";
-import { BsCardHeading } from "react-icons/bs";
-import { FaFileAlt } from "react-icons/fa";
+import {HoverEffect} from "../components/ui/card-hover-effect";
+import {AiOutlineTeam} from "react-icons/ai";
+import {LuSchool} from "react-icons/lu";
+import {IoSchool} from "react-icons/io5";
+import {PiSealQuestionFill} from "react-icons/pi";
+import {FaArrowsLeftRightToLine} from "react-icons/fa6";
+import {BsCardHeading} from "react-icons/bs";
+import {FaFileAlt} from "react-icons/fa";
 
 import NavBar from "../components/Admin/NavBar";
 
@@ -89,7 +89,6 @@ export function AdminLayout() {
         "Gestion des qualificatifs",
         "Gestion des enseignants",
         "Gestion des étudiants",
-        ,
       ].includes(link.title)
     );
   } else if (role === "ETU") {
@@ -98,11 +97,12 @@ export function AdminLayout() {
     );
   }
   return (
-    <>
+    <div className={"h-screen"}>
       <NavBar />
-      <div className="max-w-5xl h-screen mx-auto px-8">
+      <div className="max-w-5xl mx-auto px-8">
+        <h1 className="text-center pt-4 text-3xl font-bold my-4">Plateforme d'évaluation des enseignements</h1>
         <HoverEffect items={projets} />
       </div>
-    </>
+    </div>
   );
 }

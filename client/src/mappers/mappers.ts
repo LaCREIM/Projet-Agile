@@ -48,7 +48,7 @@ export const etatEvaluationMapper = (etat: string) => {
     const mapping: Record<string, string> = {
         ELA: "En cours d'élaboration",
         CLO: "Clôturée",
-        DIS: "Mise en disposition",
+        DIS: "Mise à disposition",
     };
 
     return mapping[etat] || "Inconnu";

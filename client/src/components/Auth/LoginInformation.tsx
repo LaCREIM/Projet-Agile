@@ -54,9 +54,8 @@ const LoginInformation = () => {
             token: ""
         });
 
-        console.log("User data:", userData);
-
-        navigate("/user");
+        if (userData.data.role === "ETU") navigate("/user/home/evaluations");
+        else navigate("/user");
     };
 
     return (
