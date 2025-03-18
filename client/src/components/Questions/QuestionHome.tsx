@@ -57,8 +57,6 @@ const QuestionHome = () => {
       const matchesSearch = Object.values(question).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
-
-      console.log(question);
       
        const matchesType = selectedType
          ? (selectedType === "QUP" && question.noEnseignant !== null) || // Question personnelle

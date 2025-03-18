@@ -22,7 +22,7 @@ const initialState: QuestionState = {
 export interface QuestionP {
     //id: number;4    noEnseignant: Enseignant;
     noEnseignant: number;
-   // type: string;
+    type: string;
     intitule: string;
     idQualificatif: number;
     maxQualificatif: string;
@@ -143,12 +143,13 @@ export const createQuestionPersoAsync = createAsyncThunk<
   async (question, { rejectWithValue }) => {
     try {
       const questionPrs: QuestionP = {
-        noEnseignant: Number(question.noEnseignant),
+        noEnseignant: question.noEnseignant,
         intitule: question.intitule.trim(),
         //id: Number(question.id),  // ➡️ Ajout du champ `idQuestion`
         idQualificatif: Number(question.idQualificatif),
-        maxQualificatif: String(question.maxQualificatif),  // ➡️ Conversion en string
-        minQualificatif: String(question.minQualificatif),  // ➡️ Conversion en string
+        maxQualificatif: String(question.maxQualificatif), // ➡️ Conversion en string
+        minQualificatif: String(question.minQualificatif),
+        type: "QUP"
       };
  
       console.log("Données envoyées :", questionPrs);
