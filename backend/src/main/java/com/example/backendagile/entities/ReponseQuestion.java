@@ -1,9 +1,13 @@
 package com.example.backendagile.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "REPONSE_QUESTION", schema = "DOSI_DEV", indexes = {
         @Index(name = "RPQ_RPE_FK_I", columnList = "ID_REPONSE_EVALUATION"),
@@ -27,37 +31,5 @@ public class ReponseQuestion {
 
     @Column(name = "POSITIONNEMENT")
     private Long positionnement;
-
-    public ReponseQuestionId getId() {
-        return id;
-    }
-
-    public void setId(ReponseQuestionId id) {
-        this.id = id;
-    }
-
-    public ReponseEvaluation getIdReponseEvaluation() {
-        return idReponseEvaluation;
-    }
-
-    public void setIdReponseEvaluation(ReponseEvaluation idReponseEvaluation) {
-        this.idReponseEvaluation = idReponseEvaluation;
-    }
-
-    public QuestionEvaluation getIdQuestionEvaluation() {
-        return idQuestionEvaluation;
-    }
-
-    public void setIdQuestionEvaluation(QuestionEvaluation idQuestionEvaluation) {
-        this.idQuestionEvaluation = idQuestionEvaluation;
-    }
-
-    public Long getPositionnement() {
-        return positionnement;
-    }
-
-    public void setPositionnement(Long positionnement) {
-        this.positionnement = positionnement;
-    }
 
 }

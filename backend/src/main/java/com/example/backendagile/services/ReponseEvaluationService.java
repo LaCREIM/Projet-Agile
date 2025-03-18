@@ -1,11 +1,5 @@
 package com.example.backendagile.services;
 
-
-import com.example.backendagile.dto.EvaluationDTO;
-import com.example.backendagile.dto.QuestionReponseDTO;
-import com.example.backendagile.dto.ReponseEvaluationDTO;
-import com.example.backendagile.dto.RubriqueReponseDTO;
-
 import com.example.backendagile.dto.*;
 import com.example.backendagile.entities.*;
 import com.example.backendagile.mapper.QuestionReponseMapper;
@@ -19,6 +13,7 @@ import com.example.backendagile.mapper.RubriqueReponseMapper;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -243,4 +238,54 @@ public class ReponseEvaluationService {
         }
     }
 
+
+    public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
+        List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionByIdQuestionEvaluation_Id(idEvaluation);
+
+        Map<Long, Double> moyennePositionnementParQuestion = reponses.stream()
+                .collect(Collectors.groupingBy(
+                        rq -> rq.getIdQuestionEvaluation().getId(),
+                        Collectors.averagingDouble(ReponseQuestion::getPositionnement)
+                ));
+
+        Map<Long, Long> nbReponsesParQuestion = reponses.stream()
+                .collect(Collectors.groupingBy(
+                        rq -> rq.getIdQuestionEvaluation().getId(),
+                        Collectors.counting()
+                ));
+
+        Map<Long, long[]> totalPositionnementParQuestion = reponses.stream()
+                .collect(Collectors.groupingBy(
+                        rq -> rq.getIdQuestionEvaluation().getId(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    long[] totals = new long[5];
+                                    for (ReponseQuestion rq : list) {
+                                        int positionnement = rq.getPositionnement().intValue();
+                                        if (positionnement >= 1 && positionnement <= 5) {
+                                            totals[positionnement - 1]++;
+                                        }
+                                    }
+                                    return totals;
+                                }
+                        )
+                ));
+
+        return moyennePositionnementParQuestion.entrySet().stream()
+                .map(entry -> {
+                    Long questionId = entry.getKey();
+                    ReponseQuestion rq = reponses.stream()
+                            .filter(r -> r.getIdQuestionEvaluation().getId().equals(questionId))
+                            .findFirst()
+                            .orElseThrow();
+                    String maximal = rq.getIdQuestionEvaluation().getIdQualificatif().getMaximal();
+                    String minimal = rq.getIdQuestionEvaluation().getIdQualificatif().getMinimal();
+                    String intitule = rq.getIdQuestionEvaluation().getIdQuestion().getIntitule();
+                    Long nbReponses = nbReponsesParQuestion.get(questionId);
+                    long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
+                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule, totalPositionnements);
+                })
+                .collect(Collectors.toList());
+    }
 }

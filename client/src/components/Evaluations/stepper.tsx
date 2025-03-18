@@ -8,6 +8,9 @@ import {
 } from "@material-tailwind/react";
 import { Rubrique } from "@/types/types";
 import Positionement from "./Positionement";
+import { useAppDispatch } from "@/hook/hooks";
+import { envoyerReponseEvaluationAsync } from "@/features/EvaluationSlice";
+import { useParams } from "react-router-dom";
 // import { toast } from "react-toastify";
 // import { useNavigate } from "react-router-dom";
 
@@ -34,7 +37,7 @@ interface RubriqueReponse {
   questions: QuestionReponse[];
 }
 
-interface ReponseEvaluation {
+export interface ReponseEvaluation {
   idEvaluation: number;
   idEtudiant: string;
   commentaire: string;
@@ -65,12 +68,14 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     { designation: "Commentaire", questions: [] },
     { designation: "Récapitulatif", questions: [] },
   ];
+  const { evaluationId } = useParams();
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
   const [hover, setHover] = useState<{ [key: number]: number }>({});
   const [activeStep, setActiveStep] = React.useState(0);
   const [isLastStep, setIsLastStep] = React.useState(false);
   const [isFirstStep, setIsFirstStep] = React.useState(false);
   const [comment, setComment] = useState("");
+  const dispatch = useAppDispatch();
   // const navigate = useNavigate();
 
   if (!rubriques || rubriques.length === 0) {
@@ -95,32 +100,31 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
   };
 
   const handleSubmit = async () => {
-    
     const reponseEvaluation: ReponseEvaluation = {
-      idEvaluation: 2, 
-      idEtudiant: localStorage.getItem("id") || "", 
+      idEvaluation: Number(evaluationId),
+      idEtudiant: localStorage.getItem("id") || "",
       commentaire: comment,
       noEnseignant: -1,
-      nomEnseignant: "", 
-      prenomEnseignant: "", 
-      codeFormation: "", 
-      anneeUniversitaire: "", 
-      codeUE: "", 
-      designationUE: "", 
-      nomFormation: "", 
-      noEvaluation: -1, 
-      designation: "", 
-      etat: "", 
-      periode: "", 
-      debutReponse: "", 
-      finReponse: "", 
+      nomEnseignant: "",
+      prenomEnseignant: "",
+      codeFormation: "",
+      anneeUniversitaire: "",
+      codeUE: "",
+      designationUE: "",
+      nomFormation: "",
+      noEvaluation: -1,
+      designation: "",
+      etat: "",
+      periode: "",
+      debutReponse: "",
+      finReponse: "",
       rubriques: rubriques.map((rubrique) => ({
-        idRubriqueEvaluation: -1, 
-        idRubrique: rubrique.id, 
+        idRubriqueEvaluation: -1,
+        idRubrique: rubrique.id,
         designation: rubrique.designation,
         questions: rubrique.questions.map((question) => ({
           idQuestion: question.id,
-          positionnement: ratings[question.id] || 0, 
+          positionnement: ratings[question.id] || 0,
           intitule: question.intitule,
           qualificatif: {
             maximal: question.maxQualificatif,
@@ -131,16 +135,17 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     };
 
     console.log(reponseEvaluation);
+    dispatch(envoyerReponseEvaluationAsync(reponseEvaluation));
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full px-4 md:px-24 py-4">
+    <div className="flex flex-col gap-3 mx-auto w-full px-4 md:px-24 py-4">
       <Stepper
         {...({} as React.ComponentProps<typeof Stepper>)}
         activeStep={activeStep}
         isLastStep={(value) => setIsLastStep(value)}
         isFirstStep={(value) => setIsFirstStep(value)}
-        className="w-full md:w-[80%] mx-auto"
+        className="w-[90%] md:w-[80%] mx-auto"
       >
         {stepsData.map((rubrique, index) => (
           <Step
@@ -160,7 +165,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                   }
                 >
                   <span className="hidden lg:inline max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
-                    {rubrique.designation}
+                    Étape {index + 1}
                   </span>
                   <span className="lg:hidden">Étape {index + 1}</span>
                 </Typography>
@@ -170,7 +175,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         ))}
       </Stepper>
 
-      <div className="mt-20 flex flex-col gap-4">
+      <div className="mt-20 flex flex-col gap-4 w-[90%] mx-auto">
         {activeStep !== rubriques.length &&
           activeStep !== stepsData.length - 1 && (
             <Typography
@@ -188,7 +193,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
               {...({} as React.ComponentProps<typeof Typography>)}
               className="text-gray-600"
             >
-              Ajoutez un commentaire :
+              Ajoutez un commentaire (facultatif):
             </Typography>
             <textarea
               className="w-full p-2 border border-gray-300 rounded"
@@ -209,6 +214,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {rubriques.map((rubrique, index) => (
                 <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                  
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"
@@ -252,8 +258,13 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             </div>
           </div>
         ) : (
-          rubriques[activeStep].questions.map((question) => (
+          <>
+          <h1 className="text-left font-bold mb-4 text-2xl">
+            {rubriques[activeStep].designation}
+          </h1>
+         { rubriques[activeStep].questions.map((question) => (
             <div key={question.id}>
+              
               <div className="flex flex-row justify-between">
                 <Typography
                   {...({} as React.ComponentProps<typeof Typography>)}
@@ -285,7 +296,8 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                 </div>
               </div>
             </div>
-          ))
+          ))}
+          </>
         )}
       </div>
 

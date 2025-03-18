@@ -15,6 +15,8 @@ import NotFound from "./layouts/NotFound";
 import RubriqueHome from "./components/Rubriques/RubriqueHome.tsx";
 import DetailsEvaluation from "./components/Evaluations/DetailsEvaluation.tsx";
 import {ToastContainer} from "react-toastify";
+import ConsulterReponseETD from "./components/Evaluations/ConsulterReponseETD";
+
 import RepondreEvaluation from "./components/Evaluations/RepondreEvaluation.tsx";
 import ListeEvaluationReponses from "./components/Evaluations/ListeEvaluationReponses.tsx";
 import StatistiquesEvaluation from "@/components/Evaluations/StatistiquesEvaluation.tsx";
@@ -57,6 +59,8 @@ function App() {
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="evaluations/:evaluationId" element={<DetailsEvaluation />} />
+               <Route path="evaluations/reponses/:evaluationId" element={<ConsulterReponseETD />} />
+
               <Route path="evaluations/statistiques/:evaluationId" element={<StatistiquesEvaluation/>} />
               <Route path="evaluations/repondre/:evaluationId" element={<RepondreEvaluation />} />
               <Route path="evaluations/reponses/:evaluationId" element={<ListeEvaluationReponses />} />

@@ -1,5 +1,6 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.QuestionStatistiqueDTO;
 import com.example.backendagile.dto.ReponseEvaluationDTO;
 import com.example.backendagile.dto.ReponseEvaluationPourEtudiantDTO;
 import com.example.backendagile.services.ReponseEvaluationService;
@@ -33,6 +34,12 @@ public class ReponseEvaluationController {
         }
     }
 
+    @GetMapping("/statistiques/{idEvaluation}")
+    public ResponseEntity<List<QuestionStatistiqueDTO>> getStatistiquesByEvaluation(@PathVariable Long idEvaluation) {
+        List<QuestionStatistiqueDTO> statistiques = reponseEvaluationService.getStatistiquesByEvaluation(idEvaluation);
+        return ResponseEntity.ok(statistiques);
+    }
+
     @PostMapping
     public ResponseEntity<String> createReponseEvaluation(@RequestBody ReponseEvaluationDTO reponseEvaluationDTO) {
         return ResponseEntity.ok(reponseEvaluationService.addReponseEvaluation(reponseEvaluationDTO));
@@ -47,8 +54,6 @@ public class ReponseEvaluationController {
         String result = reponseEvaluationService.updateReponseEvaluation(idEvaluation, idEtudiant, reponseEvaluationDTO);
         return ResponseEntity.ok(result);
     }
-
-
 
 
 }

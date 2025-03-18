@@ -358,7 +358,8 @@ export interface PromotionDetails {
     siglePro: string;
 }
 
-interface ReponseEvaluation {
+
+interface GetReponseEvaluation {
     idReponseEvaluation: number;
     idEvaluation: number;
     commentaire: string;
