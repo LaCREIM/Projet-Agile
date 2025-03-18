@@ -1,4 +1,4 @@
-import {ReponseEvaluation, StatistiquesDTO} from './../types/types.d';
+import { StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -14,7 +14,6 @@ interface EvaluationState {
     reponsesEvaluation: GetReponseEvaluation[];
     reponseEvaluation: ReponseEvaluation;
     statistiques: StatistiquesDTO[];
-    reponsesEvaluation: ReponseEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;

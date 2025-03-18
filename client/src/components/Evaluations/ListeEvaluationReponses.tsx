@@ -77,30 +77,34 @@ const ListeEvaluationReponses = () => {
 
   return (
     <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
-      <h1 className="text-xl font-bold">Réponses pour l'évaluation XXXX - M2DOSI : 2024-2025</h1>
+      <h1 className="text-xl font-bold">
+        Réponses pour l'évaluation XXXX - M2DOSI : 2024-2025
+      </h1>
 
+      <div className="flex flex-row w-[85%] gap-5 items-center mx-auto rounded-s-3xl bg-white text-md">
+        <div
+          className="flex items-center w-[85%] text-left gap-2 px-4 py-2 hover:cursor-pointer"
+          onClick={() => navigate("/user/home/evaluations")}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} />
+          Retournez à la liste des évaluations
+        </div>
+
+        {/* Barre de recherche */}
+        <div className="w-[85%] flex justify-between items-center mb-4">
+          <label className="input input-bordered flex items-center gap-2 shadow-md w-1/3">
+            <input
+              type="text"
+              className="grow placeholder:font-medium"
+              placeholder="Rechercher..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <FaSearch />
+          </label>
+        </div>
+      </div>
       {/* Bouton "Retournez à la liste des évaluations" */}
-      <div
-        className="flex items-center w-[85%] text-left gap-2 mb-4 px-4 py-2 hover:cursor-pointer"
-        onClick={() => navigate("/user/home/evaluations")}
-      >
-        <FontAwesomeIcon icon={faArrowLeft} />
-        Retournez à la liste des évaluations
-      </div>
-
-      {/* Barre de recherche */}
-      <div className="w-[85%] flex justify-between items-center mb-4">
-        <label className="input input-bordered flex items-center gap-2 shadow-md w-1/3">
-          <input
-            type="text"
-            className="grow placeholder:font-medium"
-            placeholder="Rechercher..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <FaSearch />
-        </label>
-      </div>
 
       {/* Tableau des réponses */}
       <table className="table table-zebra w-[85%]">

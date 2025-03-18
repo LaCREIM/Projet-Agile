@@ -59,7 +59,7 @@ function App() {
               <Route path="questions" element={<QuestionHome />} />
               <Route path="evaluations" element={<EvaluationHome />} />
               <Route path="evaluations/:evaluationId" element={<DetailsEvaluation />} />
-               <Route path="evaluations/reponses/:evaluationId" element={<ConsulterReponseETD />} />
+               <Route path="evaluations/reponse/:evaluationId" element={<ConsulterReponseETD />} />
 
               <Route path="evaluations/statistiques/:evaluationId" element={<StatistiquesEvaluation/>} />
               <Route path="evaluations/repondre/:evaluationId" element={<RepondreEvaluation />} />

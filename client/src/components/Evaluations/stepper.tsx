@@ -8,9 +8,13 @@ import {
 } from "@material-tailwind/react";
 import Positionement from "./Positionement";
 import { useAppDispatch, useAppSelector } from "@/hook/hooks";
-import { envoyerReponseEvaluationAsync, fetchReponseEvaluationAsync, getReponseEvaluation } from "@/features/EvaluationSlice";
+import {
+  envoyerReponseEvaluationAsync,
+  fetchReponseEvaluationAsync,
+} from "@/features/EvaluationSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "@/api/store";
+import { toast } from "react-toastify";
 
 interface Qualificatif {
   maximal: string;
@@ -91,9 +95,36 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     console.log("stepsData", evaluation);
     setStepsData([
       ...(evaluation?.rubriques || []),
-      { designation: "Commentaire", questions: [] },
-      { designation: "Récapitulatif", questions: [] },
+      {
+        idRubriqueEvaluation: -1,
+        idRubrique: -1,
+        designation: "Commentaire",
+        questions: [],
+      } as RubriqueReponse,
+      {
+        idRubriqueEvaluation: -1,
+        idRubrique: -1,
+        designation: "Récapitulatif",
+        questions: [],
+      } as RubriqueReponse,
     ]);
+
+    if (evaluation && evaluation.rubriques) {
+      // Initialize ratings with existing positionnement values
+      const initialRatings: { [key: string]: number } = {};
+      evaluation.rubriques.forEach((rubrique) => {
+        rubrique.questions.forEach((question) => {
+          const compositeKey = `${rubrique.idRubrique}-${question.idQuestion}`;
+          initialRatings[compositeKey] = question.positionnement;
+        });
+      });
+      setRatings(initialRatings);
+
+      // Initialize comment with existing comment
+      if (evaluation.commentaire) {
+        setComment(evaluation.commentaire);
+      }
+    }
   }, [evaluation]);
 
   if (!rubriques || rubriques.length === 0) {
@@ -169,15 +200,21 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             maximal: question.qualificatif.maximal,
             minimal: question.qualificatif.minimal,
           },
-        })),
+        })).filter((question) => question.positionnement !== 0),
       })),
     };
-
-    console.log(reponseEvaluation);
     const res = await dispatch(
       envoyerReponseEvaluationAsync(reponseEvaluation)
     );
-    console.log(res);
+
+    if (res.type === "evaluations/envoyerReponseEvaluationAsync/fulfilled") {
+      toast.success("Réponse envoyée avec succès");
+      setTimeout(() => {
+        navigate("/user/home/evaluations");
+      }, 3000);
+    } else {
+      toast.error("Erreur lors de l'envoi de la réponse");
+    }
   };
 
   return (
@@ -232,7 +269,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                   >
                     {question.intitule}
                   </Typography>
-                  <div className="w-fit grid grid-cols-3 items-center">
+                  <div className="w-fit grid grid-cols-3 gap-7 items-center">
                     <Typography
                       {...({} as React.ComponentProps<typeof Typography>)}
                       className="text-gray-600 text-left"
