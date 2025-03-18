@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
-import { FiLogOut } from "react-icons/fi";
-import { AiOutlineTeam } from "react-icons/ai";
-import { LuSchool } from "react-icons/lu";
-import { IoSchool } from "react-icons/io5";
-import { PiSealQuestionFill } from "react-icons/pi";
-import { FaArrowsLeftRightToLine } from "react-icons/fa6";
-import { FaFileAlt } from "react-icons/fa";
-import { BsCardHeading } from "react-icons/bs";
-import { Link, Outlet } from "react-router-dom";
-import { motion } from "framer-motion";
-import { cn } from "../../lib/utils";
+import {useState} from "react";
+import {Sidebar, SidebarBody, SidebarLink} from "../ui/sidebar";
+import {FiLogOut} from "react-icons/fi";
+import {AiOutlineTeam} from "react-icons/ai";
+import {LuSchool} from "react-icons/lu";
+import {IoSchool} from "react-icons/io5";
+import {PiSealQuestionFill} from "react-icons/pi";
+import {FaArrowsLeftRightToLine} from "react-icons/fa6";
+import {FaFileAlt} from "react-icons/fa";
+import {BsCardHeading} from "react-icons/bs";
+import {Link, Outlet} from "react-router-dom";
+import {motion} from "framer-motion";
+import {cn} from "../../lib/utils";
 
 
 export function Dashboard() {

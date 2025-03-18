@@ -3,10 +3,10 @@ import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
 import AddEvaluation from "./AddEvaluation";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
-  faArrowRight,
   faCopy,
   faEye,
   faLock,
+  faPenToSquare,
   faShareNodes,
   faSquarePollVertical,
   faTrash,
@@ -23,7 +23,6 @@ import {GetEvaluationDTO} from "../../types/types";
 import {RootState} from "../../api/store";
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-
 import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
 import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
 import {etatEvaluationMapper} from "../../mappers/mappers";
@@ -147,7 +146,6 @@ const EvaluationHome = () => {
   };
 
   const handleInspect = (evaluationId: number) => {
-
     if (localStorage.getItem("role") === "ENS") navigate(`${evaluationId}`);
     else if (localStorage.getItem("role") === "ETU")
       navigate(`repondre/${evaluationId}`);
@@ -345,16 +343,19 @@ const EvaluationHome = () => {
                     {localStorage.getItem("role") === "ENS" ? (
                       <>
                         <td className="px-4 py-2">
+                        <span
+                            className={`badge  text-white ${evaluation.evaluation.etat === 'DIS' ? 'badge-warning' : evaluation.evaluation.etat === 'ELA' ? 'badge-success' : 'badge-error'}`}>
                           {etatEvaluationMapper(evaluation.evaluation.etat)}
+                        </span>
                         </td>
                         <td className="px-4 py-2">
                           {evaluation.evaluation.noEnseignant ===
                           Number(localStorage.getItem("id")) ? (
-                            <div className="badge badge-accent text-white">
+                              <div className="badge badge-success text-white">
                               {"Personnelle"}
                             </div>
                           ) : (
-                            <div className="badge badge-success text-white">
+                              <div className="badge badge-warning text-white">
                               {"Partagée"}
                             </div>
                           )}
@@ -418,22 +419,38 @@ const EvaluationHome = () => {
                           </div>
                           <div
                             className="tooltip"
-                            data-tip="Consulter les réponses"
+                            data-tip={
+                              evaluation.evaluation.noEnseignant != Number(id)
+                                  ? "Vous n'avez pas le droit de clôturer"
+                                  : evaluation.evaluation.etat == "CLO"
+                                      ? "L'évaluation est déjà cloitrée"
+                                      : evaluation.evaluation.etat == "ELA"
+                                          ? "L'évaluation est déjà en cours d'élaboration"
+                                          : "Cloîtrer l'évaluation"
+                            }
                             onClick={() =>
-                              navigate(
+                                evaluation.evaluation.etat != "ELA" && navigate(
                                 `reponses/${evaluation.evaluation.idEvaluation}`
                               )
                             }
                           >
                             <LuArrowRight
                               size={20}
-                              className="text-black text-base cursor-pointer"
+                              className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat == "ELA" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
                             />
                           </div>
 
                           <div
                               className="tooltip"
-                              data-tip="Clôturer l'évaluation"
+                              data-tip={
+                                evaluation.evaluation.etat === "CLO"
+                                    ? "L'évaluation est déjà clôturée"
+                                    : evaluation.evaluation.etat === "DIS"
+                                        ? "L'évaluation est déjà mise à disposition"
+                                        : evaluation.evaluation.noEnseignant != Number(id)
+                                            ? "Vous n'avez pas le droit de clôturée"
+                                            : "Cloîtrer l'évaluation"
+                              }
                               onClick={() => evaluation.evaluation.noEnseignant == Number(id) && evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
                           >
                             <FontAwesomeIcon
@@ -446,9 +463,9 @@ const EvaluationHome = () => {
                               className="tooltip"
                               data-tip={
                                 evaluation.evaluation.etat === "CLO"
-                                    ? "L'évaluation est déjà cloitrée"
+                                    ? "L'évaluation est déjà clôturée"
                                     : evaluation.evaluation.etat === "DIS"
-                                        ? "L'évaluation est déjà "
+                                        ? "L'évaluation est déjà mise à disposition"
                                         : evaluation.evaluation.noEnseignant != Number(id)
                                             ? "Vous n'avez pas le droit de mettre à disposition"
                                             : "Mettre à disposition l'évaluation"
@@ -457,19 +474,19 @@ const EvaluationHome = () => {
                           >
                             <FontAwesomeIcon
                                 icon={faShareNodes}
-                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "ELA" ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat != "ELA" || evaluation.evaluation.noEnseignant != Number(id) ? "text-gray-400 hover:cursor-not-allowed" : ""}`}
                             />
                           </div>
                           <div
                               className="tooltip"
                               data-tip="Consulter les statistiques"
                               onClick={() =>
-                                  navigate(`statistiques/${evaluation.evaluation.idEvaluation}`)
+                                  evaluation.evaluation.etat != "ELA" && navigate(`statistiques/${evaluation.evaluation.idEvaluation}`)
                               }
                           >
                             <FontAwesomeIcon
                                 icon={faSquarePollVertical}
-                                className="text-black text-base cursor-pointer"
+                                className={`text-black text-base cursor-pointer ${evaluation.evaluation.etat == 'ELA' ? 'text-gray-400 hover:cursor-not-allowed' : ''}`}
                             />
                           </div>
 
@@ -519,7 +536,7 @@ const EvaluationHome = () => {
                             }
                           >
                             <FontAwesomeIcon
-                              icon={faArrowRight}
+                                icon={faPenToSquare}
                               className="text-black text-base cursor-pointer"
                             />
                           </div>
@@ -535,8 +552,21 @@ const EvaluationHome = () => {
                               className="text-black text-base cursor-pointer"
                             />
                           </div>
+                          <div
+                              className="tooltip"
+                              data-tip="Consulter les statistiques"
+                              onClick={() =>
+                                  navigate(`statistiques/${evaluation.evaluation.idEvaluation}`)
+                              }
+                          >
+                            <FontAwesomeIcon
+                                icon={faSquarePollVertical}
+                                className="text-black text-base cursor-pointer"
+                            />
+                          </div>
                         </>
                       )}
+
                     </td>
                     <dialog
                       id={`delete-${evaluation.evaluation.idEvaluation}`}
