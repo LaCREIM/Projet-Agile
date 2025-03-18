@@ -245,7 +245,8 @@ public class ReponseEvaluationService {
             return "Réponse d'évaluation mise à jour avec succès";
 
         } catch (Exception e) {
-            return e.getMessage();
+//            return e.getMessage();
+            return "Erreur lors de la mise à jour de la réponse à l'évaluation";
         }
     }
 
