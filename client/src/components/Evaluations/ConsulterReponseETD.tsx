@@ -37,7 +37,7 @@ const ConsulterReponseETD = () => {
       {/* En-tête */}
       <div className="flex flex-row items-center justify-between w-full px-14 py-5 bg-white shadow-md rounded-lg">
         <IoMdArrowBack size={25} className="cursor-pointer" onClick={() => navigate("/user/home/evaluations")} />
-        <h1 className="text-2xl font-bold">Réponse de l'évaluation</h1>
+        <h1 className="text-2xl font-bold">Mes réponse pour l'évaluation</h1>
         <div></div> {/* Espace vide pour équilibrer la mise en page */}
       </div>
 

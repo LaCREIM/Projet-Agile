@@ -159,7 +159,7 @@ const RubriqueHome = () => {
               />
               <FaSearch />
             </label>
-            <select
+            {role=="ENS" ? <select
               className="select select-bordered grow w-full max-w-xs shadow-md"
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
@@ -167,7 +167,7 @@ const RubriqueHome = () => {
               <option value="">Tous les types</option>
               <option value="RBS">Rubriques standard</option>
               <option value="RBP">Rubrique personnelle</option>
-            </select>
+            </select> : null}
             <div className="tooltip" data-tip="Réinitialiser le filtre">
               <button
                 onClick={() =>{ setSelectedType(""); setSearch("");}}

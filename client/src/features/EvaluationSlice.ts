@@ -1,5 +1,4 @@
 import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
-import { StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -100,7 +99,7 @@ export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, {
     }
 );
 export const fetchReponseEvaluationAsyncETD = createAsyncThunk<ReponseEvaluationDTO, { idEvaluation: number; idEtudiant: string }, { rejectValue: string }>(
-    "evaluations/fetchReponseEvaluationAsync",
+    "evaluations/fetchReponseEvaluationAsyncETD",
     async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<ReponseEvaluationDTO>(
@@ -250,8 +249,6 @@ const EvaluationSlice = createSlice({
         })       
             .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
-
-
                 state.loading = false;
             })
             .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action) => {
