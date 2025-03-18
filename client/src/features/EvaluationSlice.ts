@@ -20,7 +20,6 @@ const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     evaluations: [],
     reponseEvaluation: null,
-
     totalPages: 0,
     loading: false,
     error: null,

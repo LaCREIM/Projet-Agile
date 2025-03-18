@@ -127,6 +127,8 @@ const EvaluationHome = () => {
   };
 
   const handleInspect = (evaluationId: number) => {
+    if (role === "ETU") navigate(`reponses/${evaluationId}`);
+    else
     navigate(`${evaluationId}`);
   };
 
