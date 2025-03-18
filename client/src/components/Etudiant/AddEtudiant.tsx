@@ -457,7 +457,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
                 value={student.ville}
                 onChange={handleChange}
                 className="grow"
-                placeholder="Ex: Brest"
+                placeholder="Ex: Maroc"
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
