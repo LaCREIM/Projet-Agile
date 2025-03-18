@@ -116,7 +116,7 @@ public class EtudiantController {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
-             etudiantService.update(id, etudiantDTO);
+            etudiantService.update(id, etudiantDTO);
             return ResponseEntity.ok("Étudiant mis à jour avec succès.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la mise à jour de l'étudiant. " + e.getMessage());
@@ -146,12 +146,12 @@ public class EtudiantController {
         return ResponseEntity.ok("Étudiant supprimé avec succès.");
     }
 
-    
+
     @GetMapping("/search")
-public ResponseEntity<List<Etudiant>> searchEtudiants(@RequestParam String keyword) {
-    List<Etudiant> result = etudiantService.searchEtudiants(keyword);
-    return ResponseEntity.ok(result);
-}
+    public ResponseEntity<List<Etudiant>> searchEtudiants(@RequestParam String keyword) {
+        List<Etudiant> result = etudiantService.searchEtudiants(keyword);
+        return ResponseEntity.ok(result);
+    }
 
 }
 

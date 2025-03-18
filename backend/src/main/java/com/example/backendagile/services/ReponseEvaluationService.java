@@ -196,17 +196,18 @@ public class ReponseEvaluationService {
             }
 
             // Récupérer la réponse d'évaluation existante
-            ReponseEvaluation reponseEvaluation= new ReponseEvaluation();
-            ReponseEvaluation reponseEvaluation1 = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
-            if (reponseEvaluation1 == null) {
+//            ReponseEvaluation reponseEvaluation= null;
+            ReponseEvaluation reponseEvaluation = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
+            if (reponseEvaluation == null) {
 //                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réponse d'évaluation non trouvée");
-                reponseEvaluation1.setIdEvaluation(evaluation);
-                reponseEvaluation1.setNoEtudiant(etudiant.get());
-                reponseEvaluation1.setCommentaire(reponseEvaluationDTO.getCommentaire());
-                reponseEvaluation1.setNom(etudiant.get().getNom());
-                reponseEvaluation1.setPrenom(etudiant.get().getPrenom());
-                reponseEvaluationRepository.save(reponseEvaluation1);
-                 reponseEvaluation = reponseEvaluationRepository.save(reponseEvaluation1);
+                reponseEvaluation.setIdEvaluation(evaluation);
+                reponseEvaluation.setNoEtudiant(etudiant.get());
+                reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
+                reponseEvaluation.setNom(etudiant.get().getNom());
+                reponseEvaluation.setPrenom(etudiant.get().getPrenom());
+//                reponseEvaluationRepository.save(reponseEvaluation);
+                 reponseEvaluation = reponseEvaluationRepository.save(reponseEvaluation);
+                System.out.println("reponseEvaluation: " + reponseEvaluation.getIdEvaluation().getId() + " etudiant  : "+ reponseEvaluation.getNoEtudiant().getNoEtudiant());
             }
 
 
