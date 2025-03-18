@@ -43,8 +43,6 @@ const EvaluationHome = () => {
     (state: RootState) => state.enseignants.enseignants
   );
   const promotions = useAppSelector(getPromotionByEnseignant);
-  console.log(promotions);
-
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const evaluationPerPage = 10;

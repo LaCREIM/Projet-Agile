@@ -89,7 +89,7 @@ export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, {
                 `/reponse-evaluation/${idEvaluation}/${idEtudiant}`
             );
             console.log("response", response.data);
-            
+
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
@@ -182,14 +182,13 @@ export const envoyerReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation,
     "evaluations/envoyerReponseEvaluationAsync",
     async (reponse, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post<ReponseEvaluation>(`/reponse-evaluation`, reponse);
+            const response = await axiosInstance.put<ReponseEvaluation>(`/reponse-evaluation/${Number(reponse.idEvaluation)}/${localStorage.getItem("id")}`, reponse);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de l'envoie du réponse de l'évaluation");
         }
     }
 );
-
 
 const EvaluationSlice = createSlice({
     name: "evaluations",
@@ -227,8 +226,8 @@ const EvaluationSlice = createSlice({
 
                 state.loading = false;
             })
-            .addCase(fetchReponseEvaluationAsync.rejected, (state, action) => {
-                state.error = action.payload as string;
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action) => {
+                state.reponseEvaluation = action.payload;
                 state.loading = false;
             })
            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
