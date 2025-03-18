@@ -195,7 +195,7 @@ const EvaluationHome = () => {
                   >
                     <option value="">Tous les états</option>
                     <option value="ELA">En cours d'élaboration</option>
-                    <option value="DIS">Mise en disposition</option>
+                    <option value="DIS">Mise à disposition</option>
                     <option value="CLO">Clôturée</option>
                   </select>
                   <div className="tooltip" data-tip="Réinitialiser le filtre">
@@ -446,10 +446,10 @@ const EvaluationHome = () => {
                                 evaluation.evaluation.etat === "CLO"
                                     ? "L'évaluation est déjà cloitrée"
                                     : evaluation.evaluation.etat === "DIS"
-                                        ? "L'évaluation est déjà en disposition"
+                                        ? "L'évaluation est déjà "
                                         : evaluation.evaluation.noEnseignant != Number(id)
                                             ? "Vous n'avez pas le droit de mettre à disposition"
-                                            : "Mettre en disposition l'évaluation"
+                                            : "Mettre à disposition l'évaluation"
                               }
                               onClick={() => evaluation.evaluation.etat == "ELA" && handleDisposition(evaluation.evaluation.idEvaluation)}
                           >
