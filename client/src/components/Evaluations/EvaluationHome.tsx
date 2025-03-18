@@ -613,7 +613,7 @@ const EvaluationHome = () => {
                             className="tooltip"
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
-                              handleInspect(evaluation.evaluation.idEvaluation)
+                              navigate(`reponse/${evaluation.evaluation.idEvaluation}`)
                             }
                           >
                             <FontAwesomeIcon

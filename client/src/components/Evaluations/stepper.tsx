@@ -173,9 +173,9 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
       <span className="flex space-x-1 text-black-500">
         {[...Array(totalStars)].map((_, index) =>
           index < positionnement ? (
-            <FaCircle key={index} size={30} />
+            <FaCircle key={index} size={20} />
           ) : (
-            <FaRegCircle key={index} size={30} />
+            <FaRegCircle key={index} size={20} />
           )
         )}
       </span>
@@ -356,7 +356,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {evaluation?.rubriques?.map((rubrique, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md w-full">
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"
