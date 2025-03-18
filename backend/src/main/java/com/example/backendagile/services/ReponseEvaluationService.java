@@ -60,11 +60,21 @@ public class ReponseEvaluationService {
         }
         EvaluationDTO evaluationDTO = evaluationService.mapEvaulation(evaluation);
 
+        String commentaire=null;
+        Long idReponseEvaluation=null;
         //Get commentaires de l'etudiant
         ReponseEvaluation reponse = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
-        String commentaire = reponse.getCommentaire();
-        Long idReponseEvaluation = reponse.getId();
-        System.out.println("idReponseEvaluation: " + idReponseEvaluation);
+        if(reponse != null){
+             commentaire = reponse.getCommentaire();
+             idReponseEvaluation = reponse.getId();
+            System.out.println("idReponseEvaluation: " + idReponseEvaluation);
+        }
+        if(commentaire == null){
+            commentaire = "";
+        }
+        if(idReponseEvaluation == null){
+            idReponseEvaluation = 0L;
+        }
 
         //get les rubriques de l'evaluation avec les questions et leurs qualificatifs et le positionnement
 
@@ -82,6 +92,9 @@ public class ReponseEvaluationService {
             //get positionnement
             for (QuestionEvaluation question : questions) {
                 Long positionnement = reponseQuestionRepository.findPositionnement(idReponseEvaluation, question.getId());
+                if(positionnement==null){
+                    positionnement = 0L;
+                }
                 QuestionReponseDTO questionReponseDTO = questionReponseMapper.toDTO(question, positionnement);
                 String intitule = questionRepository.findIntitule(questionReponseDTO.getIdQuestion());
                 questionReponseDTO.setIntitule(intitule);
@@ -253,8 +266,7 @@ public class ReponseEvaluationService {
 
 
     public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
-        List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionByIdQuestionEvaluation_Id(idEvaluation);
-
+        List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionsByEvaluationId(idEvaluation);
         Map<Long, Double> moyennePositionnementParQuestion = reponses.stream()
                 .collect(Collectors.groupingBy(
                         rq -> rq.getIdQuestionEvaluation().getId(),
@@ -295,7 +307,10 @@ public class ReponseEvaluationService {
                     String maximal = rq.getIdQuestionEvaluation().getIdQualificatif().getMaximal();
                     String minimal = rq.getIdQuestionEvaluation().getIdQualificatif().getMinimal();
                     String intitule = rq.getIdQuestionEvaluation().getIdQuestion().getIntitule();
-                    String designation = rq.getIdQuestionEvaluation().getIdRubriqueEvaluation().getDesignation();
+                    Evaluation evaluation= rq.getIdReponseEvaluation().getIdEvaluation();
+                    String designation = evaluationRepository.findById(evaluation.getId()).orElseGet(
+                            Evaluation::new
+                    ).getDesignation();
                     Long nbReponses = nbReponsesParQuestion.get(questionId);
                     long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
                     return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule,designation, totalPositionnements);

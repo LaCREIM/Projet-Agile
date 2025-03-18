@@ -57,8 +57,6 @@ const QuestionHome = () => {
       const matchesSearch = Object.values(question).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
-
-      console.log(question);
       
        const matchesType = selectedType
          ? (selectedType === "QUP" && question.noEnseignant !== null) || // Question personnelle
@@ -222,7 +220,7 @@ const QuestionHome = () => {
             <tr key={question.idQuestion} className="transition-all duration-75">
               <td className="px-4 py-2 w-[20%]">{question.intitule || "N/A"}</td>
               <td className="px-4 py-2">
-                {question?.maxQualificatif + " - " + question?.minQualificatif || "N/A"}
+                {question?.minQualificatif + " - " + question?.maxQualificatif || "N/A"}
               </td>
               {role === "ENS" && (
                 <td className="px-4 py-2">

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
-import { fetchReponseEvaluationAsync, getReponseEvaluation } from "../../features/EvaluationSlice";
+import {  fetchReponseEvaluationAsyncETD, getReponseEvaluationETD } from "../../features/EvaluationSlice";
 import { ToastContainer } from "react-toastify";
 import { IoMdArrowBack } from "react-icons/io";
 import { etatEvaluationMapper } from "../../mappers/mappers";
@@ -22,12 +22,11 @@ const ConsulterReponseETD = () => {
   const idEtudiant = localStorage.getItem("id") || "";
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const evaluation = useAppSelector(getReponseEvaluation);
-
+  const evaluation = useAppSelector(getReponseEvaluationETD);
   // Récupérer les réponses de l'évaluation au chargement du composant
   useEffect(() => {
     if (evaluationId && idEtudiant) {
-      dispatch(fetchReponseEvaluationAsync({ idEvaluation: Number(evaluationId), idEtudiant }));
+      dispatch(fetchReponseEvaluationAsyncETD({ idEvaluation: Number(evaluationId), idEtudiant }));
     }
   }, [dispatch, evaluationId, idEtudiant]);
 
@@ -64,27 +63,36 @@ const ConsulterReponseETD = () => {
 <div className="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-md">
       {evaluation?.rubriques?.length ? (
         evaluation.rubriques.map((rubrique) => (
-          <div key={rubrique.idRubriqueEvaluation} className="mb-10">
-            <h3 className="text-lg font-semibold mb-4">{rubrique.designation}</h3>
-            <ul className="space-y-3 pl-6">
-              {rubrique.questions.map((question) => (
-                <li key={question.idQuestion} className="text-gray-700">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold">{question.intitule} :</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">
-                        {question.qualificatif?.minimal}
-                      </span>
-                      {getStars(question.positionnement)}
-                      <span className="text-sm text-gray-600">
-                        {question.qualificatif?.maximal}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+<div key={rubrique.idRubriqueEvaluation} className="mb-10">
+  <h3 className="text-lg font-semibold mb-4">{rubrique.designation}</h3>
+  
+  <div className="grid grid-cols-4 gap-1 text-gray-700 font-semibold border-b border-gray-300 pb-2">
+    <span>Question</span>
+    <span className="text-center">Qualificatif minimal</span>
+    <span className="text-center">Réponse</span>
+    <span className="text-center">Qualificatif maximal</span>
+  </div>
+
+  <ul className="space-y-3 pl-0">
+    {rubrique.questions.map((question) => (
+      <li key={question.idQuestion} className="grid grid-cols-4 gap-1 items-center border-gray-200 py-2">
+        <span>{question.intitule}</span>
+        <div className="flex justify-center text-sm text-gray-600">
+          <span>{question.qualificatif?.minimal}</span>
+        </div>
+
+        <div className="flex justify-center">
+          {getStars(question.positionnement)}
+        </div>
+
+        <div className="flex justify-center text-sm text-gray-600">
+          <span>{question.qualificatif?.maximal}</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
         ))
       ) : (
         <div className="text-center text-lg text-gray-600">
