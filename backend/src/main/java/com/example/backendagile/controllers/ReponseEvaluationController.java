@@ -34,11 +34,6 @@ public class ReponseEvaluationController {
         }
     }
 
-    @GetMapping("/statistiques/{idEvaluation}")
-    public ResponseEntity<List<QuestionStatistiqueDTO>> getStatistiquesByEvaluation(@PathVariable Long idEvaluation) {
-        List<QuestionStatistiqueDTO> statistiques = reponseEvaluationService.getStatistiquesByEvaluation(idEvaluation);
-        return ResponseEntity.ok(statistiques);
-    }
 
     @PostMapping
     public ResponseEntity<String> createReponseEvaluation(@RequestBody ReponseEvaluationDTO reponseEvaluationDTO) {
