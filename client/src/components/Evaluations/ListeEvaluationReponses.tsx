@@ -63,7 +63,7 @@ const ListeEvaluationReponses = () => {
   );
 
   const handleViewDetails = (reponseId: number) => {
-    navigate(`/reponses/${reponseId}`); // Rediriger vers la page de détails de la réponse
+    navigate(`reponse/${reponseId}`); 
   };
 
   const handleSort = (field: string) => {

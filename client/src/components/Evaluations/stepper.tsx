@@ -15,6 +15,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "@/api/store";
 import { toast } from "react-toastify";
+import { FaCircle, FaRegCircle } from "react-icons/fa6";
 
 interface Qualificatif {
   maximal: string;
@@ -167,6 +168,21 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     }));
   };
 
+  const getStars = (positionnement: number) => {
+    const totalStars = 5;
+    return (
+      <span className="flex space-x-1 text-black-500">
+        {[...Array(totalStars)].map((_, index) =>
+          index < positionnement ? (
+            <FaCircle key={index} size={30} />
+          ) : (
+            <FaRegCircle key={index} size={30} />
+          )
+        )}
+      </span>
+    );
+  };
+
   const handleSubmit = async () => {
     const reponseEvaluation: ReponseEvaluation = {
       idReponseEvaluation: -1,
@@ -191,16 +207,18 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         idRubriqueEvaluation: -1,
         idRubrique: rubrique.idRubrique,
         designation: rubrique.designation,
-        questions: rubrique.questions.map((question) => ({
-          idQuestion: question.idQuestion,
-          positionnement:
-            ratings[`${rubrique.idRubrique}-${question.idQuestion}`] || 0,
-          intitule: question.intitule,
-          qualificatif: {
-            maximal: question.qualificatif.maximal,
-            minimal: question.qualificatif.minimal,
-          },
-        })).filter((question) => question.positionnement !== 0),
+        questions: rubrique.questions
+          .map((question) => ({
+            idQuestion: question.idQuestion,
+            positionnement:
+              ratings[`${rubrique.idRubrique}-${question.idQuestion}`] || 0,
+            intitule: question.intitule,
+            qualificatif: {
+              maximal: question.qualificatif.maximal,
+              minimal: question.qualificatif.minimal,
+            },
+          }))
+          .filter((question) => question.positionnement !== 0),
       })),
     };
     const res = await dispatch(
@@ -348,22 +366,29 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                     {rubrique.designation}
                   </Typography>
                   {rubrique.questions.map((question) => (
-                    <div key={question.idQuestion} className="mb-4">
+                    <div
+                      key={question.idQuestion}
+                      className="mb-4 items-center justify-between grid grid-cols-2"
+                    >
                       <Typography
                         {...({} as React.ComponentProps<typeof Typography>)}
                         className="text-gray-600"
                       >
                         {question.intitule}
                       </Typography>
-                      <Typography
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                        className="text-gray-800 font-bold"
-                      >
-                        Réponse :{" "}
-                        {ratings[
-                          `${rubrique.idRubrique}-${question.idQuestion}`
-                        ] || "Non répondue"}
-                      </Typography>
+
+                      <div className="grid grid-cols-3 gap-3 items-center">
+                        <h1 className="text-right">
+                          {question.qualificatif.minimal}
+                        </h1>
+
+                        {getStars(
+                          ratings[
+                            `${rubrique.idRubrique}-${question.idQuestion}`
+                          ]
+                        )}
+                        <h1>{question.qualificatif.maximal}</h1>
+                      </div>
                     </div>
                   ))}
                 </div>

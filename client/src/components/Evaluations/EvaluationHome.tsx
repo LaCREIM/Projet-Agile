@@ -148,7 +148,7 @@ const EvaluationHome = () => {
   const handleInspect = (evaluationId: number) => {
     if (localStorage.getItem("role") === "ENS") navigate(`${evaluationId}`);
     else if (localStorage.getItem("role") === "ETU")
-      navigate(`repondre/${evaluationId}`);
+      navigate(`reponse/${evaluationId}`);
   };
 
   const handleDuplicate = (evaluationId: number) => {
@@ -159,8 +159,8 @@ const EvaluationHome = () => {
     const response = await dispatch(duplicateEvaluationAsync(evaluationId));
     console.log(response);
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
-      toast.success("L'évaluation a été dupliquée avec succès");
       await dispatch(fetchEvaluationAsync());
+      toast.success("L'évaluation a été dupliquée avec succès");
     } else if (
       response.type === "evaluations/duplicateEvaluationAsync/rejected"
     ) {
