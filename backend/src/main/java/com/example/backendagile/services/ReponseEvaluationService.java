@@ -60,11 +60,21 @@ public class ReponseEvaluationService {
         }
         EvaluationDTO evaluationDTO = evaluationService.mapEvaulation(evaluation);
 
+        String commentaire=null;
+        Long idReponseEvaluation=null;
         //Get commentaires de l'etudiant
         ReponseEvaluation reponse = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
-        String commentaire = reponse.getCommentaire();
-        Long idReponseEvaluation = reponse.getId();
-        System.out.println("idReponseEvaluation: " + idReponseEvaluation);
+        if(reponse != null){
+             commentaire = reponse.getCommentaire();
+             idReponseEvaluation = reponse.getId();
+            System.out.println("idReponseEvaluation: " + idReponseEvaluation);
+        }
+        if(commentaire == null){
+            commentaire = "";
+        }
+        if(idReponseEvaluation == null){
+            idReponseEvaluation = 0L;
+        }
 
         //get les rubriques de l'evaluation avec les questions et leurs qualificatifs et le positionnement
 
@@ -82,6 +92,9 @@ public class ReponseEvaluationService {
             //get positionnement
             for (QuestionEvaluation question : questions) {
                 Long positionnement = reponseQuestionRepository.findPositionnement(idReponseEvaluation, question.getId());
+                if(positionnement==null){
+                    positionnement = 0L;
+                }
                 QuestionReponseDTO questionReponseDTO = questionReponseMapper.toDTO(question, positionnement);
                 String intitule = questionRepository.findIntitule(questionReponseDTO.getIdQuestion());
                 questionReponseDTO.setIntitule(intitule);
@@ -195,15 +208,26 @@ public class ReponseEvaluationService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
             }
 
-            // Récupérer la réponse d'évaluation existante
+            // Récupérer la réponse d'évaluation existante ou en créer une nouvelle
             ReponseEvaluation reponseEvaluation = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
             if (reponseEvaluation == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réponse d'évaluation non trouvée");
+                // Si la réponse n'existe pas, on en crée une nouvelle
+                reponseEvaluation = new ReponseEvaluation();
+                reponseEvaluation.setIdEvaluation(evaluation);
+                reponseEvaluation.setNoEtudiant(etudiant.get());
+                reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
+                reponseEvaluation.setNom(etudiant.get().getNom());
+                reponseEvaluation.setPrenom(etudiant.get().getPrenom());
+                reponseEvaluation = reponseEvaluationRepository.save(reponseEvaluation);
+                System.out.println("Nouvelle réponse d'évaluation créée: " + reponseEvaluation.getIdEvaluation().getId() + " id étudiant: " + reponseEvaluation.getNoEtudiant().getNoEtudiant());
+            } else {
+                // Si la réponse existe, on la met à jour
+                reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
+                reponseEvaluation.setNom(etudiant.get().getNom());
+                reponseEvaluation.setPrenom(etudiant.get().getPrenom());
+                reponseEvaluation = reponseEvaluationRepository.save(reponseEvaluation);
+                System.out.println("Réponse d'évaluation mise à jour: " + reponseEvaluation.getIdEvaluation().getId() + " id étudiant: " + reponseEvaluation.getNoEtudiant().getNoEtudiant());
             }
-
-            // Mise à jour des champs simples
-            reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
-            reponseEvaluationRepository.save(reponseEvaluation);
 
             // Supprimer toutes les réponses aux questions existantes liées à cette évaluation
             reponseQuestionRepository.deleteByIdReponseEvaluation(reponseEvaluation.getId());
@@ -234,14 +258,15 @@ public class ReponseEvaluationService {
             return "Réponse d'évaluation mise à jour avec succès";
 
         } catch (Exception e) {
-            return e.getMessage();
+//            return e.getMessage();
+            return "Erreur lors de la mise à jour de la réponse à l'évaluation";
         }
     }
 
 
-    public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
-        List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionByIdQuestionEvaluation_Id(idEvaluation);
 
+    public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
+        List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionsByEvaluationId(idEvaluation);
         Map<Long, Double> moyennePositionnementParQuestion = reponses.stream()
                 .collect(Collectors.groupingBy(
                         rq -> rq.getIdQuestionEvaluation().getId(),
@@ -282,7 +307,10 @@ public class ReponseEvaluationService {
                     String maximal = rq.getIdQuestionEvaluation().getIdQualificatif().getMaximal();
                     String minimal = rq.getIdQuestionEvaluation().getIdQualificatif().getMinimal();
                     String intitule = rq.getIdQuestionEvaluation().getIdQuestion().getIntitule();
-                    String designation = rq.getIdQuestionEvaluation().getIdRubriqueEvaluation().getDesignation();
+                    Evaluation evaluation= rq.getIdReponseEvaluation().getIdEvaluation();
+                    String designation = evaluationRepository.findById(evaluation.getId()).orElseGet(
+                            Evaluation::new
+                    ).getDesignation();
                     Long nbReponses = nbReponsesParQuestion.get(questionId);
                     long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
                     return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule,designation, totalPositionnements);

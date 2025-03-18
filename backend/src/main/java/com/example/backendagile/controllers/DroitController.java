@@ -22,13 +22,13 @@ public class DroitController {
         this.droitService = droitService;
     }
 
-    // 🔍 Récupérer les droits par évaluation
+    //  Récupérer les droits par évaluation
     @GetMapping("/evaluation/{idEvaluation}")
     public ResponseEntity<List<DroitDTO>> getDroitsByEvaluation(@PathVariable Long idEvaluation) {
         return ResponseEntity.ok(droitService.getDroitsByEvaluation(idEvaluation));
     }
 
-    // ➕ Créer un droit
+    //  Créer un droit
     @PostMapping
     public ResponseEntity<String> createDroit(@RequestBody DroitDTO droitDTO) {
         try{
@@ -50,7 +50,7 @@ public class DroitController {
 
     }
 
-    // ✏️ Mettre à jour un droit
+    //  Mettre à jour un droit
     @PutMapping("/{idEvaluation}/{idEnseignant}")
     public ResponseEntity<String> updateDroit(
             @PathVariable Long idEvaluation,
@@ -66,7 +66,7 @@ public class DroitController {
 
     }
 
-    // 🗑️ Supprimer un droit
+    //  Supprimer un droit
     @DeleteMapping("/{idEvaluation}/{idEnseignant}")
     public ResponseEntity<String> deleteDroit(@PathVariable Long idEvaluation, @PathVariable Long idEnseignant) {
 

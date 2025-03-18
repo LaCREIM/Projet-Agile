@@ -1,4 +1,5 @@
 import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
+import { StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -91,7 +92,7 @@ export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, {
                 `/reponse-evaluation/${idEvaluation}/${idEtudiant}`
             );
             console.log("response", response.data);
-            
+
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
@@ -200,14 +201,13 @@ export const envoyerReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation,
     "evaluations/envoyerReponseEvaluationAsync",
     async (reponse, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post<ReponseEvaluation>(`/reponse-evaluation`, reponse);
+            const response = await axiosInstance.put<ReponseEvaluation>(`/reponse-evaluation/${Number(reponse.idEvaluation)}/${localStorage.getItem("id")}`, reponse);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de l'envoie du réponse de l'évaluation");
         }
     }
 );
-
 
 const EvaluationSlice = createSlice({
     name: "evaluations",
@@ -250,6 +250,12 @@ const EvaluationSlice = createSlice({
         })       
             .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
+
+
+                state.loading = false;
+            })
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action) => {
+                state.reponseEvaluation = action.payload;
                 state.loading = false;
             })                       
 
