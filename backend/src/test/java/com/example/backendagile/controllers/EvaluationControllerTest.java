@@ -198,7 +198,7 @@ public class EvaluationControllerTest {
 
     @Test
     void testGetStatistiquesByEvaluation() throws Exception {
-        List<QuestionStatistiqueDTO> statistiques = Arrays.asList(new QuestionStatistiqueDTO());
+        List<QuestionStatistiqueDTO> statistiques = List.of(new QuestionStatistiqueDTO());
         when(reponseEvaluationService.getStatistiquesByEvaluation(1L)).thenReturn(statistiques);
 
         mockMvc.perform(get("/api/evaluations/statistiques/1"))
