@@ -68,7 +68,7 @@ const StatistiquesEvaluation: React.FC = () => {
                     return (
                         <div key={stat.idQuestion} className="bg-white p-6 rounded-lg shadow-md">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
-                                {stat.intitule}
+                                {stat.designation} : {stat.intitule}
                             </h3>
                             <div className="grid grid-cols-2 gap-6 text-gray-700">
                                 <p><strong>Maximal:</strong> {stat.maximal}</p>
