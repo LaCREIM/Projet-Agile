@@ -196,14 +196,21 @@ public class ReponseEvaluationService {
             }
 
             // Récupérer la réponse d'évaluation existante
-            ReponseEvaluation reponseEvaluation = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
-            if (reponseEvaluation == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réponse d'évaluation non trouvée");
+            ReponseEvaluation reponseEvaluation= new ReponseEvaluation();
+            ReponseEvaluation reponseEvaluation1 = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
+            if (reponseEvaluation1 == null) {
+//                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réponse d'évaluation non trouvée");
+                reponseEvaluation1.setIdEvaluation(evaluation);
+                reponseEvaluation1.setNoEtudiant(etudiant.get());
+                reponseEvaluation1.setCommentaire(reponseEvaluationDTO.getCommentaire());
+                reponseEvaluation1.setNom(etudiant.get().getNom());
+                reponseEvaluation1.setPrenom(etudiant.get().getPrenom());
+                reponseEvaluationRepository.save(reponseEvaluation1);
+                 reponseEvaluation = reponseEvaluationRepository.save(reponseEvaluation1);
             }
 
-            // Mise à jour des champs simples
-            reponseEvaluation.setCommentaire(reponseEvaluationDTO.getCommentaire());
-            reponseEvaluationRepository.save(reponseEvaluation);
+
+
 
             // Supprimer toutes les réponses aux questions existantes liées à cette évaluation
             reponseQuestionRepository.deleteByIdReponseEvaluation(reponseEvaluation.getId());
