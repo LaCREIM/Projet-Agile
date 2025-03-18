@@ -51,6 +51,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
     const selectedQualificatif = qualificatifs.find(
       (qual) => qual.id === Number(e.target.value)
     );
+    const userId = localStorage.getItem("id");
 
     setQuestion((prev) => ({
       ...prev,
@@ -60,7 +61,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
       minQualificatif: selectedQualificatif?.minimal || "",
       intitule: prev.intitule,
       type: prev.type,
-      noEnseignant: prev.noEnseignant,
+      noEnseignant: Number(userId),
     }));
   };
 
@@ -89,8 +90,9 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
       maxQualificatif: question.maxQualificatif ?? "",
       minQualificatif: question.minQualificatif ?? "",
       intitule: prev.intitule,
-      noEnseignant: question.noEnseignant,
+      noEnseignant: Number(userId),
     }));
+    console.log("questionToSend", questionToSend);
     questionToSend.noEnseignant = Number(userId);
     const action = isEnseignant
       ? createQuestionPersoAsync(question)
