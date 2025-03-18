@@ -32,7 +32,6 @@ import { etatEvaluationMapper } from "../../mappers/mappers";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { RiUserSettingsFill } from "react-icons/ri";
 import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
 import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
 import { LuArrowRight } from "react-icons/lu";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Stepper,
   Step,
@@ -6,17 +6,10 @@ import {
   Typography,
   Tooltip,
 } from "@material-tailwind/react";
-import { Rubrique } from "@/types/types";
 import Positionement from "./Positionement";
-import { useAppDispatch } from "@/hook/hooks";
-import { envoyerReponseEvaluationAsync } from "@/features/EvaluationSlice";
-import { useParams } from "react-router-dom";
-// import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
-
-interface StepperProp {
-  rubriques: Rubrique[];
-}
+import { useAppDispatch, useAppSelector } from "@/hook/hooks";
+import { envoyerReponseEvaluationAsync, fetchReponseEvaluationAsync, getReponseEvaluation } from "@/features/EvaluationSlice";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface Qualificatif {
   maximal: string;
@@ -38,6 +31,7 @@ interface RubriqueReponse {
 }
 
 export interface ReponseEvaluation {
+  idReponseEvaluation: number;
   idEvaluation: number;
   idEtudiant: string;
   commentaire: string;
@@ -59,24 +53,47 @@ export interface ReponseEvaluation {
 }
 
 interface StepperProp {
-  rubriques: Rubrique[];
+  rubriques: RubriqueReponse[];
 }
 
 const StepperWithContent = ({ rubriques }: StepperProp) => {
-  const stepsData = [
-    ...rubriques,
-    { designation: "Commentaire", questions: [] },
-    { designation: "Récapitulatif", questions: [] },
-  ];
-  const { evaluationId } = useParams();
+  const evaluation = useAppSelector(getReponseEvaluation);
+
+  
+  
+  const { evaluationId } = useParams<{ evaluationId: string }>();
   const [ratings, setRatings] = useState<{ [key: number]: number }>({});
   const [hover, setHover] = useState<{ [key: number]: number }>({});
   const [activeStep, setActiveStep] = React.useState(0);
   const [isLastStep, setIsLastStep] = React.useState(false);
   const [isFirstStep, setIsFirstStep] = React.useState(false);
   const [comment, setComment] = useState("");
+  const [stepsData, setStepsData] = useState<RubriqueReponse[]>([]);
   const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
+
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    console.log("evaluationId", useParams());
+    if (!evaluationId) {
+      return;
+    }
+    const res = dispatch(
+      fetchReponseEvaluationAsync({
+        idEvaluation: Number(evaluationId),
+        idEtudiant: localStorage.getItem("id") || "",
+      })
+    );
+
+    setStepsData(evaluation?.rubriques || []);
+    console.log("stepsData", stepsData);
+    
+
+    console.log("res", res);
+  }, [dispatch]);
+
+  
 
   if (!rubriques || rubriques.length === 0) {
     return <div>No rubriques available</div>;
@@ -101,6 +118,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
 
   const handleSubmit = async () => {
     const reponseEvaluation: ReponseEvaluation = {
+      idReponseEvaluation: -1,
       idEvaluation: Number(evaluationId),
       idEtudiant: localStorage.getItem("id") || "",
       commentaire: comment,
@@ -120,22 +138,24 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
       finReponse: "",
       rubriques: rubriques.map((rubrique) => ({
         idRubriqueEvaluation: -1,
-        idRubrique: rubrique.id,
+        idRubrique: rubrique.idRubrique,
         designation: rubrique.designation,
         questions: rubrique.questions.map((question) => ({
-          idQuestion: question.id,
-          positionnement: ratings[question.id] || 0,
+          idQuestion: question.idQuestion,
+          positionnement: ratings[question.idQuestion] || 0,
           intitule: question.intitule,
           qualificatif: {
-            maximal: question.maxQualificatif,
-            minimal: question.minQualificatif,
+            maximal: question.qualificatif.maximal,
+            minimal: question.qualificatif.minimal,
           },
         })),
       })),
     };
 
     console.log(reponseEvaluation);
-    dispatch(envoyerReponseEvaluationAsync(reponseEvaluation));
+    const res = await dispatch(envoyerReponseEvaluationAsync(reponseEvaluation));
+    console.log(res);
+    
   };
 
   return (
@@ -147,7 +167,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         isFirstStep={(value) => setIsFirstStep(value)}
         className="w-[90%] md:w-[80%] mx-auto"
       >
-        {stepsData.map((rubrique, index) => (
+        {stepsData?.map((rubrique, index) => (
           <Step
             {...({} as React.ComponentProps<typeof Step>)}
             key={index}
@@ -212,9 +232,8 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
               Récapitulatif des réponses
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {rubriques.map((rubrique, index) => (
+              {evaluation?.rubriques?.map((rubrique, index) => (
                 <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-                  
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"
@@ -223,7 +242,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                     {rubrique.designation}
                   </Typography>
                   {rubrique.questions.map((question) => (
-                    <div key={question.id} className="mb-4">
+                    <div key={question.idQuestion} className="mb-4">
                       <Typography
                         {...({} as React.ComponentProps<typeof Typography>)}
                         className="text-gray-600"
@@ -234,7 +253,8 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                         {...({} as React.ComponentProps<typeof Typography>)}
                         className="text-gray-800 font-bold"
                       >
-                        Réponse : {ratings[question.id] || "Non répondue"}
+                        Réponse :{" "}
+                        {ratings[question.idQuestion] || "Non répondue"}
                       </Typography>
                     </div>
                   ))}
@@ -259,44 +279,45 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
           </div>
         ) : (
           <>
-          <h1 className="text-left font-bold mb-4 text-2xl">
-            {rubriques[activeStep].designation}
-          </h1>
-         { rubriques[activeStep].questions.map((question) => (
-            <div key={question.id}>
-              
-              <div className="flex flex-row justify-between">
-                <Typography
-                  {...({} as React.ComponentProps<typeof Typography>)}
-                  className="text-gray-600"
-                >
-                  {question.intitule}
-                </Typography>
-                <div className="w-fit grid grid-cols-3 items-center">
+            <h1 className="text-left font-bold mb-4 text-2xl">
+              {rubriques[activeStep].designation}
+            </h1>
+            {rubriques[activeStep].questions.map((question) => (
+              <div key={question.idQuestion}>
+                <div className="flex flex-row justify-between">
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
-                    className="text-gray-600 text-left"
+                    className="text-gray-600"
                   >
-                    {question.maxQualificatif}
+                    {question.intitule}
                   </Typography>
-                  <Positionement
-                    rating={ratings[question.id] || 0}
-                    setRating={(value) =>
-                      handleRatingChange(question.id, value)
-                    }
-                    hover={hover[question.id] || 0}
-                    setHover={(value) => handleHoverChange(question.id, value)}
-                  />
-                  <Typography
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                    className="text-gray-600 text-right"
-                  >
-                    {question.minQualificatif}
-                  </Typography>
+                  <div className="w-fit grid grid-cols-3 items-center">
+                    <Typography
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                      className="text-gray-600 text-left"
+                    >
+                      {question.qualificatif.maximal}
+                    </Typography>
+                    <Positionement
+                      rating={ratings[question.idQuestion] || 0}
+                      setRating={(value) =>
+                        handleRatingChange(question.idQuestion, value)
+                      }
+                      hover={hover[question.idQuestion] || 0}
+                      setHover={(value) =>
+                        handleHoverChange(question.idQuestion, value)
+                      }
+                    />
+                    <Typography
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                      className="text-gray-600 text-right"
+                    >
+                      {question.qualificatif.minimal}
+                    </Typography>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
           </>
         )}
       </div>
