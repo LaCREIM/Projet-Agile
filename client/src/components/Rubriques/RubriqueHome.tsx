@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hook/hooks";
+import {useEffect, useRef, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEye, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {
   getQuestionsRubrique,
   getQuestionsStandardAsync,
@@ -13,16 +13,16 @@ import {
   searchRubriquesAsync,
   setQuestions,
 } from "../../features/RubriqueSlice";
-import { Rubrique } from "../../types/types";
+import {Rubrique} from "../../types/types";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
-import { RootState } from "../../api/store";
-import { fetchQuestionsAsync } from "../../features/QuestionSlice";
+import {RootState} from "../../api/store";
+import {fetchQuestionsAsync} from "../../features/QuestionSlice";
 import DeleteRubriqueConfirmation from "./DeleteRubriqueConfirmation";
-import { MdClear } from "react-icons/md";
-import { typeRubriqueMapper } from "../../mappers/mappers.ts";
-import { useSelector } from "react-redux";
-import { FaSearch } from "react-icons/fa";
+import {MdClear} from "react-icons/md";
+import {typeRubriqueMapper} from "../../mappers/mappers.ts";
+import {useSelector} from "react-redux";
+import {FaSearch} from "react-icons/fa";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
@@ -236,6 +236,7 @@ const RubriqueHome = () => {
                         </td>
                       )}
                       <td className="flex gap-3 items-center">
+                        <div className={"tooltip"} data-tip={"Afficher les détails"}>
                         <FontAwesomeIcon
                           icon={faEye}
                           className="text-black text-base cursor-pointer"
@@ -244,6 +245,7 @@ const RubriqueHome = () => {
                             openModal(`inspect-${index}`);
                           }}
                         />
+                        </div>
                         <div
                           className="tooltip"
                           data-tip={

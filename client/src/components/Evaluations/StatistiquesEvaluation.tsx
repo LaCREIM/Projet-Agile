@@ -54,11 +54,10 @@ const StatistiquesEvaluation: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between bg-white shadow-md rounded-lg p-6">
                 <button
-                    className="flex items-center text-gray-600 hover:text-gray-800 transition duration-300"
+                    className="flex items-center text-gray-600 hover:text-gray-800 transition duration-300 hover:cursor-pointer"
                     onClick={() => navigate(`/user/home/evaluations`)}
                 >
                     <IoMdArrowBack size={25} className="mr-2" />
-                    <span className="text-lg font-medium">Retour</span>
                 </button>
                 <h1 className="text-2xl font-bold text-gray-800">Statistiques de l'évaluation</h1>
                 <div></div>

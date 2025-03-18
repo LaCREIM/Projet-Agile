@@ -1,31 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  getEtudiantAsync,
-  getEtudiantByPromotionAsync,
-} from "../../features/EtudiantSlice";
-import { Etudiant } from "../../types/types";
+import React, {useEffect, useState} from "react";
+import {motion} from "framer-motion";
+import {getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
+import {Etudiant, PromotionDetails} from "../../types/types";
 
-import {
-  getPromotionAsync,
-  getPromotions,
-} from "../../features/PromotionSlice";
+import {getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
 
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import AddEtudiant from "./AddEtudiant.tsx";
 import EtudiantDetails from "./EtudiantDetails";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { HiOutlineChevronLeft } from "react-icons/hi";
-import {
-  faEye,
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {HiOutlineChevronLeft} from "react-icons/hi";
+import {faEye, faPenToSquare, faTrash,} from "@fortawesome/free-solid-svg-icons";
 import UpdateEtudiant from "./UpdateEtudiant.tsx";
-import { PromotionDetails } from "../../types/types";
-import { FaSearch } from "react-icons/fa";
+import {FaSearch} from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
-import { universiteMapper } from "../../mappers/mappers.ts";
+import {universiteMapper} from "../../mappers/mappers.ts";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -191,7 +180,7 @@ const StudentHome = ({
             {promotionDetails.anneeUniversitaire}{" "}
           </h3>
         ) : (
-          <h1 className="text-xl">Liste des étudiants</h1>
+            <h1 className={"font-bold text-xl"}>Liste des étudiants</h1>
         )}
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
