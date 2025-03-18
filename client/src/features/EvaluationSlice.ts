@@ -254,11 +254,6 @@ const EvaluationSlice = createSlice({
 
                 state.loading = false;
             })
-            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action) => {
-                state.reponseEvaluation = action.payload;
-                state.loading = false;
-            })                       
-
            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
             state.statistiques = action.payload;
             state.loading = false;
