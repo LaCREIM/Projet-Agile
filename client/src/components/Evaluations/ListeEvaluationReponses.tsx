@@ -77,7 +77,7 @@ const ListeEvaluationReponses = () => {
 
   return (
     <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
-      <h1 className="text-xl font-bold">Réponses des étudiants</h1>
+      <h1 className="text-xl font-bold">Réponses pour l'évaluation XXXX - M2DOSI : 2024-2025</h1>
 
       {/* Bouton "Retournez à la liste des évaluations" */}
       <div
