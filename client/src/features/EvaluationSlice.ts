@@ -1,3 +1,5 @@
+import {ReponseEvaluation, StatistiquesDTO} from './../types/types.d';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
@@ -11,6 +13,8 @@ interface EvaluationState {
     evaluations: GetEvaluationDTO[];
     reponsesEvaluation: GetReponseEvaluation[];
     reponseEvaluation: ReponseEvaluation;
+    statistiques: StatistiquesDTO[];
+    reponsesEvaluation: ReponseEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -18,15 +22,14 @@ interface EvaluationState {
 
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
+    statistiques: [] as StatistiquesDTO[],
     evaluations: [],
     reponsesEvaluation: [],
     reponseEvaluation: {} as ReponseEvaluation,
-    totalPages: 0,
-
+    totalPages: 0, 
     loading: false,
     error: null,
 };
-
 
 
 export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
@@ -40,7 +43,6 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
         }
     }
 );
-
 
 export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
@@ -228,11 +230,31 @@ const EvaluationSlice = createSlice({
             .addCase(fetchReponseEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
                 state.loading = false;
-            });
-
+            })
+           .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
+            state.statistiques = action.payload;
+            state.loading = false;
+        })
+            .addCase(fetchStatistiquesAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
 
     },
 });
+
+export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number, { rejectValue: string }>(
+    "evaluations/fetchStatistiquesAsync",
+    async (evaluationId, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<StatistiquesDTO[]>(`/evaluations/statistiques/${evaluationId}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des statistiques");
+        }
+    }
+);
+
+
 
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 

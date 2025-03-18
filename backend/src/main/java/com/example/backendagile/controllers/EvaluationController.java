@@ -1,6 +1,8 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.QuestionStatistiqueDTO;
 import com.example.backendagile.services.DroitService;
+import com.example.backendagile.services.ReponseEvaluationService;
 import org.springframework.http.ResponseEntity;
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
@@ -23,9 +25,11 @@ public class EvaluationController {
 
     private final EvaluationService evaluationService;
     private final DroitService droitService;
+    private final ReponseEvaluationService reponseEvaluationService;
 
-    public EvaluationController(EvaluationService evaluationService, DroitService droitService) {
+    public EvaluationController(EvaluationService evaluationService, DroitService droitService, ReponseEvaluationService reponseEvaluationService) {
         this.evaluationService = evaluationService;
+        this.reponseEvaluationService = reponseEvaluationService;
         this.droitService = droitService;
     }
 
@@ -159,5 +163,11 @@ public class EvaluationController {
             response.put("message", "Une erreur s'est produite lors de la mise en disposition de l'évaluation.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @GetMapping("/statistiques/{idEvaluation}")
+    public ResponseEntity<List<QuestionStatistiqueDTO>> getStatistiquesByEvaluation(@PathVariable Long idEvaluation) {
+        List<QuestionStatistiqueDTO> statistiques = reponseEvaluationService.getStatistiquesByEvaluation(idEvaluation);
+        return ResponseEntity.ok(statistiques);
     }
 }

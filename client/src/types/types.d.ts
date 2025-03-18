@@ -368,3 +368,14 @@ interface GetReponseEvaluation {
     idEtudiant: string;
 }
 
+
+export interface StatistiquesDTO {
+    idQuestion: number;
+    moyennePositionnement: number;
+    maximal: string;
+    minimal: string;
+    nbReponses: number;
+    intitule: string;
+    designation: string;
+    totalPositionnements: number[];
+}
