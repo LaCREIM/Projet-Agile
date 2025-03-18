@@ -423,10 +423,10 @@ const EvaluationHome = () => {
                               evaluation.evaluation.noEnseignant != Number(id)
                                   ? "Vous n'avez pas le droit de clôturer"
                                   : evaluation.evaluation.etat == "CLO"
-                                      ? "L'évaluation est déjà cloitrée"
+                                      ? "L'évaluation est déjà clôturée"
                                       : evaluation.evaluation.etat == "ELA"
                                           ? "L'évaluation est déjà en cours d'élaboration"
-                                          : "Cloîtrer l'évaluation"
+                                          : "Clôturer l'évaluation"
                             }
                             onClick={() =>
                                 evaluation.evaluation.etat != "ELA" && navigate(
@@ -449,7 +449,7 @@ const EvaluationHome = () => {
                                         ? "L'évaluation est déjà mise à disposition"
                                         : evaluation.evaluation.noEnseignant != Number(id)
                                             ? "Vous n'avez pas le droit de clôturée"
-                                            : "Cloîtrer l'évaluation"
+                                            : "Clôturer l'évaluation"
                               }
                               onClick={() => evaluation.evaluation.noEnseignant == Number(id) && evaluation.evaluation.etat == "DIS" && handleClouter(evaluation.evaluation.idEvaluation)}
                           >
