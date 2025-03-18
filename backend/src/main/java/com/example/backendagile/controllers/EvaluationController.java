@@ -131,7 +131,7 @@ public class EvaluationController {
     public ResponseEntity<Map<String, String>> cloturerEvaluation(@PathVariable Long idEvaluation) {
         Map<String, String> response = new HashMap<>();
         try {
-            boolean isUpdated = evaluationService.updateEvaluationStatus(idEvaluation,  "CLO");
+            boolean isUpdated = evaluationService.updateEvaluationStatus(idEvaluation, "CLO");
             if (isUpdated) {
                 response.put("message", "L'évaluation a été clôturée avec succès.");
                 return ResponseEntity.ok(response);

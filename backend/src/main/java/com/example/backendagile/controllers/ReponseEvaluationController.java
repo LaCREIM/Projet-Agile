@@ -40,10 +40,10 @@ public class ReponseEvaluationController {
         return ResponseEntity.ok(reponseEvaluationService.addReponseEvaluation(reponseEvaluationDTO));
     }
 
-    @PutMapping("/reponse-evaluation")
+    @PutMapping("/{idEvaluation}/{idEtudiant}")
     public ResponseEntity<String> updateReponseEvaluation(
-            @RequestParam("idEvaluation") Long idEvaluation,
-            @RequestParam("idEtudiant") String idEtudiant,
+            @PathVariable("idEvaluation") Long idEvaluation,
+            @PathVariable("idEtudiant") String idEtudiant,
             @RequestBody ReponseEvaluationDTO reponseEvaluationDTO) {
 
         String result = reponseEvaluationService.updateReponseEvaluation(idEvaluation, idEtudiant, reponseEvaluationDTO);

@@ -428,10 +428,12 @@ const EvaluationHome = () => {
                             className="tooltip"
                             data-tip={
                               evaluation.evaluation.noEnseignant != Number(id)
+
                                 ? "Vous n'avez pas le droit de consulter les réponses"
                                 : evaluation.evaluation.etat == "ELA"
                                 ? "L'évaluation est toujours en cours d'élaboration"
                                 : "Consulter les réponses"
+
                             }
                             onClick={() =>
                               evaluation.evaluation.etat != "ELA" &&
@@ -468,6 +470,7 @@ const EvaluationHome = () => {
                               evaluation.evaluation.etat == "DIS" &&
                               handleClouter(evaluation.evaluation.idEvaluation)
                             }
+
                           >
                             <FontAwesomeIcon
                               icon={faLock}
