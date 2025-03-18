@@ -1,21 +1,25 @@
 package com.example.backendagile.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class DroitDTO {
 
-    @NotBlank(message = "L'id evaluation est obligatoire")
+    @NotNull(message = "L'id évaluation est obligatoire")
     private Long idEvaluation;
-    @NotBlank(message = "L'id Enseignant est obligatoire")
+
+    @NotNull(message = "L'id Enseignant est obligatoire")
     private Long idEnseignant;
+
     private String nom;
     private String prenom;
-    @NotBlank(message = "La consultation est obligatoire")
-    private char consultation;
-    @NotBlank(message = "La duplication est obligatoire")
-    private char duplication;
 
-    public DroitDTO(Long idEvaluation, Long idEnseignant, String nom, String prenom, char consultation, char duplication) {
+    @NotNull(message = "La consultation est obligatoire")
+    private Character consultation;
+
+    @NotNull(message = "La duplication est obligatoire")
+    private Character duplication;
+
+    public DroitDTO(Long idEvaluation, Long idEnseignant, String nom, String prenom, Character consultation, Character duplication) {
         this.idEvaluation = idEvaluation;
         this.idEnseignant = idEnseignant;
         this.nom = nom;
@@ -59,20 +63,19 @@ public class DroitDTO {
         this.prenom = prenom;
     }
 
-    public char getConsultation() {
+    public Character getConsultation() {
         return consultation;
     }
 
-    public void setConsultation(char consultation) {
+    public void setConsultation(Character consultation) {
         this.consultation = consultation;
     }
 
-    public char getDuplication() {
+    public Character getDuplication() {
         return duplication;
     }
 
-    public void setDuplication(char duplication) {
+    public void setDuplication(Character duplication) {
         this.duplication = duplication;
     }
 }
-
