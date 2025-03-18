@@ -1,16 +1,17 @@
-import {  ReponseEvaluationDTO } from './../types/types.d';
+import {ReponseEvaluation, StatistiquesDTO} from './../types/types.d';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import {EvaluationDTO, GetEvaluationDTO} from "../types/types";
+import {EvaluationDTO, GetEvaluationDTO} from "@/types/types";
 
 
 interface EvaluationState {
     evaluation: EvaluationDTO;
     evaluations: GetEvaluationDTO[];
-    reponseEvaluation: ReponseEvaluationDTO | null;
-
+    statistiques: StatistiquesDTO[];
+    reponsesEvaluation: ReponseEvaluation[];
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -18,13 +19,14 @@ interface EvaluationState {
 
 const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
+    statistiques: [] as StatistiquesDTO[],
     evaluations: [],
     reponseEvaluation: null,
-    totalPages: 0,
+    reponsesEvaluation: [],
+    totalPages: 0, 
     loading: false,
     error: null,
 };
-
 
 
 export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
@@ -38,7 +40,6 @@ export const fetchEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], void, {
         }
     }
 );
-
 
 export const fetchEvaluationByEtuAsync = createAsyncThunk<GetEvaluationDTO[], void, { rejectValue: string }>(
     "evaluations/fetchEvaluationByEtuAsync",
@@ -137,6 +138,52 @@ export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], num
         }
     }
 );
+export const clouterEvaluationAsync = createAsyncThunk<void, number, { rejectValue: string }>(
+    "evaluations/clouterEvaluationAsync",
+    async (idEvaluation, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(`/evaluations/clouter/${idEvaluation}`);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la clôture de l'évaluation");
+        }
+    }
+);
+
+export const dispositionEvaluationAsync = createAsyncThunk<void, number, { rejectValue: string }>(
+    "evaluations/dispositionEvaluationAsync",
+    async (idEvaluation, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(`/evaluations/disposition/${idEvaluation}`);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la disposition de l'évaluation");
+        }
+    }
+);
+
+
+export const getAllReponsesEvaluationAsync = createAsyncThunk<GetReponseEvaluation[], number, { rejectValue: string }>(
+    "evaluations/getAllReponsesEvaluationAsync",
+    async (idEvaluation, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<GetReponseEvaluation[]>(`/reponse-evaluation/${idEvaluation}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récuperation des résulats de l'évaluation");
+        }
+    }
+);
+
+export const envoyerReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, ReponseEvaluation, { rejectValue: string }>(
+    "evaluations/envoyerReponseEvaluationAsync",
+    async (reponse, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.post<ReponseEvaluation>(`/reponse-evaluation`, reponse);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de l'envoie du réponse de l'évaluation");
+        }
+    }
+);
 
 
 const EvaluationSlice = createSlice({
@@ -162,9 +209,6 @@ const EvaluationSlice = createSlice({
             .addCase(createEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
-            .addCase(duplicateEvaluationAsync.fulfilled, (state, action) => {
-                state.loading = false;
-            })
             .addCase(duplicateEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
@@ -173,19 +217,43 @@ const EvaluationSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluationDTO>) => {
-                state.reponseEvaluation = action.payload;
+            .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
+                state.reponsesEvaluation = action.payload;
+
                 state.loading = false;
             })
             .addCase(fetchReponseEvaluationAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
                 state.loading = false;
-            });
+            })
+           .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
+            state.statistiques = action.payload;
+            state.loading = false;
+        })
+            .addCase(fetchStatistiquesAsync.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
 
     },
 });
 
+export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number, { rejectValue: string }>(
+    "evaluations/fetchStatistiquesAsync",
+    async (evaluationId, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get<StatistiquesDTO[]>(`/evaluations/statistiques/${evaluationId}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des statistiques");
+        }
+    }
+);
+
+
+
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
-export const getReponseEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
+
+export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
+
 export default EvaluationSlice.reducer;
 

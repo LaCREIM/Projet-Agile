@@ -164,6 +164,7 @@ const DetailsRubrique = ({
   
     if (isEditing) {
       try {
+
         let resultAdd = "";
         let resultRem = "";
   

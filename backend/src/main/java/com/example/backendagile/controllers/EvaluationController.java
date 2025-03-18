@@ -57,15 +57,16 @@ public class EvaluationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{idEvaluation}/enseignant/{noEnseignant}")
-    public ResponseEntity<Map<String, String>> deleteEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+    @DeleteMapping("/{idEvaluation}")
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteEvaluation(@PathVariable Long idEvaluation) {
         Map<String, String> response = new HashMap<>();
         try {
-            response.put("message", "L'évaluation a été supprimée avec succès.");
             // supprimer l'évaluation droite
-            droitService.deleteDroit(idEvaluation, noEnseignant);
+//            droitService.deleteDroitByIdEvaluation(idEvaluation);
             // supprimer l'évaluation
             evaluationService.deleteEvaluation(idEvaluation);
+            response.put("message", "L'évaluation a été supprimée avec succès.");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -98,7 +99,7 @@ public class EvaluationController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            response.put("message", e.getMessage());
+            response.put("message", "L'évaluation ne peut pas être dupliquée.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -120,5 +121,43 @@ public class EvaluationController {
     public ResponseEntity<List<EvaluationDTO>> getEvaluationsByEtudiant(@PathVariable String idEtudiant) {
         List<EvaluationDTO> evaluations = evaluationService.getEvaluationsByEtudiant(idEtudiant);
         return ResponseEntity.ok(evaluations);
+    }
+
+    @PutMapping("clouter/{idEvaluation}")
+    public ResponseEntity<Map<String, String>> cloturerEvaluation(@PathVariable Long idEvaluation) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isUpdated = evaluationService.updateEvaluationStatus(idEvaluation,  "CLO");
+            if (isUpdated) {
+                response.put("message", "L'évaluation a été clôturée avec succès.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message", "L'état initial de l'évaluation n'est pas en cours d'élaboration");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response.put("message", "Une erreur s'est produite lors de la clôture de l'évaluation.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @PutMapping("disposition/{idEvaluation}")
+    public ResponseEntity<Map<String, String>> miseEnDispositionEvaluation(@PathVariable Long idEvaluation) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isUpdated = evaluationService.updateEvaluationStatus(idEvaluation, "DIS");
+            if (isUpdated) {
+                response.put("message", "L'évaluation a été mise en disposition avec succès.");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message", "L'état initial de l'évaluation n'est pas en cours d'élaboration");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response.put("message", "Une erreur s'est produite lors de la mise en disposition de l'évaluation.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

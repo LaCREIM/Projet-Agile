@@ -1,4 +1,4 @@
-//export const API_BASE_URL = "https://00ce-2a04-cec0-1024-5d39-da3b-1517-8508-9e25.ngrok-free.app";
- export const API_BASE_URL = "http://localhost:8080";
+export const API_BASE_URL = "https://6a2b-2a04-cec0-1034-e3a9-8db6-97cb-1f86-39ef.ngrok-free.app";
+//  export const API_BASE_URL = "http://localhost:8080";
 
 
