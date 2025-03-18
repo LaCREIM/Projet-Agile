@@ -21,6 +21,7 @@ const initialState: EvaluationState = {
     evaluation: {} as EvaluationDTO,
     statistiques: [] as StatistiquesDTO[],
     evaluations: [],
+    reponseEvaluation: null,
     reponsesEvaluation: [],
     totalPages: 0, 
     loading: false,

@@ -146,6 +146,7 @@ const EvaluationHome = () => {
   };
 
   const handleInspect = (evaluationId: number) => {
+
     if (localStorage.getItem("role") === "ENS") navigate(`${evaluationId}`);
     else if (localStorage.getItem("role") === "ETU")
       navigate(`repondre/${evaluationId}`);
