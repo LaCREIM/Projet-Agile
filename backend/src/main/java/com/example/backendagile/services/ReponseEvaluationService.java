@@ -282,9 +282,10 @@ public class ReponseEvaluationService {
                     String maximal = rq.getIdQuestionEvaluation().getIdQualificatif().getMaximal();
                     String minimal = rq.getIdQuestionEvaluation().getIdQualificatif().getMinimal();
                     String intitule = rq.getIdQuestionEvaluation().getIdQuestion().getIntitule();
+                    String designation = rq.getIdQuestionEvaluation().getIdRubriqueEvaluation().getDesignation();
                     Long nbReponses = nbReponsesParQuestion.get(questionId);
                     long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
-                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule, totalPositionnements);
+                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule,designation, totalPositionnements);
                 })
                 .collect(Collectors.toList());
     }
