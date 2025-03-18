@@ -222,7 +222,7 @@ const QuestionHome = () => {
             <tr key={question.idQuestion} className="transition-all duration-75">
               <td className="px-4 py-2 w-[20%]">{question.intitule || "N/A"}</td>
               <td className="px-4 py-2">
-                {question?.maxQualificatif + " - " + question?.minQualificatif || "N/A"}
+                {question?.minQualificatif + " - " + question?.maxQualificatif || "N/A"}
               </td>
               {role === "ENS" && (
                 <td className="px-4 py-2">
