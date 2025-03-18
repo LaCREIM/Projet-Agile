@@ -32,10 +32,6 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
         <div className="flex-grow overflow-auto">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3 sm:col-gap-6 xl:grid-cols-2">
             <div className="text-base font-medium text-gray-900">
-              <dt>Code :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.id}</dd>
-            </div>
-            <div className="text-base font-medium text-gray-900">
               <dt>Sexe :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.sexe === "H" ? "HOMME" : enseignant.sexe === "F" ? "FEMME" : "Non spécifié"}
