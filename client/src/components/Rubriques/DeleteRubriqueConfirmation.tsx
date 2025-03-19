@@ -37,6 +37,8 @@ const DeleteRubriqueConfirmation = ({
         } else {
           toast.error("ID de l'enseignant non trouvé.");
         }
+
+        
       }
     } catch (error) {
       console.error("Erreur lors de la suppression :", error);

@@ -313,7 +313,7 @@ const EnseignantsHome = () => {
                       <td className="flex gap-3 justify-center items-center">
                         <FontAwesomeIcon
                           icon={faEye}
-                          className="text-blue-600 text-base cursor-pointer"
+                          className=" text-base cursor-pointer"
                           onClick={() => {
                             handleClick(enseignant, index);
                             openModal(`inspect-${index}`);
@@ -322,7 +322,7 @@ const EnseignantsHome = () => {
 
                         <FontAwesomeIcon
                           icon={faPenToSquare}
-                          className="text-green-600 text-base cursor-pointer"
+                          className=" text-base cursor-pointer"
                           onClick={() => {
                             handleClickUpdate(enseignant, index);
                             openModal(`updateEnseignant-${index}`);
@@ -331,7 +331,7 @@ const EnseignantsHome = () => {
 
                         <FontAwesomeIcon
                           icon={faTrash}
-                          className=" text-red-600 text-base cursor-pointer"
+                          className=" text-base cursor-pointer"
                           onClick={(e) => openDeleteModal(enseignant, e)}
                         />
                       </td>
