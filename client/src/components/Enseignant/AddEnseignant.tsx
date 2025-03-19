@@ -12,9 +12,9 @@ import { Enseignant } from "../../types/types";
 import { Eye, EyeOff } from "lucide-react";
 import { getPays } from "../../features/EnseignantSlice";
 
-const AddEnseignant = ({ onClose }: { onClose: () => void }) => { 
-   const dispatch = useAppDispatch();
-   const [enseignant, setEnseignant] = useState<Enseignant>({
+const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
+  const dispatch = useAppDispatch();
+  const [enseignant, setEnseignant] = useState<Enseignant>({
     id: 0,
     type: "",
     sexe: "",
@@ -35,9 +35,6 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
 
-  
-
-  
   const [submitting, setSubmitting] = useState(false);
 
   const pays = useAppSelector(getPays);
@@ -56,27 +53,30 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     { champ: "motPasse", valeur: enseignant.motPasse.trim() },
   ].every((field) => Boolean(field.valeur));
 
-
   const formatPhoneNumber = (value: string): string => {
-    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
-                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
-                .trim();
+    return value
+      .replace(/\D/g, "") // Supprime tous les caractères non numériques
+      .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+      .trim();
   };
   const validateEmail = (email: string, uboOnly = false) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const uboRegex = /^[a-zA-Z0-9._%+-]+@univ-brest\.fr$/;
     return uboOnly ? uboRegex.test(email) : emailRegex.test(email);
   };
-  const validatePhoneNumber = (number: string) => /^\d{10}$/.test(number.replace(/\s/g, ""));
+  const validatePhoneNumber = (number: string) =>
+    /^\d{10}$/.test(number.replace(/\s/g, ""));
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
 
     // Vérification du mobile
     if (!validatePhoneNumber(enseignant.mobile)) {
-      newErrors.mobile = "Le numéro de mobile doit contenir exactement 10 chiffres.";
+      newErrors.mobile =
+        "Le numéro de mobile doit contenir exactement 10 chiffres.";
     }
     if (enseignant.telephone && !validatePhoneNumber(enseignant.telephone)) {
-      newErrors.telephone = "Le numéro de téléphone doit contenir exactement 10 chiffres.";
+      newErrors.telephone =
+        "Le numéro de téléphone doit contenir exactement 10 chiffres.";
     }
 
     // Vérification des emails
@@ -84,7 +84,8 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
       newErrors.emailUbo = "L'email UBO doit être au format xxxx@univ-brest.fr";
     }
     if (enseignant.emailPerso && !validateEmail(enseignant.emailPerso)) {
-      newErrors.emailPerso = "L'email personnel doit être valide (ex: test@domaine.com).";
+      newErrors.emailPerso =
+        "L'email personnel doit être valide (ex: test@domaine.com).";
     }
 
     // Vérification du code postal (5 chiffres)
@@ -104,7 +105,9 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     let formattedValue = value;
@@ -120,65 +123,64 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     // Validation à chaque modification
     validateFields();
   };
-// Gestion de la soumission du formulaire
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!validateFields()) {
-    toast.error("Veuillez corriger les erreurs du formulaire.");
-    return;
-  }
-
-  setSubmitting(true);
-
-  try {
-    const cleanedEnseignant = {
-      ...enseignant,
-      telephone: enseignant.telephone.replace(/\s/g, ""),
-      mobile: enseignant.mobile.replace(/\s/g, ""),
-    };
-
-    const response = await dispatch(postEnseignantAsync(cleanedEnseignant)).unwrap();
-    console.log("Enseignant ajouté avec succès :", response);
-
-    if (response != null) {
-      toast.success("Enseignant ajouté avec succès !");
-      await dispatch(getEnseignantAsync({ page: 1, size: 10 }));
-      setEnseignant({
-        id: 0,
-        type: "",
-        sexe: "",
-        nom: "",
-        prenom: "",
-        adresse: "",
-        codePostal: "",
-        ville: "",
-        pays: "",
-        mobile: "",
-        telephone: "",
-        emailUbo: "",
-        emailPerso: "",
-        password: "",
-        motPasse: "",
-      });
-      setErrors({});
-      onClose();
+  // Gestion de la soumission du formulaire
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateFields()) {
+      toast.error("Veuillez corriger les erreurs du formulaire.");
+      return;
     }
-  } catch (error) {
-    console.error("Erreur lors de l'ajout :", error);
-   // toast.error("Erreur lors de l'ajout. Veuillez réessayer.");
-    setErrors((prev) => ({ ...prev, api: "Erreur lors de l'ajout." }));
-  } finally {
-    setSubmitting(false);
-  }
-};
-  
-  
 
-  
+    setSubmitting(true);
+
+    try {
+      const cleanedEnseignant = {
+        ...enseignant,
+        telephone: enseignant.telephone.replace(/\s/g, ""),
+        mobile: enseignant.mobile.replace(/\s/g, ""),
+      };
+
+      const response = await dispatch(
+        postEnseignantAsync(cleanedEnseignant)
+      ).unwrap();
+      console.log("Enseignant ajouté avec succès :", response);
+
+      if (response != null) {
+        toast.success("Enseignant ajouté avec succès !");
+        await dispatch(getEnseignantAsync({ page: 1, size: 10 }));
+        setEnseignant({
+          id: 0,
+          type: "",
+          sexe: "",
+          nom: "",
+          prenom: "",
+          adresse: "",
+          codePostal: "",
+          ville: "",
+          pays: "",
+          mobile: "",
+          telephone: "",
+          emailUbo: "",
+          emailPerso: "",
+          password: "",
+          motPasse: "",
+        });
+        setErrors({});
+        onClose();
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'ajout :", error);
+      // toast.error("Erreur lors de l'ajout. Veuillez réessayer.");
+      setErrors((prev) => ({ ...prev, api: "Erreur lors de l'ajout." }));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(getDomainePaysAsync());
   }, [dispatch]);
-  
+
   const handleCancel = () => {
     setEnseignant({
       id: 0,
@@ -407,40 +409,39 @@ const handleSubmit = async (e: React.FormEvent) => {
               </select>
             </label>
             <div className="flex flex-col gap-1">
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">
-                Email UBO<span className="text-red-500">*</span>
-              </span>
-              <input
-                type="email"
-                name="emailUbo"
-                value={enseignant.emailUbo}
-
-                onChange={handleChange}
-                required
-                className="grow"
-                placeholder="john.doe@univ-brest.fr"
-              />
-               </label>
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">
+                  Email UBO<span className="text-red-500">*</span>
+                </span>
+                <input
+                  type="email"
+                  name="emailUbo"
+                  value={enseignant.emailUbo}
+                  onChange={handleChange}
+                  required
+                  className="grow"
+                  placeholder="john.doe@univ-brest.fr"
+                />
+              </label>
               {errors.emailUbo && (
                 <p className="text-red-500 text-sm">{errors.emailUbo}</p>
               )}
             </div>
             <div className="flex flex-col gap-1">
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="font-semibold">Email Personnel</span>
-              <input
-                type="email"
-                name="emailPerso"
-                value={enseignant.emailPerso}
-                onChange={handleChange}
-                className="grow"
-                placeholder="john.doe@gmail.com"
-              />
-            </label>
-                {errors.emailPerso && (
+              <label className="input input-bordered flex items-center gap-2">
+                <span className="font-semibold">Email Personnel</span>
+                <input
+                  type="email"
+                  name="emailPerso"
+                  value={enseignant.emailPerso}
+                  onChange={handleChange}
+                  className="grow"
+                  placeholder="john.doe@gmail.com"
+                />
+              </label>
+              {errors.emailPerso && (
                 <p className="text-red-500 text-sm">{errors.emailPerso}</p>
-                )}
+              )}
             </div>
           </div>
 
@@ -455,8 +456,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                   onClick={handleSubmit}
                   disabled={!canSave || submitting}
                 >
-                {submitting ? "Ajout en cours..." : "Ajouter"}           
-                     </button>
+                  {submitting ? "Ajout en cours..." : "Ajouter"}
+                </button>
               </div>
             </form>
           </div>
