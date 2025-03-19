@@ -185,6 +185,7 @@ const EnseignantsHome = () => {
   return (
     <>
       <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
+
         <h1 className="text-xl font-bold">Liste des enseignants</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-full px-[5%]">
           <div className="w-2/3 flex flex-row items-center gap-5 hover:cursor-text">
@@ -200,6 +201,7 @@ const EnseignantsHome = () => {
               />
               <FaSearch />
             </label>
+
             <>
               <select
                 className="select select-bordered"
@@ -267,10 +269,20 @@ const EnseignantsHome = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredEnseignants.length === 0 ? (
+              {enseignants.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={11}
+                    className="uppercase tracking-widest text-center "
+                  >
+                    <span className="loading loading-dots loading-lg"></span>
+                  </td>
+                </tr>
+              ) : filteredEnseignants.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={11}
+
                     className="uppercase tracking-widest text-center text-gray-500"
                   >
                     Pas d'enseignants trouvés.
@@ -279,13 +291,17 @@ const EnseignantsHome = () => {
               ) : (
                 filteredEnseignants.map(
                   (enseignant: Enseignant, index: number) => (
-                    <tr key={enseignant.id}>
+                    <tr
+                      key={enseignant.id}
+                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                    >
+
                       <td className="px-4 py-2">
                         {enseignant.nom.toUpperCase()}
                       </td>
                       <td className="px-4 py-2">{enseignant.prenom}</td>
                       <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                      <td className="px-4 py-2">{enseignant.mobile}</td>
+                      <td className="px-4 py-2">{formatPhoneNumber(enseignant.mobile)}</td>
 
                       <td className="px-4 py-2">
                         {enseignantMapper(enseignant.type)}
@@ -293,7 +309,7 @@ const EnseignantsHome = () => {
                       <td className="flex gap-3 justify-center items-center">
                         <FontAwesomeIcon
                           icon={faEye}
-                          className=" text-base cursor-pointer"
+                          className="text-blue-600 text-base cursor-pointer"
                           onClick={() => {
                             handleClick(enseignant, index);
                             openModal(`inspect-${index}`);
@@ -302,7 +318,7 @@ const EnseignantsHome = () => {
 
                         <FontAwesomeIcon
                           icon={faPenToSquare}
-                          className=" text-base cursor-pointer"
+                          className="text-green-600 text-base cursor-pointer"
                           onClick={() => {
                             handleClickUpdate(enseignant, index);
                             openModal(`updateEnseignant-${index}`);
@@ -311,7 +327,7 @@ const EnseignantsHome = () => {
 
                         <FontAwesomeIcon
                           icon={faTrash}
-                          className=" text-base cursor-pointer"
+                          className=" text-red-600 text-base cursor-pointer"
                           onClick={(e) => openDeleteModal(enseignant, e)}
                         />
                       </td>
@@ -322,9 +338,19 @@ const EnseignantsHome = () => {
                         <UpdateEnseignant enseignantData={enseignant} />
                       </dialog>
 
+                      {/* Modal de mise à jour */}
+                      <dialog
+                        id={`updateEnseignant-${index}`}
+                        className="modal"
+                      >
+                        <UpdateEnseignant enseignantData={enseignant} />
+                      </dialog>
+
+                      {/* Modal de détails */}
                       <dialog id={`inspect-${index}`} className="modal">
                         <DetailsEnseignant enseignant={enseignant} />
-                      </dialog> 
+                      </dialog>
+
                     </tr>
                   )
                 )
