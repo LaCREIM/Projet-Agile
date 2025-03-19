@@ -22,9 +22,7 @@ public class EtudiantDTO {
     private String lieuNaissance;
     @NotBlank
     private String nationalite;
-
     private String telephone;
-
     private String mobile;
     @NotBlank
     private String email;
@@ -32,7 +30,6 @@ public class EtudiantDTO {
     private String emailUbo;
     @NotBlank
     private String adresse;
-    @NotBlank
     private String codePostal;
     @NotBlank
     private String ville;
@@ -40,9 +37,7 @@ public class EtudiantDTO {
     private String paysOrigine;
     @NotBlank
     private String universiteOrigine;
-    @NotNull
     private Long groupeTp;
-    @NotNull
     private Long groupeAnglais;
     @NotBlank
     private String motPasse;
