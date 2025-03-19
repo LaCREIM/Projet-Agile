@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { IoIosPersonAdd } from "react-icons/io";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddEnseignant from "./AddEnseignant";
 import DetailsEnseignant from "./EnseignantDetails";
@@ -21,6 +20,7 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
 import { enseignantMapper } from "../../mappers/mappers";
+import { MdClear } from "react-icons/md";
 
 const EnseignantsHome = () => {
   document.title = "UBO | Enseignants";
@@ -28,6 +28,9 @@ const EnseignantsHome = () => {
   const enseignants = useAppSelector(getEnseignants);
   const totalPages = useAppSelector(getTotalePages);
   const [search, setSearch] = useState<string>("");
+  const [sortField, setSortField] = useState<string>("nom");
+  const [sortOrder, setSortOrder] = useState<string>("asc");
+  const [filterType, setFilterType] = useState<string>("");
   const [filteredEnseignants, setFilteredEnseignants] = useState<Enseignant[]>(
     []
   );
@@ -95,13 +98,33 @@ const EnseignantsHome = () => {
   const updateEnseignantModalRef = useRef<HTMLDialogElement | null>(null);
   const enseignantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
 
+
   useEffect(() => {
-    setFilteredEnseignants(enseignants);
-  }, [enseignants]);
-  const formatPhoneNumber = (value: string): string => {
-    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
-                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
-                .trim();
+    const filtered = enseignants.filter((enseignant) => {
+      const matchesSearch = Object.values(enseignant).some((value) =>
+        value?.toString().toLowerCase().includes(search.toLowerCase())
+      );
+      const matchesType = filterType ? enseignant.type === filterType : true;
+      return matchesSearch && matchesType;
+    });
+
+    if (sortField) {
+      filtered.sort((a, b) => {
+        const aValue = a[sortField as keyof typeof a];
+        const bValue = b[sortField as keyof typeof b];
+        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    setFilteredEnseignants(filtered);
+  }, [enseignants, search, sortField, sortOrder, filterType]);
+
+  const handleSortChange = (field: string) => {
+    const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(order);
+
   };
 
   useEffect(() => {
@@ -162,9 +185,10 @@ const EnseignantsHome = () => {
   return (
     <>
       <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1>Liste des enseignants</h1>
+
+        <h1 className="text-xl font-bold">Liste des enseignants</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-full px-[5%]">
-          <div className="w-1/3 block hover:cursor-text">
+          <div className="w-2/3 flex flex-row items-center gap-5 hover:cursor-text">
             <label className="input input-bordered flex items-center gap-2 shadow-md">
               <input
                 disabled={enseignants?.length == 0}
@@ -177,6 +201,30 @@ const EnseignantsHome = () => {
               />
               <FaSearch />
             </label>
+
+            <>
+              <select
+                className="select select-bordered"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="">Tous</option>
+                <option value="MCF">Maître de Conférences</option>
+                <option value="INT">Intervenant-Extérieur</option>
+                <option value="PR">Professeur des Universités</option>
+                <option value="PRAST">Professionnel Associé</option>
+                <option value="PRAG">Professeur Agrégé</option>
+              </select>
+              <div className="tooltip" data-tip="Réinitialiser le filtre">
+                <button
+                  onClick={() => setFilterType("")}
+                  disabled={filterType === ""}
+                  className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                >
+                  <MdClear size={20} />
+                </button>
+              </div>
+            </>
           </div>
           <div className="tooltip" data-tip="Ajouter un enseignant">
             <button
@@ -200,10 +248,22 @@ const EnseignantsHome = () => {
           >
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Email professionnel</th>
-                <th>Mobile</th>
+                <th onClick={() => handleSortChange("nom")}>
+                  Nom {sortField === "nom" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("prenom")}>
+                  Prénom{" "}
+                  {sortField === "prenom" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("emailUbo")}>
+                  Email professionnel{" "}
+                  {sortField === "emailUbo" &&
+                    (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
+                <th onClick={() => handleSortChange("mobile")}>
+                  Téléphone{" "}
+                  {sortField === "mobile" && (sortOrder === "asc" ? "↑" : "↓")}
+                </th>
                 <th>Type</th>
                 <th className="text-center">Actions</th>
               </tr>
@@ -222,6 +282,7 @@ const EnseignantsHome = () => {
                 <tr>
                   <td
                     colSpan={11}
+
                     className="uppercase tracking-widest text-center text-gray-500"
                   >
                     Pas d'enseignants trouvés.
@@ -234,12 +295,14 @@ const EnseignantsHome = () => {
                       key={enseignant.id}
                       className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
                     >
+
                       <td className="px-4 py-2">
                         {enseignant.nom.toUpperCase()}
                       </td>
                       <td className="px-4 py-2">{enseignant.prenom}</td>
                       <td className="px-4 py-2">{enseignant.emailUbo}</td>
                       <td className="px-4 py-2">{formatPhoneNumber(enseignant.mobile)}</td>
+
                       <td className="px-4 py-2">
                         {enseignantMapper(enseignant.type)}
                       </td>
@@ -268,6 +331,12 @@ const EnseignantsHome = () => {
                           onClick={(e) => openDeleteModal(enseignant, e)}
                         />
                       </td>
+                      <dialog
+                        id={`updateEnseignant-${index}`}
+                        className="modal"
+                      >
+                        <UpdateEnseignant enseignantData={enseignant} />
+                      </dialog>
 
                       {/* Modal de mise à jour */}
                       <dialog
@@ -281,6 +350,7 @@ const EnseignantsHome = () => {
                       <dialog id={`inspect-${index}`} className="modal">
                         <DetailsEnseignant enseignant={enseignant} />
                       </dialog>
+
                     </tr>
                   )
                 )
