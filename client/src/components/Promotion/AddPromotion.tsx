@@ -1,5 +1,5 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import React, {FormEvent, useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {
   anneesUniv,
   Domaine,
@@ -13,8 +13,9 @@ import {
   postPromotionsAsync,
 } from "../../features/PromotionSlice";
 
-import { Enseignant, Formation, PromotionCreate } from "../../types/types";
+import {Enseignant, Formation, PromotionCreate} from "../../types/types";
 import AlertError from "../ui/alert-error.tsx";
+import { toast } from "react-toastify";
 
 interface AddPromotionProps {
   dispatchPromotion: () => void;
@@ -129,12 +130,14 @@ const AddPromotion = ({
       const errorMessage = Object.values(response.payload).join(" et ");
       setError(errorMessage);
       return;
+    }else{
+      toast.success("Promotion ajoutée avec succès");
+     dispatchPromotion();
+      setPromotion(initialPromotionState);
+      setErrors(initialErrors);
+      setError(null);
+      onClose();
     }
-    dispatchPromotion();
-    setPromotion(initialPromotionState);
-    setErrors(initialErrors);
-    setError(null);
-    onClose();
   };
 
   useEffect(() => {
@@ -328,31 +331,29 @@ const AddPromotion = ({
                 <label className="font-semibold text-center">
                   Date limite de réponse pour la liste
                 </label>
-                <div className="flex flex-row gap-2 ">
-                  <div className="flex flex-col gap-1 w-[50%] ">
+                <div className="flex flex-row gap-2 justify-between ">
+                  <div className="flex flex-col w-[45%]">
                     <label className="input input-bordered flex items-center gap-2">
-                      <span className="font-semibold w-[20%]">Principale</span>
+                      <span className="font-semibold ">Principale</span>
                       <input
                         type="date"
                         name="dateReponseLp"
                         value={formatDate(promotion.dateReponseLp)}
                         onChange={handleChange}
-                        className="input input-bordered w-[80%] max-w-full"
                       />
                     </label>
                     {errors.dateError && (
                       <p className="text-red-500 text-sm">{errors.dateError}</p>
                     )}
                   </div>
-                  <div className="flex flex-col gap-1 w-[50%]">
+                  <div className="flex flex-col w-[45%]">
                     <label className="input input-bordered flex items-center gap-2">
-                      <span className="font-semibold w-[15%]">Attente</span>
+                      <span className="font-semibold ">Attente</span>
                       <input
                         type="date"
                         name="dateReponseLalp"
                         value={formatDate(promotion.dateReponseLalp)}
                         onChange={handleChange}
-                        className="input input-bordered w-[80%] max-w-full"
                       />
                     </label>
                     {errors.dateError && (

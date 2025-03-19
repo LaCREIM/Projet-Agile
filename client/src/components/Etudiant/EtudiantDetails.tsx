@@ -39,8 +39,12 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
               <dd className="mt-1 text-gray-500">{etudiant.emailUbo}</dd>
             </div>
             <div className="text-base font-medium text-gray-900">
-              <dt>Téléphone :</dt>
+              <dt>Mobile :</dt>
               <dd className="mt-1 text-gray-500">{etudiant.mobile}</dd>
+            </div>
+            <div className="text-base font-medium text-gray-900">
+              <dt>Téléphone :</dt>
+              <dd className="mt-1 text-gray-500">{etudiant.telephone}</dd>
             </div>
 
             <div className="text-base font-medium text-gray-900">

@@ -201,7 +201,8 @@ const PromotionHome = () => {
         />
       ) : (
         <div className="flex flex-col gap-5 items-center pt-[10%] mx-auto rounded-s-3xl bg-white w-full h-screen">
-          <h1>Liste des promotions</h1>
+          <h1 className={"font-bold text-xl"}>Liste des promotions</h1>
+
           <div className="flex flex-row items-center justify-between gap-5  hover:cursor-pointer w-full px-[5%]">
             <div className="w-1/3 block hover:cursor-text">
               <label className="input input-bordered flex items-center gap-2 shadow-md">
@@ -338,11 +339,11 @@ const PromotionHome = () => {
                           </div>
 
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip={
                               isEditable(promotion)
                                 ? "Modifier"
-                                : "Promotion non modifiable"
+                                : "Cette promotion est ancienne, elle ne peut pas être modifiée"
                             }
                           >
                             <FontAwesomeIcon
@@ -370,7 +371,7 @@ const PromotionHome = () => {
                             data-tip={
                               isEditable(promotion)
                                 ? "Supprimer"
-                                : "Promotion non supprimable"
+                                : "Cette promotion est ancienne, elle ne peut pas être supprimée"
                             }
                           >
                             <FontAwesomeIcon

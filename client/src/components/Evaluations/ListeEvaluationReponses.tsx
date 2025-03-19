@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import {
-  getAllReponsesEvaluationAsync,
+  getAllReponsesEvaluationAsync, getEvaluation, getEvaluationByIdAsync,
   getReponsesEvaluation,
 } from "../../features/EvaluationSlice";
 import { FaSearch } from "react-icons/fa";
@@ -15,6 +15,7 @@ const ListeEvaluationReponses = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const reponses = useAppSelector(getReponsesEvaluation);
+  const evaluation = useAppSelector(getEvaluation);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<string | null>(null);
@@ -23,6 +24,7 @@ const ListeEvaluationReponses = () => {
 
   useEffect(() => {
     dispatch(getAllReponsesEvaluationAsync(Number(evaluationId)));
+    dispatch(getEvaluationByIdAsync(Number(evaluationId)));
   }, [dispatch, evaluationId]);
 
   // Filtrer les réponses en fonction de la recherche
@@ -63,7 +65,7 @@ const ListeEvaluationReponses = () => {
   );
 
   const handleViewDetails = (reponseId: number) => {
-    navigate(`/reponses/${reponseId}`); // Rediriger vers la page de détails de la réponse
+    navigate(`/user/home/evaluations/reponse/${reponseId}`); 
   };
 
   const handleSort = (field: string) => {
@@ -78,7 +80,7 @@ const ListeEvaluationReponses = () => {
   return (
     <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
       <h1 className="text-xl font-bold">
-        Réponses pour l'évaluation XXXX - M2DOSI : 2024-2025
+        Réponses pour "{evaluation.designation} - {evaluation.codeFormation} : {evaluation.anneeUniversitaire}"
       </h1>
 
       <div className="flex flex-row w-[85%] gap-5 items-center mx-auto rounded-s-3xl bg-white text-md">
@@ -120,7 +122,7 @@ const ListeEvaluationReponses = () => {
                 (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("promotion")}>
-              Promotion{" "}
+              Année universitaire{" "}
               {sortField === "promotion" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("commentaire")}>
@@ -150,7 +152,7 @@ const ListeEvaluationReponses = () => {
                 <td className="flex gap-3 justify-center items-center">
                   <div
                     className="tooltip"
-                    data-tip="Consulter les détails"
+                    data-tip="Consulter la réponse"
                     onClick={() =>
                       handleViewDetails(reponse.idReponseEvaluation)
                     }

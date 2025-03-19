@@ -1,3 +1,4 @@
+
 import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -106,7 +107,7 @@ export const fetchReponseEvaluationAsyncETD = createAsyncThunk<ReponseEvaluation
                 `/reponse-evaluation/${idEvaluation}/${idEtudiant}`
             );
             console.log("response", response.data);
-            
+
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
@@ -235,26 +236,26 @@ const EvaluationSlice = createSlice({
                 state.error = action.payload as string;
             });
         builder
-        .addCase(fetchReponseEvaluationAsyncETD.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(fetchReponseEvaluationAsyncETD.fulfilled, (state, action) => {
-            state.loading = false;
-            state.reponseEvaluationETD = action.payload;  // ✅ Stocker les données récupérées ici
-        })
-        .addCase(fetchReponseEvaluationAsyncETD.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;  // ✅ Stocker l'erreur ici
-        })       
+            .addCase(fetchReponseEvaluationAsyncETD.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchReponseEvaluationAsyncETD.fulfilled, (state, action) => {
+                state.loading = false;
+                state.reponseEvaluationETD = action.payload;  // ✅ Stocker les données récupérées ici
+            })
+            .addCase(fetchReponseEvaluationAsyncETD.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;  // ✅ Stocker l'erreur ici
+            })
             .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
                 state.loading = false;
             })
-            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action) => {
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation>) => {
                 state.reponseEvaluation = action.payload;
                 state.loading = false;
-            })                       
+            })
 
            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
             state.statistiques = action.payload;
@@ -269,7 +270,7 @@ const EvaluationSlice = createSlice({
 
 export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number, { rejectValue: string }>(
     "evaluations/fetchStatistiquesAsync",
-    async (evaluationId, {rejectWithValue}) => {
+    async (evaluationId, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<StatistiquesDTO[]>(`/evaluations/statistiques/${evaluationId}`);
             return response.data;
@@ -284,9 +285,12 @@ export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 
 export const getReponseEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
-export const getReponseEvaluationETD = (state: { evaluations: EvaluationState }) =>state.evaluations.reponseEvaluationETD;
+
+export const getReponseEvaluationETD = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluationETD;
 
 export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
+
+export const getEvaluationResponse = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
 
 export default EvaluationSlice.reducer;
 

@@ -88,7 +88,7 @@ public class EtudiantController {
             // Create authentication for the new student
             authentificationService.save(
                     String.valueOf(Role.ETU),
-                    savedEtudiant.getEmail(),
+                    savedEtudiant.getEmailUbo(),
                     pseudo,
                     etudiantDTO.getMotPasse(),
                     null,
@@ -113,6 +113,13 @@ public class EtudiantController {
             // Check if an Etudiant with the same email already exists
             Optional<Etudiant> existingEtudiant = etudiantService.findByEmailandId(etudiantDTO.getEmail().trim(), etudiantDTO.getNoEtudiant().trim());
             if (existingEtudiant.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
+            }
+
+            // Check if an Etudiant with the same email already exists
+            Optional<Etudiant> existingEtudiant1 = etudiantService.findByEmailandId(etudiantDTO.getEmailUbo().trim(), etudiantDTO.getNoEtudiant().trim());
+            if (existingEtudiant1.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("L'email existe déjà ! Veuillez en choisir un autre."); // Return 409 Conflict if the Etudiant already exists
             }
