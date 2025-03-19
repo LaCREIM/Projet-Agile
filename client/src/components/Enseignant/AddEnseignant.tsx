@@ -58,9 +58,9 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
 
 
   const formatPhoneNumber = (value: string): string => {
-    const cleaned = value.replace(/\s/g, "");
-    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
-    return formatted.trim();
+    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
+                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+                .trim();
   };
   const validateEmail = (email: string, uboOnly = false) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
