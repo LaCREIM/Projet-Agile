@@ -12,6 +12,7 @@ import lombok.Setter;
 public class QuestionStatistiqueDTO {
     private Long idQuestion;
     private Double moyennePositionnement;
+    private Double medianPositionnement;
     private String maximal;
     private String minimal;
     private Long nbReponses;
