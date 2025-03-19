@@ -84,7 +84,7 @@ const StatistiquesEvaluation: React.FC = () => {
                                         <p><strong>Minimal:</strong> {stat.minimal}</p>
                                         <p><strong>Maximal:</strong> {stat.maximal}</p>
                                         <p><strong>Moyenne:</strong> {stat.moyennePositionnement.toFixed(2)}</p>
-                                        <p><strong>Median:</strong> {stat.medianPositionnement.toFixed(2)}</p>
+                                        <p><strong>Médiane:</strong> {stat.medianPositionnement.toFixed(2)}</p>
                                         <p><strong>Nombre de réponses:</strong> {stat.nbReponses}</p>
                                     </div>
 

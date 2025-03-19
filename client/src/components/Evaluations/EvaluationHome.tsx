@@ -1,10 +1,6 @@
-
-
-
 import type React from "react";
-
-import { useEffect, useState, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "@/hook/hooks.ts";
+import {useEffect, useRef, useState} from "react";
+import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
 
 import AddEvaluation from "./AddEvaluation";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -26,8 +22,8 @@ import {
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
 
-import type { GetEvaluationDTO } from "../../types/types";
-import type { RootState } from "../../api/store";
+import type {GetEvaluationDTO} from "../../types/types";
+import type {RootState} from "../../api/store";
 
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
@@ -110,20 +106,20 @@ const EvaluationHome = () => {
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat, filterType]);
 
-  // Check for new evaluations
-  useEffect(() => {
-    if (evaluations.length > prevEvaluationsLength.current) {
-      // Find the new evaluation (assuming it's the last one added)
-      const newEval = evaluations[evaluations.length - 1];
-      setNewEvaluationId(newEval.evaluation.idEvaluation);
-
-      // Reset the highlight after 3 seconds
-      setTimeout(() => {
-        setNewEvaluationId(null);
-      }, 3000);
-    }
-    prevEvaluationsLength.current = evaluations.length;
-  }, [evaluations]);
+  // // Check for new evaluations
+  // useEffect(() => {
+  //   if (evaluations.length > prevEvaluationsLength.current) {
+  //     // Find the new evaluation (assuming it's the last one added)
+  //     const newEval = evaluations[evaluations.length - 1];
+  //     setNewEvaluationId(newEval.evaluation.idEvaluation);
+  //
+  //     // Reset the highlight after 3 seconds
+  //     setTimeout(() => {
+  //       setNewEvaluationId(null);
+  //     }, 3000);
+  //   }
+  //   prevEvaluationsLength.current = evaluations.length;
+  // }, [evaluations]);
 
   useEffect(() => {
     if (localStorage.getItem("role") == "ENS") {
@@ -178,8 +174,8 @@ const EvaluationHome = () => {
     openModal(`duplicate-${evaluationId}`);
   };
 
-  const confirmDuplicate = async (evaluationId: number) => {
-    const response = await dispatch(duplicateEvaluationAsync(evaluationId));
+  const confirmDuplicate = async (evaluation: GetEvaluationDTO["evaluation"]) => {
+    const response = await dispatch(duplicateEvaluationAsync(evaluation));
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       await dispatch(fetchEvaluationAsync());
       toast.success("L'évaluation a été dupliquée avec succès");
@@ -191,7 +187,7 @@ const EvaluationHome = () => {
         { autoClose: false }
       );
     }
-    closeModal(`duplicate-${evaluationId}`);
+    closeModal(`duplicate-${evaluation.idEvaluation}`);
   };
 
   return (
@@ -339,7 +335,8 @@ const EvaluationHome = () => {
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
 
-                    <tr key={index} className={evaluation.evaluation.noEvaluation == 99 ? "bg-red-100!" : ""}>
+                    <tr key={index}
+                        className={evaluation.evaluation.noEvaluation == newEvaluationId ? "bg-red-100!" : ""}>
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
@@ -672,15 +669,20 @@ const EvaluationHome = () => {
                       className="modal"
                     >
                       <DuplicateEvaluationConfirmation
+                          promotions={promotions}
                         evaluation={evaluation.evaluation}
                         onClose={() =>
                           closeModal(
                             `duplicate-${evaluation.evaluation.idEvaluation}`
                           )
                         }
-                        onConfirm={() =>
-                          confirmDuplicate(evaluation.evaluation.idEvaluation)
-                        }
+                          onConfirm={(updated_evaluation) => {
+                            confirmDuplicate(updated_evaluation)
+                            setNewEvaluationId(updated_evaluation.noEvaluation)
+                            setTimeout(() => {
+                              setNewEvaluationId(null);
+                            }, 5000);
+                          }}
                       />
                     </dialog>
                   </tr>
