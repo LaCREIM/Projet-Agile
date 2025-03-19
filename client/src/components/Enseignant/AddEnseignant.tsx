@@ -108,6 +108,8 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    validateFields();
+
     const { name, value } = e.target;
 
     let formattedValue = value;
@@ -121,7 +123,6 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     }));
 
     // Validation à chaque modification
-    validateFields();
   };
   // Gestion de la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
