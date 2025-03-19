@@ -35,11 +35,6 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
 
-  const formatPhoneNumber = (value: string): string => {
-    const cleaned = value.replace(/\s/g, "");
-    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
-    return formatted.trim();
-  };
   
 
   
@@ -61,6 +56,12 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     { champ: "motPasse", valeur: enseignant.motPasse.trim() },
   ].every((field) => Boolean(field.valeur));
 
+
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\s/g, "");
+    const formatted = cleaned.replace(/(\d{2})(?=\d)/g, "$1 ");
+    return formatted.trim();
+  };
   const validateEmail = (email: string, uboOnly = false) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const uboRegex = /^[a-zA-Z0-9._%+-]+@univ-brest\.fr$/;
@@ -179,7 +180,23 @@ const handleSubmit = async (e: React.FormEvent) => {
   }, [dispatch]);
   
   const handleCancel = () => {
-    setEnseignant(enseignantNull);
+    setEnseignant({
+      id: 0,
+      type: "",
+      sexe: "",
+      nom: "",
+      prenom: "",
+      adresse: "",
+      codePostal: "",
+      ville: "",
+      pays: "",
+      mobile: "",
+      telephone: "",
+      emailUbo: "",
+      emailPerso: "",
+      password: "",
+      motPasse: "",
+    });
     setErrors({});
   };
 
