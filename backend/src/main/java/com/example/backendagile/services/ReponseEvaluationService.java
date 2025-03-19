@@ -10,11 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.backendagile.mapper.RubriqueReponseMapper;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -260,10 +256,9 @@ public class ReponseEvaluationService {
             return "Erreur lors de la mise à jour de la réponse à l'évaluation";
         }
     }
-
-
     public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
         List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionsByEvaluationId(idEvaluation);
+
         Map<Long, Double> moyennePositionnementParQuestion = reponses.stream()
                 .collect(Collectors.groupingBy(
                         rq -> rq.getIdQuestionEvaluation().getId(),
@@ -294,6 +289,24 @@ public class ReponseEvaluationService {
                         )
                 ));
 
+        
+        Map<Long, Double> medianPositionnementParQuestion = reponses.stream()
+                .collect(Collectors.groupingBy(
+                        rq -> rq.getIdQuestionEvaluation().getId(),
+                        Collectors.collectingAndThen(
+                                Collectors.mapping(ReponseQuestion::getPositionnement, Collectors.toList()),
+                                list -> {
+                                    Collections.sort(list);
+                                    int size = list.size();
+                                    if (size % 2 == 0) {
+                                        return (list.get(size / 2 - 1) + list.get(size / 2)) / 2.0;
+                                    } else {
+                                        return list.get(size / 2).doubleValue();
+                                    }
+                                }
+                        )
+                ));
+
         return moyennePositionnementParQuestion.entrySet().stream()
                 .map(entry -> {
                     Long questionId = entry.getKey();
@@ -307,8 +320,11 @@ public class ReponseEvaluationService {
                     String designation = rubriqueRepository.findDesignation(rq.getIdQuestionEvaluation().getIdRubriqueEvaluation().getIdRubrique().getId());
                     Long nbReponses = nbReponsesParQuestion.get(questionId);
                     long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
-                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule, designation, totalPositionnements);
+                    Double medianPositionnement = medianPositionnementParQuestion.get(questionId);
+                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), medianPositionnement, maximal, minimal, nbReponses, intitule, designation, totalPositionnements);
                 })
                 .collect(Collectors.toList());
     }
+
+
 }

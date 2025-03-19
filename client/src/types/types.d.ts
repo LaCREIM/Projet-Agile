@@ -372,6 +372,7 @@ interface GetReponseEvaluation {
 export interface StatistiquesDTO {
     idQuestion: number;
     moyennePositionnement: number;
+    medianPositionnement: number;
     maximal: string;
     minimal: string;
     nbReponses: number;

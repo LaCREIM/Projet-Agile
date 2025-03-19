@@ -1,12 +1,11 @@
-
 import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import { EvaluationDTO, GetEvaluationDTO, GetReponseEvaluation } from "@/types/types";
-import { ReponseEvaluation } from '@/components/Evaluations/stepper';
+import {EvaluationDTO, GetEvaluationDTO, GetReponseEvaluation} from "@/types/types";
+import {ReponseEvaluation} from '@/components/Evaluations/stepper';
 
 
 interface EvaluationState {
@@ -151,11 +150,13 @@ export const deleteEvaluationAsync = createAsyncThunk<void, number, { rejectValu
 );
 
 
-export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], number, { rejectValue: string }>(
+export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], GetEvaluationDTO["evaluation"], {
+    rejectValue: string
+}>(
     "evaluations/duplicateEvaluationAsync",
-    async (idEvaluation, { rejectWithValue }) => {
+    async (evaluation, {rejectWithValue}) => {
         try {
-            const response = await axiosInstance.post(`/evaluations/dupliquer/${idEvaluation}/${localStorage.getItem("id")}`);
+            const response = await axiosInstance.post(`/evaluations/dupliquer/${evaluation.idEvaluation}/${localStorage.getItem("id")}`, evaluation);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Erreur lors de la duplication de l'évaluation");
