@@ -66,68 +66,63 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
   };
   const validatePhoneNumber = (number: string) =>
     /^\d{10}$/.test(number.replace(/\s/g, ""));
-  const validateFields = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    // Vérification du mobile
-    if (!validatePhoneNumber(enseignant.mobile)) {
-      newErrors.mobile =
-        "Le numéro de mobile doit contenir exactement 10 chiffres.";
-    }
-    if (enseignant.telephone && !validatePhoneNumber(enseignant.telephone)) {
-      newErrors.telephone =
-        "Le numéro de téléphone doit contenir exactement 10 chiffres.";
-    }
-
-    // Vérification des emails
-    if (!validateEmail(enseignant.emailUbo, true)) {
-      newErrors.emailUbo = "L'email UBO doit être au format xxxx@univ-brest.fr";
-    }
-    if (enseignant.emailPerso && !validateEmail(enseignant.emailPerso)) {
-      newErrors.emailPerso =
-        "L'email personnel doit être valide (ex: test@domaine.com).";
-    }
-
-    // Vérification du code postal (5 chiffres)
-    if (!/^\d{5}$/.test(enseignant.codePostal)) {
-      newErrors.codePostal = "Le code postal doit contenir 5 chiffres.";
-    }
-
-    // Vérification du nom et prénom (uniquement des lettres et espaces)
-    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/;
-    if (!nameRegex.test(enseignant.nom.trim())) {
-      newErrors.nom = "Le nom ne doit contenir que des lettres.";
-    }
-    if (!nameRegex.test(enseignant.prenom.trim())) {
-      newErrors.prenom = "Le prénom ne doit contenir que des lettres.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    validateFields();
-
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
+  
     let formattedValue = value;
     if (name === "mobile" || name === "telephone") {
       formattedValue = formatPhoneNumber(value);
     }
-
-    setEnseignant((prev) => ({
-      ...prev,
-      [name]: formattedValue,
-    }));
-
-    // Validation à chaque modification
+  
+    // Met à jour l'état en fonction de la nouvelle valeur
+    setEnseignant((prev) => {
+      const updatedEnseignant = { ...prev, [name]: formattedValue };
+  
+      // Valide avec la nouvelle valeur après mise à jour de l'état
+      validateFields(updatedEnseignant);
+  
+      return updatedEnseignant;
+    });
   };
+  
+  // Mise à jour de validateFields pour accepter des données en paramètre
+  const validateFields = (updatedEnseignant: typeof enseignant) => {
+    const newErrors: { [key: string]: string } = {};
+  
+    if (!validatePhoneNumber(updatedEnseignant.mobile)) {
+      newErrors.mobile = "Le numéro de mobile doit contenir exactement 10 chiffres.";
+    }
+    if (updatedEnseignant.telephone && !validatePhoneNumber(updatedEnseignant.telephone)) {
+      newErrors.telephone = "Le numéro de téléphone doit contenir exactement 10 chiffres.";
+    }
+  
+    if (!validateEmail(updatedEnseignant.emailUbo, true)) {
+      newErrors.emailUbo = "L'email UBO doit être au format xxxx@univ-brest.fr";
+    }
+    if (updatedEnseignant.emailPerso && !validateEmail(updatedEnseignant.emailPerso)) {
+      newErrors.emailPerso = "L'email personnel doit être valide (ex: test@domaine.com).";
+    }
+  
+    if (!/^\d{5}$/.test(updatedEnseignant.codePostal)) {
+      newErrors.codePostal = "Le code postal doit contenir 5 chiffres.";
+    }
+  
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/;
+    if (!nameRegex.test(updatedEnseignant.nom.trim())) {
+      newErrors.nom = "Le nom ne doit contenir que des lettres.";
+    }
+    if (!nameRegex.test(updatedEnseignant.prenom.trim())) {
+      newErrors.prenom = "Le prénom ne doit contenir que des lettres.";
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
   // Gestion de la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateFields()) {
+    if (!validateFields(enseignant)) {
       toast.error("Veuillez corriger les erreurs du formulaire.");
       return;
     }
@@ -207,7 +202,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
     <div className="flex justify-center items-center w-full h-screen backdrop-blur-sm">
       <div className="modal-box w-[50em] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Ajouter un enseignant</h3>
-        <form onSubmit={handleSubmit} onChange={validateFields}>
+        <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-5">
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">

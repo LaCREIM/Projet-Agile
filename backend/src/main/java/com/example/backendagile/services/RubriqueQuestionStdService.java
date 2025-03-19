@@ -5,6 +5,7 @@ import com.example.backendagile.entities.RubriqueQuestion;
 import com.example.backendagile.entities.RubriqueQuestionId;
 import com.example.backendagile.mapper.RubriqueQuestionStdMapper;
 import com.example.backendagile.repositories.RubriqueQuestionStdRepository;
+import com.example.backendagile.repositories.RubriqueRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -38,9 +39,24 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
-        return ResponseEntity.ok(questionService.updateQuestion(id, questionDTO));
+    public ResponseEntity<?> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
+        if (questionService.existsQuestionInEvaluation(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Impossible de modifier cette question car elle est utilisée dans une évaluation.");
+        }
+
+        try {
+            QuestionDTO updatedQuestion = questionService.updateQuestion(id, questionDTO);
+            return ResponseEntity.ok(updatedQuestion);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Aucune question trouvée avec cet ID.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la mise à jour de la question.");
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
