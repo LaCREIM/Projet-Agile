@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import AddQualificatif from "./AddQualificatif";
@@ -156,7 +156,8 @@ const QualificatifHome = () => {
   return (
     <>
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
-        <h1 className="text-xl">Liste des couples qualificatifs</h1>
+        <h1 className={"font-bold text-xl"}>Liste des qualificatifs</h1>
+
         <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
           <div className="tooltip" data-tip="Ajouter un couple qualificatif">
             <button

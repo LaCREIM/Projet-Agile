@@ -6,6 +6,7 @@ import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.QuestionPrsService;
 import com.example.backendagile.services.RubriqueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +52,13 @@ public class RubriqueController {
       }
       */
     @PostMapping
-    public ResponseEntity<RubriqueDTO> createRubrique(@RequestBody RubriqueDTO dto) {
-        RubriqueDTO createdRubrique = rubriqueService.createRubrique(dto);
-        return ResponseEntity.ok(createdRubrique);
+    public ResponseEntity<Object> createRubrique(@RequestBody RubriqueDTO dto) {
+        try {
+            RubriqueDTO rubriqueDTO = rubriqueService.createRubrique(dto);
+            return ResponseEntity.ok(rubriqueDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors de la création de la rubrique : " + e.getMessage());
+        }
     }
 
 
