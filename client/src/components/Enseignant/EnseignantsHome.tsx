@@ -97,7 +97,11 @@ const EnseignantsHome = () => {
 
   const updateEnseignantModalRef = useRef<HTMLDialogElement | null>(null);
   const enseignantDetailsModalRef = useRef<HTMLDialogElement | null>(null);
-
+  const formatPhoneNumber = (value: string): string => {
+    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
+                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+                .trim();
+  };
 
   useEffect(() => {
     const filtered = enseignants.filter((enseignant) => {
