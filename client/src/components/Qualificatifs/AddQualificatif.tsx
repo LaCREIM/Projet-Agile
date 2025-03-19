@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   createQualificatifAsync,
+  fetchQualificatifsAsync,
   fetchQualificatifsPagedAsync,
 } from "../../features/QualificatifSlice";
 import { useAppDispatch } from "../../hook/hooks";
@@ -32,6 +33,11 @@ const AddQualificatif = ({ currentPage, onClose }: AddQualificatifProps) => {
   const canSave = qualificatif.maximal != "" && qualificatif.minimal != "";
 
   const handleSubmit = async (e: React.FormEvent) => {
+
+    if(qualificatif.maximal === qualificatif.minimal){
+      setError("les valeurs de qualificatid maximal et minimal doivent être différents");
+      return;
+    }else{
     e.preventDefault();
     if (canSave) {
       const response = await dispatch(createQualificatifAsync(qualificatif));
@@ -40,11 +46,12 @@ const AddQualificatif = ({ currentPage, onClose }: AddQualificatifProps) => {
       } else if (
         (response?.type as string) === "qualificatifs/create/fulfilled"
       ) {
-        dispatch(fetchQualificatifsPagedAsync({ page: currentPage, size: 10 }));
+        dispatch(fetchQualificatifsAsync());
         toast.success(response.payload as string);
         handleClose();
       }
     }
+  }
   };
 
   const handleClose = () => {

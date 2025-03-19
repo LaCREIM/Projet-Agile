@@ -30,7 +30,6 @@ import {
 
 import { FaSearch } from "react-icons/fa";
 import { diplomeMapper } from "../../mappers/mappers";
-import { IoMdAdd } from "react-icons/io";
 import DeletePromotionConfirmation from "./DeletePromotionConfirmation.tsx";
 
 const PromotionHome = () => {
@@ -224,7 +223,7 @@ const PromotionHome = () => {
                   className="flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-md hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
                   onClick={() => openModal("addPromotion")}
                 >
-                  <IoMdAdd />
+                  +
                 </button>
               </div>
             )}
@@ -339,11 +338,11 @@ const PromotionHome = () => {
                           </div>
 
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip={
                               isEditable(promotion)
                                 ? "Modifier"
-                                : "Promotion non modifiable"
+                                : "Cette promotion est ancienne, elle ne peut pas être modifiée"
                             }
                           >
                             <FontAwesomeIcon
@@ -371,7 +370,7 @@ const PromotionHome = () => {
                             data-tip={
                               isEditable(promotion)
                                 ? "Supprimer"
-                                : "Promotion non supprimable"
+                                : "Cette promotion est ancienne, elle ne peut pas être supprimée"
                             }
                           >
                             <FontAwesomeIcon

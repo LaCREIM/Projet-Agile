@@ -7,7 +7,11 @@ import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColo
 module.exports = withMT({
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     theme: {
-        extend: {},
+        extend: {
+            animation: {
+                highlight: 'highlight 3s ease-in-out',
+            },
+        },
     },
     plugins: [addVariablesForColors],
 });

@@ -22,7 +22,11 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
     const pays = paysList.find((p: { rvLowValue: string; }) => p.rvLowValue === code);
     return pays ? pays.rvMeaning : "Pays inconnu";
   };
-  
+  const formatPhoneNumber = (value: string): string => {
+    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
+                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+                .trim();
+  };
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[50em] max-w-5xl space-y-5">
@@ -40,29 +44,33 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
 
             <div className="text-base font-medium text-gray-900">
               <dt>Mobile :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.mobile}</dd>
+              <dd className="mt-1 text-gray-500">{formatPhoneNumber(enseignant.mobile)}</dd>
             </div>
-
+            {enseignant.telephone && (
+                  <div className="text-base font-medium text-gray-900">
+                    <dt>Numéro de téléphone :</dt>
+                    <dd className="mt-1 text-gray-500">
+                      {formatPhoneNumber(enseignant.telephone)}
+                    </dd>
+                  </div>
+                )}
             <div className="text-base font-medium text-gray-900">
               <dt>Adresse :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.adresse}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.adresse}, {enseignant.codePostal} - {enseignant.pays.toUpperCase() ? getPaysNom(enseignant.pays).toUpperCase() : "FRANCE"}</dd>
             </div>
-            <div className="text-base font-medium text-gray-900">
-              <dt>Code postale :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.codePostal}</dd>
-            </div>
+            {/* 
             <div className="text-base font-medium text-gray-900">
               <dt>Email :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.emailUbo || "France"}
               </dd>
             </div>
-            <div className="text-base font-medium text-gray-900">
+             <div className="text-base font-medium text-gray-900">
               <dt>Pays :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.pays ? getPaysNom(enseignant.pays) : "France"}
               </dd>
-            </div>
+            </div> */}
 
             <div className="text-base font-medium text-gray-900">
               <dt>Type :</dt>
@@ -87,14 +95,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
                     </dd>
                   </div>
                 )}
-                {enseignant.telephone && (
-                  <div className="text-base font-medium text-gray-900">
-                    <dt>Numéro de téléphone :</dt>
-                    <dd className="mt-1 text-gray-500">
-                      {enseignant.telephone}
-                    </dd>
-                  </div>
-                )}
+
               </>
           
 

@@ -1,5 +1,11 @@
-import {useEffect, useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
+
+
+
+import type React from "react";
+
+import { useEffect, useState, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/hook/hooks.ts";
+
 import AddEvaluation from "./AddEvaluation";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
@@ -19,8 +25,10 @@ import {
   fetchEvaluationAsync,
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
-import {GetEvaluationDTO} from "../../types/types";
-import {RootState} from "../../api/store";
+
+import type { GetEvaluationDTO } from "../../types/types";
+import type { RootState } from "../../api/store";
+
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
 import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
@@ -57,6 +65,9 @@ const EvaluationHome = () => {
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
   const id = localStorage.getItem("id");
+  
+  const [newEvaluationId, setNewEvaluationId] = useState<number | null>(null);
+  const prevEvaluationsLength = useRef(evaluations.length);
 
   // Add this function to handle the clouter action
   const handleClouter = async (evaluationId: number) => {
@@ -98,6 +109,21 @@ const EvaluationHome = () => {
     }
     setFilteredEvaluations(filtered);
   }, [evaluations, search, sortField, sortOrder, filterEtat, filterType]);
+
+  // Check for new evaluations
+  useEffect(() => {
+    if (evaluations.length > prevEvaluationsLength.current) {
+      // Find the new evaluation (assuming it's the last one added)
+      const newEval = evaluations[evaluations.length - 1];
+      setNewEvaluationId(newEval.evaluation.idEvaluation);
+
+      // Reset the highlight after 3 seconds
+      setTimeout(() => {
+        setNewEvaluationId(null);
+      }, 3000);
+    }
+    prevEvaluationsLength.current = evaluations.length;
+  }, [evaluations]);
 
   useEffect(() => {
     if (localStorage.getItem("role") == "ENS") {
@@ -145,7 +171,7 @@ const EvaluationHome = () => {
   const handleInspect = (evaluationId: number) => {
     if (localStorage.getItem("role") === "ENS") navigate(`${evaluationId}`);
     else if (localStorage.getItem("role") === "ETU")
-      navigate(`reponse/${evaluationId}`);
+      navigate(`repondre/${evaluationId}`);
   };
 
   const handleDuplicate = (evaluationId: number) => {
@@ -160,7 +186,10 @@ const EvaluationHome = () => {
     } else if (
       response.type === "evaluations/duplicateEvaluationAsync/rejected"
     ) {
-      toast.error((response.payload as unknown as { message: string }).message);
+      toast.error(
+        (response.payload as unknown as { message: string }).message,
+        { autoClose: false }
+      );
     }
     closeModal(`duplicate-${evaluationId}`);
   };
@@ -309,6 +338,7 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
+
                     <tr key={index} className={evaluation.evaluation.noEvaluation == 99 ? "bg-red-100!" : ""}>
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
@@ -424,12 +454,10 @@ const EvaluationHome = () => {
                             className="tooltip"
                             data-tip={
                               evaluation.evaluation.noEnseignant != Number(id)
-
                                 ? "Vous n'avez pas le droit de consulter les réponses"
                                 : evaluation.evaluation.etat == "ELA"
                                 ? "L'évaluation est toujours en cours d'élaboration"
                                 : "Consulter les réponses"
-
                             }
                             onClick={() =>
                               evaluation.evaluation.etat != "ELA" &&
@@ -466,7 +494,6 @@ const EvaluationHome = () => {
                               evaluation.evaluation.etat == "DIS" &&
                               handleClouter(evaluation.evaluation.idEvaluation)
                             }
-
                           >
                             <FontAwesomeIcon
                               icon={faLock}
@@ -581,7 +608,7 @@ const EvaluationHome = () => {
                             className="tooltip"
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
-                              handleInspect(evaluation.evaluation.idEvaluation)
+                              navigate(`reponse/${evaluation.evaluation.idEvaluation}`)
                             }
                           >
                             <FontAwesomeIcon

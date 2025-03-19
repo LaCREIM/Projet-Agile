@@ -53,8 +53,13 @@ export const fetchQualificatifsPagedAsync = createAsyncThunk<QualificatifRespons
 export const createQualificatifAsync = createAsyncThunk<Qualificatif, Qualificatif, { rejectValue: string }>(
   "qualificatifs/create",
   async (qualificatif, { rejectWithValue }) => {
+   const qualificatifToSend = {
+     maximal: qualificatif.maximal,
+
+      minimal: qualificatif.minimal,
+    };
     try {
-      const response = await axiosInstance.post("/qualificatifs", qualificatif);
+      const response = await axiosInstance.post("/qualificatifs", qualificatifToSend);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Erreur lors de la création du qualificatif");

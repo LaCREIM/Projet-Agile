@@ -15,6 +15,7 @@ import {
 
 import {Enseignant, Formation, PromotionCreate} from "../../types/types";
 import AlertError from "../ui/alert-error.tsx";
+import { toast } from "react-toastify";
 
 interface AddPromotionProps {
   dispatchPromotion: () => void;
@@ -129,12 +130,14 @@ const AddPromotion = ({
       const errorMessage = Object.values(response.payload).join(" et ");
       setError(errorMessage);
       return;
+    }else{
+      toast.success("Promotion ajoutée avec succès");
+     dispatchPromotion();
+      setPromotion(initialPromotionState);
+      setErrors(initialErrors);
+      setError(null);
+      onClose();
     }
-    dispatchPromotion();
-    setPromotion(initialPromotionState);
-    setErrors(initialErrors);
-    setError(null);
-    onClose();
   };
 
   useEffect(() => {

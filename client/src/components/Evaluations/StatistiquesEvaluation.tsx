@@ -4,7 +4,8 @@ import {fetchStatistiquesAsync} from '@/features/EvaluationSlice';
 import {useNavigate, useParams} from 'react-router-dom';
 import {RootState} from '@/api/store';
 import {IoMdArrowBack} from 'react-icons/io';
-import {Bar, Line} from 'react-chartjs-2';
+import {Line} from 'react-chartjs-2';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import {
     BarElement,
     CategoryScale,
@@ -16,6 +17,8 @@ import {
     Title,
     Tooltip
 } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, annotationPlugin);
 
 ChartJS.register(
     CategoryScale,
@@ -78,48 +81,15 @@ const StatistiquesEvaluation: React.FC = () => {
                                         {stat.intitule}
                                     </h3>
                                     <div className="grid grid-cols-2 gap-6 text-gray-700">
-                                        <p><strong>Maximal:</strong> {stat.maximal}</p>
                                         <p><strong>Minimal:</strong> {stat.minimal}</p>
+                                        <p><strong>Maximal:</strong> {stat.maximal}</p>
                                         <p><strong>Moyenne:</strong> {stat.moyennePositionnement.toFixed(2)}</p>
+                                        <p><strong>Median:</strong> {stat.medianPositionnement.toFixed(2)}</p>
                                         <p><strong>Nombre de réponses:</strong> {stat.nbReponses}</p>
                                     </div>
 
                                     {/* Charts */}
-                                    <div className="flex flex-row gap-4 mt-4">
-                                        <div className="w-full md:w-1/2">
-                                            <Bar
-                                                height={75}
-                                                data={{
-                                                    labels: [stat.intitule],
-                                                    datasets: [{
-                                                        label: 'Moyenne Positionnement',
-                                                        data: [stat.moyennePositionnement],
-                                                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                                        borderColor: 'rgba(75, 192, 192, 1)',
-                                                        borderWidth: 1,
-                                                    }],
-                                                }}
-                                                options={{
-                                                    responsive: true,
-                                                    plugins: {legend: {display: false}},
-                                                    scales: {
-                                                        y: {
-                                                            beginAtZero: true, suggestedMax: 5,
-                                                            ticks: {
-                                                                stepSize: 1,
-                                                                callback: function (value) {
-                                                                    if (Number.isInteger(value)) {
-                                                                        return value;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                }}
-                                            />
-                                `        </div>
-
-                                        <div className="w-full md:w-1/2">
+                                    <div className="w-[50%] mx-auto mt-6">
                                             <Line
                                                 height={75}
                                                 data={{
@@ -135,10 +105,43 @@ const StatistiquesEvaluation: React.FC = () => {
                                                 }}
                                                 options={{
                                                     responsive: true,
-                                                    plugins: {legend: {display: false}},
+                                                    plugins: {
+                                                        legend: {display: false},
+                                                        title: {
+                                                            display: true,
+                                                            text: `Le nombre de réponses pour chaque positionnement`
+                                                        },
+                                                        annotation: {
+                                                            annotations: {
+                                                                line1: {
+                                                                    type: 'line',
+                                                                    xMin: stat.moyennePositionnement - 1,
+                                                                    xMax: stat.moyennePositionnement - 1,
+                                                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                                                    borderWidth: 2,
+                                                                    label: {
+                                                                        content: 'Moyenne',
+                                                                        position: 'center'
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
                                                     scales: {
+                                                        x: {
+                                                            title: {
+                                                                display: true,
+                                                                text: `${stat.minimal} - ${stat.maximal}`
+                                                            }
+                                                        },
                                                         y: {
-                                                            beginAtZero: true, suggestedMax: 5, ticks: {
+                                                            title: {
+                                                                display: true,
+                                                                text: "Nombre de réponses"
+                                                            },
+                                                            beginAtZero: true,
+                                                            suggestedMax: 5,
+                                                            ticks: {
                                                                 stepSize: 1,
                                                                 callback: function (value) {
                                                                     if (Number.isInteger(value)) {
@@ -152,7 +155,6 @@ const StatistiquesEvaluation: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                </div>
                             ))}
                         </div>
                     </div>

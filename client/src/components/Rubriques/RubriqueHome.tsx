@@ -159,6 +159,7 @@ const RubriqueHome = () => {
               />
               <FaSearch />
             </label>
+
             {
               role == "ENS" ? (
                   <>

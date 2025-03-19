@@ -6,14 +6,13 @@ interface PromotionProp {
 }
 
 export const DetailsPromotions = ({ promotion }: PromotionProp) => {
-    const formateDate = (date: Date | null) => 
-          new Date(date!).toLocaleDateString("fr-FR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-        
-    
+  const formateDate = (date: Date | null) =>
+    new Date(date!).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <div className="modal-box w-[55em] max-w-5xl space-y-5 hover:cursor-default">
@@ -28,7 +27,9 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
 
         <div className="text-base font-medium text-gray-900">
           {/* <dt>Nom de la formation :</dt> */}
-          <dd className="mt-1 text-gray-500">{promotion.codeFormation} : {promotion.nomFormation}</dd>
+          <dd className="mt-1 text-gray-500">
+            {promotion.codeFormation} : {promotion.nomFormation}
+          </dd>
         </div>
 
         <div className="divider divider-start xl:col-span-2 sm:col-span-3 col-span-1 text-lg text-gray-400 ">
@@ -63,25 +64,25 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             {promotion.commentaire && (
               <div className="text-base font-medium text-gray-900">
                 <dt>Commentaire:</dt>
-                <dd className="mt-1 text-gray-500">{ promotion.commentaire}</dd>
+                <dd className="mt-1 text-gray-500">{promotion.commentaire}</dd>
               </div>
             )}
             <div className="text-base font-medium text-gray-900">
               <dt>Stage :</dt>
-              <dd className="mt-1 text-gray-500">{processusmapper(promotion.processusStage)}</dd>
+              <dd className="mt-1 text-gray-500">
+                {processusmapper(promotion.processusStage)}
+              </dd>
             </div>
-
 
             <div className="divider divider-start xl:col-span-2 sm:col-span-3 col-span-1 text-lg text-gray-400 ">
               Responsable
             </div>
 
-
             <div className="text-base font-medium text-gray-900">
               <dt>Nom :</dt>
               <dd className="mt-1 text-gray-500">
                 {promotion.nom} {promotion.prenom}
-              </dd> 
+              </dd>
             </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Email :</dt>
@@ -97,6 +98,11 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
             <div className="text-base font-medium text-gray-900">
               <dt>Nombre maximal d'étudiants :</dt>
               <dd className="mt-1 text-gray-500">{promotion.nbMaxEtudiant}</dd>
+            </div>
+            <div></div>
+            <div className="text-base font-medium text-gray-900">
+              <dt>Commentaire :</dt>
+              <dd className="mt-1 text-gray-500">{promotion.commentaire}</dd>
             </div>
           </dl>
         </div>

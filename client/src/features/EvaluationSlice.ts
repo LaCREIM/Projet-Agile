@@ -1,5 +1,5 @@
-import { ReponseEvaluationDTO, StatistiquesDTO } from './../types/types.d';
-import { StatistiquesDTO } from './../types/types.d';
+
+import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -100,7 +100,7 @@ export const fetchReponseEvaluationAsync = createAsyncThunk<ReponseEvaluation, {
     }
 );
 export const fetchReponseEvaluationAsyncETD = createAsyncThunk<ReponseEvaluationDTO, { idEvaluation: number; idEtudiant: string }, { rejectValue: string }>(
-    "evaluations/fetchReponseEvaluationAsync",
+    "evaluations/fetchReponseEvaluationAsyncETD",
     async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<ReponseEvaluationDTO>(
@@ -250,8 +250,10 @@ const EvaluationSlice = createSlice({
             })
             .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
-
-
+                state.loading = false;
+            })
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation>) => {
+                state.reponseEvaluation = action.payload;
                 state.loading = false;
             })
 
@@ -283,9 +285,12 @@ export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 
 export const getReponseEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
+
 export const getReponseEvaluationETD = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluationETD;
 
 export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
+
+export const getEvaluationResponse = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
 
 export default EvaluationSlice.reducer;
 

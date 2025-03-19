@@ -83,17 +83,15 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     if (!evaluationId) {
       return;
     }
-    const res = dispatch(
+    dispatch(
       fetchReponseEvaluationAsync({
         idEvaluation: Number(evaluationId),
         idEtudiant: localStorage.getItem("id") || "",
       })
     );
-    console.log("res", res);
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("stepsData", evaluation);
     setStepsData([
       ...(evaluation?.rubriques || []),
       {
@@ -109,9 +107,10 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         questions: [],
       } as RubriqueReponse,
     ]);
+    console.log("stepsData", evaluation);
+
 
     if (evaluation && evaluation.rubriques) {
-      // Initialize ratings with existing positionnement values
       const initialRatings: { [key: string]: number } = {};
       evaluation.rubriques.forEach((rubrique) => {
         rubrique.questions.forEach((question) => {
@@ -174,9 +173,9 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
       <span className="flex space-x-1 text-black-500">
         {[...Array(totalStars)].map((_, index) =>
           index < positionnement ? (
-            <FaCircle key={index} size={30} />
+            <FaCircle key={index} size={20} />
           ) : (
-            <FaRegCircle key={index} size={30} />
+            <FaRegCircle key={index} size={20} />
           )
         )}
       </span>
@@ -357,7 +356,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {evaluation?.rubriques?.map((rubrique, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md w-full">
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"

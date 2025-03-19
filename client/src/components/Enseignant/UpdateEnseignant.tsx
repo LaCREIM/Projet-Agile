@@ -24,7 +24,6 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
       enseignant.prenom &&
       enseignant.sexe &&
       enseignant.adresse &&
-      enseignant.emailPerso &&
       enseignant.codePostal &&
       enseignant.mobile &&
       enseignant.type

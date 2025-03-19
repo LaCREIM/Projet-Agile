@@ -45,7 +45,6 @@ export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { reje
     async (_, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
-            //console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching groupe tps:", error);
@@ -59,7 +58,6 @@ export const getDomaineUnivAsync = createAsyncThunk<Domaine_Universite[], void, 
     async (_, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=UNIVERSITE`);
-            //console.log("from all", response.data);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching groupe tps:", error);
@@ -132,6 +130,8 @@ export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectVa
     async (etudiant, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.post(`/etudiants`, etudiant);
+            console.log(response.data);
+            
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
