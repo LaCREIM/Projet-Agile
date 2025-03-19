@@ -359,7 +359,7 @@ const StudentHome = ({
                       <div className="tooltip" data-tip="Consulter">
                         <FontAwesomeIcon
                           icon={faEye}
-                          className="text-blue-600 text-base cursor-pointer"
+                          className="text-base cursor-pointer"
                           onClick={() => {
                             handleClick(etudiant, index);
                             openModal(`inspect-${etudiant.noEtudiant}`);
@@ -371,7 +371,7 @@ const StudentHome = ({
                         <div className="tooltip" data-tip="Modifer">
                           <FontAwesomeIcon
                             icon={faPenToSquare}
-                            className="text-green-600 text-base cursor-pointer"
+                            className="text-base cursor-pointer"
                             onClick={() => {
                               handleClickUpdate(etudiant, index);
                               openModal(`updateStudent-${etudiant.noEtudiant}`);
@@ -383,7 +383,7 @@ const StudentHome = ({
                         <div className="tooltip" data-tip="Supprimer">
                           <FontAwesomeIcon
                             icon={faTrash}
-                            className="text-red-600 text-base cursor-pointer"
+                            className=" text-base cursor-pointer"
                             onClick={() =>
                               openModal(`delete-${etudiant.noEtudiant}`)
                             }

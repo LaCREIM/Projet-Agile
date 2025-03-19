@@ -1,5 +1,5 @@
-import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
+import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -252,6 +252,10 @@ const EvaluationSlice = createSlice({
                 state.reponsesEvaluation = action.payload;
                 state.loading = false;
             })
+            .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation>) => {
+                state.reponseEvaluation = action.payload;
+                state.loading = false;
+            })
 
            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
             state.statistiques = action.payload;
@@ -281,9 +285,12 @@ export const fetchStatistiquesAsync = createAsyncThunk<StatistiquesDTO[], number
 export const getEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.evaluation;
 
 export const getReponseEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
+
 export const getReponseEvaluationETD = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluationETD;
 
 export const getReponsesEvaluation = (state: { evaluations: EvaluationState }) => state.evaluations.reponsesEvaluation;
+
+export const getEvaluationResponse = (state: { evaluations: EvaluationState }) => state.evaluations.reponseEvaluation;
 
 export default EvaluationSlice.reducer;
 

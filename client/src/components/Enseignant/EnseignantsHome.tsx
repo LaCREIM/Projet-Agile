@@ -218,57 +218,41 @@ const EnseignantsHome = () => {
                         colSpan={11}
                         className="uppercase tracking-widest text-center text-gray-500"
                     >
+                      <td className="px-4 py-2">
+                        {enseignant.nom.toUpperCase()}
+                      </td>
+                      <td className="px-4 py-2">{enseignant.prenom}</td>
+                      <td className="px-4 py-2">{enseignant.emailUbo}</td>
+                      <td className="px-4 py-2">{enseignant.mobile}</td>
+                      <td className="px-4 py-2">
+                        {enseignantMapper(enseignant.type)}
+                      </td>
+                      <td className="flex gap-3 justify-center items-center">
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className=" text-base cursor-pointer"
+                          onClick={() => {
+                            handleClick(enseignant, index);
+                            openModal(`inspect-${index}`);
+                          }}
+                        />
 
-                      Pas d'enseignants trouvés.
-                    </td>
-                  </tr>
-              ) : (
-                  filteredEnseignants.map(
-                      (enseignant: Enseignant, index: number) => (
-                          <tr
-                              key={enseignant.id}
-                              className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                          >
-                            <td className="px-4 py-2">
-                              {enseignant.nom.toUpperCase()}
-                            </td>
-                            <td className="px-4 py-2">{enseignant.prenom}</td>
-                            <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                            <td className="px-4 py-2">{enseignant.mobile.replace(/\./g, ' ')}</td>
-                            <td className="px-4 py-2">
-                              {enseignantMapper(enseignant.type)}
-                            </td>
-                            <td className="flex gap-3 justify-center items-center">
-                              <div className="tooltip" data-tip="Voir les détails">
-                                <FontAwesomeIcon
-                                    icon={faEye}
-                                    className="text-blue-600 text-base cursor-pointer"
-                                    onClick={() => {
-                                      handleClick(enseignant, index);
-                                      openModal(`inspect-${index}`);
-                                    }}
-                                />
-                              </div>
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          className=" text-base cursor-pointer"
+                          onClick={() => {
+                            handleClickUpdate(enseignant, index);
+                            openModal(`updateEnseignant-${index}`);
+                          }}
+                        />
 
-                              <div className="tooltip" data-tip="Modifier">
-                                <FontAwesomeIcon
-                                    icon={faPenToSquare}
-                                    className="text-green-600 text-base cursor-pointer"
-                                    onClick={() => {
-                                      handleClickUpdate(enseignant, index);
-                                      openModal(`updateEnseignant-${index}`);
-                                    }}
-                                />
-                              </div>
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className=" text-base cursor-pointer"
+                          onClick={(e) => openDeleteModal(enseignant, e)}
+                        />
+                      </td>
 
-                              <div className="tooltip" data-tip="Supprimer">
-                                <FontAwesomeIcon
-                                    icon={faTrash}
-                                    className=" text-red-600 text-base cursor-pointer"
-                                    onClick={(e) => openDeleteModal(enseignant, e)}
-                                />
-                              </div>
-                            </td>
 
                             <dialog
                                 id={`updateEnseignant-${index}`}
