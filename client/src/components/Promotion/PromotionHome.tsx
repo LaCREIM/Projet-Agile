@@ -30,7 +30,6 @@ import {
 
 import { FaSearch } from "react-icons/fa";
 import { diplomeMapper } from "../../mappers/mappers";
-import { IoMdAdd } from "react-icons/io";
 import DeletePromotionConfirmation from "./DeletePromotionConfirmation.tsx";
 
 const PromotionHome = () => {
