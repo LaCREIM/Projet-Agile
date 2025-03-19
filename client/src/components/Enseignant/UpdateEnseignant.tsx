@@ -77,7 +77,9 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
 
   // Formatage du numéro de téléphone
   const formatPhoneNumber = (value: string): string => {
-    return value.replace(/\s/g, "").replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+    return value.replace(/\D/g, "") // Supprime tous les caractères non numériques
+                .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+                .trim();
   };
 
   // Validation des emails
@@ -88,15 +90,19 @@ const UpdateEnseignant = ({ enseignantData }: UpdateEnseignantProps) => {
   };
 
   // Validation du numéro de téléphone
-  const validatePhoneNumber = (number: string) => /^\d{10}$/.test(number.replace(/\s/g, ""));
-
+  const validatePhoneNumber = (number: string): boolean => {
+    return /^\d{10}$/.test(number.replace(/\D/g, ""));
+  };
+  
   // Validation des champs
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
-
-    if (!validatePhoneNumber(enseignant.mobile)) {
+    let phone =formatPhoneNumber(enseignant.mobile)
+    if (!validatePhoneNumber(phone)) {
       newErrors.mobile = "Le mobile doit contenir exactement 10 chiffres.";
     }
+     phone =formatPhoneNumber(enseignant.telephone)
+
     if (enseignant.telephone && !validatePhoneNumber(enseignant.telephone)) {
       newErrors.telephone = "Le téléphone doit contenir exactement 10 chiffres.";
     }

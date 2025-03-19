@@ -124,6 +124,7 @@ const EnseignantsHome = () => {
     const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
     setSortField(field);
     setSortOrder(order);
+
   };
 
   useEffect(() => {
@@ -284,7 +285,8 @@ const EnseignantsHome = () => {
                       </td>
                       <td className="px-4 py-2">{enseignant.prenom}</td>
                       <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                      <td className="px-4 py-2">{enseignant.mobile}</td>
+                      <td className="px-4 py-2">{formatPhoneNumber(enseignant.mobile)}</td>
+
                       <td className="px-4 py-2">
                         {enseignantMapper(enseignant.type)}
                       </td>
