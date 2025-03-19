@@ -43,10 +43,7 @@ const StudentHome = ({
     index: number;
   }>({ etudiant: null, index: -1 });
 
-  const [modalUpdate, setModalUpdate] = useState<{
-    etudiant: Etudiant | null;
-    index: number;
-  }>({ etudiant: null, index: -1 });
+  
 
   const [pro, setPro] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
@@ -107,10 +104,6 @@ const StudentHome = ({
     setModal({ etudiant, index });
   };
 
-  const handleClickUpdate = (etudiant: Etudiant, index: number) => {
-    setModal({ etudiant: null, index: -1 });
-    setModalUpdate({ etudiant, index });
-  };
 
   const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
@@ -373,7 +366,6 @@ const StudentHome = ({
                             icon={faPenToSquare}
                             className="text-base cursor-pointer"
                             onClick={() => {
-                              handleClickUpdate(etudiant, index);
                               openModal(`updateStudent-${etudiant.noEtudiant}`);
                             }}
                           />
