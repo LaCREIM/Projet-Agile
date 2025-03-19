@@ -54,11 +54,10 @@ const StatistiquesEvaluation: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between bg-white shadow-md rounded-lg p-6">
                 <button
-                    className="flex items-center text-gray-600 hover:text-gray-800 transition duration-300"
+                    className="flex items-center text-gray-600 hover:text-gray-800 transition duration-300 hover:cursor-pointer"
                     onClick={() => navigate(`/user/home/evaluations`)}
                 >
                     <IoMdArrowBack size={25} className="mr-2" />
-                    <span className="text-lg font-medium">Retour</span>
                 </button>
                 <h1 className="text-2xl font-bold text-gray-800">Statistiques de l'évaluation</h1>
                 <div></div>
@@ -81,7 +80,7 @@ const StatistiquesEvaluation: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-6 text-gray-700">
                                         <p><strong>Maximal:</strong> {stat.maximal}</p>
                                         <p><strong>Minimal:</strong> {stat.minimal}</p>
-                                        <p><strong>Moyenne positionnement:</strong> {stat.moyennePositionnement}</p>
+                                        <p><strong>Moyenne:</strong> {stat.moyennePositionnement.toFixed(2)}</p>
                                         <p><strong>Nombre de réponses:</strong> {stat.nbReponses}</p>
                                     </div>
 
@@ -103,10 +102,22 @@ const StatistiquesEvaluation: React.FC = () => {
                                                 options={{
                                                     responsive: true,
                                                     plugins: {legend: {display: false}},
-                                                    scales: {y: {beginAtZero: true, suggestedMax: 5}},
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true, suggestedMax: 5,
+                                                            ticks: {
+                                                                stepSize: 1,
+                                                                callback: function (value) {
+                                                                    if (Number.isInteger(value)) {
+                                                                        return value;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
                                                 }}
                                             />
-                                        </div>
+                                `        </div>
 
                                         <div className="w-full md:w-1/2">
                                             <Line
@@ -125,7 +136,18 @@ const StatistiquesEvaluation: React.FC = () => {
                                                 options={{
                                                     responsive: true,
                                                     plugins: {legend: {display: false}},
-                                                    scales: {y: {beginAtZero: true, suggestedMax: 5}},
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true, suggestedMax: 5, ticks: {
+                                                                stepSize: 1,
+                                                                callback: function (value) {
+                                                                    if (Number.isInteger(value)) {
+                                                                        return value;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
                                                 }}
                                             />
                                         </div>

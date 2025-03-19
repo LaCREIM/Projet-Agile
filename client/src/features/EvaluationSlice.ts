@@ -1,5 +1,5 @@
-import { ReponseEvaluationDTO } from './../types/types.d';
-import { StatistiquesDTO } from './../types/types.d';
+
+import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -250,8 +250,6 @@ const EvaluationSlice = createSlice({
             })
             .addCase(getAllReponsesEvaluationAsync.fulfilled, (state, action: PayloadAction<GetReponseEvaluation[]>) => {
                 state.reponsesEvaluation = action.payload;
-
-
                 state.loading = false;
             })
             .addCase(fetchReponseEvaluationAsync.fulfilled, (state, action: PayloadAction<ReponseEvaluation>) => {

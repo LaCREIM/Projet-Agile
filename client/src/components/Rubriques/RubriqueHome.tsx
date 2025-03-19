@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hook/hooks";
+import {useEffect, useRef, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../hook/hooks";
 import AddRubrique from "./AddRubrique";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEye, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {
   getQuestionsRubrique,
   getQuestionsStandardAsync,
@@ -13,16 +13,16 @@ import {
   searchRubriquesAsync,
   setQuestions,
 } from "../../features/RubriqueSlice";
-import { Rubrique } from "../../types/types";
+import {Rubrique} from "../../types/types";
 import DetailsRubrique from "./DetailsRubriques";
 import UpdateRubrique from "./UpdateRubrique";
-import { RootState } from "../../api/store";
-import { fetchQuestionsAsync } from "../../features/QuestionSlice";
+import {RootState} from "../../api/store";
+import {fetchQuestionsAsync} from "../../features/QuestionSlice";
 import DeleteRubriqueConfirmation from "./DeleteRubriqueConfirmation";
-import { MdClear } from "react-icons/md";
-import { typeRubriqueMapper } from "../../mappers/mappers.ts";
-import { useSelector } from "react-redux";
-import { FaSearch } from "react-icons/fa";
+import {MdClear} from "react-icons/md";
+import {typeRubriqueMapper} from "../../mappers/mappers.ts";
+import {useSelector} from "react-redux";
+import {FaSearch} from "react-icons/fa";
 
 const RubriqueHome = () => {
   document.title = "UBO | Rubriques";
@@ -159,15 +159,20 @@ const RubriqueHome = () => {
               />
               <FaSearch />
             </label>
-            <select
-              className="select select-bordered grow w-full max-w-xs shadow-md"
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-            >
-              <option value="">Tous les types</option>
-              <option value="RBS">Rubriques standard</option>
-              <option value="RBP">Rubrique personnelle</option>
-            </select>
+
+            {
+              role == "ENS" ? (
+                  <>
+                    <select
+                        className="select select-bordered grow w-full max-w-xs shadow-md"
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                    >
+                      <option value="">Tous les types</option>
+                      <option value="RBS">Rubriques standard</option>
+                      <option value="RBP">Rubrique personnelle</option>
+                    </select>
+
             <div className="tooltip" data-tip="Réinitialiser le filtre">
               <button
                 onClick={() =>{ setSelectedType(""); setSearch("");}}
@@ -177,6 +182,9 @@ const RubriqueHome = () => {
                 <MdClear size={20} />
               </button>
             </div>
+                  </>
+              ) : null
+            }
           </div>
           <div className="tooltip" data-tip="Ajouter une rubrique">
             <button
@@ -220,7 +228,7 @@ const RubriqueHome = () => {
                 filteredRubriques.map((rubrique: Rubrique, index: number) => {
                   return (
                     <tr key={rubrique.id}>
-                      <td className="px-4 py-2 ">{rubrique.designation}</td>
+                      <td className="px-4 py-2 w-[30%]">{rubrique.designation}</td>
 
                       {role == "ENS" && (
                         <td className="px-4 py-2 ">
@@ -236,6 +244,7 @@ const RubriqueHome = () => {
                         </td>
                       )}
                       <td className="flex gap-3 items-center">
+                        <div className={"tooltip"} data-tip={"Afficher les détails"}>
                         <FontAwesomeIcon
                           icon={faEye}
                           className="text-black text-base cursor-pointer"
@@ -244,6 +253,7 @@ const RubriqueHome = () => {
                             openModal(`inspect-${index}`);
                           }}
                         />
+                        </div>
                         <div
                           className="tooltip"
                           data-tip={

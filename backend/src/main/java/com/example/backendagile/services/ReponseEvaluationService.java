@@ -51,7 +51,6 @@ public class ReponseEvaluationService {
     }
 
 
-
     public ReponseEvaluationDTO getReponsesByEvaluationByEtudiant(Long idEvaluation, String idEtudiant) {
         //Get evqluation en utilisant evaluationDTO, on mappe ensuite avec ReponseEvaluationDTO
         Evaluation evaluation = evaluationRepository.findByIdEvaluation(idEvaluation);
@@ -60,19 +59,19 @@ public class ReponseEvaluationService {
         }
         EvaluationDTO evaluationDTO = evaluationService.mapEvaulation(evaluation);
 
-        String commentaire=null;
-        Long idReponseEvaluation=null;
+        String commentaire = null;
+        Long idReponseEvaluation = null;
         //Get commentaires de l'etudiant
         ReponseEvaluation reponse = reponseEvaluationRepository.findByIdEvaluation_IdAndNoEtudiant_NoEtudiant(idEvaluation, idEtudiant);
-        if(reponse != null){
-             commentaire = reponse.getCommentaire();
-             idReponseEvaluation = reponse.getId();
+        if (reponse != null) {
+            commentaire = reponse.getCommentaire();
+            idReponseEvaluation = reponse.getId();
             System.out.println("idReponseEvaluation: " + idReponseEvaluation);
         }
-        if(commentaire == null){
+        if (commentaire == null) {
             commentaire = "";
         }
-        if(idReponseEvaluation == null){
+        if (idReponseEvaluation == null) {
             idReponseEvaluation = 0L;
         }
 
@@ -92,7 +91,7 @@ public class ReponseEvaluationService {
             //get positionnement
             for (QuestionEvaluation question : questions) {
                 Long positionnement = reponseQuestionRepository.findPositionnement(idReponseEvaluation, question.getId());
-                if(positionnement==null){
+                if (positionnement == null) {
                     positionnement = 0L;
                 }
                 QuestionReponseDTO questionReponseDTO = questionReponseMapper.toDTO(question, positionnement);
@@ -140,8 +139,7 @@ public class ReponseEvaluationService {
     }
 
 
-
-    public String addReponseEvaluation(ReponseEvaluationDTO reponseEvaluationDTO){
+    public String addReponseEvaluation(ReponseEvaluationDTO reponseEvaluationDTO) {
         try {
             //Get evaluation
             Evaluation evaluation = evaluationRepository.findByIdEvaluation(reponseEvaluationDTO.getIdEvaluation());
@@ -189,8 +187,8 @@ public class ReponseEvaluationService {
             return "Reponse Evaluation ajoutée avec succès";
         } catch (Exception e) {
 //            return "Erreur lors de l'ajout de la réponse à l'évaluation";
-              return  e.getMessage();
-            }
+            return e.getMessage();
+        }
 
     }
 
@@ -264,7 +262,6 @@ public class ReponseEvaluationService {
     }
 
 
-
     public List<QuestionStatistiqueDTO> getStatistiquesByEvaluation(Long idEvaluation) {
         List<ReponseQuestion> reponses = reponseQuestionRepository.findReponseQuestionsByEvaluationId(idEvaluation);
         Map<Long, Double> moyennePositionnementParQuestion = reponses.stream()
@@ -307,13 +304,10 @@ public class ReponseEvaluationService {
                     String maximal = rq.getIdQuestionEvaluation().getIdQualificatif().getMaximal();
                     String minimal = rq.getIdQuestionEvaluation().getIdQualificatif().getMinimal();
                     String intitule = rq.getIdQuestionEvaluation().getIdQuestion().getIntitule();
-                    Evaluation evaluation= rq.getIdReponseEvaluation().getIdEvaluation();
-                    String designation = evaluationRepository.findById(evaluation.getId()).orElseGet(
-                            Evaluation::new
-                    ).getDesignation();
+                    String designation = rubriqueRepository.findDesignation(rq.getIdQuestionEvaluation().getIdRubriqueEvaluation().getIdRubrique().getId());
                     Long nbReponses = nbReponsesParQuestion.get(questionId);
                     long[] totalPositionnements = totalPositionnementParQuestion.get(questionId);
-                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule,designation, totalPositionnements);
+                    return new QuestionStatistiqueDTO(questionId, entry.getValue(), maximal, minimal, nbReponses, intitule, designation, totalPositionnements);
                 })
                 .collect(Collectors.toList());
     }

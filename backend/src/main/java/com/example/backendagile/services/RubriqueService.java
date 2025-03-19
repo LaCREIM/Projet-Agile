@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import javax.xml.bind.ValidationException;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +61,7 @@ public class RubriqueService {
         // Vérifier si une rubrique avec la même désignation existe déjà
         rubriqueRepository.findByDesignation(dto.getDesignation())
                 .ifPresent(r -> {
-                    throw new IllegalArgumentException("Une rubrique avec cette désignation existe déjà.");
+                    throw new RuntimeException("Une rubrique avec cette désignation existe déjà.");
                 });
 
         Rubrique rubrique = rubriqueMapper.toEntity(dto);

@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-import { useAppDispatch } from "../../hook/hooks";
+import React, {useState} from "react";
+import {useAppDispatch} from "../../hook/hooks";
 import {
-  //fetchQuestionsAsync,
   createQuestionAsync,
   createQuestionPersoAsync,
   getAllQuestionsPersoAsync,
   Question,
 } from "../../features/QuestionSlice";
-import {  Qualificatif, QuestionP } from "../../types/types";
-import { toast } from "react-toastify";
+import {Qualificatif, QuestionP} from "../../types/types";
+import {toast} from "react-toastify";
 import AlertError from "../ui/alert-error";
 
 interface AddQuestionProps {
@@ -170,7 +169,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
               </select>
             </label>
           </div>
-          {error && <AlertError error={error} />}
+          {error && <div className={"mt-4"}><AlertError error={error}/></div>}
 
           <div className="modal-action">
             <button className="btn" type="button" onClick={handleReset}>
