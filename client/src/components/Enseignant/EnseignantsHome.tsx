@@ -197,7 +197,7 @@ const EnseignantsHome = () => {
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Email professionnel</th>
-                <th>Téléphone</th>
+                <th>Mobile</th>
                 <th>Type</th>
                 <th className="text-center">Actions</th>
               </tr>
@@ -218,6 +218,7 @@ const EnseignantsHome = () => {
                         colSpan={11}
                         className="uppercase tracking-widest text-center text-gray-500"
                     >
+
                       Pas d'enseignants trouvés.
                     </td>
                   </tr>
@@ -233,7 +234,7 @@ const EnseignantsHome = () => {
                             </td>
                             <td className="px-4 py-2">{enseignant.prenom}</td>
                             <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                            <td className="px-4 py-2">{enseignant.mobile}</td>
+                            <td className="px-4 py-2">{enseignant.mobile.replace(/\./g, ' ')}</td>
                             <td className="px-4 py-2">
                               {enseignantMapper(enseignant.type)}
                             </td>

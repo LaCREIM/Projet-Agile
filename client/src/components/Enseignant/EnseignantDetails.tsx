@@ -40,29 +40,33 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
 
             <div className="text-base font-medium text-gray-900">
               <dt>Mobile :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.mobile}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.mobile.replace(/\./g, ' ')}</dd>
             </div>
-
+            {enseignant.telephone && (
+                  <div className="text-base font-medium text-gray-900">
+                    <dt>Numéro de téléphone :</dt>
+                    <dd className="mt-1 text-gray-500">
+                      {enseignant.telephone.replace(/\./g, ' ')}
+                    </dd>
+                  </div>
+                )}
             <div className="text-base font-medium text-gray-900">
               <dt>Adresse :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.adresse}</dd>
+              <dd className="mt-1 text-gray-500">{enseignant.adresse}, {enseignant.codePostal} - {enseignant.pays.toUpperCase() ? getPaysNom(enseignant.pays) : "France"}</dd>
             </div>
-            <div className="text-base font-medium text-gray-900">
-              <dt>Code postale :</dt>
-              <dd className="mt-1 text-gray-500">{enseignant.codePostal}</dd>
-            </div>
+            {/* 
             <div className="text-base font-medium text-gray-900">
               <dt>Email :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.emailUbo || "France"}
               </dd>
             </div>
-            <div className="text-base font-medium text-gray-900">
+             <div className="text-base font-medium text-gray-900">
               <dt>Pays :</dt>
               <dd className="mt-1 text-gray-500">
                 {enseignant.pays ? getPaysNom(enseignant.pays) : "France"}
               </dd>
-            </div>
+            </div> */}
 
             <div className="text-base font-medium text-gray-900">
               <dt>Type :</dt>
@@ -87,14 +91,7 @@ const EnseignantDetails = ({ enseignant }: EnseignantProp) => {
                     </dd>
                   </div>
                 )}
-                {enseignant.telephone && (
-                  <div className="text-base font-medium text-gray-900">
-                    <dt>Numéro de téléphone :</dt>
-                    <dd className="mt-1 text-gray-500">
-                      {enseignant.telephone}
-                    </dd>
-                  </div>
-                )}
+
               </>
           
 

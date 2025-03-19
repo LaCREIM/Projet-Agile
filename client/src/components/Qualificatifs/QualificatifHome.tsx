@@ -37,11 +37,11 @@ const QualificatifHome = () => {
   // Filtrer les qualificatifs
   const filteredQualificatifs = qualificatifs.filter((qualificatif) => {
     return (
-      qualificatif.minimal.toLowerCase().includes(search.toLowerCase()) ||
-      qualificatif.maximal.toLowerCase().includes(search.toLowerCase())
+      qualificatif.minimal?.toLowerCase().includes(search.toLowerCase()) ||
+      qualificatif.maximal?.toLowerCase().includes(search.toLowerCase())
     );
   });
-
+  
   // Trier les qualificatifs
   const sortedQualificatifs = filteredQualificatifs.sort((a, b) => {
     const aValue = a[sortField];
