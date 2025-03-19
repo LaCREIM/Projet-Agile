@@ -65,7 +65,7 @@ const ListeEvaluationReponses = () => {
   );
 
   const handleViewDetails = (reponseId: number) => {
-    navigate(`/user/home/evaluations/reponse/${reponseId}`); 
+    navigate(`/user/home/evaluations/reponses/etudiant/${reponseId}`); 
   };
 
   const handleSort = (field: string) => {

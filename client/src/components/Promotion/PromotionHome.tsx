@@ -48,6 +48,8 @@ const PromotionHome = () => {
   const [filteredPromotions, setFilteredPromotions] = useState<Promotion[]>([]);
   const [sortField, setSortField] = useState<string>("codeFormation");
   const [sortOrder, setSortOrder] = useState<string>("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const promotionsPerPage = 10; // Nombre de promotions par page
 
   const isEditable = (promotion: Promotion) => {
     if (role == "ENS") {
@@ -95,8 +97,24 @@ const PromotionHome = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setFilteredPromotions(promotions);
-  }, [promotions]);
+    const filtered = promotions.filter((promotion) => {
+      const matchesSearch = Object.values(promotion).some((value) =>
+        value?.toString().toLowerCase().includes(search.toLowerCase())
+      );
+      return matchesSearch;
+    });
+
+    if (sortField) {
+      filtered.sort((a, b) => {
+        const aValue = a[sortField as keyof typeof a];
+        const bValue = b[sortField as keyof typeof b];
+        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    setFilteredPromotions(filtered);
+  }, [promotions, search, sortField, sortOrder]);
 
   useEffect(() => {
     if (
@@ -147,29 +165,8 @@ const PromotionHome = () => {
     setShowStudent(!showStudents);
   };
 
-  const handleSearchChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { value } = e.target;
-    setSearch(value);
-    if (value.trim() === "") {
-      setFilteredPromotions(promotions);
-    } else {
-      setFilteredPromotions(
-        promotions.filter(
-          (promotion) =>
-            promotion.siglePromotion
-              ?.toLowerCase()
-              .includes(value.toLowerCase()) ||
-            promotion.nomFormation
-              .toLowerCase()
-              .includes(value.toLowerCase()) ||
-            (promotion.nom + " " + promotion.prenom)
-              .toLowerCase()
-              .includes(value.toLowerCase())
-        )
-      );
-    }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
   };
 
   const handleSortChange = (field: string) => {
@@ -190,6 +187,20 @@ const PromotionHome = () => {
     } else return promotion;
   });
   console.log(filteredPromotionsByRole);
+  const paginatedPromotions = filteredPromotions.slice(
+    (currentPage - 1) * promotionsPerPage,
+    currentPage * promotionsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredPromotions.length / promotionsPerPage);
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
   return (
     <>
       {showStudents ? (
@@ -280,7 +291,7 @@ const PromotionHome = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredPromotionsByRole.map(
+                  paginatedPromotions.map(
                     (promotion: Promotion, index: number) => (
                       <tr
                         key={index}
@@ -418,6 +429,25 @@ const PromotionHome = () => {
                 )}
               </tbody>
             </motion.table>
+          </div>
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="btn"
+            >
+              Précédent
+            </button>
+            <span>
+              Page {currentPage} sur {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="btn"
+            >
+              Suivant
+            </button>
           </div>
         </div>
       )}

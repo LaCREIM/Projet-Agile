@@ -189,7 +189,7 @@ const StudentHome = ({
             {promotionDetails.anneeUniversitaire}{" "}
           </h3>
         ) : (
-            <h1 className={"font-bold text-xl"}>Liste des étudiants</h1>
+          <h1 className={"font-bold text-xl"}>Liste des étudiants</h1>
         )}
 
         <div className="flex flex-row items-center  justify-between gap-5 w-full px-[5%]">
@@ -265,14 +265,16 @@ const StudentHome = ({
               </div>
             </div>
           )}
-          <div className="tooltip" data-tip="Ajouter un etudiant">
-            <button
-              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-              onClick={() => openModal("addStudent")}
-            >
-              +
-            </button>
-          </div>
+          {role === "ADM" && (
+            <div className="tooltip" data-tip="Ajouter un etudiant">
+              <button
+                className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+                onClick={() => openModal("addStudent")}
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
         <div className="overflow-y-auto w-[90%] py-5">
           <motion.table

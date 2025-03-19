@@ -127,6 +127,13 @@ const EnseignantsHome = () => {
 
   };
 
+  const formatPhoneNumber = (value: string): string => {
+    return value
+      .replace(/\D/g, "") // Supprime tous les caractères non numériques
+      .replace(/(\d{2})(?=\d)/g, "$1 ") // Ajoute un espace tous les deux chiffres
+      .trim();
+  };
+
   useEffect(() => {
     if (modal.enseignant && enseignantDetailsModalRef.current) {
       enseignantDetailsModalRef.current.showModal();
@@ -285,7 +292,9 @@ const EnseignantsHome = () => {
                       </td>
                       <td className="px-4 py-2">{enseignant.prenom}</td>
                       <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                      <td className="px-4 py-2">{enseignant.mobile}</td>
+                      <td className="px-4 py-2">
+                        {formatPhoneNumber(enseignant.mobile)}
+                      </td>
 
                       <td className="px-4 py-2">
                         {enseignantMapper(enseignant.type)}
@@ -324,7 +333,7 @@ const EnseignantsHome = () => {
 
                       <dialog id={`inspect-${index}`} className="modal">
                         <DetailsEnseignant enseignant={enseignant} />
-                      </dialog> 
+                      </dialog>
                     </tr>
                   )
                 )

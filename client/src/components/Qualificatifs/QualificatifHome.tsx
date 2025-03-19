@@ -44,14 +44,13 @@ const QualificatifHome = () => {
   
   // Trier les qualificatifs
   const sortedQualificatifs = filteredQualificatifs.sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = a[sortField as keyof Qualificatif];
+    const bValue = b[sortField as keyof Qualificatif];
     if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
     if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedQualificatifs.slice(

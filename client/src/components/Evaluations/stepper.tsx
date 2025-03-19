@@ -234,6 +234,18 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     }
   };
 
+  const areAllQuestionsAnswered = () => {
+    if (activeStep >= rubriques.length) {
+      return true; // Pas de questions pour les étapes "Commentaire" et "Récapitulatif"
+    }
+
+    const currentRubrique = rubriques[activeStep];
+    return currentRubrique.questions.every((question) => {
+      const compositeKey = `${currentRubrique.idRubrique}-${question.idQuestion}`;
+      return ratings[compositeKey] !== 0; // Vérifie si la question a une réponse
+    });
+  };
+
   return (
     <div className="flex flex-col gap-3 mx-auto w-full px-4 md:px-24 py-4">
       <Stepper
@@ -241,16 +253,23 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
         activeStep={activeStep}
         isLastStep={(value) => setIsLastStep(value)}
         isFirstStep={(value) => setIsFirstStep(value)}
-        className="w-[90%] md:w-[80%] mx-auto"
+        className="w-[90%] md:w-[80%] mx-auto hover:cursor-pointer"
       >
         {stepsData?.map((step, index) => (
           <Step
             {...({} as React.ComponentProps<typeof Step>)}
             key={index}
-            onClick={() => setActiveStep(index)}
+            onClick={() => {
+              if (index <= activeStep) {
+                setActiveStep(index);
+              }
+            }}
+            className={
+              index > activeStep ? "cursor-not-allowed" : "cursor-pointer"
+            }
           >
             <div className="absolute -bottom-[2.5rem] w-max text-center">
-              <Tooltip content={step.designation} placement="bottom">
+              <Tooltip content={step.designation} placement="top">
                 <Typography
                   variant="h6"
                   {...({} as React.ComponentProps<typeof Typography>)}
@@ -286,7 +305,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                   >
                     {question.intitule}
                   </Typography>
-                  <div className="w-fit grid grid-cols-3 gap-7 items-center">
+                  <div className="w-fit grid grid-cols-3 gap-7 items-center mr-[10%]">
                     <Typography
                       {...({} as React.ComponentProps<typeof Typography>)}
                       className="text-gray-600 text-left"
@@ -356,7 +375,10 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {evaluation?.rubriques?.map((rubrique, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md w-full">
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-lg shadow-md w-full"
+                >
                   <Typography
                     {...({} as React.ComponentProps<typeof Typography>)}
                     variant="h5"
@@ -380,7 +402,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                         <h1 className="text-right">
                           {question.qualificatif.minimal}
                         </h1>
-
+                    
                         {getStars(
                           ratings[
                             `${rubrique.idRubrique}-${question.idQuestion}`
@@ -433,8 +455,8 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
           <Button
             {...({} as React.ComponentProps<typeof Button>)}
             onClick={handleNext}
-            className="hover:cursor-pointer"
-            disabled={isLastStep}
+            className="hover:cursor-pointer disabled:cursor-not-allowed"
+            disabled={isLastStep || !areAllQuestionsAnswered()}
           >
             Suivant
           </Button>

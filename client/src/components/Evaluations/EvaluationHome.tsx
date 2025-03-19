@@ -53,7 +53,7 @@ const EvaluationHome = () => {
   const promotions = useAppSelector(getPromotionByEnseignant);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const evaluationPerPage = 10;
+  const evaluationPerPage = 7;
   const [search, setSearch] = useState<string>("");
   const [filteredEvaluations, setFilteredEvaluations] = useState<
     GetEvaluationDTO[]
@@ -196,7 +196,7 @@ const EvaluationHome = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
+      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md overflow-y-auto">
         <h1 className="text-xl font-bold">Liste des évaluations</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[90%] px-14">
           <div className="w-2/3 hover:cursor-text flex flex-row items-center gap-5">
@@ -227,31 +227,39 @@ const EvaluationHome = () => {
                     <button
                       onClick={() => setFilterEtat("")}
                       disabled={filterEtat === ""}
-                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8 hover:cursor-pointer"
                     >
                       <MdClear size={20} />
                     </button>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 w-1/2">
-                  <select
-                    className="select select-bordered grow w-full max-w-xs shadow-md"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                  >
-                    <option value="">Tous les types</option>
-                    <option value="Personnelle">Personnelle</option>
-                    <option value="Partagée">Partagée</option>
-                  </select>
-                  <div className="tooltip" data-tip="Réinitialiser le filtre">
-                    <button
+                  <form className="filter flex gap-2">
+                    <input
+                      className="btn btn-square rounded-full"
+                      type="reset"
+                      value="×"
                       onClick={() => setFilterType("")}
                       disabled={filterType === ""}
-                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
-                    >
-                      <MdClear size={20} />
-                    </button>
-                  </div>
+                    />
+
+                    <input
+                      className="btn rounded-full checked:bg-neutral-900 checked:text-white"
+                      type="radio"
+                      name="frameworks"
+                      aria-label="Personnelle"
+                      checked={filterType === "Personnelle"}
+                      onChange={() => setFilterType("Personnelle")}
+                    />
+                    <input
+                      className="btn rounded-full checked:bg-neutral-900 checked:text-white"
+                      type="radio"
+                      name="frameworks"
+                      aria-label="Partagée"
+                      checked={filterType === "Partagée"}
+                      onChange={() => setFilterType("Partagée")}
+                    />
+                  </form>
                 </div>
               </>
             )}
@@ -338,8 +346,14 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
-
-                    <tr key={index} className={evaluation.evaluation.noEvaluation == 99 ? "bg-red-100!" : ""}>
+                  <tr
+                    key={index}
+                    className={
+                      evaluation.evaluation.noEvaluation == 99
+                        ? "bg-red-100!"
+                        : ""
+                    }
+                  >
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
@@ -372,10 +386,10 @@ const EvaluationHome = () => {
                           <span
                             className={`badge w-fit h-fit  text-white ${
                               evaluation.evaluation.etat === "DIS"
-                                ? "badge-warning"
-                                : evaluation.evaluation.etat === "ELA"
                                 ? "badge-success"
-                                : "badge-error"
+                                : evaluation.evaluation.etat === "ELA"
+                                ? "badge bg-blue-400"
+                                : "badge bg-gray-400"
                             }`}
                           >
                             {etatEvaluationMapper(evaluation.evaluation.etat)}
@@ -608,7 +622,9 @@ const EvaluationHome = () => {
                             className="tooltip"
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
-                              navigate(`reponse/${evaluation.evaluation.idEvaluation}`)
+                              navigate(
+                                `reponses/etudiant/${evaluation.evaluation.idEvaluation}`
+                              )
                             }
                           >
                             <FontAwesomeIcon
