@@ -65,6 +65,7 @@ const EvaluationHome = () => {
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
   const id = localStorage.getItem("id");
+  
   const [newEvaluationId, setNewEvaluationId] = useState<number | null>(null);
   const prevEvaluationsLength = useRef(evaluations.length);
 

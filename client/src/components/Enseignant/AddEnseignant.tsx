@@ -81,7 +81,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
 
     // Vérification des emails
     if (!validateEmail(enseignant.emailUbo, true)) {
-      newErrors.emailUbo = "L'email UBO doit être au format xxxx@univ-brest.fr.";
+      newErrors.emailUbo = "L'email UBO doit être au format xxxx@univ-brest.fr";
     }
     if (enseignant.emailPerso && !validateEmail(enseignant.emailPerso)) {
       newErrors.emailPerso = "L'email personnel doit être valide (ex: test@domaine.com).";
@@ -140,7 +140,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     const response = await dispatch(postEnseignantAsync(cleanedEnseignant)).unwrap();
     console.log("Enseignant ajouté avec succès :", response);
 
-    if (response) {
+    if (response != null) {
       toast.success("Enseignant ajouté avec succès !");
       await dispatch(getEnseignantAsync({ page: 1, size: 10 }));
       setEnseignant({
@@ -213,6 +213,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="text"
                 name="nom"
+                placeholder="Nom"
                 value={enseignant.nom}
                 onChange={handleChange}
                 required
@@ -227,6 +228,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="text"
                 name="prenom"
+                placeholder="Prénom"
                 value={enseignant.prenom}
                 onChange={handleChange}
                 required
@@ -257,6 +259,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input
                   type="text"
                   name="mobile"
+                  placeholder="Mobile : 06 06 06 06 06"
                   value={enseignant.mobile}
                   onChange={handleChange}
                   required
@@ -275,6 +278,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input
                   type="text"
                   name="telephone"
+                  placeholder="Téléphone : 06 06 06 06 06"
                   value={enseignant.telephone}
                   onChange={handleChange}
                   required
@@ -295,6 +299,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="text"
                 name="adresse"
+                placeholder="Adresse : 123 Rue de la Paix"
                 value={enseignant.adresse}
                 onChange={handleChange}
                 required
@@ -310,6 +315,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input
                   type="text"
                   name="codePostal"
+                  placeholder="Code postal : 29200"
                   value={enseignant.codePostal}
                   onChange={handleChange}
                   required
@@ -353,6 +359,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="text"
                 name="ville"
+                placeholder="Ville : Brest"
                 value={enseignant.ville}
                 onChange={handleChange}
                 required
@@ -408,6 +415,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 type="email"
                 name="emailUbo"
                 value={enseignant.emailUbo}
+
                 onChange={handleChange}
                 required
                 className="grow"
@@ -427,6 +435,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 value={enseignant.emailPerso}
                 onChange={handleChange}
                 className="grow"
+                placeholder="john.doe@gmail.com"
               />
             </label>
                 {errors.emailPerso && (
