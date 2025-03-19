@@ -98,6 +98,11 @@ export const DetailsPromotions = ({ promotion }: PromotionProp) => {
               <dt>Nombre maximal d'étudiants :</dt>
               <dd className="mt-1 text-gray-500">{promotion.nbMaxEtudiant}</dd>
             </div>
+            <div></div>
+            <div className="text-base font-medium text-gray-900">
+              <dt>Commentaire :</dt>
+              <dd className="mt-1 text-gray-500">{promotion.commentaire}</dd>
+            </div>
           </dl>
         </div>
         <div className="modal-action">
