@@ -73,7 +73,11 @@ export function Dashboard() {
     {
       label: "Déconnexion",
       href: "/",
-      icon: <FiLogOut className="text-neutral-700 h-5 w-5 flex-shrink-0" />,
+      icon: <FiLogOut onClick={() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('id');
+      }} className="text-neutral-700 h-5 w-5 flex-shrink-0"/>,
     },
   ];
 
