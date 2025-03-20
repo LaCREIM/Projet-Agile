@@ -18,7 +18,7 @@ const getStars = (positionnement: number) => {
   );
 };
 const ConsulterReponseETD = () => {
-  const { evaluationId } = useParams();
+  const { evaluationId, etudiantId } = useParams();
   const idEtudiant = localStorage.getItem("id") || "";
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
