@@ -312,17 +312,17 @@ const QualificatifHome = () => {
         </div>
         <div className="flex justify-center items-center mt-2">
           <button
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
           >
             Précédent
           </button>
           <span className="mx-2">
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
           >

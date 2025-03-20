@@ -256,7 +256,7 @@ const RubriqueHome = () => {
                       )}
                       <td className="flex gap-3 items-center">
                         <div
-                          className={"tooltip"}
+                          className={"tooltip tooltip-left"}
                           data-tip={"Afficher les détails"}
                         >
                           <FontAwesomeIcon
@@ -269,7 +269,7 @@ const RubriqueHome = () => {
                           />
                         </div>
                         <div
-                          className="tooltip"
+                          className="tooltip tooltip-left "
                           data-tip={
                             localStorage.getItem("role") === "ENS" &&
                             rubrique.type === "RBS"
@@ -325,17 +325,17 @@ const RubriqueHome = () => {
             <button
               disabled={page === 1}
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              className="px-4 py-2 disabled:cursor-not-allowed hover:cursor-pointer bg-gray-200 rounded disabled:opacity-50"
             >
               Précédent
             </button>
             <span>
-              Page {page} sur {totalPages}
+              Page {page} sur {totalPages === 0 ? 1 : totalPages}
             </span>
             <button
               disabled={page === totalPages}
               onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              className="px-4 py-2 disabled:cursor-not-allowed hover:cursor-pointer bg-gray-200 rounded disabled:opacity-50"
             >
               Suivant
             </button>

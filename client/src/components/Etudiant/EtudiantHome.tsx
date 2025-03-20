@@ -457,7 +457,7 @@ const StudentHome = ({
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Précédent
           </button>
@@ -467,7 +467,7 @@ const StudentHome = ({
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Suivant
           </button>
