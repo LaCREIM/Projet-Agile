@@ -160,5 +160,10 @@ public class EtudiantController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping
+    public ResponseEntity<List<EtudiantDTO>> getAllEtudiants() {
+        List<EtudiantDTO> etudiants = etudiantService.getAllEtudiants(); 
+        return ResponseEntity.ok(etudiants);
+    }
 }
 

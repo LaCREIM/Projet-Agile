@@ -149,4 +149,11 @@ public void deleteById(String id) {
     public Optional<Etudiant> findByEmailandId(String emailUbo, String id) {
         return etudiantRepository.findByEmailandId(emailUbo,id).stream().findFirst();
     }
+    public List<EtudiantDTO> getAllEtudiants() {
+        List<Etudiant> etudiants = etudiantRepository.findAll(); 
+        return etudiants.stream()
+                .map(etudiantMapper::toDto) 
+                .collect(Collectors.toList());
+    }
+    
 }

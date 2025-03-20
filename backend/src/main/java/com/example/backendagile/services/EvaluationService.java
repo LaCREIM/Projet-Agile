@@ -1,5 +1,6 @@
 package com.example.backendagile.services;
 
+import com.example.backendagile.dto.EnseignantDTO;
 import com.example.backendagile.dto.EvaluationDTO;
 import com.example.backendagile.dto.EvaluationPartagerDTO;
 import com.example.backendagile.entities.*;
@@ -36,10 +37,9 @@ public class EvaluationService {
     private final EvaluationPartagerMapper evaluationPartagerMapper;
 
     private final UniteEnseignementRepository uniteEnseignementRepository;
- 
-   
 
-    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository, QuestionEvaluationRepository questionEvaluationRepository, RubriqueEvaluationRepository rubriqueEvaluationRepository,EtudiantRepository etudiantRepository) {
+
+    public EvaluationService(EvaluationRepository evaluationRepository, FormationRepository formationRepository, DroitRepository droitRepository, EnseignantService enseignantService, EvaluationPartagerMapper evaluationPartagerMapper, UniteEnseignementRepository uniteEnseignementRepository, QuestionEvaluationRepository questionEvaluationRepository, RubriqueEvaluationRepository rubriqueEvaluationRepository, EtudiantRepository etudiantRepository) {
         this.evaluationRepository = evaluationRepository;
         this.formationRepository = formationRepository;
         this.droitRepository = droitRepository;
@@ -161,13 +161,19 @@ public class EvaluationService {
         return evaluations;
     }
 
-    public void dupliquerEvaluation(Long idEvaluation, Long noEnseignant) {
-        Short noEva= 99 ;
+    public void dupliquerEvaluation(Long idEvaluation, Long noEnseignant, EvaluationDTO evaluationDTO) {
         Evaluation evaluation = getEvaluationByID(idEvaluation);
         Optional<Enseignant> enseignant = enseignantService.findById(noEnseignant);
         Evaluation evaluationCopy = evaluation.copy();
         evaluationCopy.setEnseignant(enseignant.orElse(null));
-        evaluationCopy.setNoEvaluation(noEva);
+        evaluationCopy.setCodeEC(evaluationDTO.getCodeEC());
+        evaluationCopy.setCodeUE(evaluationDTO.getCodeUE());
+        evaluationCopy.setCodeFormation(evaluationDTO.getCodeFormation());
+        evaluationCopy.setAnneeUniversitaire(evaluationDTO.getAnneeUniversitaire());
+        evaluationCopy.setDesignation(evaluationDTO.getDesignation());
+        evaluationCopy.setNoEvaluation(evaluationDTO.getNoEvaluation());
+        evaluationCopy.setDebutReponse(evaluationDTO.getDebutReponse());
+        evaluationCopy.setFinReponse(evaluationDTO.getFinReponse());
         evaluationCopy.setEtat("ELA");
         Evaluation newEvaluation = evaluationRepository.save(evaluationCopy);
         List<RubriqueEvaluation> rubriqueEvaluations = rubriqueEvaluationRepository.findAllByIdEvaluation(idEvaluation);
@@ -239,7 +245,7 @@ public class EvaluationService {
 
     public List<EvaluationDTO> getEvaluationsByEtudiant(String idEtudiant) {
         Etudiant etudiant = etudiantRepository.findById(idEtudiant)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé"));
 
         String codeFormation = etudiant.getCodeFormation();
         String anneeUniversitaire = etudiant.getAnneeUniversitaire();
@@ -262,7 +268,7 @@ public class EvaluationService {
                 .collect(Collectors.toList());
     }
 
-    public boolean updateEvaluationStatus(Long idEvaluation,String etat) {
+    public boolean updateEvaluationStatus(Long idEvaluation, String etat) {
         Evaluation evaluation = evaluationRepository.findByIdEvaluation(idEvaluation);
         if (evaluation == null) {
             throw new ErrorResponseException(HttpStatus.NOT_FOUND);

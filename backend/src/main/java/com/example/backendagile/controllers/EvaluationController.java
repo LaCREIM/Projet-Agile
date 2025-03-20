@@ -1,5 +1,6 @@
 package com.example.backendagile.controllers;
 
+import com.example.backendagile.dto.EnseignantDTO;
 import com.example.backendagile.dto.QuestionStatistiqueDTO;
 import com.example.backendagile.services.DroitService;
 import com.example.backendagile.services.ReponseEvaluationService;
@@ -94,10 +95,10 @@ public class EvaluationController {
 
     @Transactional
     @PostMapping("/dupliquer/{idEvaluation}/{noEnseignant}")
-    public ResponseEntity<Map<String, Object>> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant) {
+    public ResponseEntity<Map<String, Object>> dupliquerEvaluation(@PathVariable Long idEvaluation, @PathVariable Long noEnseignant, @RequestBody EvaluationDTO evaluationDTO) {
         Map<String, Object> response = new HashMap<>();
         try {
-            evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant);
+            evaluationService.dupliquerEvaluation(idEvaluation, noEnseignant, evaluationDTO);
             response.put("message", "La duplication de l'évaluation a été effectuée avec succès.");
 
             return ResponseEntity.ok(response);

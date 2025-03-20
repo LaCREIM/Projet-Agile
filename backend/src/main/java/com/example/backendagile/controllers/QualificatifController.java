@@ -73,23 +73,31 @@ public class QualificatifController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateQualificatif(@PathVariable Long id, @RequestBody QualificatifDTO qualificatifDTO) {
         if (!qualificatifService.findById(id).isPresent()) {
-            return ResponseEntity.status(404).body("Aucun qualificatif trouvé avec cet ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aucun qualificatif trouvé avec cet ID.");
         }
 
-        try{
-            Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(qualificatifDTO.getMinimal().trim(), qualificatifDTO.getMaximal().trim());
-            if(existingQualificatif.isPresent()) {
+        // Vérifier si le qualificatif est utilisé dans une question
+        if (qualificatifService.existsDansQuestion(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Impossible de modifier ce qualificatif car il est utilisé dans une question.");
+        }
+
+        try {
+            Optional<Qualificatif> existingQualificatif = qualificatifService.findByMinimalAndMaximal(
+                    qualificatifDTO.getMinimal().trim(),
+                    qualificatifDTO.getMaximal().trim()
+            );
+
+            if (existingQualificatif.isPresent() && !existingQualificatif.get().getId().equals(id)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Le qualificatif existe déjà.");
             }
+
             Qualificatif qualificatif = qualificatifMapper.toEntity(qualificatifDTO);
             qualificatif.setId(id);
             qualificatifService.save(qualificatif);
             return ResponseEntity.ok("Le qualificatif a bien été mis à jour.");
-
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur s'est produite lors de la mise à jour.");
         }
-
     }
 
     /**

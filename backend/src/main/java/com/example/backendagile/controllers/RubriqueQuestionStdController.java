@@ -1,7 +1,9 @@
 package com.example.backendagile.controllers;
 
 import com.example.backendagile.dto.RubriqueQuestionStdDTO;
+import com.example.backendagile.repositories.RubriquePrsRepository;
 import com.example.backendagile.services.RubriqueQuestionStdService;
+import com.example.backendagile.services.RubriqueStdService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +41,10 @@ public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
         List<RubriqueQuestionStdDTO> rubriqueQuestions = rubriqueQuestionStdService.getAllRubriquesQuestionStd();
         return ResponseEntity.ok(rubriqueQuestions);
     }
-
+//
     @PostMapping("/save-update")
     public ResponseEntity<Void> saveOrUpdateRubriqueQuestions(@RequestBody List<RubriqueQuestionStdDTO> rubriqueQuestionDtos) {
+
         rubriqueQuestionStdService.saveOrUpdateRubriqueQuestions(rubriqueQuestionDtos);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  
     }
@@ -50,7 +53,7 @@ public ResponseEntity<?> getQuestionsByRubrique(@PathVariable Long idRubrique) {
 public ResponseEntity<String> deleteRubriqueQuestion(
         @PathVariable Long idRubrique,
         @PathVariable Long idQuestion) {
-    try {
+    try{
         rubriqueQuestionStdService.deleteRubriqueQuestion(idRubrique, idQuestion);
         return ResponseEntity.ok("Rubrique Question Standard supprimée avec succès.");
     } catch (IllegalArgumentException e) {
