@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Question, Rubrique } from "../../types/types";
 import {
   deleteRubriqueQuestionsAsync,
+  estUtiliseeAsync,
+  getEstUtilisee,
   RubriqueQuestion,
   searchRubriquesAsync,
   updateRubriqueAsync,
@@ -11,7 +13,7 @@ import {
 import QuestionsList from "./QuestionsList";
 import { closestCorners, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useAppDispatch } from "../../hook/hooks";
+import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
 
@@ -31,7 +33,6 @@ export interface QuestionOrderDetails {
   qualificatifMax: string;
   qualificatifMin: string;
 }
-
 
 export interface RequestQuestionOrderDetails {
   idRubrique: number;
@@ -77,6 +78,8 @@ const DetailsRubrique = ({
     QuestionOrderDetails[]
   >([]);
   const [removedQuestions, setRemovedQuestions] = useState<number[]>([]); // IDs des questions supprimées
+  const estUtilisee = useAppSelector(getEstUtilisee);
+  console.log(estUtilisee);
 
   useEffect(() => {
     const formattedQuestions = questions.map((q) => ({
@@ -109,6 +112,7 @@ const DetailsRubrique = ({
 
   useEffect(() => {
     setCanSave(rubriqueData?.designation?.trim() !== "");
+    dispatch(estUtiliseeAsync(rubrique.id));
   }, [rubriqueData]);
 
   useEffect(() => {
@@ -161,13 +165,12 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (isEditing) {
       try {
-
         let resultAdd = "";
         let resultRem = "";
-  
+
         // 🛠️ Mettre à jour les questions
         const formattedQuestions = questionsOrder.map((q, idx) => ({
           idRubrique: rubrique.id,
@@ -181,42 +184,58 @@ const DetailsRubrique = ({
           },
           ordre: idx + 1,
         }));
-  
-        const res = await dispatch(updateRubriqueQuestionsAsync(formattedQuestions));
+
+        const res = await dispatch(
+          updateRubriqueQuestionsAsync(formattedQuestions)
+        );
         if (res.type === "rubriques-questions/update/rejected") {
           resultAdd = res.payload as string;
         }
-  
+
         // 🛠️ Suppression des questions
         if (removedQuestions.length > 0) {
           for (const idQuestion of removedQuestions) {
-            const res = await dispatch(deleteRubriqueQuestionsAsync({ idRubrique: rubrique.id, idQuestion }));
+            const res = await dispatch(
+              deleteRubriqueQuestionsAsync({
+                idRubrique: rubrique.id,
+                idQuestion,
+              })
+            );
             if (res.type === "rubriques-questions/delete/rejected") {
               resultRem = res.payload as string;
             }
           }
         }
-  
+
         // 🛠️ Mise à jour de la rubrique
-        const rubriqueUpdateRes = await dispatch(updateRubriqueAsync({ id: rubriqueData.id, designation: rubriqueData.designation }));
+        const rubriqueUpdateRes = await dispatch(
+          updateRubriqueAsync({
+            id: rubriqueData.id,
+            designation: rubriqueData.designation,
+          })
+        );
         if (rubriqueUpdateRes.type !== "rubriques/update/fulfilled") {
           setError(rubriqueUpdateRes.payload as string);
           return;
         }
-  
+
         if (resultAdd || resultRem) {
           setError(resultAdd || resultRem);
           return;
         }
-  
-        toast.success("Rubrique mise à jour avec succès.", { autoClose: 10000 });
-  
+
+        toast.success("Rubrique mise à jour avec succès.", {
+          autoClose: 10000,
+        });
+
         // 🔄 Rafraîchir la liste des rubriques
         const idEns = localStorage.getItem("id");
         if (idEns) {
-          await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
+          await dispatch(
+            searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 })
+          );
         }
-  
+
         setIsEditing(false);
         setError(null);
         onClose();
@@ -225,13 +244,10 @@ const DetailsRubrique = ({
         toast.error("Erreur lors de la mise à jour de la rubrique.");
       }
     } else {
-      // Passer en mode édition
       setIsEditing(true);
       setError(null);
     }
   };
-  
-  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -249,7 +265,6 @@ const DetailsRubrique = ({
 
     if (!questionToAdd) return;
 
-    // Ajoutez la question à l'état local
     const newQuestion: QuestionOrderDetails = {
       id: questionToAdd.id,
       idQuestion: questionToAdd.id,
@@ -265,20 +280,24 @@ const DetailsRubrique = ({
     setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
     setSelectedQuestion(-1);
   };
-  
 
   const handleRemoveQuestion = (idQuestion: number) => {
     setRemovedQuestions((prev) => [...prev, idQuestion]);
-  
-    const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
+
+    const removedQuestion = allQuestions.find(
+      (q) => q.idQuestion === idQuestion
+    );
     if (removedQuestion) {
       setUnusedQuestions((prev) => [...prev, removedQuestion]);
     }
-  
-    setQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
-    setNewQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
+
+    setQuestionsOrder((prev) =>
+      prev.filter((q) => q.idQuestion !== idQuestion)
+    );
+    setNewQuestionsOrder((prev) =>
+      prev.filter((q) => q.idQuestion !== idQuestion)
+    );
   };
-  
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -382,14 +401,23 @@ const DetailsRubrique = ({
             rubrique.type === "RBS") ||
           (localStorage.getItem("role") === "ENS" &&
             rubrique.type === "RBP") ? (
-            <button
-              type="button"
-              className="btn btn-neutral"
-              onClick={handleEdit}
-              disabled={isEditing === true && !canSave}
+            <div
+              className={` ${estUtilisee ? "tooltip tooltip-left" : ""}`}
+              data-tip={`${
+                estUtilisee
+                  ? "La rubrique est utilisée dans une évaluation, vous ne pouvez pas la modifier."
+                  : ""
+              }`}
             >
-              {isEditing ? "Enregistrer" : "Modifier"}
-            </button>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={handleEdit}
+                disabled={estUtilisee || !canSave}
+              >
+                {isEditing ? "Enregistrer" : "Modifier"}
+              </button>
+            </div>
           ) : null}
 
           <button

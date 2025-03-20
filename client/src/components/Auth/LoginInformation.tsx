@@ -68,7 +68,7 @@ const LoginInformation = () => {
                 value={info.username}
                 placeholder="Nom d'utilisateur"
                 onChange={handleInputChange}
-                className="input input-bordered w-[55%] focus:outline-none"
+                className="input input-bordered w-[80%] focus:outline-none"
                 required
             />
 
@@ -78,7 +78,7 @@ const LoginInformation = () => {
                 value={info.password}
                 onChange={handleInputChange}
                 placeholder="Mot de Passe"
-                className="input input-bordered w-[55%] focus:outline-none"
+                className="input input-bordered w-[80%] focus:outline-none"
                 required
             />
 

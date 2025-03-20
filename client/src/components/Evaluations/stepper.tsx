@@ -109,7 +109,6 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
     ]);
     console.log("stepsData", evaluation);
 
-
     if (evaluation && evaluation.rubriques) {
       const initialRatings: { [key: string]: number } = {};
       evaluation.rubriques.forEach((rubrique) => {
@@ -226,9 +225,8 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
 
     if (res.type === "evaluations/envoyerReponseEvaluationAsync/fulfilled") {
       toast.success("Réponse envoyée avec succès");
-      setTimeout(() => {
-        navigate("/user/home/evaluations");
-      }, 3000);
+
+      navigate("/user/home/evaluations");
     } else {
       toast.error("Erreur lors de l'envoi de la réponse");
     }
@@ -402,7 +400,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                         <h1 className="text-right">
                           {question.qualificatif.minimal}
                         </h1>
-                    
+
                         {getStars(
                           ratings[
                             `${rubrique.idRubrique}-${question.idQuestion}`
@@ -427,7 +425,15 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                 {...({} as React.ComponentProps<typeof Typography>)}
                 className="text-gray-800"
               >
-                {comment || "Aucun commentaire"}
+                {comment || (
+                  <Typography
+                    variant="h6"
+                    className="text-gray-400 italic"
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    Aucun commentaire
+                  </Typography>
+                )}
               </Typography>
             </div>
           </div>

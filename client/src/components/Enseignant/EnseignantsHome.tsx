@@ -212,7 +212,7 @@ const EnseignantsHome = () => {
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
               >
-                <option value="">Tous</option>
+                <option value="">Tous les types</option>
                 <option value="MCF">Maître de Conférences</option>
                 <option value="INT">Intervenant-Extérieur</option>
                 <option value="PR">Professeur des Universités</option>

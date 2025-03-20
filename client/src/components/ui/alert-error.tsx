@@ -3,7 +3,7 @@ interface ComponentProps {
 }
 const AlertError = ({error} : ComponentProps) => {
   return (
-    <div role="alert" className="alert alert-error alert-soft">
+    <div role="alert" className="alert alert-error alert-soft my-4 w-[95%]">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-6 w-6 shrink-0 stroke-current"

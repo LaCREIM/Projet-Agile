@@ -158,5 +158,9 @@ public ResponseEntity<Map<String, Object>> getAllQualificatifsPaged(
 }
 
 
+    @GetMapping("/estUtilisee/{id}")
+    public Boolean estUtilise(@PathVariable Long id) {
 
+        return  qualificatifService.existsDansEva(id);
+    }
 }

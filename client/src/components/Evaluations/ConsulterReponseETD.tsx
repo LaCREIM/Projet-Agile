@@ -114,6 +114,10 @@ const ConsulterReponseETD = () => {
               {evaluation?.designationUE}
             </div>
           </div>
+            <div>
+              <strong>Commentaire :</strong>{" "}
+              {evaluation?.commentaire || <h1 className="text-gray-600 italic">Aucun commentaire</h1>}
+            </div>
         </div>
       </div>
 

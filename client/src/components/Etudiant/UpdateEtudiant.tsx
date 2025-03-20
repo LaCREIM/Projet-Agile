@@ -4,13 +4,12 @@ import {
   getAllEtudiantsAsync,
   getDomainePaysAsync,
   getDomaineUnivAsync,
-  getEtudiantAsync,
   getEtudiantByIdAsync,
   getPays,
   getUniversite,
   updateEtudiantAsync,
 } from "../../features/EtudiantSlice";
-import { Etudiant, Promotion } from "../../types/types";
+import { Etudiant, Promotion, PromotionDetails } from "../../types/types";
 import { getFormationAsync } from "../../features/PromotionSlice";
 import { toast } from "react-toastify";
 
@@ -19,12 +18,13 @@ interface UpdateStudentProps {
   promotions: Promotion[];
   currentpage: number;
   onClose: () => void;
+  setPro: (pro: PromotionDetails) => void;
 }
 
 const UpdateEtudiant = ({
   studentData,
   promotions,
-  currentpage,
+  setPro,
   onClose,
 }: UpdateStudentProps) => {
   const dispatch = useAppDispatch();
@@ -152,6 +152,10 @@ const UpdateEtudiant = ({
       } else if (res?.type === "etudiants/updateEtudiantAsync/fulfilled") {
         toast.success(res?.payload as string);
         dispatch(getAllEtudiantsAsync());
+        setPro({
+          anneeUniversitaire: "-1",
+          codeFormation: "",
+        } as PromotionDetails);
         onClose();
       }
     }

@@ -23,6 +23,7 @@ export interface RubriqueQuestion {
 }
 
 interface RubriqueState {
+  estUtilisee: boolean;
   rubriques: Rubrique[];
   questions: Question[];
   rubriqueQuestions: RubriqueQuestion[];
@@ -32,6 +33,7 @@ interface RubriqueState {
 }
 
 const initialState: RubriqueState = {
+  estUtilisee: false,
   rubriques: [],
   questions: [],
   rubriqueQuestions: [],
@@ -222,6 +224,18 @@ export const deleteRubriqueAsync = createAsyncThunk<number, number, { rejectValu
   }
 );
 
+export const estUtiliseeAsync = createAsyncThunk<boolean, number, { rejectValue: string }>(
+  "rubriques/estUtiliseeAsync",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response =await axiosInstance.get(`/rubriquesPrs/estUtilisee/${id}`);
+       return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la vérification de l'utilisation de la rubrique");
+    }
+  }
+);
+
 const rubriqueSlice = createSlice({
   name: "rubriques",
   initialState,
@@ -307,12 +321,17 @@ const rubriqueSlice = createSlice({
     .addCase(getAllRubriquesPrsStdPagedAsync.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Une erreur est survenue.";
-    });
+    })
+    .addCase(estUtiliseeAsync.fulfilled, (state, action) => {
+      state.estUtilisee = action.payload;
+    })
+    
   },
 });
 
 export const getRubriques = (state : RootState) => state.rubriques.rubriques;
 export const getQuestionsRubrique = (state : RootState) => state.rubriques.rubriqueQuestions;
+export const getEstUtilisee = (state : RootState) => state.rubriques.estUtilisee;
 export const { setQuestions } = rubriqueSlice.actions;
 
 export default rubriqueSlice.reducer;

@@ -140,7 +140,7 @@ const StatistiquesEvaluation: React.FC = () => {
                                                                 text: "Nombre de réponses"
                                                             },
                                                             beginAtZero: true,
-                                                            suggestedMax: 5,
+                                                            suggestedMax: 10,
                                                             ticks: {
                                                                 stepSize: 1,
                                                                 callback: function (value) {

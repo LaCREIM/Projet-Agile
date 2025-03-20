@@ -96,6 +96,10 @@ public class QuestionPrsController {
         }
     }
 
+    @GetMapping("/estUtilise/{id}")
+    public Boolean estUtilise(@PathVariable Long id) {
+        return  questionPrsService.existsQuestionInEvaluation(id);
+    }
     @PutMapping("/{id}")
     public ResponseEntity<String> updateQuestion(@PathVariable Long id, @RequestBody QuestionPrsDTO questionPrsDTO) {
         try {
