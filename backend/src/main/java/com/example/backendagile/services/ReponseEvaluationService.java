@@ -116,7 +116,6 @@ public class ReponseEvaluationService {
         // Fetch the responses
         List<ReponseEvaluation> reponses = reponseEvaluationRepository.findByIdEvaluation_Id(idEvaluation);
 
-        // Map the responses to DTOs
 
         // Return the list of DTOs
         return reponses.stream()
@@ -127,7 +126,7 @@ public class ReponseEvaluationService {
                     dto.setCommentaire(reponse.getCommentaire());
                     dto.setNomFormation(formation.getNomFormation());
                     dto.setPromotion(evaluation.getPromotion().getAnneeUniversitaire());
-                    dto.generateHashedIdEtudiant(reponse.getNoEtudiant().getNoEtudiant());
+                    dto.encryptIdEtudiant(reponse.getNoEtudiant().getNoEtudiant());
                     return dto;
                 })
                 .sorted(Comparator.comparingInt(dto -> dto.getIdEtudiant().hashCode()))
