@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import { Etudiant, PromotionDetails } from "../types/types";
+import {Etudiant, PromotionDetails} from "../types/types";
+
 // import { RootState } from "../api/store";
 
 
@@ -144,13 +145,15 @@ export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectVa
     "etudiants/postEtudiantAsync",
     async (etudiant, { rejectWithValue }) => {
         try {
+            etudiant.groupeAnglais = etudiant.groupeAnglais != -1 ? etudiant.groupeAnglais : null;
+            etudiant.groupeTp = etudiant.groupeTp != -1 ? etudiant.groupeTp : null;
             const response = await axiosInstance.post(`/etudiants`, etudiant);
             console.log(response.data);
 
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while posting the student.");
+            return rejectWithValue(error.response?.data || "Erreur lors de l'ajout de l'étudiant.");
         }
     }
 );
@@ -165,7 +168,7 @@ export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { reject
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while posting the student.");
+            return rejectWithValue(error.response?.data || "Erreur lors de l'ajout de l'étudiant");
         }
     }
 );
@@ -179,7 +182,7 @@ export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValu
             return response.data;
         } catch (error: any) {
             console.error("Error deleting student:", error);
-            return rejectWithValue(error.response?.data || "An error occurred while posting the student.");
+            return rejectWithValue(error.response?.data || "Erreur lors de l'ajout de l'étudiant");
         }
     }
 );

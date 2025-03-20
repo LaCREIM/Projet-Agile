@@ -138,8 +138,8 @@ export interface Etudiant {
     ville: string;
     paysOrigine: string;
     universiteOrigine: string;
-    groupeTp: number;
-    groupeAnglais: number;
+    groupeTp: number | null;
+    groupeAnglais: number | null;
     [key: string]: any;
 }
 
