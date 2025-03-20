@@ -452,7 +452,7 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}

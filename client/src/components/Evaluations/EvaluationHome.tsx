@@ -619,7 +619,9 @@ const EvaluationHome = () => {
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
                               navigate(
-                                `reponses/etudiant/${evaluation.evaluation.idEvaluation}/${localStorage.getItem("id")}`
+                                `reponses/etudiant/${
+                                  evaluation.evaluation.idEvaluation
+                                }/${localStorage.getItem("id")}`
                               )
                             }
                           >
@@ -707,7 +709,7 @@ const EvaluationHome = () => {
           </tbody>
         </table>
 
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
