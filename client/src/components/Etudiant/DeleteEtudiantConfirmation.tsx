@@ -28,11 +28,10 @@ const DeleteEtudiantConfirmation = ({
 
       console.log(e);
       if (response?.type === "etudiants/deleteEtudiantAsync/rejected") {
-        toast.error("Cet étudiant ne peux pas être supprimé , car il a déjà rempli une évaluation!");
+        toast.error("Cet étudiant ne peut pas être supprimé , car il a déjà rempli une évaluation!");
       } else if (response?.type === "etudiants/deleteEtudiantAsync/fulfilled") {
         toast.success(response.payload);
-        setPro({anneeUniversitaire: "-1", specialite: "-1"});
-     ;
+        setPro({anneeUniversitaire: "-1", codeFormation: "-1" } as PromotionDetails);
         //
         // if (pro.anneeUniversitaire === "-1") {
         //   await dispatch(getAllEtudiantsAsync());
