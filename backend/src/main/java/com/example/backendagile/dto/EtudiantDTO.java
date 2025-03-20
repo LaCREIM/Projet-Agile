@@ -31,7 +31,6 @@ public class EtudiantDTO {
     @NotBlank
     private String adresse;
     private String codePostal;
-    @NotBlank
     private String ville;
     @NotBlank
     private String paysOrigine;
