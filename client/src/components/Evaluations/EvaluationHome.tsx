@@ -230,15 +230,8 @@ const EvaluationHome = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 w-1/2">
+                  <h1 className="text-sm font-se">Type : </h1>
                   <form className="filter flex gap-2">
-                    <input
-                      className="btn btn-square rounded-full"
-                      type="reset"
-                      value="×"
-                      onClick={() => setFilterType("")}
-                      disabled={filterType === ""}
-                    />
-
                     <input
                       className="btn rounded-full checked:bg-neutral-900 checked:text-white"
                       type="radio"
@@ -254,6 +247,13 @@ const EvaluationHome = () => {
                       aria-label="Partagée"
                       checked={filterType === "Partagée"}
                       onChange={() => setFilterType("Partagée")}
+                    />
+                    <input
+                      className="btn btn-square rounded-full"
+                      type="reset"
+                      value="×"
+                      onClick={() => setFilterType("")}
+                      disabled={filterType === ""}
                     />
                   </form>
                 </div>
@@ -342,11 +342,14 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
-
-
-                    <tr key={index}
-                        className={evaluation.evaluation.noEvaluation == newEvaluationId ? "bg-red-100!" : ""}>
-
+                  <tr
+                    key={index}
+                    className={
+                      evaluation.evaluation.noEvaluation == newEvaluationId
+                        ? "bg-red-100!"
+                        : ""
+                    }
+                  >
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
@@ -681,20 +684,20 @@ const EvaluationHome = () => {
                       className="modal"
                     >
                       <DuplicateEvaluationConfirmation
-                          promotions={promotions}
+                        promotions={promotions}
                         evaluation={evaluation.evaluation}
                         onClose={() =>
                           closeModal(
                             `duplicate-${evaluation.evaluation.idEvaluation}`
                           )
                         }
-                          onConfirm={(updated_evaluation) => {
-                            confirmDuplicate(updated_evaluation)
-                            setNewEvaluationId(updated_evaluation.noEvaluation)
-                            setTimeout(() => {
-                              setNewEvaluationId(null);
-                            }, 5000);
-                          }}
+                        onConfirm={(updated_evaluation) => {
+                          confirmDuplicate(updated_evaluation);
+                          setNewEvaluationId(updated_evaluation.noEvaluation);
+                          setTimeout(() => {
+                            setNewEvaluationId(null);
+                          }, 5000);
+                        }}
                       />
                     </dialog>
                   </tr>

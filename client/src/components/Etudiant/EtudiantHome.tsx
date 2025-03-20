@@ -214,8 +214,7 @@ const StudentHome = ({
                           codeFormation: promotion.codeFormation,
                         })}
                       >
-                        {promotion.anneeUniversitaire} :{" "}
-                        {promotion.codeFormation}
+                        {promotion.codeFormation} : {promotion.anneeUniversitaire}
                       </option>
                     ))}
                   </select>
