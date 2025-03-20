@@ -66,7 +66,7 @@ public class Etudiant {
     @Column(name = "CODE_POSTAL", length = 10)
     private String codePostal;
 
-    @Column(name = "VILLE", nullable = false)
+    @Column(name = "VILLE")
     private String ville;
 
     @Column(name = "PAYS_ORIGINE", nullable = false, length = 5)
