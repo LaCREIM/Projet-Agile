@@ -69,11 +69,13 @@ const ConsulterReponseETD = () => {
             }
           }}
         />
+
         {localStorage.getItem("role") === "ETU" ? (
           <h1 className="text-2xl font-bold">Mes réponse pour l'évaluation</h1>
         ) : (
-          <h1 className="text-2xl font-bold">Réponse pour l'évaluation</h1>
+          <h1 className="text-2xl font-bold">Les réponses pour l'évaluation</h1>
         )}
+
         <div></div> {/* Espace vide pour équilibrer la mise en page */}
       </div>
 
