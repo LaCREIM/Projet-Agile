@@ -11,6 +11,7 @@ import {
 import { Etudiant, Promotion } from "../../types/types";
 import { getFormationAsync } from "../../features/PromotionSlice";
 import { toast } from "react-toastify";
+import AlertError from "../ui/alert-error";
 
 interface AddStudentProps {
   promotions: Promotion[];
@@ -603,7 +604,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
             </label>
           </div>
         </form>
-        {error && <div className="text-red-500 text-sm my-2 ">{error}</div>}
+        {error && <AlertError error={error} />}
 
         <div className="modal-action">
           <button className="btn" onClick={resetStudent}>

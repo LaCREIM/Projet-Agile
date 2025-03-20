@@ -80,11 +80,6 @@ const EtudiantDetails = ({ etudiant }: EtudiantProp) => {
                 {etudiant.ville}
               </dd>
             </div>
-
-            <div className="text-base font-medium text-gray-900">
-              <dt>Pays d'origine :</dt>
-              <dd className="mt-1 text-gray-500">{etudiant.paysOrigine}</dd>
-            </div>
             <div className="text-base font-medium text-gray-900">
               <dt>Universite d'origine :</dt>
               <dd className="mt-1 text-gray-500">

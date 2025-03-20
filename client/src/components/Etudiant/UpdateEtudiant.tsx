@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
+  getAllEtudiantsAsync,
   getDomainePaysAsync,
   getDomaineUnivAsync,
   getEtudiantAsync,
@@ -150,7 +151,7 @@ const UpdateEtudiant = ({
         setError(res.payload as string);
       } else if (res?.type === "etudiants/updateEtudiantAsync/fulfilled") {
         toast.success(res?.payload as string);
-        dispatch(getEtudiantAsync({ page: currentpage, size: 5 }));
+        dispatch(getAllEtudiantsAsync());
         onClose();
       }
     }

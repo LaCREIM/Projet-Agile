@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {motion} from "framer-motion";
-import {getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
+import {getAllEtudiantsAsync, getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
 import {Etudiant, PromotionDetails} from "../../types/types";
 
 import {getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
@@ -15,6 +15,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import {FaSearch} from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
 import {universiteMapper} from "../../mappers/mappers.ts";
+import { MdClear } from "react-icons/md";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -31,31 +32,27 @@ const StudentHome = ({
   const role = localStorage.getItem("role");
   const dispatch = useAppDispatch();
   const etudiants = useAppSelector((state) => state.etudiants.etudiants);
-  const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
+  
   const [search, setSearch] = useState<string>("");
   const [sortField, setSortField] = useState<string>("nom");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
-
-  const [modal, setModal] = useState<{
-    etudiant: Etudiant | null;
-    index: number;
-  }>({ etudiant: null, index: -1 });
-
   
-
   const [pro, setPro] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
     codeFormation: "",
   } as PromotionDetails);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const etudiantPerPage = 5;
+  const [selectedPromotion, setSelectedPromotion] = useState<string>("-1");
+
 
   /**********************  UseEffect *********************/
 
   const handleFetch = async () => {
-    await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
+    await dispatch(getAllEtudiantsAsync());
   };
 
   const handleFetchByPage = async (currentPage: number) => {
@@ -68,9 +65,6 @@ const StudentHome = ({
 
   useEffect(() => {
     dispatch(getPromotionAsync());
-    console.log(filteredEtudiants);
-    console.log(modal);
-
     if (
       promotionDetails.anneeUniversitaire == "-1" &&
       promotionDetails.codeFormation == ""
@@ -88,6 +82,19 @@ const StudentHome = ({
   }, [etudiants]);
 
   /**********************  Functions ********************/
+    const handleNextPage = () => {
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
+
+    const handlePrevPage = () => {
+      setCurrentPage((prev) => Math.max(prev - 1, 1));
+    };
+
+      const paginatedEtudiants = filteredEtudiants.slice(
+        (currentPage - 1) * etudiantPerPage,
+        currentPage * etudiantPerPage
+      );
+  const totalPages = Math.ceil(filteredEtudiants.length / etudiantPerPage);
 
   const openModal = (name: string) => {
     const dialog = document.getElementById(name) as HTMLDialogElement;
@@ -97,11 +104,6 @@ const StudentHome = ({
   const closeModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.close();
-  };
-
-  const handleClick = (etudiant: Etudiant, index: number) => {
-    setModal({ etudiant: null, index: -1 });
-    setModal({ etudiant, index });
   };
 
 
@@ -143,14 +145,6 @@ const StudentHome = ({
     setSearch(e.target.value.toLowerCase().trim());
   };
 
-  const handlePageChange = async (newPage: number) => {
-    setCurrentPage(newPage);
-    if (pro.anneeUniversitaire == "-1" && pro.codeFormation == "") {
-      await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
-    } else {
-      await dispatch(getEtudiantByPromotionAsync(pro));
-    }
-  };
 
   useEffect(() => {
     if (search.trim() === "") {
@@ -198,27 +192,59 @@ const StudentHome = ({
             promotionDetails.anneeUniversitaire != ""
           ) ? (
             <div className="flex flex-row items-center gap-5 w-2/3 ">
-              <select
-                defaultValue="default"
-                className="w-1/3 select hover:cursor-pointer shadow-md"
-                onChange={handlePromotionChange}
-              >
-                <option value="default" disabled>
-                  Sélectionnez une promotion
-                </option>
-                <option value="-1">Toutes les promotions</option>
-                {promotions.map((promotion, idx) => (
-                  <option
-                    key={idx}
-                    value={JSON.stringify({
-                      anneeUniversitaire: promotion.anneeUniversitaire,
-                      codeFormation: promotion.codeFormation,
-                    })}
+              {localStorage.getItem("role") === "ADM" && (
+                <>
+                  <select
+                    value={selectedPromotion}
+                    className="w-1/3 select hover:cursor-pointer shadow-md"
+                    onChange={(e) => {
+                      setSelectedPromotion(e.target.value);
+                      handlePromotionChange(e);
+                    }}
                   >
-                    {promotion.anneeUniversitaire} : {promotion.codeFormation}
-                  </option>
-                ))}
-              </select>
+                    <option value="default" disabled>
+                      Sélectionnez une promotion
+                    </option>
+                    <option value="-1">Toutes les promotions</option>
+                    {promotions.map((promotion, idx) => (
+                      <option
+                        key={idx}
+                        value={JSON.stringify({
+                          anneeUniversitaire: promotion.anneeUniversitaire,
+                          codeFormation: promotion.codeFormation,
+                        })}
+                      >
+                        {promotion.anneeUniversitaire} :{" "}
+                        {promotion.codeFormation}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="tooltip" data-tip="Réinitialiser le filtre">
+                    <button
+                      onClick={() => {
+                        setPro({
+                          anneeUniversitaire: "-1",
+                          codeFormation: "",
+                        } as PromotionDetails);
+                        setPromotionDetails({
+                          anneeUniversitaire: "-1",
+                          codeFormation: "",
+                        } as PromotionDetails);
+                        setSelectedPromotion("-1");
+                        handleFetch();
+                      }}
+                      disabled={
+                        pro.anneeUniversitaire == "-1" &&
+                        pro.codeFormation == ""
+                      }
+                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8 hover:cursor-pointer"
+                    >
+                      <MdClear size={20} />
+                    </button>
+                  </div>
+                </>
+              )}
+
               <div className="w-1/3 block hover:cursor-text">
                 <label className="input input-bordered flex items-center gap-2 shadow-md">
                   <input
@@ -315,7 +341,7 @@ const StudentHome = ({
               </tr>
             </thead>
             <tbody>
-              {etudiants.length === 0 ? (
+              {filteredEtudiants.length === 0 ? (
                 <tr>
                   <td
                     colSpan={11}
@@ -325,7 +351,7 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
+                paginatedEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr key={index}>
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
@@ -344,7 +370,7 @@ const StudentHome = ({
                         className="tooltip"
                         data-tip={universiteMapper(etudiant.universiteOrigine)}
                       >
-                        {etudiant.universiteOrigine}
+                        {universiteMapper(etudiant.universiteOrigine)}
                       </div>
                     </td>
                     <td
@@ -356,7 +382,6 @@ const StudentHome = ({
                           icon={faEye}
                           className="text-base cursor-pointer"
                           onClick={() => {
-                            handleClick(etudiant, index);
                             openModal(`inspect-${etudiant.noEtudiant}`);
                           }}
                         />
@@ -423,21 +448,21 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-        <div className="flex justify-center items-center mt-2">
+        <div className="flex justify-center items-center gap-4 mt-4">
           <button
-            className="btn"
+            onClick={handlePrevPage}
             disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
+            className="btn"
           >
             Précédent
           </button>
-          <span className="mx-2">
-            Page {currentPage} sur {totalPages}
+          <span>
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
-            className="btn"
+            onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
+            className="btn"
           >
             Suivant
           </button>
