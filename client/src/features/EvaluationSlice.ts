@@ -118,7 +118,7 @@ export const fetchHashedReponseEvaluationAsyncETD = createAsyncThunk<ReponseEval
     async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<ReponseEvaluationDTO>(
-                `/hashed/reponse-evaluation/${idEvaluation}/${idEtudiant}`
+                `/reponse-evaluation-hashed/${idEvaluation}/${idEtudiant}`
             );
             console.log("response", response.data);
 

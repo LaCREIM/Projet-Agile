@@ -64,8 +64,8 @@ const ListeEvaluationReponses = () => {
     currentPage * reponsesPerPage
   );
 
-  const handleViewDetails = (reponseId: number, etudiantId: string) => {
-    navigate(`/user/home/evaluations/reponses/etudiant/${reponseId}/${etudiantId}`); 
+  const handleViewDetails = (evaluationId: number, etudiantId: string) => {
+    navigate(`/user/home/evaluations/reponses/etudiant/${evaluationId}/${etudiantId}`);
   };
 
   const handleSort = (field: string) => {
@@ -154,7 +154,7 @@ const ListeEvaluationReponses = () => {
                     className="tooltip"
                     data-tip="Consulter la réponse"
                     onClick={() =>
-                      handleViewDetails(reponse.idReponseEvaluation, reponse.idEtudiant)
+                      handleViewDetails(reponse.idEvaluation, reponse.idEtudiant)
                     }
                   >
                     <FontAwesomeIcon

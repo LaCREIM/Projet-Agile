@@ -36,7 +36,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
             <h3 className="font-bold text-lg">Confirmer la duplication</h3>
             <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
-                    <label className="input input-bordered flex items-center gap-2 w-full mt-2">
+                    <label className="input input-bordered flex items-center gap-2 w-full mt-4">
                         <span className="font-semibold">Désignation<span className="text-red-500"> *</span></span>
                         <input
                             required

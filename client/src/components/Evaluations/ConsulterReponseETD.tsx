@@ -63,7 +63,7 @@ const ConsulterReponseETD = () => {
           className="cursor-pointer"
           onClick={() => navigate("/user/home/evaluations")}
         />
-        <h1 className="text-2xl font-bold">Mes réponse pour l'évaluation</h1>
+        <h1 className="text-2xl font-bold">Les réponses pour l'évaluation</h1>
         <div></div> {/* Espace vide pour équilibrer la mise en page */}
       </div>
 
