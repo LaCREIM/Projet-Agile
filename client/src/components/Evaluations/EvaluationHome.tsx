@@ -1,9 +1,9 @@
 import type React from "react";
-import {useEffect, useRef, useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hook/hooks.ts";
 
 import AddEvaluation from "./AddEvaluation";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
   faEye,
@@ -13,7 +13,7 @@ import {
   faSquarePollVertical,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import {MdClear} from "react-icons/md";
+import { MdClear } from "react-icons/md";
 import {
   clouterEvaluationAsync,
   dispositionEvaluationAsync,
@@ -22,20 +22,23 @@ import {
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
 
-import type {GetEvaluationDTO} from "../../types/types";
-import type {RootState} from "../../api/store";
+import type { GetEvaluationDTO } from "../../types/types";
+import type { RootState } from "../../api/store";
 
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
-import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
-import {etatEvaluationMapper} from "../../mappers/mappers";
-import {FaSearch} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {toast} from "react-toastify";
+import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
+import {
+  getPromotionByEnseignant,
+  getPromotionByEnseignantAsync,
+} from "../../features/PromotionSlice";
+import { etatEvaluationMapper } from "../../mappers/mappers";
+import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
 import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
-import {LuArrowRight} from "react-icons/lu";
+import { LuArrowRight } from "react-icons/lu";
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -61,7 +64,7 @@ const EvaluationHome = () => {
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
   const id = localStorage.getItem("id");
-  
+
   const [newEvaluationId, setNewEvaluationId] = useState<number | null>(null);
   const prevEvaluationsLength = useRef(evaluations.length);
 
@@ -174,7 +177,9 @@ const EvaluationHome = () => {
     openModal(`duplicate-${evaluationId}`);
   };
 
-  const confirmDuplicate = async (evaluation: GetEvaluationDTO["evaluation"]) => {
+  const confirmDuplicate = async (
+    evaluation: GetEvaluationDTO["evaluation"]
+  ) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluation));
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       await dispatch(fetchEvaluationAsync());
@@ -230,32 +235,24 @@ const EvaluationHome = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 w-1/2">
-                  <h1 className="text-sm font-se">Type : </h1>
-                  <form className="filter flex gap-2">
-                    <input
-                      className="btn rounded-full checked:bg-neutral-900 checked:text-white"
-                      type="radio"
-                      name="frameworks"
-                      aria-label="Personnelle"
-                      checked={filterType === "Personnelle"}
-                      onChange={() => setFilterType("Personnelle")}
-                    />
-                    <input
-                      className="btn rounded-full checked:bg-neutral-900 checked:text-white"
-                      type="radio"
-                      name="frameworks"
-                      aria-label="Partagée"
-                      checked={filterType === "Partagée"}
-                      onChange={() => setFilterType("Partagée")}
-                    />
-                    <input
-                      className="btn btn-square rounded-full"
-                      type="reset"
-                      value="×"
+                  <select
+                    className="select select-bordered grow w-full max-w-xs shadow-md"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                  >
+                    <option value="">Tous les types</option>
+                    <option value="Personnelle">Personnelle</option>
+                    <option value="Partagée">Partagée</option>
+                  </select>
+                  <div className="tooltip" data-tip="Réinitialiser le filtre">
+                    <button
                       onClick={() => setFilterType("")}
                       disabled={filterType === ""}
-                    />
-                  </form>
+                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                    >
+                      <MdClear size={20} />
+                    </button>
+                  </div>
                 </div>
               </>
             )}
@@ -604,14 +601,26 @@ const EvaluationHome = () => {
                         <>
                           <div
                             className="tooltip"
-                            data-tip="Répondre à l'évaluation"
-                            onClick={() =>
-                              handleInspect(evaluation.evaluation.idEvaluation)
+                            data-tip={
+                              evaluation.evaluation.etat === "CLO"
+                                ? "Cette évaluation est clôturée et ne peut plus être répondue."
+                                : "Répondre à l'évaluation"
                             }
+                            onClick={() => {
+                              if (evaluation.evaluation.etat !== "CLO") {
+                                handleInspect(
+                                  evaluation.evaluation.idEvaluation
+                                );
+                              }
+                            }}
                           >
                             <FontAwesomeIcon
                               icon={faPenToSquare}
-                              className="text-black text-base cursor-pointer"
+                              className={`text-black text-base cursor-pointer ${
+                                evaluation.evaluation.etat === "CLO"
+                                  ? "text-gray-400 hover:cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                           </div>
                           <div

@@ -45,7 +45,7 @@ const StudentHome = ({
   } as PromotionDetails);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const etudiantPerPage = 5;
+  const etudiantPerPage = 8;
   const [selectedPromotion, setSelectedPromotion] = useState<string>("-1");
 
 

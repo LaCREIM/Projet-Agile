@@ -113,17 +113,8 @@ const ListeEvaluationReponses = () => {
         <thead>
           <tr>
             <th onClick={() => handleSort("idEtudiant")}>
-              ID Étudiant{" "}
+              ID Étudiant (Anonymisé){" "}
               {sortField === "idEtudiant" && (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => handleSort("nomFormation")}>
-              Formation{" "}
-              {sortField === "nomFormation" &&
-                (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => handleSort("promotion")}>
-              Année universitaire{" "}
-              {sortField === "promotion" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("commentaire")}>
               Commentaire{" "}
@@ -145,9 +136,7 @@ const ListeEvaluationReponses = () => {
           ) : (
             paginatedReponses.map((reponse, idx) => (
               <tr key={idx}>
-                <td>{reponse.idEtudiant}</td>
-                <td>{reponse.nomFormation}</td>
-                <td>{reponse.promotion}</td>
+                <td>{reponse.idEtudiant.split("",10)}</td>
                 <td>{reponse.commentaire}</td>
                 <td className="flex gap-3 justify-center items-center">
                   <div
@@ -170,7 +159,7 @@ const ListeEvaluationReponses = () => {
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-4 mt-4">
+      <div className="flex justify-center items-center gap-4 mt-4 mb-4">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
@@ -179,7 +168,7 @@ const ListeEvaluationReponses = () => {
           Précédent
         </button>
         <span>
-          Page {currentPage} sur {totalPages}
+          Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
         </span>
         <button
           onClick={handleNextPage}
