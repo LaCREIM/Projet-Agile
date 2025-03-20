@@ -193,9 +193,12 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
     dispatch(getFormationAsync());
   }, [dispatch]);
 
-  const formatDate = (date: string | Date | null) => {
+  const formatDate = (date: string | Date | null): string => {
     if (date === null) return "";
-    date instanceof Date ? date.toISOString().split("T")[0] : date;
+    if (date instanceof Date) {
+      return date.toISOString().split("T")[0];
+    }
+    return date; // Si c'est déjà une chaîne de caractères, retournez-la directement
   };
 
   const resetStudent = () => {

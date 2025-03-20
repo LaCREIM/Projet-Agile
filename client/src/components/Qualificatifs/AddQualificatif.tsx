@@ -35,7 +35,7 @@ const AddQualificatif = ({ currentPage, onClose }: AddQualificatifProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
 
     if(qualificatif.maximal === qualificatif.minimal){
-      setError("les valeurs de qualificatid maximal et minimal doivent être différents");
+      setError("Les valeurs minimales et maximales du couple qualificatif doivent être différentes");
       return;
     }else{
     e.preventDefault();

@@ -404,14 +404,14 @@ const GestionDroit = ({ enseignants, onClose }: GestionDroitProps) => {
                         <input
                           type="checkbox"
                           className="checkbox"
+                          disabled
                           checked={droit.consultation === "O"}
                           onChange={() =>
                             handleDroitChange(
                               droit.idEnseignant,
                               "consultation"
                             )
-                          }
-                          disabled={droit.duplication === "O"} // Désactiver si duplication est activé
+                          } // Désactiver si duplication est activé
                         />
                       ) : droit.consultation === "O" ? (
                         <MdCheck size={20} className="font-bold" />
