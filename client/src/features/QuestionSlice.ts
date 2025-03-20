@@ -5,6 +5,7 @@ import axiosInstance from "../api/axiosConfig";
 import { RootState } from "../api/store"; 
 
 interface QuestionState {
+  estUtilisee: boolean;
   questions: Question[];
   questionsPerso: Question[]; // Ajout des questions perso
   totalPages: number;
@@ -13,6 +14,7 @@ interface QuestionState {
 }
 
 const initialState: QuestionState = {
+  estUtilisee: false,
   questions: [],
   questionsPerso: [], // Initialisation
   totalPages: 0,  // Ajout du total de pages
@@ -29,6 +31,7 @@ export interface QuestionP {
     minQualificatif: string;
 }
 export interface Question {
+
     idQuestion: number;
     type: string;
     noEnseignant: number;
@@ -259,6 +262,19 @@ export const deleteQuestionPersoAsync = createAsyncThunk<
   }
 );
 
+export const estUtiliseeAsync = createAsyncThunk<boolean, number, { rejectValue: string }>(
+  "rubriques/estUtiliseeAsync",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/questionsPrs/estUtilisee/${id}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erreur lors de la vérification de l'utilisation de la rubrique");
+    }
+  }
+);
+
+
 const questionSlice = createSlice({
   name: "questions",
   initialState,
@@ -331,6 +347,9 @@ const questionSlice = createSlice({
     builder.addCase(getQuestionPersoAsync.fulfilled, (state, action: PayloadAction<{ content: Question[]; totalPages: number }>) => {
       state.questionsPerso = action.payload.content;
     })    
+    builder.addCase(estUtiliseeAsync.fulfilled, (state, action: PayloadAction<boolean>) => {
+      state.estUtilisee = action.payload;
+    })
     builder.addCase(getQuestionPersoAsync.rejected, (state, action) => {
       state.error = action.payload as string;
     });
