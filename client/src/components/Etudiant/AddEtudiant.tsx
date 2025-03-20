@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import React, {useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {
   getAllEtudiantsAsync,
   getDomainePaysAsync,
   getDomaineUnivAsync,
-  getEtudiantAsync,
   getEtudiantByPromotionAsync,
   getPays,
   getUniversite,
   postEtudiantAsync,
 } from "../../features/EtudiantSlice";
-import { Etudiant, Promotion, PromotionDetails } from "../../types/types";
-import { getFormationAsync } from "../../features/PromotionSlice";
-import { toast } from "react-toastify";
+import {Etudiant, Promotion, PromotionDetails} from "../../types/types";
+import {getFormationAsync} from "../../features/PromotionSlice";
+import {toast} from "react-toastify";
 import AlertError from "../ui/alert-error";
 
 interface AddStudentProps {
@@ -467,7 +466,7 @@ const AddEtudiant = ({ promotions, promotionDetails, pro, onClose }: AddStudentP
             </label>
             <label className="input input-bordered flex items-center gap-2">
               <span className="font-semibold">
-                Pays<span className="text-red-500"> *</span>
+                Ville <span className="text-red-500"> *</span>
               </span>
               <input
                 required
@@ -476,7 +475,7 @@ const AddEtudiant = ({ promotions, promotionDetails, pro, onClose }: AddStudentP
                 value={student.ville}
                 onChange={handleChange}
                 className="grow"
-                placeholder="Ex: Maroc"
+                placeholder="Ex: Tanger"
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -613,7 +612,9 @@ const AddEtudiant = ({ promotions, promotionDetails, pro, onClose }: AddStudentP
             </label>
           </div>
         </form>
-        {error && <AlertError error={error} />}
+        <div className={"mt-2"}>
+          {error && <AlertError error={error}/>}
+        </div>
 
         <div className="modal-action">
           <button className="btn" onClick={resetStudent}>

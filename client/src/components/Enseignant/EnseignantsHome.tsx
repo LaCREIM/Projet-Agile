@@ -87,7 +87,7 @@ const EnseignantsHome = () => {
       dispatch(getEnseignantAsync({ page: currentPage, size: 10 }));
     } else {
       toast.error(
-        "Cet enseignant ne peut pas être supprimé, il est responsable à une promotion."
+        "Cet enseignant ne peut pas être supprimé, il est responsable d'une promotion."
       );
     }
 
@@ -212,7 +212,7 @@ const EnseignantsHome = () => {
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
               >
-                <option value="">Tous</option>
+                <option value="">Tous les types</option>
                 <option value="MCF">Maître de Conférences</option>
                 <option value="INT">Intervenant-Extérieur</option>
                 <option value="PR">Professeur des Universités</option>
@@ -367,17 +367,17 @@ const EnseignantsHome = () => {
         <div className="flex justify-center mt-4">
           <button
             className="btn"
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || totalPages === 0}
             onClick={() => handlePageChange(currentPage - 1)}
           >
             Precedent
           </button>
           <span className="mx-2">
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
             className="btn"
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
             onClick={() => handlePageChange(currentPage + 1)}
           >
             Suivant

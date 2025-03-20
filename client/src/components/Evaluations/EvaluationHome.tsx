@@ -39,6 +39,7 @@ import { toast } from "react-toastify";
 import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
 import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
 import { LuArrowRight } from "react-icons/lu";
+import { IoIosMore } from "react-icons/io";
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -458,112 +459,6 @@ const EvaluationHome = () => {
                             />
                           </div>
                           <div
-                            className="tooltip"
-                            data-tip={
-                              evaluation.evaluation.noEnseignant != Number(id)
-                                ? "Vous n'avez pas le droit de consulter les réponses"
-                                : evaluation.evaluation.etat == "ELA"
-                                ? "L'évaluation est toujours en cours d'élaboration"
-                                : "Consulter les réponses"
-                            }
-                            onClick={() =>
-                              evaluation.evaluation.etat != "ELA" &&
-                              navigate(
-                                `reponses/${evaluation.evaluation.idEvaluation}`
-                              )
-                            }
-                          >
-                            <LuArrowRight
-                              size={20}
-                              className={`text-black text-base cursor-pointer ${
-                                evaluation.evaluation.etat == "ELA"
-                                  ? "text-gray-400 hover:cursor-not-allowed"
-                                  : ""
-                              }`}
-                            />
-                          </div>
-
-                          <div
-                            className="tooltip"
-                            data-tip={
-                              evaluation.evaluation.etat === "CLO"
-                                ? "L'évaluation est déjà clôturée"
-                                : evaluation.evaluation.etat === "DIS"
-                                ? "L'évaluation est déjà mise à disposition"
-                                : evaluation.evaluation.noEnseignant !=
-                                  Number(id)
-                                ? "Vous n'avez pas le droit de clôturée"
-                                : "Cloîtrer l'évaluation"
-                            }
-                            onClick={() =>
-                              evaluation.evaluation.noEnseignant ==
-                                Number(id) &&
-                              evaluation.evaluation.etat == "DIS" &&
-                              handleClouter(evaluation.evaluation.idEvaluation)
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faLock}
-                              className={`text-black text-base cursor-pointer ${
-                                evaluation.evaluation.noEnseignant !=
-                                  Number(id) ||
-                                evaluation.evaluation.etat != "DIS"
-                                  ? "text-gray-400 hover:cursor-not-allowed"
-                                  : ""
-                              }`}
-                            />
-                          </div>
-
-                          <div
-                            className="tooltip"
-                            data-tip={
-                              evaluation.evaluation.etat === "CLO"
-                                ? "L'évaluation est déjà clôturée"
-                                : evaluation.evaluation.etat === "DIS"
-                                ? "L'évaluation est déjà mise à disposition"
-                                : evaluation.evaluation.noEnseignant !=
-                                  Number(id)
-                                ? "Vous n'avez pas le droit de mettre à disposition"
-                                : "Mettre à disposition l'évaluation"
-                            }
-                            onClick={() =>
-                              evaluation.evaluation.etat == "ELA" &&
-                              handleDisposition(
-                                evaluation.evaluation.idEvaluation
-                              )
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faShareNodes}
-                              className={`text-black text-base cursor-pointer ${
-                                evaluation.evaluation.etat != "ELA" ||
-                                evaluation.evaluation.noEnseignant != Number(id)
-                                  ? "text-gray-400 hover:cursor-not-allowed"
-                                  : ""
-                              }`}
-                            />
-                          </div>
-                          <div
-                            className="tooltip"
-                            data-tip="Consulter les statistiques"
-                            onClick={() =>
-                              evaluation.evaluation.etat != "ELA" &&
-                              navigate(
-                                `statistiques/${evaluation.evaluation.idEvaluation}`
-                              )
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faSquarePollVertical}
-                              className={`text-black text-base cursor-pointer ${
-                                evaluation.evaluation.etat == "ELA"
-                                  ? "text-gray-400 hover:cursor-not-allowed"
-                                  : ""
-                              }`}
-                            />
-                          </div>
-
-                          <div
                             className={"tooltip"}
                             data-tip={`${
                               evaluation?.droit?.duplication === "O"
@@ -594,13 +489,146 @@ const EvaluationHome = () => {
                               }}
                             />
                           </div>
+                          <div className="dropdown dropdown-right">
+                            <div
+                              tabIndex={0}
+                              role="button"
+                              className="btn rounded-full w-8 h-8 pb-2 flex items-center justify-center"
+                            >
+                              ...
+                            </div>
+                            <ul
+                              tabIndex={0}
+                              className="dropdown-content menu bg-base-100 rounded-box ml-3 z-1 p-2 shadow-sm"
+                            >
+                              <li>
+                                <div
+                                  className="tooltip tooltip-left"
+                                  data-tip={
+                                    evaluation.evaluation.noEnseignant !=
+                                    Number(id)
+                                      ? "Vous n'avez pas le droit de consulter les réponses"
+                                      : evaluation.evaluation.etat == "ELA"
+                                      ? "L'évaluation est toujours en cours d'élaboration"
+                                      : "Consulter les réponses"
+                                  }
+                                  onClick={() =>
+                                    evaluation.evaluation.etat != "ELA" &&
+                                    navigate(
+                                      `reponses/${evaluation.evaluation.idEvaluation}`
+                                    )
+                                  }
+                                >
+                                  <LuArrowRight
+                                    size={20}
+                                    className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.etat == "ELA"
+                                        ? "text-gray-400 hover:cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                  />
+                                </div>
+                              </li>
+                              <li>
+                                <div
+                                  className="tooltip tooltip-left"
+                                  data-tip={
+                                    evaluation.evaluation.etat === "CLO"
+                                      ? "L'évaluation est déjà clôturée"
+                                      : evaluation.evaluation.noEnseignant !=
+                                        Number(id)
+                                      ? "Vous n'avez pas le droit de clôturer l'évaluation"
+                                      : evaluation.evaluation.etat === "DIS"
+                                      ? "Clôturer l'évaluation"
+                                      : "Vous ne pouvez pas clôturer l'évaluation"
+                                  }
+                                  onClick={() =>
+                                    evaluation.evaluation.noEnseignant ==
+                                      Number(id) &&
+                                    evaluation.evaluation.etat == "DIS" &&
+                                    handleClouter(
+                                      evaluation.evaluation.idEvaluation
+                                    )
+                                  }
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faLock}
+                                    className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.noEnseignant !=
+                                        Number(id) ||
+                                      evaluation.evaluation.etat != "DIS"
+                                        ? "text-gray-400 hover:cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                  />
+                                </div>
+                              </li>
+                              <li>
+                                <div
+                                  className="tooltip tooltip-left"
+                                  data-tip={
+                                    evaluation.evaluation.etat === "CLO"
+                                      ? "L'évaluation est déjà clôturée"
+                                      : evaluation.evaluation.etat === "DIS"
+                                      ? "L'évaluation est déjà mise à disposition"
+                                      : evaluation.evaluation.noEnseignant !=
+                                        Number(id)
+                                      ? "Vous n'avez pas le droit de mettre à disposition"
+                                      : "Mettre à disposition l'évaluation"
+                                  }
+                                  onClick={() =>
+                                    evaluation.evaluation.etat == "ELA" &&
+                                    handleDisposition(
+                                      evaluation.evaluation.idEvaluation
+                                    )
+                                  }
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faShareNodes}
+                                    className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.etat != "ELA" ||
+                                      evaluation.evaluation.noEnseignant !=
+                                        Number(id)
+                                        ? "text-gray-400 hover:cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                  />
+                                </div>
+                              </li>
+                              <li>
+                                <div
+                                  className="tooltip tooltip-left"
+                                  data-tip={
+                                    evaluation.evaluation.etat === "ELA"
+                                      ? "Cette évaluation est toujours en cours d'élaboration."
+                                      : "Consulter les statistiques"
+                                  }
+                                  onClick={() =>
+                                    evaluation.evaluation.etat != "ELA" &&
+                                    navigate(
+                                      `statistiques/${evaluation.evaluation.idEvaluation}`
+                                    )
+                                  }
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faSquarePollVertical}
+                                    className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.etat == "ELA"
+                                        ? "text-gray-400 hover:cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                  />
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
                         </>
                       )}
 
                       {role == "ETU" && (
                         <>
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip={
                               evaluation.evaluation.etat === "CLO"
                                 ? "Cette évaluation est clôturée et ne peut plus être répondue."
@@ -624,7 +652,7 @@ const EvaluationHome = () => {
                             />
                           </div>
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
                               navigate(
@@ -640,7 +668,7 @@ const EvaluationHome = () => {
                             />
                           </div>
                           <div
-                            className="tooltip"
+                            className="tooltip tooltip-left"
                             data-tip="Consulter les statistiques"
                             onClick={() =>
                               navigate(
@@ -721,18 +749,18 @@ const EvaluationHome = () => {
         <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="btn"
+            disabled={currentPage === 1 || totalPages === 0}
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Précédent
           </button>
           <span>
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
             onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="btn"
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Suivant
           </button>

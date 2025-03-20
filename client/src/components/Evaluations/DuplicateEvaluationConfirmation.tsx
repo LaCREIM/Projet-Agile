@@ -3,6 +3,7 @@ import { GetEvaluationDTO, Promotion } from '../../types/types';
 import {useSelector} from "react-redux";
 import {RootState} from "@/api/store.ts";
 
+
 interface DuplicateEvaluationConfirmationProps {
     evaluation: GetEvaluationDTO['evaluation'];
     promotions: Promotion[];
@@ -29,6 +30,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onConfirm(updatedEvaluation);
+        updatedEvaluation.noEvaluation = 0;
         onClose();
     };
 
@@ -164,7 +166,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
                         />
                     </label>
                 </div>
-                <h1 className="text-sm text-red-500">* Veuillez bien vérifier les informations ci-dessus!</h1>
+                <h1 className="text-sm text-red-500 mt-2">* Veuillez bien vérifier les informations ci-dessus!</h1>
                 <div className="modal-action">
                     <button className="btn" type={"button"} onClick={onClose}>Annuler</button>
                     <button className="btn btn-neutral" type="submit">Dupliquer</button>

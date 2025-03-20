@@ -138,7 +138,7 @@ const RubriqueHome = () => {
 
   function handleSortChange(field: string) {
     const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
-    setSortField(field);
+    setSortField(field as keyof Rubrique);
     setSortOrder(order);
   }
 
@@ -146,45 +146,48 @@ const RubriqueHome = () => {
     <>
       <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl font-bold">Liste des rubriques</h1>
-        <div className="flex flex-row items-center justify-between gap-5 w-[75%] ">
-          <div className="w-2/3 hover:cursor-text flex flex-row items-center gap-5">
-            <label className="input input-bordered flex items-center gap-2 shadow-md w-1/3">
+        <div className="flex flex-row items-center justify-between gap-5 w-[40%] ">
+          <div className="w-3/4 hover:cursor-text flex flex-row items-center gap-5">
+            <label className="input input-bordered flex items-center gap-2 shadow-md w-2/4">
               <input
                 type="text"
                 className="grow placeholder:font-medium"
                 placeholder="Rechercher..."
                 value={search}
-                onChange={(e) => {setPage(1);
-                  setSearch(e.target.value)}}
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch(e.target.value);
+                }}
               />
               <FaSearch />
             </label>
 
-            {
-              role == "ENS" ? (
-                  <>
-                    <select
-                        className="select select-bordered grow w-full max-w-xs shadow-md"
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                    >
-                      <option value="">Tous les types</option>
-                      <option value="RBS">Rubriques standard</option>
-                      <option value="RBP">Rubrique personnelle</option>
-                    </select>
+            {role == "ENS" ? (
+              <>
+                <select
+                  className="select select-bordered grow w-full max-w-xs shadow-md"
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                >
+                  <option value="">Tous les types</option>
+                  <option value="RBS">Rubriques standard</option>
+                  <option value="RBP">Rubrique personnelle</option>
+                </select>
 
-            <div className="tooltip" data-tip="Réinitialiser le filtre">
-              <button
-                onClick={() =>{ setSelectedType(""); setSearch("");}}
-                disabled={selectedType === ""}
-                className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
-              >
-                <MdClear size={20} />
-              </button>
-            </div>
-                  </>
-              ) : null
-            }
+                <div className="tooltip" data-tip="Réinitialiser le filtre">
+                  <button
+                    onClick={() => {
+                      setSelectedType("");
+                      setSearch("");
+                    }}
+                    disabled={selectedType === ""}
+                    className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                  >
+                    <MdClear size={20} />
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
           <div className="tooltip" data-tip="Ajouter une rubrique">
             <button
@@ -196,22 +199,28 @@ const RubriqueHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[75%]">
+        <div className="overflow-y-auto w-[40%]">
           <table className="table table-zebra text-base">
             <thead className="text-base">
               <tr>
-                <th onClick={() => handleSortChange("designation")}>
+                <th
+                  className="w-[30em] min-w-[30em]"
+                  onClick={() => handleSortChange("designation")}
+                >
                   Désignation{" "}
                   {sortField === "designation" &&
                     (sortOrder === "asc" ? "↑" : "↓")}
                 </th>
                 {role == "ENS" ? (
-                  <th onClick={() => handleSortChange("type")}>
+                  <th
+                    className="w-[30%]"
+                    onClick={() => handleSortChange("type")}
+                  >
                     Type{" "}
                     {sortField === "type" && (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
                 ) : null}
-                <th>Actions</th>
+                <th className="w-fit">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -228,7 +237,9 @@ const RubriqueHome = () => {
                 filteredRubriques.map((rubrique: Rubrique, index: number) => {
                   return (
                     <tr key={rubrique.id}>
-                      <td className="px-4 py-2 w-[30%]">{rubrique.designation}</td>
+                      <td className="px-4 py-2 w-[30%]">
+                        {rubrique.designation}
+                      </td>
 
                       {role == "ENS" && (
                         <td className="px-4 py-2 ">
@@ -244,18 +255,21 @@ const RubriqueHome = () => {
                         </td>
                       )}
                       <td className="flex gap-3 items-center">
-                        <div className={"tooltip"} data-tip={"Afficher les détails"}>
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          className="text-black text-base cursor-pointer"
-                          onClick={() => {
-                            handleClick(rubrique, index);
-                            openModal(`inspect-${index}`);
-                          }}
-                        />
+                        <div
+                          className={"tooltip tooltip-left"}
+                          data-tip={"Afficher les détails"}
+                        >
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            className="text-black text-base cursor-pointer"
+                            onClick={() => {
+                              handleClick(rubrique, index);
+                              openModal(`inspect-${index}`);
+                            }}
+                          />
                         </div>
                         <div
-                          className="tooltip"
+                          className="tooltip tooltip-left "
                           data-tip={
                             localStorage.getItem("role") === "ENS" &&
                             rubrique.type === "RBS"
@@ -308,25 +322,24 @@ const RubriqueHome = () => {
           </table>
 
           <div className="flex justify-center items-center gap-4 mt-4">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                Précédent
-              </button>
-              <span>
-                Page {page} sur {totalPages}
-              </span>
-              <button
-                disabled={page === totalPages}
-                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              >
-                Suivant
-              </button>
-            </div>
-
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 disabled:cursor-not-allowed hover:cursor-pointer bg-gray-200 rounded disabled:opacity-50"
+            >
+              Précédent
+            </button>
+            <span>
+              Page {page} sur {totalPages === 0 ? 1 : totalPages}
+            </span>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+              className="px-4 py-2 disabled:cursor-not-allowed hover:cursor-pointer bg-gray-200 rounded disabled:opacity-50"
+            >
+              Suivant
+            </button>
+          </div>
         </div>
       </div>
 

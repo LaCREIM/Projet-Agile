@@ -1,18 +1,24 @@
-import { toast } from "react-toastify";
-import { deleteEtudiantAsync } from "../../features/EtudiantSlice";
-import { Etudiant } from "../../types/types";
-import { useAppDispatch } from "../../hook/hooks";
+import {toast} from "react-toastify";
+import {deleteEtudiantAsync} from "../../features/EtudiantSlice";
+import {Etudiant, PromotionDetails} from "../../types/types";
+import {useAppDispatch} from "../../hook/hooks";
 
 interface DeleteProps {
   etudiant: Etudiant;
   handleFetchByPage: (page: number) => void;
   currentPage: number;
+  promotionDetails: PromotionDetails;
+  pro: PromotionDetails;
+  setPro: (pro: PromotionDetails) => void;
 }
 
 const DeleteEtudiantConfirmation = ({
   etudiant,
   handleFetchByPage,
   currentPage,
+                                      pro,
+                                      setPro,
+                                      promotionDetails,
 }: DeleteProps) => {
   const dispatch = useAppDispatch();
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,11 +27,24 @@ const DeleteEtudiantConfirmation = ({
       console.log(response);
 
       console.log(e);
-      handleFetchByPage(currentPage);
       if (response?.type === "etudiants/deleteEtudiantAsync/rejected") {
-        toast.error("Cet étudiant ne peux pas être supprimer!");
+        toast.error("Cet étudiant ne peut pas être supprimé , car il a déjà rempli une évaluation!");
       } else if (response?.type === "etudiants/deleteEtudiantAsync/fulfilled") {
         toast.success(response.payload);
+        setPro({anneeUniversitaire: "-1", codeFormation: "-1" } as PromotionDetails);
+        //
+        // if (pro.anneeUniversitaire === "-1") {
+        //   await dispatch(getAllEtudiantsAsync());
+        // } else {
+        //   await dispatch(getEtudiantByPromotionAsync(pro));
+        // }
+        //
+        // if (promotionDetails.anneeUniversitaire === "-1") {
+        //   await dispatch(getAllEtudiantsAsync());
+        // } else {
+        //   await dispatch(getEtudiantByPromotionAsync(promotionDetails));
+        // }
+
       }
     } catch (error) {
       toast.error("Une erreur est survenue lors de la suppression.");

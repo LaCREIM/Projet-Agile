@@ -136,7 +136,7 @@ const ListeEvaluationReponses = () => {
           ) : (
             paginatedReponses.map((reponse, idx) => (
               <tr key={idx}>
-                <td>{reponse.idEtudiant.split("",10)}</td>
+                <td>{reponse.idEtudiant}</td>
                 <td>{reponse.commentaire}</td>
                 <td className="flex gap-3 justify-center items-center">
                   <div

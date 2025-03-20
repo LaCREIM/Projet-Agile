@@ -33,6 +33,7 @@ const QuestionHome = () => {
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
 
   useEffect(() => {
+
     const fetchData = async () => {
       const qualificatifsData = await dispatch(fetchQualificatifsAsync());
       if (Array.isArray(qualificatifsData?.payload))
@@ -305,18 +306,18 @@ const QuestionHome = () => {
         <div className="flex justify-center gap-4 mt-4">
           <button
             onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="btn"
+            disabled={currentPage === 1 || totalPages === 0}
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Précédent
           </button>
           <span>
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
             onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="btn"
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Suivant
           </button>
