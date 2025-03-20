@@ -420,6 +420,7 @@ const StudentHome = ({
                       className="modal"
                     >
                       <UpdateEtudiant
+                        setPro={setPro}
                         onClose={() =>
                           closeModal(`updateStudent-${etudiant.noEtudiant}`)
                         }

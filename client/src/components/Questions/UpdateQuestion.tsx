@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
-import { useAppDispatch } from "../../hook/hooks";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../hook/hooks";
 import {
   updateQuestionAsync,
   getAllQuestionsPersoAsync,
+  estUtiliseeAsync,
 } from "../../features/QuestionSlice";
 import { Qualificatif, Question } from "../../types/types";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
+import { RootState } from "@/api/store";
 
 interface UpdateQuestionProps {
   questionData: Question;
@@ -24,6 +26,8 @@ const UpdateQuestion = ({
   const dispatch = useAppDispatch();
   const [question, setQuestion] = useState<Question>({ ...questionData });
   const [error, setError] = useState<string | null>(null); 
+  const estUtilisee = useAppSelector((state: RootState) => state.question.estUtilisee);
+  console.log(estUtilisee);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -32,6 +36,10 @@ const UpdateQuestion = ({
     setQuestion((prev) => ({ ...prev, [name]: value }));
     setError(null); 
   };
+
+  useEffect(() => {
+    dispatch(estUtiliseeAsync(question.idQuestion));
+  }, [estUtilisee]);
 
   const handleSelectQualificatif = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -78,7 +86,7 @@ const UpdateQuestion = ({
       <div className="modal-box w-[40%] max-w-5xl">
         <h3 className="font-bold text-lg my-4">Modifier la question</h3>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          <label className="input input-bordered w-[85%] flex items-center gap-2">
+          <label className="input input-bordered w-full flex items-center gap-2">
             <span className="font-semibold">Intitulé</span>
             <input
               required
@@ -92,13 +100,13 @@ const UpdateQuestion = ({
           </label>
 
           {/* Sélection du Qualificatif */}
-          <label className="flex flex-row items-center">
-            <span className="font-semibold w-[15%]">Qualificatif</span>
+          <label className="grid grid-cols-10 items-center w-full">
+            <span className="font-semibold w-[15%] col-span-2">Qualificatif</span>
             <select
               required
               onChange={handleSelectQualificatif}
               value={question.idQualificatif || ""}
-              className="select select-bordered w-[70%] max-w-full hover:cursor-pointer"
+              className="select select-bordered w-full max-w-full hover:cursor-pointer col-span-8"
             >
               <option value="">Sélectionnez un qualificatif</option>
               {qualificatifs.map((qual) => (
@@ -121,7 +129,7 @@ const UpdateQuestion = ({
             </button>
             <button
               type="submit"
-              disabled={!canSave}
+              disabled={estUtilisee || !canSave}
               className="btn btn-neutral"
             >
               Mettre à jour
