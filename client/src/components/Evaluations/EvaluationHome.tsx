@@ -619,7 +619,7 @@ const EvaluationHome = () => {
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
                               navigate(
-                                `reponses/etudiant/${evaluation.evaluation.idEvaluation}`
+                                `reponses/etudiant/${evaluation.evaluation.idEvaluation}/${localStorage.getItem("id")}`
                               )
                             }
                           >

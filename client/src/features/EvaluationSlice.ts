@@ -1,11 +1,11 @@
-import {ReponseEvaluationDTO, StatistiquesDTO} from './../types/types.d';
+import { ReponseEvaluationDTO, StatistiquesDTO } from './../types/types.d';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
 
-import {EvaluationDTO, GetEvaluationDTO, GetReponseEvaluation} from "@/types/types";
-import {ReponseEvaluation} from '@/components/Evaluations/stepper';
+import { EvaluationDTO, GetEvaluationDTO, GetReponseEvaluation } from "@/types/types";
+import { ReponseEvaluation } from '@/components/Evaluations/stepper';
 
 
 interface EvaluationState {
@@ -113,6 +113,21 @@ export const fetchReponseEvaluationAsyncETD = createAsyncThunk<ReponseEvaluation
         }
     }
 );
+export const fetchHashedReponseEvaluationAsyncETD = createAsyncThunk<ReponseEvaluationDTO, { idEvaluation: number; idEtudiant: string }, { rejectValue: string }>(
+    "evaluations/fetchHashedReponseEvaluationAsyncETD",
+    async ({ idEvaluation, idEtudiant }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<ReponseEvaluationDTO>(
+                `/hashed/reponse-evaluation/${idEvaluation}/${idEtudiant}`
+            );
+            console.log("response", response.data);
+
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Erreur lors de la récupération des réponses.");
+        }
+    }
+);
 
 export const createEvaluationAsync = createAsyncThunk<EvaluationDTO, EvaluationDTO, { rejectValue: string }>(
     "evaluations/createEvaluationAsync",
@@ -154,7 +169,7 @@ export const duplicateEvaluationAsync = createAsyncThunk<GetEvaluationDTO[], Get
     rejectValue: string
 }>(
     "evaluations/duplicateEvaluationAsync",
-    async (evaluation, {rejectWithValue}) => {
+    async (evaluation, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/evaluations/dupliquer/${evaluation.idEvaluation}/${localStorage.getItem("id")}`, evaluation);
             return response.data;
@@ -257,11 +272,15 @@ const EvaluationSlice = createSlice({
                 state.reponseEvaluation = action.payload;
                 state.loading = false;
             })
+            .addCase(fetchHashedReponseEvaluationAsyncETD.fulfilled, (state, action: PayloadAction<ReponseEvaluationDTO>) => {
+                state.reponseEvaluationETD = action.payload;
+                state.loading = false;
+            })
 
-           .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
-            state.statistiques = action.payload;
-            state.loading = false;
-        })
+            .addCase(fetchStatistiquesAsync.fulfilled, (state, action: PayloadAction<StatistiquesDTO[]>) => {
+                state.statistiques = action.payload;
+                state.loading = false;
+            })
             .addCase(fetchStatistiquesAsync.rejected, (state, action) => {
                 state.error = action.payload as string;
             })
