@@ -52,11 +52,11 @@ public class RubriquePrsController {
     }
 
     @GetMapping("/estUtilisee/{id}")
-    public ResponseEntity<Boolean> rubriqueEstUtilisee(@PathVariable long id) {
+    public Boolean rubriqueEstUtilisee(@PathVariable long id) {
         if (rubriqueService.existsRubriqueInEvaluation(id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(true);
+            return true;
         }
-        return ResponseEntity.ok(false);
+        return false;
     }
 
     // ✅ Mettre à jour une rubrique existante
