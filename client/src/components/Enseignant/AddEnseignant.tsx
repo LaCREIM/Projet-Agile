@@ -39,19 +39,21 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
 
   const pays = useAppSelector(getPays);
 
-  const canSave = [
-    { champ: "nom", valeur: enseignant.nom.trim() },
-    { champ: "prenom", valeur: enseignant.prenom.trim() },
-    { champ: "sexe", valeur: enseignant.sexe },
-    { champ: "adresse", valeur: enseignant.adresse.trim() },
-    { champ: "emailUbo", valeur: enseignant.emailUbo.trim() },
-    { champ: "codePostal", valeur: enseignant.codePostal.trim() },
-    { champ: "mobile", valeur: enseignant.mobile.trim() },
-    { champ: "type", valeur: enseignant.type },
-    { champ: "pays", valeur: enseignant.pays },
-    { champ: "ville", valeur: enseignant.ville.trim() },
-    { champ: "motPasse", valeur: enseignant.motPasse.trim() },
-  ].every((field) => Boolean(field.valeur));
+ const canSave = [
+   { champ: "nom", valeur: enseignant.nom.trim() },
+   { champ: "prenom", valeur: enseignant.prenom.trim() },
+   { champ: "sexe", valeur: enseignant.sexe },
+   { champ: "adresse", valeur: enseignant.adresse.trim() },
+   { champ: "emailUbo", valeur: enseignant.emailUbo.trim() },
+   { champ: "codePostal", valeur: enseignant.codePostal.trim() },
+   { champ: "mobile", valeur: enseignant.mobile.trim() },
+   { champ: "type", valeur: enseignant.type },
+   { champ: "pays", valeur: enseignant.pays },
+   { champ: "ville", valeur: enseignant.ville.trim() },
+   { champ: "motPasse", valeur: enseignant.motPasse.trim() },
+ ].every((field) => Boolean(field.valeur));
+
+ const isFormValid = canSave && Object.keys(errors).length === 0;
 
   const formatPhoneNumber = (value: string): string => {
     return value
@@ -257,7 +259,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
                 <input
                   type="text"
                   name="mobile"
-                  placeholder="Mobile : 06 06 06 06 06"
+                  placeholder="Ex: 06 06 06 06 06"
                   value={enseignant.mobile}
                   onChange={handleChange}
                   required
@@ -276,7 +278,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
                 <input
                   type="text"
                   name="telephone"
-                  placeholder="Téléphone : 06 06 06 06 06"
+                  placeholder="Ex: 06 06 06 06 06"
                   value={enseignant.telephone}
                   onChange={handleChange}
                   required
@@ -297,7 +299,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
               <input
                 type="text"
                 name="adresse"
-                placeholder="Adresse : 123 Rue de la Paix"
+                placeholder="Ex: 123 Rue de la Paix"
                 value={enseignant.adresse}
                 onChange={handleChange}
                 required
@@ -313,7 +315,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
                 <input
                   type="text"
                   name="codePostal"
-                  placeholder="Code postal : 29200"
+                  placeholder="Ex: 29200"
                   value={enseignant.codePostal}
                   onChange={handleChange}
                   required
@@ -357,7 +359,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
               <input
                 type="text"
                 name="ville"
-                placeholder="Ville : Brest"
+                placeholder="Ex: Brest"
                 value={enseignant.ville}
                 onChange={handleChange}
                 required
@@ -450,7 +452,7 @@ const AddEnseignant = ({ onClose }: { onClose: () => void }) => {
                 <button
                   className="btn btn-neutral disabled:cursor-not-allowed"
                   onClick={handleSubmit}
-                  disabled={!canSave || submitting}
+                  disabled={!isFormValid || submitting}
                 >
                   {submitting ? "Ajout en cours..." : "Ajouter"}
                 </button>

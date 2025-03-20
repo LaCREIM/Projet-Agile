@@ -307,17 +307,17 @@ const QuestionHome = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Précédent
           </button>
           <span>
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="btn"
+            className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Suivant
           </button>
