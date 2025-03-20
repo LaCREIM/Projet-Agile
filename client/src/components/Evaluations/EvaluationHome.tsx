@@ -1,9 +1,9 @@
 import type React from "react";
-import {useEffect, useRef, useState} from "react";
-import {useAppDispatch, useAppSelector} from "@/hook/hooks.ts";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hook/hooks.ts";
 
 import AddEvaluation from "./AddEvaluation";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
   faEye,
@@ -13,7 +13,7 @@ import {
   faSquarePollVertical,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import {MdClear} from "react-icons/md";
+import { MdClear } from "react-icons/md";
 import {
   clouterEvaluationAsync,
   dispositionEvaluationAsync,
@@ -22,20 +22,23 @@ import {
   fetchEvaluationByEtuAsync,
 } from "../../features/EvaluationSlice";
 
-import type {GetEvaluationDTO} from "../../types/types";
-import type {RootState} from "../../api/store";
+import type { GetEvaluationDTO } from "../../types/types";
+import type { RootState } from "../../api/store";
 
 import DeleteEvaluationConfirmation from "./DeleteEvaluationConfirmation";
 import DuplicateEvaluationConfirmation from "./DuplicateEvaluationConfirmation";
-import {getAllEnseignantAsync} from "../../features/EnseignantSlice";
-import {getPromotionByEnseignant, getPromotionByEnseignantAsync,} from "../../features/PromotionSlice";
-import {etatEvaluationMapper} from "../../mappers/mappers";
-import {FaSearch} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {toast} from "react-toastify";
+import { getAllEnseignantAsync } from "../../features/EnseignantSlice";
+import {
+  getPromotionByEnseignant,
+  getPromotionByEnseignantAsync,
+} from "../../features/PromotionSlice";
+import { etatEvaluationMapper } from "../../mappers/mappers";
+import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ClouterEvaluationConfirmation from "./ClouterEvaluationConfirmation";
 import DispositionEvaluationConfirmation from "./DispositionEvaluationConfirmation.tsx";
-import {LuArrowRight} from "react-icons/lu";
+import { LuArrowRight } from "react-icons/lu";
 
 const EvaluationHome = () => {
   document.title = "UBO | Évaluations";
@@ -49,7 +52,7 @@ const EvaluationHome = () => {
   const promotions = useAppSelector(getPromotionByEnseignant);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const evaluationPerPage = 10;
+  const evaluationPerPage = 7;
   const [search, setSearch] = useState<string>("");
   const [filteredEvaluations, setFilteredEvaluations] = useState<
     GetEvaluationDTO[]
@@ -61,7 +64,7 @@ const EvaluationHome = () => {
   const totalPages = Math.ceil(filteredEvaluations.length / evaluationPerPage);
   const role = localStorage.getItem("role");
   const id = localStorage.getItem("id");
-  
+
   const [newEvaluationId, setNewEvaluationId] = useState<number | null>(null);
   const prevEvaluationsLength = useRef(evaluations.length);
 
@@ -174,7 +177,9 @@ const EvaluationHome = () => {
     openModal(`duplicate-${evaluationId}`);
   };
 
-  const confirmDuplicate = async (evaluation: GetEvaluationDTO["evaluation"]) => {
+  const confirmDuplicate = async (
+    evaluation: GetEvaluationDTO["evaluation"]
+  ) => {
     const response = await dispatch(duplicateEvaluationAsync(evaluation));
     if (response.type === "evaluations/duplicateEvaluationAsync/fulfilled") {
       await dispatch(fetchEvaluationAsync());
@@ -192,7 +197,7 @@ const EvaluationHome = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
+      <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md overflow-y-auto">
         <h1 className="text-xl font-bold">Liste des évaluations</h1>
         <div className="flex flex-row items-center justify-between gap-5 w-[90%] px-14">
           <div className="w-2/3 hover:cursor-text flex flex-row items-center gap-5">
@@ -223,7 +228,7 @@ const EvaluationHome = () => {
                     <button
                       onClick={() => setFilterEtat("")}
                       disabled={filterEtat === ""}
-                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8  hover:cursor-pointer"
+                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8 hover:cursor-pointer"
                     >
                       <MdClear size={20} />
                     </button>
@@ -334,9 +339,14 @@ const EvaluationHome = () => {
             ) : (
               paginatedEvaluations.map(
                 (evaluation: GetEvaluationDTO, index: number) => (
-
-                    <tr key={index}
-                        className={evaluation.evaluation.noEvaluation == newEvaluationId ? "bg-red-100!" : ""}>
+                  <tr
+                    key={index}
+                    className={
+                      evaluation.evaluation.noEvaluation == newEvaluationId
+                        ? "bg-red-100!"
+                        : ""
+                    }
+                  >
                     <td className="px-4 py-2">
                       {evaluation.evaluation.anneeUniversitaire}
                     </td>
@@ -369,10 +379,10 @@ const EvaluationHome = () => {
                           <span
                             className={`badge w-fit h-fit  text-white ${
                               evaluation.evaluation.etat === "DIS"
-                                ? "badge-warning"
-                                : evaluation.evaluation.etat === "ELA"
                                 ? "badge-success"
-                                : "badge-error"
+                                : evaluation.evaluation.etat === "ELA"
+                                ? "badge bg-blue-400"
+                                : "badge bg-gray-400"
                             }`}
                           >
                             {etatEvaluationMapper(evaluation.evaluation.etat)}
@@ -591,21 +601,37 @@ const EvaluationHome = () => {
                         <>
                           <div
                             className="tooltip"
-                            data-tip="Répondre à l'évaluation"
-                            onClick={() =>
-                              handleInspect(evaluation.evaluation.idEvaluation)
+                            data-tip={
+                              evaluation.evaluation.etat === "CLO"
+                                ? "Cette évaluation est clôturée et ne peut plus être répondue."
+                                : "Répondre à l'évaluation"
                             }
+                            onClick={() => {
+                              if (evaluation.evaluation.etat !== "CLO") {
+                                handleInspect(
+                                  evaluation.evaluation.idEvaluation
+                                );
+                              }
+                            }}
                           >
                             <FontAwesomeIcon
                               icon={faPenToSquare}
-                              className="text-black text-base cursor-pointer"
+                              className={`text-black text-base cursor-pointer ${
+                                evaluation.evaluation.etat === "CLO"
+                                  ? "text-gray-400 hover:cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                           </div>
                           <div
                             className="tooltip"
                             data-tip="Consulter l'évaluation"
                             onClick={() =>
-                              navigate(`reponse/${evaluation.evaluation.idEvaluation}`)
+                              navigate(
+                                `reponses/etudiant/${
+                                  evaluation.evaluation.idEvaluation
+                                }/${localStorage.getItem("id")}`
+                              )
                             }
                           >
                             <FontAwesomeIcon
@@ -669,20 +695,20 @@ const EvaluationHome = () => {
                       className="modal"
                     >
                       <DuplicateEvaluationConfirmation
-                          promotions={promotions}
+                        promotions={promotions}
                         evaluation={evaluation.evaluation}
                         onClose={() =>
                           closeModal(
                             `duplicate-${evaluation.evaluation.idEvaluation}`
                           )
                         }
-                          onConfirm={(updated_evaluation) => {
-                            confirmDuplicate(updated_evaluation)
-                            setNewEvaluationId(updated_evaluation.noEvaluation)
-                            setTimeout(() => {
-                              setNewEvaluationId(null);
-                            }, 5000);
-                          }}
+                        onConfirm={(updated_evaluation) => {
+                          confirmDuplicate(updated_evaluation);
+                          setNewEvaluationId(updated_evaluation.noEvaluation);
+                          setTimeout(() => {
+                            setNewEvaluationId(null);
+                          }, 5000);
+                        }}
                       />
                     </dialog>
                   </tr>
@@ -692,7 +718,7 @@ const EvaluationHome = () => {
           </tbody>
         </table>
 
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}

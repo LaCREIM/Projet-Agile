@@ -305,7 +305,9 @@ const EnseignantsHome = () => {
                       </td>
                       <td className="px-4 py-2">{enseignant.prenom}</td>
                       <td className="px-4 py-2">{enseignant.emailUbo}</td>
-                      <td className="px-4 py-2">{formatPhoneNumber(enseignant.mobile)}</td>
+                      <td className="px-4 py-2">
+                        {formatPhoneNumber(enseignant.mobile)}
+                      </td>
 
                       <td className="px-4 py-2">
                         {enseignantMapper(enseignant.type)}
@@ -354,7 +356,6 @@ const EnseignantsHome = () => {
                       <dialog id={`inspect-${index}`} className="modal">
                         <DetailsEnseignant enseignant={enseignant} />
                       </dialog>
-
                     </tr>
                   )
                 )

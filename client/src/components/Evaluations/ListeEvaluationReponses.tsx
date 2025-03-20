@@ -64,8 +64,8 @@ const ListeEvaluationReponses = () => {
     currentPage * reponsesPerPage
   );
 
-  const handleViewDetails = (reponseId: number) => {
-    navigate(`/user/home/evaluations/reponse/${reponseId}`); 
+  const handleViewDetails = (evaluationId: number, etudiantId: string) => {
+    navigate(`/user/home/evaluations/reponses/etudiant/${evaluationId}/${etudiantId}`);
   };
 
   const handleSort = (field: string) => {
@@ -78,7 +78,7 @@ const ListeEvaluationReponses = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
+    <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md overflow-y-auto">
       <h1 className="text-xl font-bold">
         Réponses pour "{evaluation.designation} - {evaluation.codeFormation} : {evaluation.anneeUniversitaire}"
       </h1>
@@ -113,17 +113,8 @@ const ListeEvaluationReponses = () => {
         <thead>
           <tr>
             <th onClick={() => handleSort("idEtudiant")}>
-              ID Étudiant{" "}
+              ID Étudiant (Anonymisé){" "}
               {sortField === "idEtudiant" && (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => handleSort("nomFormation")}>
-              Formation{" "}
-              {sortField === "nomFormation" &&
-                (sortOrder === "asc" ? "↑" : "↓")}
-            </th>
-            <th onClick={() => handleSort("promotion")}>
-              Année universitaire{" "}
-              {sortField === "promotion" && (sortOrder === "asc" ? "↑" : "↓")}
             </th>
             <th onClick={() => handleSort("commentaire")}>
               Commentaire{" "}
@@ -145,16 +136,14 @@ const ListeEvaluationReponses = () => {
           ) : (
             paginatedReponses.map((reponse, idx) => (
               <tr key={idx}>
-                <td>{reponse.idEtudiant}</td>
-                <td>{reponse.nomFormation}</td>
-                <td>{reponse.promotion}</td>
+                <td>{reponse.idEtudiant.split("",10)}</td>
                 <td>{reponse.commentaire}</td>
                 <td className="flex gap-3 justify-center items-center">
                   <div
                     className="tooltip"
                     data-tip="Consulter la réponse"
                     onClick={() =>
-                      handleViewDetails(reponse.idReponseEvaluation)
+                      handleViewDetails(reponse.idEvaluation, reponse.idEtudiant)
                     }
                   >
                     <FontAwesomeIcon
@@ -170,7 +159,7 @@ const ListeEvaluationReponses = () => {
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-4 mt-4">
+      <div className="flex justify-center items-center gap-4 mt-4 mb-4">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
@@ -179,7 +168,7 @@ const ListeEvaluationReponses = () => {
           Précédent
         </button>
         <span>
-          Page {currentPage} sur {totalPages}
+          Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
         </span>
         <button
           onClick={handleNextPage}

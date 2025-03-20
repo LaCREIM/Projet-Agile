@@ -29,6 +29,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onConfirm(updatedEvaluation);
+        onClose();
     };
 
     return (
@@ -36,7 +37,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
             <h3 className="font-bold text-lg">Confirmer la duplication</h3>
             <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
-                    <label className="input input-bordered flex items-center gap-2 w-full mt-2">
+                    <label className="input input-bordered flex items-center gap-2 w-full mt-4">
                         <span className="font-semibold">Désignation<span className="text-red-500"> *</span></span>
                         <input
                             required
@@ -163,6 +164,7 @@ const DuplicateEvaluationConfirmation: React.FC<DuplicateEvaluationConfirmationP
                         />
                     </label>
                 </div>
+                <h1 className="text-sm text-red-500">* Veuillez bien vérifier les informations ci-dessus!</h1>
                 <div className="modal-action">
                     <button className="btn" type={"button"} onClick={onClose}>Annuler</button>
                     <button className="btn btn-neutral" type="submit">Dupliquer</button>
