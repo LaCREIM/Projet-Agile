@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
+  getAllEtudiantsAsync,
   getDomainePaysAsync,
   getDomaineUnivAsync,
   getEtudiantAsync,
+  getEtudiantByPromotionAsync,
   getPays,
   getUniversite,
   postEtudiantAsync,
 } from "../../features/EtudiantSlice";
-import { Etudiant, Promotion } from "../../types/types";
+import { Etudiant, Promotion, PromotionDetails } from "../../types/types";
 import { getFormationAsync } from "../../features/PromotionSlice";
 import { toast } from "react-toastify";
 import AlertError from "../ui/alert-error";
 
 interface AddStudentProps {
   promotions: Promotion[];
+  promotionDetails: PromotionDetails;
+  pro: PromotionDetails;
   onClose: () => void;
 }
 
-const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
+const AddEtudiant = ({ promotions, promotionDetails, pro, onClose }: AddStudentProps) => {
   const dispatch = useAppDispatch();
   const [errors, setErrors] = useState({
     dateError: null as string | null,
@@ -178,9 +182,14 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
       if (res?.type === "etudiants/postEtudiantAsync/rejected") {
         setError(res.payload as string);
       } else if (res?.type === "etudiants/postEtudiantAsync/fulfilled") {
-        dispatch(getEtudiantAsync({ page: 1, size: 5 }));
+        if(promotionDetails.anneeUniversitaire !== "-1" && pro.anneeUniversitaire !== "-1"){
+          dispatch(getAllEtudiantsAsync());
+        }else{
+          dispatch(getEtudiantByPromotionAsync(promotionDetails));
+        }
         toast.success(res.payload as string);
         resetStudent();
+        onClose();
       }
     }
   };
@@ -199,7 +208,7 @@ const AddEtudiant = ({ promotions, onClose }: AddStudentProps) => {
     if (date instanceof Date) {
       return date.toISOString().split("T")[0];
     }
-    return date; // Si c'est déjà une chaîne de caractères, retournez-la directement
+    return date; 
   };
 
   const resetStudent = () => {

@@ -45,7 +45,7 @@ const StudentHome = ({
   } as PromotionDetails);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const etudiantPerPage = 5;
+  const etudiantPerPage = 8;
   const [selectedPromotion, setSelectedPromotion] = useState<string>("-1");
 
 
@@ -107,7 +107,9 @@ const StudentHome = ({
   };
 
 
-  const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePromotionChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedValue = e.target.value;
 
     if (selectedValue === "-1") {
@@ -115,12 +117,14 @@ const StudentHome = ({
         anneeUniversitaire: "-1",
         codeFormation: "",
       } as PromotionDetails);
-      handleFetch();
+      setCurrentPage(1); // Réinitialiser à la première page
+      await handleFetch();
     } else {
       try {
         const selectedPromotion = JSON.parse(selectedValue) as PromotionDetails;
         setPro(selectedPromotion);
-        handleFetchByPromotion(selectedPromotion);
+        setCurrentPage(1); // Réinitialiser à la première page
+        await handleFetchByPromotion(selectedPromotion);
       } catch (error) {
         console.error("Error parsing promotion details:", error);
       }
@@ -214,7 +218,8 @@ const StudentHome = ({
                           codeFormation: promotion.codeFormation,
                         })}
                       >
-                        {promotion.codeFormation} : {promotion.anneeUniversitaire}
+                        {promotion.codeFormation} :{" "}
+                        {promotion.anneeUniversitaire}
                       </option>
                     ))}
                   </select>
@@ -447,7 +452,7 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
@@ -471,6 +476,8 @@ const StudentHome = ({
       <dialog id="addStudent" className="modal">
         <AddEtudiant
           promotions={promotions}
+          promotionDetails={promotionDetails}
+          pro={pro}
           onClose={() => closeModal("addStudent")}
         />
       </dialog>

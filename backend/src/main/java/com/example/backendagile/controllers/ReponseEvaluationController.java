@@ -19,20 +19,22 @@ public class ReponseEvaluationController {
         this.reponseEvaluationService = reponseEvaluationService;
     }
 
-    @GetMapping("/{idEvaluation}/{idEtudiant}")
-    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluationParEtudiant(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
-        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluationByEtudiant(idEvaluation, idEtudiant));
-    }
-
     @GetMapping("/{idEvaluation}")
     public ResponseEntity<List<ReponseEvaluationPourEtudiantDTO>> getReponseEvaluation(@PathVariable Long idEvaluation) {
         try {
             List<ReponseEvaluationPourEtudiantDTO> reponses = reponseEvaluationService.getReponsesByEvaluation(idEvaluation);
             return ResponseEntity.ok(reponses);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/{idEvaluation}/{idEtudiant}")
+    public ResponseEntity<ReponseEvaluationDTO> getReponseEvaluationParEtudiant(@PathVariable Long idEvaluation, @PathVariable String idEtudiant) {
+        return ResponseEntity.ok(reponseEvaluationService.getReponsesByEvaluationByEtudiant(idEvaluation, idEtudiant));
+    }
+
 
 
     @PostMapping
