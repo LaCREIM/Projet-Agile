@@ -15,6 +15,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import {FaSearch} from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
 import {universiteMapper} from "../../mappers/mappers.ts";
+import { MdClear } from "react-icons/md";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -45,6 +46,7 @@ const StudentHome = ({
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const etudiantPerPage = 5;
+  const [selectedPromotion, setSelectedPromotion] = useState<string>("-1");
 
 
   /**********************  UseEffect *********************/
@@ -143,14 +145,6 @@ const StudentHome = ({
     setSearch(e.target.value.toLowerCase().trim());
   };
 
-  const handlePageChange = async (newPage: number) => {
-    setCurrentPage(newPage);
-    if (pro.anneeUniversitaire == "-1" && pro.codeFormation == "") {
-      await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
-    } else {
-      await dispatch(getEtudiantByPromotionAsync(pro));
-    }
-  };
 
   useEffect(() => {
     if (search.trim() === "") {
@@ -198,27 +192,59 @@ const StudentHome = ({
             promotionDetails.anneeUniversitaire != ""
           ) ? (
             <div className="flex flex-row items-center gap-5 w-2/3 ">
-              <select
-                defaultValue="default"
-                className="w-1/3 select hover:cursor-pointer shadow-md"
-                onChange={handlePromotionChange}
-              >
-                <option value="default" disabled>
-                  Sélectionnez une promotion
-                </option>
-                <option value="-1">Toutes les promotions</option>
-                {promotions.map((promotion, idx) => (
-                  <option
-                    key={idx}
-                    value={JSON.stringify({
-                      anneeUniversitaire: promotion.anneeUniversitaire,
-                      codeFormation: promotion.codeFormation,
-                    })}
+              {localStorage.getItem("role") === "ADM" && (
+                <>
+                  <select
+                    value={selectedPromotion}
+                    className="w-1/3 select hover:cursor-pointer shadow-md"
+                    onChange={(e) => {
+                      setSelectedPromotion(e.target.value);
+                      handlePromotionChange(e);
+                    }}
                   >
-                    {promotion.anneeUniversitaire} : {promotion.codeFormation}
-                  </option>
-                ))}
-              </select>
+                    <option value="default" disabled>
+                      Sélectionnez une promotion
+                    </option>
+                    <option value="-1">Toutes les promotions</option>
+                    {promotions.map((promotion, idx) => (
+                      <option
+                        key={idx}
+                        value={JSON.stringify({
+                          anneeUniversitaire: promotion.anneeUniversitaire,
+                          codeFormation: promotion.codeFormation,
+                        })}
+                      >
+                        {promotion.anneeUniversitaire} :{" "}
+                        {promotion.codeFormation}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="tooltip" data-tip="Réinitialiser le filtre">
+                    <button
+                      onClick={() => {
+                        setPro({
+                          anneeUniversitaire: "-1",
+                          codeFormation: "",
+                        } as PromotionDetails);
+                        setPromotionDetails({
+                          anneeUniversitaire: "-1",
+                          codeFormation: "",
+                        } as PromotionDetails);
+                        setSelectedPromotion("-1");
+                        handleFetch();
+                      }}
+                      disabled={
+                        pro.anneeUniversitaire == "-1" &&
+                        pro.codeFormation == ""
+                      }
+                      className="flex justify-center items-center rounded-full disabled:cursor-not-allowed disabled:text-gray-400 w-8 hover:cursor-pointer"
+                    >
+                      <MdClear size={20} />
+                    </button>
+                  </div>
+                </>
+              )}
+
               <div className="w-1/3 block hover:cursor-text">
                 <label className="input input-bordered flex items-center gap-2 shadow-md">
                   <input
@@ -431,7 +457,7 @@ const StudentHome = ({
             Précédent
           </button>
           <span>
-            Page {currentPage} sur {totalPages}
+            Page {currentPage} sur {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
             onClick={handleNextPage}
