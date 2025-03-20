@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {motion} from "framer-motion";
-import {getAllEtudiantsAsync, getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
+import {getAllEtudiantsAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
 import {Etudiant, PromotionDetails} from "../../types/types";
 
 import {getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
@@ -15,7 +15,7 @@ import UpdateEtudiant from "./UpdateEtudiant.tsx";
 import {FaSearch} from "react-icons/fa";
 import DeleteEtudiantConfirmation from "./DeleteEtudiantConfirmation.tsx";
 import {universiteMapper} from "../../mappers/mappers.ts";
-import { MdClear } from "react-icons/md";
+import {MdClear} from "react-icons/md";
 
 interface StudentHomeProps {
   promotionDetails: PromotionDetails;
@@ -55,8 +55,8 @@ const StudentHome = ({
     await dispatch(getAllEtudiantsAsync());
   };
 
-  const handleFetchByPage = async (currentPage: number) => {
-    await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
+  const handleFetchByPage = async () => {
+    await dispatch(getAllEtudiantsAsync());
   };
 
   const handleFetchByPromotion = async (promotion: PromotionDetails) => {
@@ -441,10 +441,12 @@ const StudentHome = ({
                       className="modal"
                     >
                       <DeleteEtudiantConfirmation
-                        etudiant={etudiant}
-                        handleFetchByPage={handleFetchByPage}
-                        currentPage={currentPage}
-                      />
+                          setPro={setPro}
+                          etudiant={etudiant}
+                          handleFetchByPage={handleFetchByPage}
+                          currentPage={currentPage}
+                          promotionDetails={promotionDetails}
+                          pro={pro}/>
                     </dialog>
                   </tr>
                 ))
