@@ -61,9 +61,21 @@ const ConsulterReponseETD = () => {
         <IoMdArrowBack
           size={25}
           className="cursor-pointer"
-          onClick={() => navigate("/user/home/evaluations")}
+          onClick={() => {
+            if (localStorage.getItem("role") === "ETU") {
+              navigate("/user/home/evaluations");
+            } else {
+              navigate(`/user/home/evaluations/reponses/${evaluationId}`);
+            }
+          }}
         />
-        <h1 className="text-2xl font-bold">Les réponses pour l'évaluation</h1>
+
+        {localStorage.getItem("role") === "ETU" ? (
+          <h1 className="text-2xl font-bold">Mes réponse pour l'évaluation</h1>
+        ) : (
+          <h1 className="text-2xl font-bold">Les réponses pour l'évaluation</h1>
+        )}
+
         <div></div> {/* Espace vide pour équilibrer la mise en page */}
       </div>
 
