@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {motion} from "framer-motion";
-import {getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
+import {getAllEtudiantsAsync, getEtudiantAsync, getEtudiantByPromotionAsync,} from "../../features/EtudiantSlice";
 import {Etudiant, PromotionDetails} from "../../types/types";
 
 import {getPromotionAsync, getPromotions,} from "../../features/PromotionSlice";
@@ -31,31 +31,26 @@ const StudentHome = ({
   const role = localStorage.getItem("role");
   const dispatch = useAppDispatch();
   const etudiants = useAppSelector((state) => state.etudiants.etudiants);
-  const totalPages = useAppSelector((state) => state.etudiants.totalPages);
   const promotions = useAppSelector(getPromotions) || [];
+  
   const [search, setSearch] = useState<string>("");
   const [sortField, setSortField] = useState<string>("nom");
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [filteredEtudiants, setfilteredEtudiants] = useState<Etudiant[]>([]);
-
-  const [modal, setModal] = useState<{
-    etudiant: Etudiant | null;
-    index: number;
-  }>({ etudiant: null, index: -1 });
-
   
-
   const [pro, setPro] = useState<PromotionDetails>({
     anneeUniversitaire: "-1",
     codeFormation: "",
   } as PromotionDetails);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const etudiantPerPage = 5;
+
 
   /**********************  UseEffect *********************/
 
   const handleFetch = async () => {
-    await dispatch(getEtudiantAsync({ page: currentPage, size: 5 }));
+    await dispatch(getAllEtudiantsAsync());
   };
 
   const handleFetchByPage = async (currentPage: number) => {
@@ -68,9 +63,6 @@ const StudentHome = ({
 
   useEffect(() => {
     dispatch(getPromotionAsync());
-    console.log(filteredEtudiants);
-    console.log(modal);
-
     if (
       promotionDetails.anneeUniversitaire == "-1" &&
       promotionDetails.codeFormation == ""
@@ -88,6 +80,19 @@ const StudentHome = ({
   }, [etudiants]);
 
   /**********************  Functions ********************/
+    const handleNextPage = () => {
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
+
+    const handlePrevPage = () => {
+      setCurrentPage((prev) => Math.max(prev - 1, 1));
+    };
+
+      const paginatedEtudiants = filteredEtudiants.slice(
+        (currentPage - 1) * etudiantPerPage,
+        currentPage * etudiantPerPage
+      );
+  const totalPages = Math.ceil(filteredEtudiants.length / etudiantPerPage);
 
   const openModal = (name: string) => {
     const dialog = document.getElementById(name) as HTMLDialogElement;
@@ -97,11 +102,6 @@ const StudentHome = ({
   const closeModal = (id: string) => {
     const dialog = document.getElementById(id) as HTMLDialogElement;
     if (dialog) dialog.close();
-  };
-
-  const handleClick = (etudiant: Etudiant, index: number) => {
-    setModal({ etudiant: null, index: -1 });
-    setModal({ etudiant, index });
   };
 
 
@@ -315,7 +315,7 @@ const StudentHome = ({
               </tr>
             </thead>
             <tbody>
-              {etudiants.length === 0 ? (
+              {filteredEtudiants.length === 0 ? (
                 <tr>
                   <td
                     colSpan={11}
@@ -325,7 +325,7 @@ const StudentHome = ({
                   </td>
                 </tr>
               ) : (
-                filteredEtudiants.map((etudiant: Etudiant, index: number) => (
+                paginatedEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr key={index}>
                     <td className="px-4 py-2">{etudiant.nom}</td>
                     <td className="px-4 py-2">{etudiant.prenom}</td>
@@ -344,7 +344,7 @@ const StudentHome = ({
                         className="tooltip"
                         data-tip={universiteMapper(etudiant.universiteOrigine)}
                       >
-                        {etudiant.universiteOrigine}
+                        {universiteMapper(etudiant.universiteOrigine)}
                       </div>
                     </td>
                     <td
@@ -356,7 +356,6 @@ const StudentHome = ({
                           icon={faEye}
                           className="text-base cursor-pointer"
                           onClick={() => {
-                            handleClick(etudiant, index);
                             openModal(`inspect-${etudiant.noEtudiant}`);
                           }}
                         />
@@ -423,21 +422,21 @@ const StudentHome = ({
             </tbody>
           </motion.table>
         </div>
-        <div className="flex justify-center items-center mt-2">
+        <div className="flex justify-center items-center gap-4 mt-4">
           <button
-            className="btn"
+            onClick={handlePrevPage}
             disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
+            className="btn"
           >
             Précédent
           </button>
-          <span className="mx-2">
+          <span>
             Page {currentPage} sur {totalPages}
           </span>
           <button
-            className="btn"
+            onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
+            className="btn"
           >
             Suivant
           </button>

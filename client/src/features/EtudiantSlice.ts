@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosConfig";
-import {Etudiant, PromotionDetails} from "../types/types";
+import { Etudiant, PromotionDetails } from "../types/types";
 // import { RootState } from "../api/store";
 
 
@@ -42,7 +42,7 @@ const initialState: EtudiantState = {
 
 export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { rejectValue: string }>(
     "paysOrigine/getGroupeTPAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=PAYS`);
             return response.data;
@@ -55,7 +55,7 @@ export const getDomainePaysAsync = createAsyncThunk<Domaine_Pays[], void, { reje
 
 export const getDomaineUnivAsync = createAsyncThunk<Domaine_Universite[], void, { rejectValue: string }>(
     "universiteOrigine/getDomaineUnivAsync",
-    async (_, {rejectWithValue}) => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Domaine_Pays[]>(`/cgRefCodes/byDomain?domain=UNIVERSITE`);
             return response.data;
@@ -70,9 +70,24 @@ export const getEtudiantAsync = createAsyncThunk<EtudiantResponse, { page: numbe
     rejectValue: string
 }>(
     "etudiants/getEtudiantAsync",
-    async ({page, size}, {rejectWithValue}) => {
+    async ({ page, size }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<EtudiantResponse>(`/etudiants/paged?page=${page}&size=${size}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error fetching students:", error);
+            return rejectWithValue(error.response?.data || "An error occurred while fetching students.");
+        }
+    }
+);
+
+export const getAllEtudiantsAsync = createAsyncThunk<Etudiant[], void, {
+    rejectValue: string
+}>(
+    "etudiants/getAllEtudiantsAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get<Etudiant[]>(`/etudiants`);
             return response.data;
         } catch (error: any) {
             console.error("Error fetching students:", error);
@@ -85,7 +100,7 @@ export const getEtudiantByIdAsync = createAsyncThunk<Etudiant, string, {
     rejectValue: string
 }>(
     "etudiants/getEtudiantByIdAsync",
-    async (id, {rejectWithValue}) => {
+    async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Etudiant>(`/etudiants/${id}`);
             return response.data;
@@ -114,7 +129,7 @@ export const searchEtudiantsAsync = createAsyncThunk<EtudiantResponse, { page: n
 
 export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], PromotionDetails, { rejectValue: string }>(
     "students/getEtudiantByPromotionAsync",
-    async (promotionDetails, {rejectWithValue}) => {
+    async (promotionDetails, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get<Etudiant[]>(`/etudiants/promotion/${promotionDetails.anneeUniversitaire}/${promotionDetails.codeFormation}`);
             return response.data;
@@ -127,11 +142,11 @@ export const getEtudiantByPromotionAsync = createAsyncThunk<Etudiant[], Promotio
 
 export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
     "etudiants/postEtudiantAsync",
-    async (etudiant, {rejectWithValue}) => {
+    async (etudiant, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/etudiants`, etudiant);
             console.log(response.data);
-            
+
             return response.data;
         } catch (error: any) {
             console.error("Error posting student:", error);
@@ -142,7 +157,7 @@ export const postEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectVa
 
 export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { rejectValue: string }>(
     "etudiants/updateEtudiantAsync",
-    async (etudiant, {rejectWithValue}) => {
+    async (etudiant, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.put(`/etudiants/${etudiant.noEtudiant}`, etudiant);
             console.log(response.data);
@@ -157,7 +172,7 @@ export const updateEtudiantAsync = createAsyncThunk<Etudiant, Etudiant, { reject
 
 export const deleteEtudiantAsync = createAsyncThunk<string, string, { rejectValue: string }>(
     "etudiants/deleteEtudiantAsync",
-    async (id, {rejectWithValue}) => {
+    async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete(`/etudiants/${id}`);
             //console.log(response);
@@ -206,10 +221,12 @@ const etudiantSlice = createSlice({
             .addCase(deleteEtudiantAsync.fulfilled, (state, action: PayloadAction<string>) => {
                 state.etudiants = state.etudiants.filter((e) => e.noEtudiant !== action.payload);
             })
-            .addCase(getEtudiantByIdAsync.fulfilled, (state, action: PayloadAction<Etudiant> ) => {
+            .addCase(getEtudiantByIdAsync.fulfilled, (state, action: PayloadAction<Etudiant>) => {
                 state.etudiant = action.payload;
             })
-
+            .addCase(getAllEtudiantsAsync.fulfilled, (state, action: PayloadAction<Etudiant[]>) => {
+                state.etudiants = action.payload;
+            })
     },
 });
 
