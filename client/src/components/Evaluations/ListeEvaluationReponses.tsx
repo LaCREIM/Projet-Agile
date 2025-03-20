@@ -78,7 +78,7 @@ const ListeEvaluationReponses = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md">
+    <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen text-md overflow-y-auto">
       <h1 className="text-xl font-bold">
         Réponses pour "{evaluation.designation} - {evaluation.codeFormation} : {evaluation.anneeUniversitaire}"
       </h1>
