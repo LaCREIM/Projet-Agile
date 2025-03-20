@@ -25,10 +25,8 @@ public class EnseignantDTO {
     @NotBlank
     private String pays;
 
-    @NotBlank
     private String mobile;
 
-    @NotBlank
     private String telephone;
 
     @NotBlank
