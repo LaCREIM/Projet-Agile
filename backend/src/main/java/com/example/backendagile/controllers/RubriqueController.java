@@ -4,6 +4,7 @@ import com.example.backendagile.dto.QuestionPrsDTO;
 import com.example.backendagile.dto.RubriqueDTO;
 import com.example.backendagile.entities.Rubrique;
 import com.example.backendagile.services.QuestionPrsService;
+import com.example.backendagile.services.RubriquePrsService;
 import com.example.backendagile.services.RubriqueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ public class RubriqueController {
 
     @Autowired
     private RubriqueService rubriqueService;
+
 
     /**
      * Récupérer toutes les rubriques standards
@@ -38,6 +40,7 @@ public class RubriqueController {
             @PathVariable long enseignantId) {
         return ResponseEntity.ok(rubriqueService.getRubriquesPaged(enseignantId,page, size));
     }
+
     @GetMapping("/enseignants/{enseignantId}")
     public ResponseEntity<List<RubriqueDTO>> getRubriques2(
             @PathVariable long enseignantId) {

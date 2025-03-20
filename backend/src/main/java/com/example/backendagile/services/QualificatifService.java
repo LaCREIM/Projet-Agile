@@ -40,6 +40,11 @@ public class QualificatifService {
         return questionRepository.existsByQualificatifId(id);
     }
 
+    public Boolean existsDansEva(Long idQualificatif) {
+        return questionRepository.existsQualificatifInEvaluation(idQualificatif);
+    }
+
+
     public Optional<Qualificatif> findByMinimalAndMaximal(String minimal, String maximal) {
         return Optional.ofNullable(qualificatifRepository.findByDesignation(minimal, maximal));
     }

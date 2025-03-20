@@ -77,7 +77,7 @@ public class QualificatifController {
         }
 
         // Vérifier si le qualificatif est utilisé dans une question
-        if (qualificatifService.existsDansQuestion(id)) {
+        if (qualificatifService.existsDansEva(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Impossible de modifier ce qualificatif car il est utilisé dans une question.");
         }
 

@@ -18,8 +18,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
     @Query("SELECT q FROM Question q ORDER BY UPPER(q.intitule) ASC")
     List<Question> findStandardQuestions();
 
-    @Query("SELECT q FROM Question q WHERE q.noEnseignant.id = :noEnseignant")
-    List<Question> findByNoEnseignant_NoEnseignant(Long noEnseignant);
 
     @Query(value = """
         SELECT COUNT(*) FROM QUESTION WHERE TYPE = 'QUP' AND NO_ENSEIGNANT = :noEnseignant
@@ -45,6 +43,17 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
 
     @Query("SELECT COUNT(q) > 0 FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
     Boolean existsByQualificatifId(@Param("idQualificatif") Long idQualificatif);
+
+    @Query("SELECT q FROM Question q WHERE q.idQualificatif.id = :idQualificatif")
+    List<Question> findByQualificatifId(@Param("idQualificatif") Long idQualificatif);
+
+    @Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe " +
+            "WHERE qe.idQuestion.id IN (SELECT q.id FROM Question q WHERE q.idQualificatif.id = :idQualificatif)")
+    boolean existsQualificatifInEvaluation(@Param("idQualificatif") Long idQualificatif);
+
+    @Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe WHERE qe.idQuestion.id = :idQuestion")
+    boolean existsQuestionInEvaluation(@Param("idQuestion") Long idQuestion);
+
 
     @Query("SELECT q FROM Question q WHERE UPPER(q.intitule) = UPPER(:intitule) AND q.idQualificatif.id = :idQualificatif")
     List<Question> findQuestionByIntitule(String intitule, Long idQualificatif);
@@ -87,8 +96,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Pagin
         """, nativeQuery = true)
     long countSearchQuestions(@Param("noEnseignant") Long noEnseignant, @Param("keyword") String keyword);
 
-    @Query("SELECT COUNT(qe) > 0 FROM QuestionEvaluation qe WHERE qe.idQuestion.id = :idQuestion")
-    boolean existsQuestionInEvaluation(@Param("idQuestion") Long idQuestion);
 
 
     @Query("SELECT q FROM Question q WHERE q.noEnseignant.id = :noEnseignant")
