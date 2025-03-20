@@ -402,7 +402,7 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                         <h1 className="text-right">
                           {question.qualificatif.minimal}
                         </h1>
-                    
+
                         {getStars(
                           ratings[
                             `${rubrique.idRubrique}-${question.idQuestion}`
@@ -427,7 +427,13 @@ const StepperWithContent = ({ rubriques }: StepperProp) => {
                 {...({} as React.ComponentProps<typeof Typography>)}
                 className="text-gray-800"
               >
-                {comment || "Aucun commentaire"}
+                {comment || (
+                  <Typography variant="h6" className="text-gray-400 italic"
+                  {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    Aucun commentaire
+                  </Typography>
+                )}
               </Typography>
             </div>
           </div>
