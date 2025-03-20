@@ -433,7 +433,7 @@ const PromotionHome = () => {
           <div className="flex justify-center items-center gap-4 mt-4">
             <button
               onClick={handlePrevPage}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || totalPages === 0}
               className="btn disabled:cursor-not-allowed hover:cursor-pointer"
             >
               Précédent
@@ -443,7 +443,7 @@ const PromotionHome = () => {
             </span>
             <button
               onClick={handleNextPage}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalPages === 0}
               className="btn disabled:cursor-not-allowed hover:cursor-pointer"
             >
               Suivant

@@ -39,6 +39,8 @@ export const universiteMapper = (code: string): string => {
         UIZ: "Université Ibn Zohr",
         UM5A: "Université Mohammed V Agdal",
         USMBA: "Université Sidi Mohammed Ben Abdellah",
+        USTHB: "Université des Sciences et Technologies de l'Hôpital Ibn Rochd",
+        UM5: "Université Mohammed V"
     };
 
     return mapping[code] || "Inconnu";

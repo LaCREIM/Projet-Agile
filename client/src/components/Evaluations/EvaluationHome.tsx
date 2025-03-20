@@ -535,12 +535,12 @@ const EvaluationHome = () => {
                                   data-tip={
                                     evaluation.evaluation.etat === "CLO"
                                       ? "L'évaluation est déjà clôturée"
-                                      : evaluation.evaluation.etat === "DIS"
-                                      ? "L'évaluation est déjà mise à disposition"
                                       : evaluation.evaluation.noEnseignant !=
                                         Number(id)
                                       ? "Vous n'avez pas le droit de clôturer l'évaluation"
-                                      : "Clôturer l'évaluation"
+                                      : evaluation.evaluation.etat === "DIS"
+                                      ? "Clôturer l'évaluation"
+                                      : "Vous ne pouvez pas clôturer l'évaluation"
                                   }
                                   onClick={() =>
                                     evaluation.evaluation.noEnseignant ==
@@ -598,7 +598,11 @@ const EvaluationHome = () => {
                               <li>
                                 <div
                                   className="tooltip tooltip-left"
-                                  data-tip="Consulter les statistiques"
+                                  data-tip={
+                                    evaluation.evaluation.etat === "ELA"
+                                      ? "Cette évaluation est toujours en cours d'élaboration."
+                                      : "Consulter les statistiques"
+                                  }
                                   onClick={() =>
                                     evaluation.evaluation.etat != "ELA" &&
                                     navigate(
@@ -745,7 +749,7 @@ const EvaluationHome = () => {
         <div className="flex justify-center items-center gap-4 mt-4 mb-4">
           <button
             onClick={handlePrevPage}
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || totalPages === 0}
             className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Précédent
@@ -755,7 +759,7 @@ const EvaluationHome = () => {
           </span>
           <button
             onClick={handleNextPage}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
             className="btn disabled:cursor-not-allowed hover:cursor-pointer"
           >
             Suivant
