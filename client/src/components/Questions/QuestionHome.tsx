@@ -33,6 +33,7 @@ const QuestionHome = () => {
   const [qualificatifs, setQualificatifs] = useState<Qualificatif[]>([]);
 
   useEffect(() => {
+
     const fetchData = async () => {
       const qualificatifsData = await dispatch(fetchQualificatifsAsync());
       if (Array.isArray(qualificatifsData?.payload))
