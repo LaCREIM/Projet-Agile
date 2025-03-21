@@ -27,7 +27,7 @@ const QualificatifHome = () => {
   );
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [updatingIndex, setUpdatingIndex] = useState<number | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null); // Use ID instead of index
   const [search, setSearch] = useState<string>("");
   const [sortField, setSortField] = useState<string>("minimal");
   const [sortOrder, setSortOrder] = useState<string>("asc");
@@ -41,7 +41,7 @@ const QualificatifHome = () => {
       qualificatif.maximal?.toLowerCase().includes(search.toLowerCase())
     );
   });
-  
+
   // Trier les qualificatifs
   const sortedQualificatifs = filteredQualificatifs.sort((a, b) => {
     const aValue = a[sortField as keyof Qualificatif];
@@ -75,7 +75,7 @@ const QualificatifHome = () => {
   }, [dispatch]);
 
   const [editingValues, setEditingValues] = useState<{
-    [key: number]: Qualificatif;
+    [key: string]: Qualificatif; // Use ID as the key
   }>({});
 
   const openModal = (id: string) => {
@@ -90,30 +90,33 @@ const QualificatifHome = () => {
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    id: string // Use ID instead of index
   ) => {
     const { name, value } = e.target;
     setEditingValues((prev) => ({
       ...prev,
-      [index]: {
-        ...prev[index],
+      [id]: {
+        ...prev[id],
         [name]: value,
       },
     }));
   };
 
-  const handleClickUpdate = (index: number) => {
-    setUpdatingIndex(index);
-    setEditingValues((prev) => ({
-      ...prev,
-      [index]: { ...qualificatifs[index] },
-    }));
+  const handleClickUpdate = (id: string) => {
+    setUpdatingId(id);
+    const qualificatifToEdit = qualificatifs.find((q) => q.id === id);
+    if (qualificatifToEdit) {
+      setEditingValues((prev) => ({
+        ...prev,
+        [id]: { ...qualificatifToEdit },
+      }));
+    }
   };
 
-  const handleUpdate = async (index: number) => {
-    if (editingValues[index]) {
-      const res = await dispatch(updateQualificatifAsync(editingValues[index]));
-      setUpdatingIndex(null);
+  const handleUpdate = async (id: string) => {
+    if (editingValues[id]) {
+      const res = await dispatch(updateQualificatifAsync(editingValues[id]));
+      setUpdatingId(null);
       if (res?.type === "qualificatifs/update/rejected") {
         toast.error(res.payload as string);
       } else if (res?.type === "qualificatifs/update/fulfilled") {
@@ -125,13 +128,13 @@ const QualificatifHome = () => {
     }
   };
 
-  const handleCancelEdit = (index: number) => {
+  const handleCancelEdit = (id: string) => {
     setEditingValues((prev) => {
       const updatedValues = { ...prev };
-      delete updatedValues[index];
+      delete updatedValues[id];
       return updatedValues;
     });
-    setUpdatingIndex(null);
+    setUpdatingId(null);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -212,97 +215,103 @@ const QualificatifHome = () => {
                     </td>
                   </tr>
                 ) : (
-                  currentItems.map(
-                    (qualificatif: Qualificatif, index: number) => (
-                      <tr
-                        key={qualificatif.id}
-                        className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
-                      >
-                        <td className="px-4 py-2">
-                          {updatingIndex !== index ? (
-                            <span>{qualificatif?.minimal}</span>
-                          ) : (
-                            <motion.input
-                              variants={MotionVariant}
-                              initial="initial"
-                              animate={MotionVariant.final()}
-                              required
-                              type="text"
-                              name="minimal"
-                              value={editingValues[index]?.minimal || ""}
-                              onChange={(e) => handleChange(e, index)}
-                              className="input input-bordered"
-                            />
-                          )}
-                        </td>
-                        <td className="px-4 py-2">
-                          {updatingIndex !== index ? (
-                            <span>{qualificatif?.maximal}</span>
-                          ) : (
-                            <motion.input
-                              variants={MotionVariant}
-                              initial="initial"
-                              animate={MotionVariant.final()}
-                              required
-                              type="text"
-                              name="maximal"
-                              value={editingValues[index]?.maximal || ""}
-                              onChange={(e) => handleChange(e, index)}
-                              className="input input-bordered"
-                            />
-                          )}
-                        </td>
-                        <td className="px-4 py-2 flex gap-3 justify-center items-center">
-                          {updatingIndex === index ? (
-                            <>
-                              <div className="tooltip" data-tip="Enregistrer">
-                                <FontAwesomeIcon
-                                  icon={faFloppyDisk}
-                                  className="text-black text-base cursor-pointer"
-                                  onClick={() => handleUpdate(index)}
-                                />
-                              </div>
-                              <div className="tooltip" data-tip="Annuler">
-                                <FontAwesomeIcon
-                                  icon={faTimes}
-                                  className="text-black text-base cursor-pointer"
-                                  onClick={() => handleCancelEdit(index)}
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="tooltip" data-tip="Modifier">
-                                <FontAwesomeIcon
-                                  icon={faPenToSquare}
-                                  className="text-black text-base cursor-pointer"
-                                  onClick={() => handleClickUpdate(index)}
-                                />
-                              </div>
-                              <div className="tooltip" data-tip="Supprimer">
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  className="text-black text-base cursor-pointer"
-                                  onClick={() =>
-                                    openModal(`delete-${qualificatif.id}`)
-                                  }
-                                />
-                              </div>
-                            </>
-                          )}
-                        </td>
-                        <dialog
-                          id={`delete-${qualificatif.id}`}
-                          className="modal"
-                        >
-                          <DeleteQualificatifConfirmation
-                            qualificatif={qualificatif}
-                            currentPage={currentPage}
+                  currentItems.map((qualificatif: Qualificatif) => (
+                    <tr
+                      key={qualificatif.id}
+                      className="hover:cursor-pointer hover:bg-gray-50 transition-all duration-75"
+                    >
+                      <td className="px-4 py-2">
+                        { updatingId !== qualificatif.id ? (
+                          <span>{qualificatif?.minimal}</span>
+                        ) : (
+                          <motion.input
+                            variants={MotionVariant}
+                            initial="initial"
+                            animate={MotionVariant.final()}
+                            required
+                            type="text"
+                            name="minimal"
+                            value={
+                              editingValues[qualificatif.id]?.minimal || ""
+                            }
+                            onChange={(e) => handleChange(e, qualificatif.id)}
+                            className="input input-bordered"
                           />
-                        </dialog>
-                      </tr>
-                    )
-                  )
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        {updatingId !== qualificatif.id ? (
+                          <span>{qualificatif?.maximal}</span>
+                        ) : (
+                          <motion.input
+                            variants={MotionVariant}
+                            initial="initial"
+                            animate={MotionVariant.final()}
+                            required
+                            type="text"
+                            name="maximal"
+                            value={
+                              editingValues[qualificatif.id]?.maximal || ""
+                            }
+                            onChange={(e) => handleChange(e, qualificatif.id)}
+                            className="input input-bordered"
+                          />
+                        )}
+                      </td>
+                      <td className="px-4 py-2 flex gap-3 justify-center items-center">
+                        {updatingId === qualificatif.id ? (
+                          <>
+                            <div className="tooltip" data-tip="Enregistrer">
+                              <FontAwesomeIcon
+                                icon={faFloppyDisk}
+                                className="text-black text-base cursor-pointer"
+                                onClick={() => handleUpdate(qualificatif.id)}
+                              />
+                            </div>
+                            <div className="tooltip" data-tip="Annuler">
+                              <FontAwesomeIcon
+                                icon={faTimes}
+                                className="text-black text-base cursor-pointer"
+                                onClick={() =>
+                                  handleCancelEdit(qualificatif.id)
+                                }
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="tooltip" data-tip="Modifier">
+                              <FontAwesomeIcon
+                                icon={faPenToSquare}
+                                className="text-black text-base cursor-pointer"
+                                onClick={() =>
+                                  handleClickUpdate(qualificatif.id)
+                                }
+                              />
+                            </div>
+                            <div className="tooltip" data-tip="Supprimer">
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="text-black text-base cursor-pointer"
+                                onClick={() =>
+                                  openModal(`delete-${qualificatif.id}`)
+                                }
+                              />
+                            </div>
+                          </>
+                        )}
+                      </td>
+                      <dialog
+                        id={`delete-${qualificatif.id}`}
+                        className="modal"
+                      >
+                        <DeleteQualificatifConfirmation
+                          qualificatif={qualificatif}
+                          currentPage={currentPage}
+                        />
+                      </dialog>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </motion.table>
