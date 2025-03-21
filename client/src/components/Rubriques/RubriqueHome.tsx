@@ -148,9 +148,9 @@ const RubriqueHome = () => {
     <>
       <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl font-bold">Liste des rubriques</h1>
-        <div className={`flex flex-row items-center justify-between gap-5 w-[${role === "ADM" ? "40%" : "100%"}] `}>
-          <div className={`w-3/4 hover:cursor-text flex flex-row items-center gap-5 ${role === "ADM" ? "w-3/4" : "w-full"}`}>
-            <label className="input input-bordered flex items-center gap-2 shadow-md w-2/4">
+        <div className={`flex flex-row items-center justify-between gap-5 w-[${role === "ADM" ? "40%" : "70%"}] `}>
+          <div className={`hover:cursor-text flex flex-row items-center gap-5 ${role === "ADM" ? "w-3/4" : "w-full"}`}>
+            <label className={`input input-bordered flex items-center gap-2 shadow-md ${role === "ADM" ? "w-1/2" : "w-1/3"}`}>
               <input
                 type="text"
                 className="grow placeholder:font-medium"
@@ -201,7 +201,7 @@ const RubriqueHome = () => {
           </div>
         </div>
 
-        <div className={`overflow-y-auto ${role === "ADM" ? "w-[40%]" : "w-[90%]"}`}>
+        <div className={`overflow-y-auto ${role === "ADM" ? "w-[40%]" : "w-[70%]"}`}>
           <table className="table table-zebra text-base">
             <thead className="text-base">
               <tr>

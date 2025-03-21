@@ -154,22 +154,10 @@ const QualificatifHome = () => {
 
   return (
     <>
-
       <div className="flex flex-col gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen overflow-y-auto">
         <h1 className="text-xl">Liste des couples qualificatifs</h1>
 
-        <div className="flex flex-row items-center justify-end gap-5 w-[60%] px-14">
-          <div className="tooltip" data-tip="Ajouter un couple qualificatif">
-            <button
-              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-              onClick={() => openModal("addQualificatif")}
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="w-[60%] flex flex-col gap-3">
+        <div className="flex flex-row items-center justify-between gap-5 w-[50%]">
           <label className="input input-bordered flex items-center gap-2 shadow-md">
             <input
               type="text"
@@ -180,7 +168,17 @@ const QualificatifHome = () => {
             />
             <FaSearch />
           </label>
+          <div className="tooltip" data-tip="Ajouter un couple qualificatif">
+            <button
+              className="disabled:cursor-not-allowed flex flex-row hover:cursor-pointer items-center justify-center gap-5 px-4 py-2 text-center rounded-full border border-black bg-white text-neutral-700 text-lg hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+              onClick={() => openModal("addQualificatif")}
+            >
+              +
+            </button>
+          </div>
+        </div>
 
+        <div className="w-[50%] flex flex-col gap-3">
           <div className="overflow-y-auto">
             <motion.table
               className="table table-zebra"
