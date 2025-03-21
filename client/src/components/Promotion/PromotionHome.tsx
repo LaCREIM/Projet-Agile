@@ -182,17 +182,23 @@ const PromotionHome = () => {
   };
 
   const filteredPromotionsByRole = filteredPromotions.filter((promotion) => {
-    if (role == "ENS") {
-      return promotion.noEnseignant == userId;
-    } else return promotion;
+    if (role === "ENS") {
+      return Number(promotion.noEnseignant) === Number(localStorage.getItem("id")); // Filtrer les promotions où noEnseignant correspond à l'ID de l'utilisateur
+    } else {
+      return promotion; // Afficher toutes les promotions pour les autres rôles
+    }
   });
-  console.log(filteredPromotionsByRole);
-  const paginatedPromotions = filteredPromotions.slice(
+  console.log(promotions);
+
+  const paginatedPromotions = filteredPromotionsByRole.slice(
     (currentPage - 1) * promotionsPerPage,
     currentPage * promotionsPerPage
   );
 
-  const totalPages = Math.ceil(filteredPromotions.length / promotionsPerPage);
+  const totalPages = Math.ceil(
+    filteredPromotionsByRole.length / promotionsPerPage
+  );
+
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));

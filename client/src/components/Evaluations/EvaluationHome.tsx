@@ -513,6 +513,8 @@ const EvaluationHome = () => {
                                       : "Consulter les réponses"
                                   }
                                   onClick={() =>
+                                    evaluation.evaluation.noEnseignant ==
+                                      Number(id) &&
                                     evaluation.evaluation.etat != "ELA" &&
                                     navigate(
                                       `reponses/${evaluation.evaluation.idEvaluation}`
@@ -522,6 +524,8 @@ const EvaluationHome = () => {
                                   <LuArrowRight
                                     size={20}
                                     className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.noEnseignant !=
+                                        Number(id) ||
                                       evaluation.evaluation.etat == "ELA"
                                         ? "text-gray-400 hover:cursor-not-allowed"
                                         : ""
@@ -568,13 +572,13 @@ const EvaluationHome = () => {
                                   className="tooltip tooltip-left"
                                   data-tip={
                                     evaluation.evaluation.etat === "CLO"
-                                      ? "L'évaluation est déjà clôturée"
+                                      ? "L'évaluation est déjà clôturée."
                                       : evaluation.evaluation.etat === "DIS"
-                                      ? "L'évaluation est déjà mise à disposition"
+                                      ? "L'évaluation est déjà mise à disposition."
                                       : evaluation.evaluation.noEnseignant !=
                                         Number(id)
-                                      ? "Vous n'avez pas le droit de mettre à disposition"
-                                      : "Mettre à disposition l'évaluation"
+                                      ? "Vous n'avez pas le droit de mettre à disposition cette évaluation."
+                                      : "Mettre à disposition l'évaluation."
                                   }
                                   onClick={() =>
                                     evaluation.evaluation.etat == "ELA" &&
@@ -599,11 +603,16 @@ const EvaluationHome = () => {
                                 <div
                                   className="tooltip tooltip-left"
                                   data-tip={
-                                    evaluation.evaluation.etat === "ELA"
+                                    evaluation.evaluation.noEnseignant !=
+                                    Number(id)
+                                      ? "Vous n'avez pas le droit de consulter les statistiques"
+                                      : evaluation.evaluation.etat === "ELA"
                                       ? "Cette évaluation est toujours en cours d'élaboration."
                                       : "Consulter les statistiques"
                                   }
                                   onClick={() =>
+                                    evaluation.evaluation.noEnseignant ==
+                                      Number(id) &&
                                     evaluation.evaluation.etat != "ELA" &&
                                     navigate(
                                       `statistiques/${evaluation.evaluation.idEvaluation}`
@@ -613,6 +622,8 @@ const EvaluationHome = () => {
                                   <FontAwesomeIcon
                                     icon={faSquarePollVertical}
                                     className={`text-black text-base cursor-pointer ${
+                                      evaluation.evaluation.noEnseignant !=
+                                        Number(id) ||
                                       evaluation.evaluation.etat == "ELA"
                                         ? "text-gray-400 hover:cursor-not-allowed"
                                         : ""

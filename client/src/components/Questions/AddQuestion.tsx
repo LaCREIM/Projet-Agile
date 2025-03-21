@@ -99,6 +99,7 @@ const AddQuestion = ({ qualificatifs, onClose }: AddQuestionProps) => {
 
     try {
       const res = await dispatch(action);
+      console.log("res", res);
 
       if (res.meta.requestStatus === "fulfilled") {
         toast.success("Question ajoutée avec succès !");

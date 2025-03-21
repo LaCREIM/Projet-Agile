@@ -34,6 +34,7 @@ export interface QuestionOrderDetails {
   qualificatifMin: string;
 }
 
+
 export interface RequestQuestionOrderDetails {
   idRubrique: number;
   designationRubrique: string;
@@ -80,7 +81,7 @@ const DetailsRubrique = ({
   const [removedQuestions, setRemovedQuestions] = useState<number[]>([]); // IDs des questions supprimées
   const estUtilisee = useAppSelector(getEstUtilisee);
   console.log(estUtilisee);
-
+  
   useEffect(() => {
     const formattedQuestions = questions.map((q) => ({
       id: q.id,
@@ -165,12 +166,13 @@ const DetailsRubrique = ({
 
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (isEditing) {
       try {
+
         let resultAdd = "";
         let resultRem = "";
-
+  
         // 🛠️ Mettre à jour les questions
         const formattedQuestions = questionsOrder.map((q, idx) => ({
           idRubrique: rubrique.id,
@@ -184,58 +186,42 @@ const DetailsRubrique = ({
           },
           ordre: idx + 1,
         }));
-
-        const res = await dispatch(
-          updateRubriqueQuestionsAsync(formattedQuestions)
-        );
+  
+        const res = await dispatch(updateRubriqueQuestionsAsync(formattedQuestions));
         if (res.type === "rubriques-questions/update/rejected") {
           resultAdd = res.payload as string;
         }
-
+  
         // 🛠️ Suppression des questions
         if (removedQuestions.length > 0) {
           for (const idQuestion of removedQuestions) {
-            const res = await dispatch(
-              deleteRubriqueQuestionsAsync({
-                idRubrique: rubrique.id,
-                idQuestion,
-              })
-            );
+            const res = await dispatch(deleteRubriqueQuestionsAsync({ idRubrique: rubrique.id, idQuestion }));
             if (res.type === "rubriques-questions/delete/rejected") {
               resultRem = res.payload as string;
             }
           }
         }
-
+  
         // 🛠️ Mise à jour de la rubrique
-        const rubriqueUpdateRes = await dispatch(
-          updateRubriqueAsync({
-            id: rubriqueData.id,
-            designation: rubriqueData.designation,
-          })
-        );
+        const rubriqueUpdateRes = await dispatch(updateRubriqueAsync({ id: rubriqueData.id, designation: rubriqueData.designation }));
         if (rubriqueUpdateRes.type !== "rubriques/update/fulfilled") {
           setError(rubriqueUpdateRes.payload as string);
           return;
         }
-
+  
         if (resultAdd || resultRem) {
           setError(resultAdd || resultRem);
           return;
         }
-
-        toast.success("Rubrique mise à jour avec succès.", {
-          autoClose: 10000,
-        });
-
+  
+        toast.success("Rubrique mise à jour avec succès.", { autoClose: 10000 });
+  
         // 🔄 Rafraîchir la liste des rubriques
         const idEns = localStorage.getItem("id");
         if (idEns) {
-          await dispatch(
-            searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 })
-          );
+          await dispatch(searchRubriquesAsync({ enseignantId: idEns, page: 0, size: 10 }));
         }
-
+  
         setIsEditing(false);
         setError(null);
         onClose();
@@ -248,6 +234,8 @@ const DetailsRubrique = ({
       setError(null);
     }
   };
+  
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -280,24 +268,20 @@ const DetailsRubrique = ({
     setUnusedQuestions((prev) => prev.filter((q) => q.id !== questionToAdd.id));
     setSelectedQuestion(-1);
   };
+  
 
   const handleRemoveQuestion = (idQuestion: number) => {
     setRemovedQuestions((prev) => [...prev, idQuestion]);
-
-    const removedQuestion = allQuestions.find(
-      (q) => q.idQuestion === idQuestion
-    );
+  
+    const removedQuestion = allQuestions.find((q) => q.idQuestion === idQuestion);
     if (removedQuestion) {
       setUnusedQuestions((prev) => [...prev, removedQuestion]);
     }
-
-    setQuestionsOrder((prev) =>
-      prev.filter((q) => q.idQuestion !== idQuestion)
-    );
-    setNewQuestionsOrder((prev) =>
-      prev.filter((q) => q.idQuestion !== idQuestion)
-    );
+  
+    setQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
+    setNewQuestionsOrder((prev) => prev.filter((q) => q.idQuestion !== idQuestion));
   };
+  
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
@@ -342,7 +326,7 @@ const DetailsRubrique = ({
                   <option value={-1}>Sélectionner une question</option>
                   {unusedQuestions.map((q) => (
                     <option key={q.id} value={q.id}>
-                      {q.intitule}
+                      {q.intitule} : {q.idQualificatif.minimal} - {q.idQualificatif.maximal}
                     </option>
                   ))}
                 </select>
@@ -401,23 +385,17 @@ const DetailsRubrique = ({
             rubrique.type === "RBS") ||
           (localStorage.getItem("role") === "ENS" &&
             rubrique.type === "RBP") ? (
-            <div
-              className={` ${estUtilisee ? "tooltip tooltip-left" : ""}`}
-              data-tip={`${
-                estUtilisee
-                  ? "La rubrique est utilisée dans une évaluation, vous ne pouvez pas la modifier."
-                  : ""
-              }`}
-            >
-              <button
-                type="button"
-                className="btn btn-neutral"
-                onClick={handleEdit}
-                disabled={estUtilisee || !canSave}
+              <div className={` ${estUtilisee ? "tooltip tooltip-left" : ""}`} data-tip={`${estUtilisee ? "La rubrique est utilisée dans une évaluation, vous ne pouvez pas la modifier." : ""}`}>
+
+            <button
+              type="button"
+              className="btn btn-neutral"
+              onClick={handleEdit}
+              disabled={estUtilisee || !canSave}
               >
-                {isEditing ? "Enregistrer" : "Modifier"}
-              </button>
-            </div>
+              {isEditing ? "Enregistrer" : "Modifier"}
+            </button>
+              </div>
           ) : null}
 
           <button

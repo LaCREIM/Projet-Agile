@@ -26,6 +26,7 @@ const QuestionDetails = ({
     transition,
     transform: CSS.Transform.toString(transform),
   };
+  console.log("question", question);
   return (
     <div
       ref={setNodeRef}

@@ -27,7 +27,6 @@ const UpdateQuestion = ({
   const [question, setQuestion] = useState<Question>({ ...questionData });
   const [error, setError] = useState<string | null>(null); 
   const estUtilisee = useAppSelector((state: RootState) => state.question.estUtilisee);
-  console.log(estUtilisee);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

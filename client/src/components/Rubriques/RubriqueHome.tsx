@@ -74,6 +74,8 @@ const RubriqueHome = () => {
     dispatch(fetchQuestionsAsync());
   }, [dispatch, pageSize]);
 
+  
+
   useEffect(() => {
     if (modal.rubrique && rubriqueDetailsModalRef.current) {
       rubriqueDetailsModalRef.current.showModal();
@@ -146,8 +148,8 @@ const RubriqueHome = () => {
     <>
       <div className="flex flex-col  gap-5 items-center pt-32 mx-auto rounded-s-3xl bg-white w-full h-screen">
         <h1 className="text-xl font-bold">Liste des rubriques</h1>
-        <div className="flex flex-row items-center justify-between gap-5 w-[40%] ">
-          <div className="w-3/4 hover:cursor-text flex flex-row items-center gap-5">
+        <div className={`flex flex-row items-center justify-between gap-5 w-[${role === "ADM" ? "40%" : "100%"}] `}>
+          <div className={`w-3/4 hover:cursor-text flex flex-row items-center gap-5 ${role === "ADM" ? "w-3/4" : "w-full"}`}>
             <label className="input input-bordered flex items-center gap-2 shadow-md w-2/4">
               <input
                 type="text"
@@ -199,7 +201,7 @@ const RubriqueHome = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto w-[40%]">
+        <div className={`overflow-y-auto ${role === "ADM" ? "w-[40%]" : "w-[90%]"}`}>
           <table className="table table-zebra text-base">
             <thead className="text-base">
               <tr>

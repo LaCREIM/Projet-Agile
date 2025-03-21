@@ -146,7 +146,7 @@ const StudentHome = ({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value.toLowerCase().trim());
+    setSearch(e.target.value?.toLowerCase().trim());
   };
 
 
@@ -157,9 +157,9 @@ const StudentHome = ({
       setfilteredEtudiants(
           etudiants.filter(
               (etudiant) =>
-                  etudiant.nom.toLowerCase().includes(search.toLowerCase()) ||
-                  etudiant.prenom.toLowerCase().includes(search.toLowerCase()) ||
-                  etudiant.email.toLowerCase().includes(search.toLowerCase())
+                  etudiant?.nom?.toLowerCase().includes(search.toLowerCase()) ||
+                  etudiant?.prenom?.toLowerCase().includes(search.toLowerCase()) ||
+                  etudiant?.email?.toLowerCase().includes(search.toLowerCase())
           )
       );
     }
@@ -282,7 +282,7 @@ const StudentHome = ({
               <div className="w-1/2 block hover:cursor-text">
                 <label className="input input-bordered flex items-center gap-2 shadow-md">
                   <input
-                    disabled={!etudiants || etudiants.length === 0}
+                    disabled={!etudiants || etudiants?.length === 0}
                     name="search"
                     value={search}
                     onChange={handleSearchChange}
@@ -357,24 +357,24 @@ const StudentHome = ({
               ) : (
                 paginatedEtudiants.map((etudiant: Etudiant, index: number) => (
                   <tr key={index}>
-                    <td className="px-4 py-2">{etudiant.nom}</td>
-                    <td className="px-4 py-2">{etudiant.prenom}</td>
-                    <td className="px-4 py-2">{etudiant.nationalite}</td>
-                    <td className="px-4 py-2">{etudiant.email}</td>
+                    <td className="px-4 py-2">{etudiant?.nom}</td>
+                    <td className="px-4 py-2">{etudiant?.prenom}</td>
+                    <td className="px-4 py-2">{etudiant?.nationalite}</td>
+                    <td className="px-4 py-2">{etudiant?.email}</td>
                     <td className="px-4 py-2">
                       <div
                         className="tooltip"
-                        data-tip={`${etudiant.codeFormation} - ${etudiant.anneeUniversitaire}`}
+                        data-tip={`${etudiant?.codeFormation} - ${etudiant?.anneeUniversitaire}`}
                       >
-                        {etudiant.codeFormation}
+                        {etudiant?.codeFormation}
                       </div>
                     </td>
                     <td className="px-4 py-2">
                       <div
                         className="tooltip"
-                        data-tip={universiteMapper(etudiant.universiteOrigine)}
+                        data-tip={universiteMapper(etudiant?.universiteOrigine)}
                       >
-                        {universiteMapper(etudiant.universiteOrigine)}
+                        {universiteMapper(etudiant?.universiteOrigine)}
                       </div>
                     </td>
                     <td
@@ -386,7 +386,7 @@ const StudentHome = ({
                           icon={faEye}
                           className="text-base cursor-pointer"
                           onClick={() => {
-                            openModal(`inspect-${etudiant.noEtudiant}`);
+                            openModal(`inspect-${etudiant?.noEtudiant}`);
                           }}
                         />
                       </div>
@@ -397,7 +397,7 @@ const StudentHome = ({
                             icon={faPenToSquare}
                             className="text-base cursor-pointer"
                             onClick={() => {
-                              openModal(`updateStudent-${etudiant.noEtudiant}`);
+                              openModal(`updateStudent-${etudiant?.noEtudiant}`);
                             }}
                           />
                         </div>
@@ -408,7 +408,7 @@ const StudentHome = ({
                             icon={faTrash}
                             className=" text-base cursor-pointer"
                             onClick={() =>
-                              openModal(`delete-${etudiant.noEtudiant}`)
+                              openModal(`delete-${etudiant?.noEtudiant}`)
                             }
                           />
                         </div>
@@ -416,13 +416,13 @@ const StudentHome = ({
                     </td>
 
                     <dialog
-                      id={`updateStudent-${etudiant.noEtudiant}`}
+                      id={`updateStudent-${etudiant?.noEtudiant}`}
                       className="modal"
                     >
                       <UpdateEtudiant
                         setPro={setPro}
                         onClose={() =>
-                          closeModal(`updateStudent-${etudiant.noEtudiant}`)
+                          closeModal(`updateStudent-${etudiant?.noEtudiant}`)
                         }
                         promotions={promotions}
                         studentData={etudiant}
@@ -431,14 +431,14 @@ const StudentHome = ({
                     </dialog>
 
                     <dialog
-                      id={`inspect-${etudiant.noEtudiant}`}
+                      id={`inspect-${etudiant?.noEtudiant}`}
                       className="modal"
                     >
                       <EtudiantDetails etudiant={etudiant} />
                     </dialog>
 
                     <dialog
-                      id={`delete-${etudiant.noEtudiant}`}
+                      id={`delete-${etudiant?.noEtudiant}`}
                       className="modal"
                     >
                       <DeleteEtudiantConfirmation

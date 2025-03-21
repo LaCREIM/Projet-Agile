@@ -24,7 +24,7 @@ const DispositionEvaluationConfirmation = ({evaluationId, onClose}: DispositionP
     return (
         <div className="modal-box">
             <h3 className="font-bold text-lg">Mettre en disposition l'évaluation</h3>
-            <p className="py-4">Êtes-vous sûr de vouloir mettre en disposition cette évaluation ?</p>
+            <p className="py-4">Êtes-vous sûr de vouloir mettre à disposition cette évaluation ?</p>
             <div className="modal-action">
                 <button className="btn btn-success text-white" onClick={handleDisposition}>
                     Mettre en disposition
